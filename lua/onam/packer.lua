@@ -23,6 +23,7 @@ return require("packer").startup(function(use)
 			vim.cmd("colorscheme rose-pine")
 		end,
 	})
+	use("xiyaowong/transparent.nvim")
 	use("nvim-treesitter/nvim-treesitter", { run = ":TSUpdate" })
 	use("windwp/nvim-ts-autotag")
 	use("ThePrimeagen/harpoon")
