@@ -148,6 +148,12 @@ _G.packer_plugins = {
     path = "/home/onam/.local/share/nvim/site/pack/packer/start/lsp-zero.nvim",
     url = "https://github.com/VonHeikemen/lsp-zero.nvim"
   },
+  ["lsp_lines.nvim"] = {
+    config = { "\27LJ\2\0027\0\0\2\0\3\0\0066\0\0\0'\1\1\0B\0\2\0029\0\2\0B\0\1\1K\0\1\0\nsetup\14lsp_lines\frequire\0" },
+    loaded = true,
+    path = "/home/onam/.local/share/nvim/site/pack/packer/start/lsp_lines.nvim",
+    url = "https://git.sr.ht/~whynothugo/lsp_lines.nvim"
+  },
   ["lualine.nvim"] = {
     loaded = true,
     path = "/home/onam/.local/share/nvim/site/pack/packer/start/lualine.nvim",
@@ -163,16 +169,15 @@ _G.packer_plugins = {
     path = "/home/onam/.local/share/nvim/site/pack/packer/start/mason.nvim",
     url = "https://github.com/williamboman/mason.nvim"
   },
+  ["mellow.nvim"] = {
+    loaded = true,
+    path = "/home/onam/.local/share/nvim/site/pack/packer/start/mellow.nvim",
+    url = "https://github.com/kvrohit/mellow.nvim"
+  },
   ["neo-tree.nvim"] = {
     loaded = true,
     path = "/home/onam/.local/share/nvim/site/pack/packer/start/neo-tree.nvim",
     url = "https://github.com/nvim-neo-tree/neo-tree.nvim"
-  },
-  neorg = {
-    config = { "\27LJ\2\2Ä\1\0\0\6\0\14\0\0196\0\0\0'\1\1\0B\0\2\0029\0\2\0005\1\f\0005\2\3\0004\3\0\0=\3\4\0024\3\0\0=\3\5\0025\3\t\0005\4\a\0005\5\6\0=\5\b\4=\4\n\3=\3\v\2=\2\r\1B\0\2\1K\0\1\0\tload\1\0\0\16core.dirman\vconfig\1\0\0\15workspaces\1\0\0\1\0\1\nnotes\f~/notes\19core.concealer\18core.defaults\1\0\0\nsetup\nneorg\frequire\0" },
-    loaded = true,
-    path = "/home/onam/.local/share/nvim/site/pack/packer/start/neorg",
-    url = "https://github.com/nvim-neorg/neorg"
   },
   ["nui.nvim"] = {
     loaded = true,
@@ -220,6 +225,11 @@ _G.packer_plugins = {
     path = "/home/onam/.local/share/nvim/site/pack/packer/start/nvim-web-devicons",
     url = "https://github.com/nvim-tree/nvim-web-devicons"
   },
+  ["oh-lucy.nvim"] = {
+    loaded = true,
+    path = "/home/onam/.local/share/nvim/site/pack/packer/start/oh-lucy.nvim",
+    url = "https://github.com/Yazeed1s/oh-lucy.nvim"
+  },
   ["packer.nvim"] = {
     loaded = true,
     path = "/home/onam/.local/share/nvim/site/pack/packer/start/packer.nvim",
@@ -240,6 +250,11 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/onam/.local/share/nvim/site/pack/packer/start/telescope.nvim",
     url = "https://github.com/nvim-telescope/telescope.nvim"
+  },
+  ["themery.nvim"] = {
+    loaded = true,
+    path = "/home/onam/.local/share/nvim/site/pack/packer/start/themery.nvim",
+    url = "https://github.com/zaldih/themery.nvim"
   },
   ["toggleterm.nvim"] = {
     config = { "\27LJ\2\0028\0\0\2\0\3\0\0066\0\0\0'\1\1\0B\0\2\0029\0\2\0B\0\1\1K\0\1\0\nsetup\15toggleterm\frequire\0" },
@@ -275,6 +290,10 @@ time([[Defining packer_plugins]], false)
 time([[Config for hop.nvim]], true)
 try_loadstring("\27LJ\2\2U\0\0\2\0\4\0\a6\0\0\0'\1\1\0B\0\2\0029\0\2\0005\1\3\0B\0\2\1K\0\1\0\1\0\1\tkeys\28etovxqpdygfblzhckisuran\nsetup\bhop\frequire\0", "config", "hop.nvim")
 time([[Config for hop.nvim]], false)
+-- Config for: lsp_lines.nvim
+time([[Config for lsp_lines.nvim]], true)
+try_loadstring("\27LJ\2\0027\0\0\2\0\3\0\0066\0\0\0'\1\1\0B\0\2\0029\0\2\0B\0\1\1K\0\1\0\nsetup\14lsp_lines\frequire\0", "config", "lsp_lines.nvim")
+time([[Config for lsp_lines.nvim]], false)
 -- Config for: which-key.nvim
 time([[Config for which-key.nvim]], true)
 try_loadstring("\27LJ\2\2t\0\0\2\0\a\0\0156\0\0\0009\0\1\0+\1\2\0=\1\2\0006\0\0\0009\0\1\0)\1ô\1=\1\3\0006\0\4\0'\1\5\0B\0\2\0029\0\6\0004\1\0\0B\0\2\1K\0\1\0\nsetup\14which-key\frequire\15timeoutlen\ftimeout\6o\bvim\0", "config", "which-key.nvim")
@@ -303,10 +322,6 @@ time([[Config for rose-pine]], false)
 time([[Config for nvim-autopairs]], true)
 try_loadstring("\27LJ\2\2@\0\0\2\0\3\0\a6\0\0\0'\1\1\0B\0\2\0029\0\2\0004\1\0\0B\0\2\1K\0\1\0\nsetup\19nvim-autopairs\frequire\0", "config", "nvim-autopairs")
 time([[Config for nvim-autopairs]], false)
--- Config for: neorg
-time([[Config for neorg]], true)
-try_loadstring("\27LJ\2\2Ä\1\0\0\6\0\14\0\0196\0\0\0'\1\1\0B\0\2\0029\0\2\0005\1\f\0005\2\3\0004\3\0\0=\3\4\0024\3\0\0=\3\5\0025\3\t\0005\4\a\0005\5\6\0=\5\b\4=\4\n\3=\3\v\2=\2\r\1B\0\2\1K\0\1\0\tload\1\0\0\16core.dirman\vconfig\1\0\0\15workspaces\1\0\0\1\0\1\nnotes\f~/notes\19core.concealer\18core.defaults\1\0\0\nsetup\nneorg\frequire\0", "config", "neorg")
-time([[Config for neorg]], false)
 
 _G._packer.inside_compile = false
 if _G._packer.needs_bufread == true then

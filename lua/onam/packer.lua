@@ -52,6 +52,13 @@ return require("packer").startup(function(use)
 			{ "rafamadriz/friendly-snippets" }, -- Optional
 		},
 	})
+	-- Cleaner Errors
+	use({
+		"https://git.sr.ht/~whynothugo/lsp_lines.nvim",
+		config = function()
+			require("lsp_lines").setup()
+		end,
+	})
 	-- leet code
 	use({
 		"kawre/leetcode.nvim",
@@ -139,25 +146,9 @@ return require("packer").startup(function(use)
 		requires = { "nvim-tree/nvim-web-devicons", opt = true },
 	})
 
-	--neorg
-	use({
-		"nvim-neorg/neorg",
-		config = function()
-			require("neorg").setup({
-				load = {
-					["core.defaults"] = {}, -- Loads default behaviour
-					["core.concealer"] = {}, -- Adds pretty icons to your documents
-					["core.dirman"] = { -- Manages Neorg workspaces
-						config = {
-							workspaces = {
-								notes = "~/notes",
-							},
-						},
-					},
-				},
-			})
-		end,
-		run = ":Neorg sync-parsers",
-		requires = "nvim-lua/plenary.nvim",
-	})
+    -- Themes
+	use("zaldih/themery.nvim")
+    use 'Yazeed1s/oh-lucy.nvim'
+    use 'kvrohit/mellow.nvim'
+
 end)
