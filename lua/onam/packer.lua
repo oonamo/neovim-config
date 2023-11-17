@@ -19,10 +19,9 @@ return require("packer").startup(function(use)
 	use({
 		"rose-pine/neovim",
 		as = "rose-pine",
-		config = function()
-			vim.cmd("colorscheme rose-pine")
-		end,
 	})
+
+	use("EdenEast/nightfox.nvim") -- Packer
 	use("xiyaowong/transparent.nvim")
 	use("nvim-treesitter/nvim-treesitter", { run = ":TSUpdate" })
 	use("windwp/nvim-ts-autotag")
@@ -146,9 +145,8 @@ return require("packer").startup(function(use)
 		requires = { "nvim-tree/nvim-web-devicons", opt = true },
 	})
 
-    -- Themes
+	-- Themes
 	use("zaldih/themery.nvim")
-    use 'Yazeed1s/oh-lucy.nvim'
-    use 'kvrohit/mellow.nvim'
-
+	use("Yazeed1s/oh-lucy.nvim")
+	use("kvrohit/mellow.nvim")
 end)
