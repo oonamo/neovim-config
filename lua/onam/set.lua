@@ -26,3 +26,7 @@ vim.opt.scrolloff = 8
 vim.opt.isfname:append("@-@")
 
 vim.opt.updatetime = 50
+
+if vim.g.neovide then
+	vim.g.neovide_scale_factor = 1
+end

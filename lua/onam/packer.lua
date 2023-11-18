@@ -2,33 +2,12 @@ vim.cmd([[packadd packer.nvim]])
 
 return require("packer").startup(function(use)
 	use("wbthomason/packer.nvim")
-
-	use({
-		"nvim-telescope/telescope.nvim",
-		tag = "0.1.3",
-		-- or                            , branch = '0.1.x',
-		requires = { { "nvim-lua/plenary.nvim" } },
-	})
-
+	-- LSP
 	use({
 		"NvChad/nvim-colorizer.lua",
 	})
 
 	use("CRAG666/code_runner.nvim")
-	--Lsp Support
-	use({
-		"rose-pine/neovim",
-		as = "rose-pine",
-	})
-
-	use("EdenEast/nightfox.nvim") -- Packer
-	use("xiyaowong/transparent.nvim")
-	use("nvim-treesitter/nvim-treesitter", { run = ":TSUpdate" })
-	use("windwp/nvim-ts-autotag")
-	use("ThePrimeagen/harpoon")
-	use("mbbill/undotree")
-	use("tpope/vim-fugitive")
-
 	use({
 		"VonHeikemen/lsp-zero.nvim",
 		branch = "v1.x",
@@ -51,13 +30,20 @@ return require("packer").startup(function(use)
 			{ "rafamadriz/friendly-snippets" }, -- Optional
 		},
 	})
-	-- Cleaner Errors
 	use({
 		"https://git.sr.ht/~whynothugo/lsp_lines.nvim",
 		config = function()
 			require("lsp_lines").setup()
 		end,
 	})
+	use("xiyaowong/transparent.nvim")
+	use("nvim-treesitter/nvim-treesitter", { run = ":TSUpdate" })
+	use("windwp/nvim-ts-autotag")
+	use("ThePrimeagen/harpoon")
+	use("mbbill/undotree")
+	use("tpope/vim-fugitive")
+	--	use({ "simrat39/rust-tools.nvim", requires = { "neovim/nvim-lspconfig" } }) -- Required
+	--	use("mfussenegger/nvim-dap")
 	-- leet code
 	use({
 		"kawre/leetcode.nvim",
@@ -118,6 +104,13 @@ return require("packer").startup(function(use)
 			require("toggleterm").setup()
 		end,
 	})
+	use({
+		"nvim-telescope/telescope.nvim",
+		tag = "0.1.3",
+		-- or                            , branch = '0.1.x',
+		requires = { { "nvim-lua/plenary.nvim" } },
+	})
+
 	-- Which keys
 	use({
 		"folke/which-key.nvim",
@@ -149,4 +142,10 @@ return require("packer").startup(function(use)
 	use("zaldih/themery.nvim")
 	use("Yazeed1s/oh-lucy.nvim")
 	use("kvrohit/mellow.nvim")
+	use({
+		"rose-pine/neovim",
+		as = "rose-pine",
+	})
+
+	use("EdenEast/nightfox.nvim") -- Packer
 end)
