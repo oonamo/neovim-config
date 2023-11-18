@@ -1,7 +1,6 @@
 local mason = require("mason")
 local mason_lspconfig = require("mason-lspconfig")
 local coq = require("coq")
-local rt = require("rust-tools")
 --enable mason
 mason.setup({
 	ui = {
@@ -23,77 +22,62 @@ mason_lspconfig.setup({
 	automatic_installation = false,
 })
 local function on_attach(client, buffer)
-    local opts = { buffer = ev.buf }
-    if client.name == "rust_analyzer" then
-        vim.keymap.set("n", "<leader>h", ":RustHoverActions<cr>", opts)
-        vim.keymap.set("n", "<leader>gp", ":RustParentModule<cr>", opts)
-    else 
-        vim.keymap.set("n", "<leader>h", vim.lsp.buf.hover, opts)
-    end
-    vim.keymap.set("n", "gd", function()
-        vim.lsp.buf.definition()
-    end, opts)
-    vim.keymap.set("n", "<leader>vws", function()
-        vim.lsp.buf.workspace_symbol()
-    end, opts)
-    vim.keymap.set("n", "<leader>vd", function()
-        vim.diagnostic.open_float()
-    end, opts)
-    vim.keymap.set("n", "[d", function()
-        vim.diagnostic.goto_next()
-   end, opts)
-    vim.keymap.set("n", "]d", function()
-      vim.diagnostic.goto_prev()
-    end, opts)
-    vim.keymap.set("n", "<leader>vca", function()
-        vim.lsp.buf.code_action()
-    end, opts)
-    vim.keymap.set("n", "<leader>vrr", function()
-        vim.lsp.buf.references()
-    end, opts)
-    vim.keymap.set("n", "<leader>vrn", function()
-        vim.lsp.buf.rename()
-    end, opts)
-    vim.keymap.set("i", "<C-h>", function()
-        vim.lsp.buf.signature_help()
-    end, opts)
-       local diag_float_grp= vim.api.nvim_create_augroup("DiagnosticFloat", {clear = true}),
-        vim.api.nvim_create_autocmd("CursorHold", {
-        callback = function()
-            vim.diagnostic.open_float(nil, {focusable = false})
-        end,
-    group = diag_float_grp
-}
- )
+	print("Called attach")
+	local opts = { buffer = buffer }
+	if client.name == "rust_analyzer" then
+		vim.keymap.set("n", "<leader>h", ":RustHoverActions<cr>", opts)
+		vim.keymap.set("n", "<leader>gp", ":RustParentModule<cr>", opts)
+		print("detected rust")
+	else
+		vim.keymap.set("n", "<leader>h", vim.lsp.buf.hover, opts)
+	end
+	vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+	vim.keymap.set("n", "<leader>vws", vim.lsp.buf.workspace_symbol, opts)
+	vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, opts)
+	vim.keymap.set("n", "[d", vim.diagnostic.goto_next, opts)
+	vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, opts)
+	vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, opts)
+	vim.keymap.set("n", "<leader>vrr", vim.lsp.buf.references, opts)
+	vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, opts)
+	vim.keymap.set("i", "<C-h>", vim.lsp.buf.signature_help, opts)
+	local diag_float_grp =
+		vim.api.nvim_create_augroup("DiagnosticFloat", { clear = true }), vim.api.nvim_create_autocmd("CursorHold", {
+			callback = function()
+				vim.diagnostic.open_float(nil, { focusable = false })
+			end,
+			group = diag_float_grp,
+		})
 end
-local rust_tools_config = {
-	-- executor = require("rust-tools.executors").quickfix,
-
-	inlay_hints = {
-		auto = true,
-		parameter_hints_prefix = "<-",
-		other_hints_prefix = "->",
-	},
-	server = {
-		standalone = false,
-	}
-}
 
 local rust_tools_rust_server = {
-    on_attach = on_attach,
+	on_attach = on_attach,
 }
 
 require("mason-lspconfig").setup_handlers({
 	function(server_name)
-		require("lspconfig")[server_name].setup({ coq.lsp_ensure_capabilities({})})
+		require("lspconfig")[server_name].setup({ coq.lsp_ensure_capabilities({}) })
 	end,
-    ["rust_analyzer"] = function()
-        require("rust-tools").setup({
-            on_attach = on_attach,
-            capabilites = coq.lsp_ensure_capabilities(),
-            server = rust_tools_rust_server,
-        })
-        end
+	["lua_ls"] = function()
+		require("lspconfig").lua_ls.setup({
+			on_attach = on_attach,
+			capabilites = coq.lsp_ensure_capabilities,
+			settings = {
+				Lua = {
+					diagnostics = {
+						globals = { "vim" },
+					},
+				},
+			},
+		})
+	end,
 
+	["rust_analyzer"] = function()
+		require("rust-tools").setup({
+			on_attach = on_attach,
+			capabilites = coq.lsp_ensure_capabilities(),
+			server = rust_tools_rust_server,
+		})
+	end,
 })
 
+vim.wo.signcolumn = "yes"
