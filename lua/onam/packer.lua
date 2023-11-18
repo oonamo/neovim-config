@@ -4,32 +4,16 @@ return require("packer").startup(function(use)
 	use("wbthomason/packer.nvim")
 	-- LSP
 	use({
+		"williamboman/mason.nvim",
+		"williamboman/mason-lspconfig.nvim",
+		"neovim/nvim-lspconfig",
+	})
+	use({
 		"NvChad/nvim-colorizer.lua",
 	})
-
+	use("ms-jpq/coq_nvim")
+	use("ms-jpq/coq.artifacts")
 	use("CRAG666/code_runner.nvim")
-	use({
-		"VonHeikemen/lsp-zero.nvim",
-		branch = "v1.x",
-		requires = {
-			-- LSP Support
-			{ "neovim/nvim-lspconfig" }, -- Required
-			{ "williamboman/mason.nvim" }, -- Optional
-			{ "williamboman/mason-lspconfig.nvim" }, -- Optional
-
-			-- Autocompletion
-			{ "hrsh7th/nvim-cmp" }, -- Required
-			{ "hrsh7th/cmp-nvim-lsp" }, -- Required
-			{ "hrsh7th/cmp-buffer" }, -- Optional
-			{ "hrsh7th/cmp-path" }, -- Optional
-			{ "saadparwaiz1/cmp_luasnip" }, -- Optional
-			{ "hrsh7th/cmp-nvim-lua" }, -- Optional
-
-			-- Snippets
-			{ "L3MON4D3/LuaSnip" }, -- Required
-			{ "rafamadriz/friendly-snippets" }, -- Optional
-		},
-	})
 	use({
 		"https://git.sr.ht/~whynothugo/lsp_lines.nvim",
 		config = function()
@@ -42,8 +26,8 @@ return require("packer").startup(function(use)
 	use("ThePrimeagen/harpoon")
 	use("mbbill/undotree")
 	use("tpope/vim-fugitive")
-	--	use({ "simrat39/rust-tools.nvim", requires = { "neovim/nvim-lspconfig" } }) -- Required
-	--	use("mfussenegger/nvim-dap")
+	use({ "simrat39/rust-tools.nvim", requires = { "neovim/nvim-lspconfig" } }) -- Required
+	use("mfussenegger/nvim-dap")
 	-- leet code
 	use({
 		"kawre/leetcode.nvim",
