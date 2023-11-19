@@ -40,13 +40,13 @@ local function on_attach(client, buffer)
 	vim.keymap.set("n", "<leader>vrr", vim.lsp.buf.references, opts)
 	vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, opts)
 	vim.keymap.set("i", "<C-h>", vim.lsp.buf.signature_help, opts)
-	local diag_float_grp =
-		vim.api.nvim_create_augroup("DiagnosticFloat", { clear = true }), vim.api.nvim_create_autocmd("CursorHold", {
-			callback = function()
-				vim.diagnostic.open_float(nil, { focusable = false })
-			end,
-			group = diag_float_grp,
-		})
+	local diag_float_grp = vim.api.nvim_create_augroup("DiagnosticFloat", { clear = true })
+	vim.api.nvim_create_autocmd("CursorHold", {
+		callback = function()
+			vim.diagnostic.open_float(nil, { focusable = false })
+		end,
+		group = diag_float_grp,
+	})
 end
 
 local rust_tools_rust_server = {
@@ -65,6 +65,12 @@ require("mason-lspconfig").setup_handlers({
 				Lua = {
 					diagnostics = {
 						globals = { "vim" },
+					},
+					workspace = {
+						library = {
+							[vim.fn.expand("$VIMRUNTIME/lua")] = true,
+							[vim.fn.stdpath("config") .. "/lua"] = true,
+						},
 					},
 				},
 			},
