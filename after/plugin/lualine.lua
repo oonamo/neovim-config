@@ -1,1 +1,1 @@
-require("lualine").setup({ theme = 'palenight' })
+require("lualine").setup({ theme = "palenight" })

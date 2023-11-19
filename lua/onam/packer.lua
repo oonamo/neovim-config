@@ -63,13 +63,6 @@ return require("packer").startup(function(use)
 		end,
 	})
 
-	use({
-		"rmagatti/goto-preview",
-		config = function()
-			require("goto-preview").setup({ default_mappings = true })
-		end,
-	})
-
 	-- tree
 	use({
 		"nvim-neo-tree/neo-tree.nvim",

@@ -23,23 +23,58 @@ mason_lspconfig.setup({
 })
 local function on_attach(client, buffer)
 	print("Called attach")
-	local opts = { buffer = buffer }
 	if client.name == "rust_analyzer" then
-		vim.keymap.set("n", "<leader>h", ":RustHoverActions<cr>", opts)
-		vim.keymap.set("n", "<leader>gp", ":RustParentModule<cr>", opts)
+		vim.keymap.set("n", "<leader>h", ":RustHoverActions<cr>", {
+			desc = "Rust Hover Actions",
+			buffer = buffer,
+		})
+		vim.keymap.set("n", "<leader>gp", ":RustParentModule<cr>", {
+			desc = "Rust Parent Module",
+			buffer = buffer,
+		})
 		print("detected rust")
 	else
-		vim.keymap.set("n", "<leader>h", vim.lsp.buf.hover, opts)
+		vim.keymap.set("n", "<leader>h", vim.lsp.buf.hover, {
+			desc = "Hover details",
+			buffer = buffer,
+		})
 	end
-	vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-	vim.keymap.set("n", "<leader>vws", vim.lsp.buf.workspace_symbol, opts)
-	vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, opts)
-	vim.keymap.set("n", "[d", vim.diagnostic.goto_next, opts)
-	vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, opts)
-	vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, opts)
-	vim.keymap.set("n", "<leader>vrr", vim.lsp.buf.references, opts)
-	vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, opts)
-	vim.keymap.set("i", "<C-h>", vim.lsp.buf.signature_help, opts)
+	vim.keymap.set("n", "gd", vim.lsp.buf.definition, {
+		desc = "go to buffer definition",
+		buffer = buffer,
+	})
+	vim.keymap.set("n", "<leader>vws", vim.lsp.buf.workspace_symbol, {
+		desc = "Go to workspace_symbol",
+		buffer = buffer,
+	})
+	vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, {
+		desc = "Open float menu",
+		buffer = buffer,
+	})
+	vim.keymap.set("n", "[d", vim.diagnostic.goto_next, {
+		desc = "Got to next diagnostic",
+		buffer = buffer,
+	})
+	vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, {
+		desc = "Go to previous diagnostic",
+		buffer = buffer,
+	})
+	vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, {
+		desc = "Preview code actions",
+		buffer = buffer,
+	})
+	vim.keymap.set("n", "<leader>vrr", vim.lsp.buf.references, {
+		desc = "Go to lsp references",
+		buffer = buffer,
+	})
+	vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, {
+		desc = "Rename variable",
+		buffer = buffer,
+	})
+	vim.keymap.set("i", "<C-h>", vim.lsp.buf.signature_help, {
+		desc = "Signature help",
+		buffer = buffer,
+	})
 	local diag_float_grp = vim.api.nvim_create_augroup("DiagnosticFloat", { clear = true })
 	vim.api.nvim_create_autocmd("CursorHold", {
 		callback = function()

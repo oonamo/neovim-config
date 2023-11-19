@@ -10,7 +10,8 @@ require("conform").setup({
 		json = { "prettier" },
 		yaml = { "prettier" },
 		markdown = { "prettier" },
-	},	timeout_ms = 500,
+	},
+	timeout_ms = 500,
 
 	format_on_save = {
 		-- These options will be passed to conform.format()
