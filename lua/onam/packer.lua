@@ -19,10 +19,8 @@ return require("packer").startup(function(use)
 	use({
 		"rose-pine/neovim",
 		as = "rose-pine",
-		config = function()
-			vim.cmd("colorscheme rose-pine")
-		end,
 	})
+	use("EdenEast/nightfox.nvim")
 	use("xiyaowong/transparent.nvim")
 	use("nvim-treesitter/nvim-treesitter", { run = ":TSUpdate" })
 	use("windwp/nvim-ts-autotag")
@@ -51,6 +49,13 @@ return require("packer").startup(function(use)
 			{ "L3MON4D3/LuaSnip" }, -- Required
 			{ "rafamadriz/friendly-snippets" }, -- Optional
 		},
+	})
+	-- Cleaner Errors
+	use({
+		"stefanwatt/lsp-lines.nvim",
+		config = function()
+			require("lsp_lines").setup()
+		end,
 	})
 	-- leet code
 	use({
@@ -139,25 +144,8 @@ return require("packer").startup(function(use)
 		requires = { "nvim-tree/nvim-web-devicons", opt = true },
 	})
 
-	--neorg
-	use({
-		"nvim-neorg/neorg",
-		config = function()
-			require("neorg").setup({
-				load = {
-					["core.defaults"] = {}, -- Loads default behaviour
-					["core.concealer"] = {}, -- Adds pretty icons to your documents
-					["core.dirman"] = { -- Manages Neorg workspaces
-						config = {
-							workspaces = {
-								notes = "~/notes",
-							},
-						},
-					},
-				},
-			})
-		end,
-		run = ":Neorg sync-parsers",
-		requires = "nvim-lua/plenary.nvim",
-	})
+	-- Themes
+	use("zaldih/themery.nvim")
+	use("Yazeed1s/oh-lucy.nvim")
+	use("kvrohit/mellow.nvim")
 end)

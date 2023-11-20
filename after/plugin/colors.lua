@@ -1,7 +1,7 @@
-function ColorMyPencils()
-	color = color or "rose-pine"
-	vim.cmd.colorscheme(color)
+--function ColorMyPencils()
+--	color = color or "rose-pine"
+--	vim.cmd.colorscheme(color)
     -- set opaque
-end
+-- end
 
-ColorMyPencils()
+-- ColorMyPencils()
