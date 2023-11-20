@@ -2,78 +2,36 @@ vim.cmd([[packadd packer.nvim]])
 
 return require("packer").startup(function(use)
 	use("wbthomason/packer.nvim")
-
+	-- LSP
 	use({
-		"nvim-telescope/telescope.nvim",
-		tag = "0.1.3",
-		-- or                            , branch = '0.1.x',
-		requires = { { "nvim-lua/plenary.nvim" } },
+		"williamboman/mason.nvim",
+		"williamboman/mason-lspconfig.nvim",
+		"neovim/nvim-lspconfig",
 	})
-
 	use({
 		"NvChad/nvim-colorizer.lua",
 	})
-
+	use("ms-jpq/coq_nvim")
+	use("ms-jpq/coq.artifacts")
 	use("CRAG666/code_runner.nvim")
-	--Lsp Support
 	use({
-		"rose-pine/neovim",
-		as = "rose-pine",
+		"https://github.com/Maan2003/lsp_lines.nvim",
+		as = "lsp_lines",
+		config = function()
+			require("lsp_lines").setup({
+				vim.diagnostic.config({ virtual_text = false }),
+			})
+		end,
 	})
-	use("EdenEast/nightfox.nvim")
 	use("xiyaowong/transparent.nvim")
 	use("nvim-treesitter/nvim-treesitter", { run = ":TSUpdate" })
 	use("windwp/nvim-ts-autotag")
 	use("ThePrimeagen/harpoon")
 	use("mbbill/undotree")
 	use("tpope/vim-fugitive")
-
-	use({
-		"VonHeikemen/lsp-zero.nvim",
-		branch = "v1.x",
-		requires = {
-			-- LSP Support
-			{ "neovim/nvim-lspconfig" }, -- Required
-			{ "williamboman/mason.nvim" }, -- Optional
-			{ "williamboman/mason-lspconfig.nvim" }, -- Optional
-
-			-- Autocompletion
-			{ "hrsh7th/nvim-cmp" }, -- Required
-			{ "hrsh7th/cmp-nvim-lsp" }, -- Required
-			{ "hrsh7th/cmp-buffer" }, -- Optional
-			{ "hrsh7th/cmp-path" }, -- Optional
-			{ "saadparwaiz1/cmp_luasnip" }, -- Optional
-			{ "hrsh7th/cmp-nvim-lua" }, -- Optional
-
-			-- Snippets
-			{ "L3MON4D3/LuaSnip" }, -- Required
-			{ "rafamadriz/friendly-snippets" }, -- Optional
-		},
-	})
-	-- Cleaner Errors
-	use({
-		"stefanwatt/lsp-lines.nvim",
-		config = function()
-			require("lsp_lines").setup()
-		end,
-	})
+	use({ "simrat39/rust-tools.nvim", requires = { "neovim/nvim-lspconfig" } }) -- Required
+	use("mfussenegger/nvim-dap")
 	-- leet code
-	use({
-		"kawre/leetcode.nvim",
-		requires = {
-			{ "nvim-treesitter/nvim-treesitter" },
-			{ "nvim-telescope/telescope.nvim" },
-			{ "nvim-lua/plenary.nvim" }, -- required by telescope
-			{ "MunifTanjim/nui.nvim" },
-
-			--optional
-			{ "rcarriga/nvim-notify" },
-		},
-		config = function()
-			require("leetcode").setup()
-		end,
-	})
-
 	-- Formaters
 	use({
 		"stevearc/conform.nvim",
@@ -89,13 +47,6 @@ return require("packer").startup(function(use)
 		config = function()
 			-- you can configure Hop the way you like here; see :h hop-config
 			require("hop").setup({ keys = "etovxqpdygfblzhckisuran" })
-		end,
-	})
-
-	use({
-		"rmagatti/goto-preview",
-		config = function()
-			require("goto-preview").setup({ default_mappings = true })
 		end,
 	})
 
@@ -117,6 +68,13 @@ return require("packer").startup(function(use)
 			require("toggleterm").setup()
 		end,
 	})
+	use({
+		"nvim-telescope/telescope.nvim",
+		tag = "0.1.3",
+		-- or                            , branch = '0.1.x',
+		requires = { { "nvim-lua/plenary.nvim" } },
+	})
+
 	-- Which keys
 	use({
 		"folke/which-key.nvim",
@@ -148,4 +106,9 @@ return require("packer").startup(function(use)
 	use("zaldih/themery.nvim")
 	use("Yazeed1s/oh-lucy.nvim")
 	use("kvrohit/mellow.nvim")
+	use({
+		"rose-pine/neovim",
+		as = "rose-pine",
+	})
+	use("EdenEast/nightfox.nvim") -- Packer
 end)

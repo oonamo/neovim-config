@@ -1,5 +1,5 @@
 vim.opt.guicursor = ""
-
+vim.diagnostic.config({ virtual_text = false })
 vim.opt.nu = true
 vim.opt.relativenumber = true
 vim.diagnostic.config({ virtual_lines = false })
@@ -27,3 +27,6 @@ vim.opt.scrolloff = 8
 vim.opt.isfname:append("@-@")
 
 vim.opt.updatetime = 50
+if vim.g.neovide then
+	vim.g.neovide_scale_factor = 1
+end
