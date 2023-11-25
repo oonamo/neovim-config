@@ -28,6 +28,7 @@ return require("packer").startup(function(use)
 	use("tpope/vim-fugitive")
 	use({ "simrat39/rust-tools.nvim", requires = { "neovim/nvim-lspconfig" } }) -- Required
 	use("mfussenegger/nvim-dap")
+	use({ "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap" } })
 	-- leet code
 	use({
 		"kawre/leetcode.nvim",
@@ -114,6 +115,7 @@ return require("packer").startup(function(use)
 		"nvim-lualine/lualine.nvim",
 		requires = { "nvim-tree/nvim-web-devicons", opt = true },
 	})
+	use({ "stevearc/dressing.nvim" })
 
 	-- Themes
 	use("zaldih/themery.nvim")
@@ -123,6 +125,5 @@ return require("packer").startup(function(use)
 		"rose-pine/neovim",
 		as = "rose-pine",
 	})
-
-	use("EdenEast/nightfox.nvim") -- Packer
+	use("EdenEast/nightfox.nvim")
 end)

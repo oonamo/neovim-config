@@ -1,6 +1,7 @@
 local mason = require("mason")
 local mason_lspconfig = require("mason-lspconfig")
 local coq = require("coq")
+
 --enable mason
 mason.setup({
 	ui = {
@@ -21,6 +22,14 @@ mason_lspconfig.setup({
 	-- enable automatic install
 	automatic_installation = false,
 })
+
+-- IMPORTANT: Run this after setting up mason
+local mason_registry = require("mason-registry")
+local codelldb = mason_registry.get_package("codelldb")
+local extension_path = codelldb:get_install_path() .. "/extension/"
+local codelldb_path = extension_path .. "adapter/codelldb"
+local liblldb_path = extension_path .. "lldb/lib/liblldb.so"
+
 local function on_attach(client, buffer)
 	print("Called attach")
 	if client.name == "rust_analyzer" then
@@ -117,6 +126,25 @@ require("mason-lspconfig").setup_handlers({
 			on_attach = on_attach,
 			capabilites = coq.lsp_ensure_capabilities(),
 			server = rust_tools_rust_server,
+			tools = {
+				hover_actions = {
+					auto_focus = true,
+				},
+			},
+			dap = {
+				adapter = require("rust-tools.dap").get_codelldb_adapter(codelldb_path, liblldb_path),
+			},
+			-- dap = {
+			--	adapter = {
+			--		type = "server",
+			--		port = "27",
+			--		host = "127.0.0.1",
+			--		executable = {
+			--			command = codelldb_path,
+			--			args = { "--liblldb", liblldb_path, "--port", "21111" },
+			--		},
+			--	},
+			--},
 		})
 	end,
 })
