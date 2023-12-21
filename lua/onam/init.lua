@@ -1,6 +1,20 @@
-vim.g.coq_settings = {
-	auto_start = true,
-}
-require("onam.remap")
-require("onam.set")
-require("onam.theme")
+-- vim.g.coq_settings = {
+-- 	auto_start = true,
+-- 	display = {
+-- 		preview = {
+-- 			border = "double",
+-- 			enabled = false,
+-- 		},
+-- 		pum = {
+-- 			x_max_len = 45,
+-- 			y_max_len = 10,
+-- 			fast_close = false,
+-- 		},
+-- 	},
+-- 	keymap = {
+-- 		jump_to_mark = "<c-m>",
+-- 	},
+-- }
+-- require("onam.remap")
+-- require("onam.set")
+-- require("onam.theme")

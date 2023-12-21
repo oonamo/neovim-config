@@ -1,5 +1,4 @@
 vim.opt.guicursor = ""
-vim.diagnostic.config({ virtual_text = false })
 vim.opt.nu = true
 vim.opt.relativenumber = true
 
