@@ -10,12 +10,29 @@ return {
 			"ms-jpq/coq_nvim",
 			"ms-jpq/coq.artifacts",
 		},
+		event = { "BufReadPre", "BufNewFile" },
 		init = function()
 			vim.g.coq_settings = {
 				auto_start = true,
 				keymap = {
-					bigger_preview = "<C-D>",
+					bigger_preview = "<C-R>",
 					jump_to_mark = "<C-M>",
+					recommended = false,
+				},
+				display = {
+					preview = {
+						border = "rounded",
+						enabled = true,
+						positions = { north = 1, south = 2, west = 3, east = 4 },
+					},
+					pum = {
+						x_max_len = 45,
+						y_max_len = 10,
+						fast_close = false,
+					},
+					statusline = {
+						helo = false,
+					},
 				},
 			}
 		end,

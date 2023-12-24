@@ -25,5 +25,6 @@ return {
 				trouble.toggle("lsp_references")
 			end, { desc = "trobuble lsp references" })
 		end,
+		event = { "BufReadPre", "BufNewFile" },
 	},
 }

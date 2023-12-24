@@ -32,5 +32,10 @@ return {
 				desc = "Switch to harp file 4",
 			})
 		end,
+		keys = {
+			{ "<leader>a" },
+			{ "<C-e>" },
+			{ "<leader>b1" },
+		},
 	},
 }

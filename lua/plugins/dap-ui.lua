@@ -20,5 +20,6 @@ return {
 			vim.keymap.set("n", "<leader>dx", ":DapTerminate<CR>")
 			vim.keymap.set("n", "<leader>do", ":DapStepOver<CR>")
 		end,
+		event = "VeryLazy",
 	},
 }
