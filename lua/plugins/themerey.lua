@@ -38,7 +38,7 @@ return {
 					TelescopeSelection = { fg = "text", bg = "base" },
 					TelescopeSelectionCaret = { fg = "rose", bg = "rose" },
 				},
-				disable_background = false,
+				disable_background = true,
 			})
 		end,
 	},

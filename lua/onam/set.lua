@@ -59,6 +59,8 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 		vim.api.nvim_set_hl(0, "NormalFloat", { blend = 15 })
 		vim.api.nvim_set_hl(0, "FloatBorder", { blend = 15 })
 		vim.api.nvim_set_hl(0, "PmenuSel", { bold = true, fg = "#ffc2c6" })
+		vim.api.nvim_set_hl(0, "Title", { bold = true, fg = "#698282" })
+		vim.api.nvim_set_hl(0, "Directory", { bold = true, fg = "#698282" })
 		vim.api.nvim_set_hl(0, "CursorLine", { bg = "#b3c3c4" })
 	end,
 })

@@ -15,15 +15,15 @@ return {
 			vim.g.coq_settings = {
 				auto_start = true,
 				keymap = {
-					bigger_preview = "<C-R>",
-					jump_to_mark = "<C-M>",
+					bigger_preview = "<C-r>",
+					jump_to_mark = "<C-m>",
 					recommended = false,
 				},
 				display = {
 					preview = {
 						border = "rounded",
 						enabled = true,
-						positions = { north = 1, south = 2, west = 3, east = 4 },
+						positions = { north = 1, south = 2, west = 4, east = 3 },
 					},
 					pum = {
 						x_max_len = 45,
@@ -71,6 +71,9 @@ return {
 			local liblldb_path = extension_path .. "lldb/lib/liblldb.so"
 
 			local function on_attach(client, buffer)
+				vim.keymap.set({ "i", "n" }, "<C-x>", function()
+					COQ.Nav_mark()
+				end)
 				if client.name == "rust_analyzer" then
 					vim.keymap.set("n", "<leader>h", ":RustHoverActions<cr>", {
 						desc = "Rust Hover Actions",
