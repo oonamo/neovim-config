@@ -37,8 +37,16 @@ return {
 					TelescopeResultsNormal = { fg = "subtle", bg = "none" },
 					TelescopeSelection = { fg = "text", bg = "base" },
 					TelescopeSelectionCaret = { fg = "rose", bg = "rose" },
+
+					StatusLine = { fg = "love", bg = "love", blend = 10 },
+					StatusLineNC = { fg = "subtle", bg = "surface" },
+					-- StatuslineAccent = { bg = "surface", fg = "love" },
+					-- StatuslineInsertAccent = { bg = "love", fg = "surface" },
+					-- StatuslineVisualAccent = { bg = "#b3c3c4", fg = "#27272a" },
+					-- StatuslineCmdAccent = { bg = "#dda0dd", fg = "#27272a" },
+					-- StatuslineReplaceAccent = { bold = true, fg = "#698282" },
 				},
-				disable_background = false,
+				disable_background = true,
 			})
 		end,
 	},

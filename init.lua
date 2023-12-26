@@ -11,9 +11,14 @@ if not vim.loop.fs_stat(lazypath) then
 		lazypath,
 	})
 end
+
 vim.opt.rtp:prepend(lazypath)
+
 vim.g.MUtils = {}
+
 require("onam.remap")
 require("onam.set")
+require("onam.utils")
 require("lazy").setup("plugins")
 require("onam.theme")
+require("onam.statusline")
