@@ -15,5 +15,6 @@ return {
 			})
 		end,
 		event = "VeryLazy",
+		enabled = false,
 	},
 }

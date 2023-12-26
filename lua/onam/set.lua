@@ -30,12 +30,14 @@ vim.opt.wildmenu = true
 vim.opt.cursorline = false
 vim.opt.statuscolumn = "%l %r"
 vim.opt.signcolumn = "yes"
+vim.opt.laststatus = 3 -- Or 3 for global statusline
+-- vim.opt.statusline = " %f %m %= %l:%c ♥ "
 -- ----------------------------------------------
 -- ----------------------------------------------
 -- Popup Menu
 
 vim.opt.completeopt = "menuone,noinsert,noselect"
-vim.opt.pumblend = 15
+vim.opt.pumblend = 30
 vim.opt.winblend = 30
 
 vim.api.nvim_create_autocmd("ColorScheme", {
@@ -51,6 +53,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 vim.api.nvim_create_autocmd("ColorScheme", {
 	pattern = "rose-pine",
 	callback = function()
+		-- vim.opt.statusline = " %f %m %= %l:%c ♥ "
 		vim.api.nvim_set_hl(0, "@keyword", { fg = "#698282" })
 		vim.api.nvim_set_hl(0, "Statement", { fg = "#698282" })
 		vim.api.nvim_set_hl(0, "Function", { fg = "#ffc2c6" })
@@ -62,6 +65,18 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 		vim.api.nvim_set_hl(0, "Title", { bold = true, fg = "#698282" })
 		vim.api.nvim_set_hl(0, "Directory", { bold = true, fg = "#698282" })
 		vim.api.nvim_set_hl(0, "CursorLine", { bg = "#b3c3c4" })
+
+		-- StatusLine
+		vim.api.nvim_set_hl(0, "StatuslineAccent", { bg = "#ffc2c6", fg = "#27272a" })
+		vim.api.nvim_set_hl(0, "StatuslineInsertAccent", { bg = "#d3a38d", fg = "#27272a" })
+		vim.api.nvim_set_hl(0, "StatuslineVisualAccent", { bg = "#b3c3c4", fg = "#27272a" })
+		vim.api.nvim_set_hl(0, "StatuslineCmdlineAccent", { bg = "#dda0dd", fg = "#27272a" })
+		vim.api.nvim_set_hl(0, "StatuslineReplaceAccent", { bold = true, fg = "#698282" })
+		-- vim.api.nvim_set_hl(0, "StatuslineAccent", { bg = "#ffc2c6", fg = "#27272a" })
+		-- vim.api.nvim_set_hl(0, "StatuslineInsertAccent", { bg = "#d3a38d", fg = "#27272a" })
+		-- vim.api.nvim_set_hl(0, "StatuslineVisualAccent", { bg = "#b3c3c4", fg = "#27272a" })
+		-- vim.api.nvim_set_hl(0, "StatuslineCmdAccent", { bg = "#dda0dd", fg = "#27272a" })
+		-- vim.api.nvim_set_hl(0, "StatuslineReplaceAccent", { bold = true, fg = "#698282" })
 	end,
 })
 
@@ -72,3 +87,9 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 		vim.api.nvim_set_hl(0, "FloatBorder", { blend = 15 })
 	end,
 })
+
+-- vim.api.nvim_set_hl(0, "StatuslineAccent", { bg = "#ffc2c6", fg = "#27272a" })
+-- vim.api.nvim_set_hl(0, "StatuslineInsertAccent", { bg = "#d3a38d", fg = "#27272a" })
+-- vim.api.nvim_set_hl(0, "StatuslineVisualAccent", { bg = "#b3c3c4", fg = "#27272a" })
+-- vim.api.nvim_set_hl(0, "StatuslineCmdAccent", { bg = "#dda0dd", fg = "#27272a" })
+-- vim.api.nvim_set_hl(0, "StatuslineReplaceAccent", { bold = true, fg = "#698282" })
