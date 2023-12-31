@@ -120,7 +120,13 @@ function utils.augroup(name, autocmds, noclear)
 
 		vim.cmd(
 
-			fmt("autocmd %s %s %s %s", table.concat(c.events, ","), table.concat(c.targets or {}, ","), table.concat(c.modifiers or {}, " "), command)
+			fmt(
+				"autocmd %s %s %s %s",
+				table.concat(c.events, ","),
+				table.concat(c.targets or {}, ","),
+				table.concat(c.modifiers or {}, " "),
+				command
+			)
 		)
 	end
 
@@ -137,6 +143,38 @@ function utils.command(name, fn)
 		fn = fmt("lua utils.execute(%s)", fn_id)
 	end
 	vim.cmd(fmt("command! %s %s", name, fn))
+end
+
+---@class UtilHighlightItem
+---@field name string
+---@field opts table
+
+---@class UtilHighlight
+---@field opts table
+utils.hl = {}
+
+function utils:create_hl()
+	if utils.hl.opts == nil then
+		print("utils.hl.opts is nil")
+		return
+	end
+	for _, hl in pairs(utils.hl.opts) do
+		vim.api.nvim_set_hl(0, hl[1], hl[2])
+	end
+end
+
+---@class UtilStatusline
+---@field opts table
+utils.statuscolors = {}
+
+function utils:create_statusline()
+	if utils.statuscolors.opts == nil then
+		print("utils.statuscolors.opts is nil")
+		return
+	end
+	for _, hl in pairs(utils.statuscolors.opts) do
+		vim.api.nvim_set_hl(0, hl[1], hl[2])
+	end
 end
 
 return utils

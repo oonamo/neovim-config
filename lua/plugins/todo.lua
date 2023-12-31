@@ -8,4 +8,5 @@ return {
 
 		-- refer to the configuration section below
 	},
+	event = { "BufReadPre", "BufNewFile" },
 }
