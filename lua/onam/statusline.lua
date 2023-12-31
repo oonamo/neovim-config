@@ -1,5 +1,10 @@
 local fn = vim.fn
 local api = vim.api
+local harpoon = require("harpoon")
+
+--@alias event {}
+--@alias CachedList {items: {value: string, index: number}[]}
+CachedList = {}
 
 local modes = {
 	["n"] = "NORMAL",
@@ -26,10 +31,17 @@ local modes = {
 	["t"] = "TERMINAL",
 }
 
+--@return string
 local function mode()
 	local current_mode = api.nvim_get_mode().mode
 	return string.format(" %s ", modes[current_mode]):upper()
 end
+
+--TODO: Not working
+-- local function keys()
+-- 	local key = ""
+-- 	return key
+-- end
 
 local function update_mode_colors()
 	local current_mode = api.nvim_get_mode().mode
@@ -79,6 +91,93 @@ local function lineinfo()
 	return " %P %l:%c "
 end
 
+--==============================================================================
+-- Harpoon
+-- =============================================================================
+-- Executes on harpoon select
+vim.api.nvim_create_autocmd("User", {
+	pattern = "HarpoonListSelect",
+	group = "HarpoonStatus",
+	callback = function(event)
+		-- Update_harpoon(event)
+		vim.schedule(function()
+			Update_harpoon(event)
+		end)
+	end,
+})
+-- Executes on harpoon:append() or harpoon:prepend()
+vim.api.nvim_create_autocmd("User", {
+	pattern = "HarpoonListChange",
+	group = "HarpoonStatus",
+	callback = function(event)
+		-- Update_harpoon(event)
+		vim.schedule(function()
+			Update_harpoon(event)
+		end)
+	end,
+})
+
+-- Executes on Harpoon UI Leave
+vim.api.nvim_create_autocmd("User", {
+	pattern = "HarpoonBufLeave",
+	group = "HarpoonStatus",
+	callback = function(event)
+		vim.schedule(function()
+			Update_harpoon(event)
+		end)
+	end,
+})
+
+vim.api.nvim_create_autocmd("BufLeave, WinLeave, BufWinLeave, BufWriteCmd", {
+	pattern = "__harpooon-menu__*",
+	group = "HarpoonStatus",
+	callback = function(event)
+		vim.schedule(function()
+			Update_harpoon(event)
+		end)
+	end,
+})
+vim.api.nvim_create_autocmd("VimEnter", {
+	group = "HarpoonStatus",
+	pattern = "*",
+	callback = function()
+		Init_harpoon()
+	end,
+})
+
+function Init_harpoon()
+	Cachedlist = harpoon:list("cmd")
+end
+
+function Update_harpoon(event)
+	Cachedlist = event.data.list
+	vim.cmd("redrawstatus")
+end
+
+local function harpoon_list()
+	local file_name = fn.fnamemodify(api.nvim_buf_get_name(0), ":p:.")
+	local inactive = ""
+	local active = ""
+	local modifier = ""
+
+	if Cachedlist.items == nil then
+		return ""
+	end
+	if #Cachedlist.items > 4 then
+		modifier = ":t"
+	end
+	for i, item in ipairs(Cachedlist.items) do
+		if item.value ~= file_name then
+			inactive = inactive .. " %=%#HarpoonInactive# " .. i .. " " .. fn.fnamemodify(item.value, modifier)
+		else
+			--FIX: Redundant to have the active harpoon item in the statusline
+			-- active = " %#HarpoonActive# " .. i .. " " .. item.value
+		end
+	end
+
+	return active .. inactive
+end
+
 local function lsp()
 	local count = {}
 	local levels = {
@@ -98,33 +197,56 @@ local function lsp()
 	local info = ""
 
 	if count["errors"] ~= 0 then
-		errors = " %#LspDiagnosticsSignError# " .. count["errors"]
+		errors = " %#DiagnosticSignError# " .. count["errors"]
 	end
 	if count["warnings"] ~= 0 then
-		warnings = " %#LspDiagnosticsSignWarning# " .. count["warnings"]
+		warnings = " %#DiagnosticSignWarn# " .. count["warnings"]
 	end
 	if count["hints"] ~= 0 then
-		hints = " %#LspDiagnosticsSignHint# " .. count["hints"]
+		hints = " %#DiagnosticSignHint# " .. count["hints"]
 	end
 	if count["info"] ~= 0 then
-		info = " %#LspDiagnosticsSignInformation# " .. count["info"]
+		info = " %#DiagnosticSignInfo# " .. count["info"]
 	end
 
 	return errors .. warnings .. hints .. info .. "%#Normal#"
 end
 
+local function macro()
+	if vim.fn.reg_recording() ~= "" then
+		return "%#Macro#@recording " .. vim.fn.reg_recording() .. " "
+	end
+	return ""
+end
+
 Statusline = {}
 
+--- Highlights
+-- StatuslineAccent
+-- StatuslineInsertAccent
+-- StatuslineVisualAccent
+-- StatuslineReplaceAccent
+-- StatuslineCmdLineAccent
+-- StatuslineTerminalAccent
+-- HarpoonActive
+-- HarpoonInactive
+-- Statusline
+-- StatusBarLong
+-- StatusEmpty
+-- StatusLineExtra
 Statusline.active = function()
 	return table.concat({
 		"%#Statusline#",
 		update_mode_colors(),
 		mode(),
-		"%#Normal# ",
+		"%#StatusBarLong#",
 		filepath(),
 		filename(),
-		"%#Normal#",
-		lsp(),
+		macro(),
+		"%#StatusEmpty#",
+		" ",
+		-- "%=",
+		harpoon_list(),
 		"%=%#StatusLineExtra#",
 		filetype(),
 		lineinfo(),
@@ -147,7 +269,6 @@ if vim.g.colors_name == "-pine" then
 			" %f %m %= %l:%c ♥ ",
 		})
 	end
-	print("status line: " .. Statusline.pine())
 	utils.augroup("Statusline", {
 		{
 			events = { "WinEnter,BufEnter" },
@@ -158,7 +279,7 @@ if vim.g.colors_name == "-pine" then
 else
 	utils.augroup("Statusline", {
 		{
-			events = { "WinEnter,BufEnter" },
+			events = { "WinEnter,BufEnter,VimEnter" },
 			targets = { "*" },
 			command = "setlocal statusline=%!v:lua.Statusline.active()",
 		},
@@ -173,6 +294,16 @@ else
 
 			targets = { "NeoTree" },
 			command = "setlocal statusline=%!v:lua.Statusline.short()",
+		},
+		{
+			events = { "CmdlineEnter", "CmdlineChanged", "BufWritePre" },
+			targets = { "*" },
+			command = "set cmdheight=1",
+		},
+		{
+			events = { "CmdlineLeave", "BufWritePost", "InsertLeave" },
+			targets = { "*" },
+			command = "set cmdheight=0 | redrawstatus!",
 		},
 	})
 end

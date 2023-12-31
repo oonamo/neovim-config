@@ -1,4 +1,5 @@
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+
 if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({
 
@@ -17,8 +18,11 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.MUtils = {}
 
 require("onam.remap")
-require("onam.set")
 require("onam.utils")
+require("onam.set") -- Set before theme and stausline
 require("lazy").setup("plugins")
-require("onam.theme")
+require("onam.color_switcher").setup_persistence()
 require("onam.statusline")
+-- require("highlights") -- Set after theme and statusline
+
+utils:create_hl()

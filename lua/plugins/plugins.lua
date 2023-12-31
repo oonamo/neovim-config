@@ -66,4 +66,5 @@ return {
 	{
 		"ThePrimeagen/vim-be-good",
 	},
+	{ "echasnovski/mini.base16", version = false },
 }
