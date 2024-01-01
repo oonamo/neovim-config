@@ -19,6 +19,23 @@ vim.keymap.set("n", "<C-j>", "<cmd> TmuxNavigateDown<CR>", { desc = "window down
 vim.keymap.set("n", "<C-k>", "<cmd> TmuxNavigateUp<CR>", { desc = "window up" })
 vim.keymap.set("n", "<C-l>", "<cmd> TmuxNavigateRight<CR>", { desc = "window right" })
 
+--Set Copy and Paste
+--Copy to Keyboard
+vim.keymap.set("n", "<leader>y", '"+y')
+vim.keymap.set("v", "<leader>y", '"+y')
+vim.keymap.set("n", "<leader>Y", '"+Y')
+vim.keymap.set("n", "<leader>yy", '"+yy')
+vim.keymap.set("v", "<leader>yy", '"+yy')
+--Paste from Keyboard
+vim.keymap.set("n", "<leader>p", '"+p')
+vim.keymap.set("v", "<leader>p", '"+p')
+vim.keymap.set("n", "<leader>P", '"+P')
+vim.keymap.set("v", "<leader>P", '"+P')
+
 vim.keymap.set("n", "<leader>cs", function()
 	require("onam.color_switcher").show_popup()
+end, { desc = "color switcher" })
+
+vim.keymap.set("n", "<leader>cp", function()
+	require("onam.color_switcher").show_plenary_popup()
 end, { desc = "color switcher" })
