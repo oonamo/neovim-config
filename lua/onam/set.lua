@@ -4,6 +4,8 @@ vim.opt.termguicolors = true
 vim.opt.background = "dark"
 if vim.g.neovide then
 	vim.g.neovide_scale_factor = 1
+	vim.g.neovide_transparency = 1
+	vim.g.neovide_hide_mouse_when_typing = true
 end
 -- Editor
 vim.opt.nu = true
@@ -35,6 +37,33 @@ vim.opt.cmdheight = 0
 vim.opt.completeopt = "menuone,noinsert,noselect"
 vim.opt.pumblend = 30
 vim.opt.winblend = 30
+
+vim.g.clipboard = {
+	name = "WslClipboard",
+	copy = {
+		["+"] = "clip.exe",
+		["*"] = "clip.exe",
+	},
+	paste = {
+		["+"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+		["*"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+	},
+	cache_enabled = 0,
+}
+vim.opt.clipboard = {
+	name = "WslClipboard",
+	copy = {
+		["+"] = "clip.exe",
+		["*"] = "clip.exe",
+	},
+	paste = {
+		["+"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+		["*"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+	},
+	cache_enabled = 0,
+}
+
+vim.g.use_custom_statusline = false
 O = {}
 
 vim.api.nvim_create_autocmd("ColorScheme", {
@@ -92,7 +121,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 -- 		vim.api.nvim_set_hl(0, "FloatBorder", { blend = 15 })
 -- 	end,
 -- })
-
+--
 vim.api.nvim_create_autocmd("TextYankPost", {
 	pattern = "*",
 	callback = function()

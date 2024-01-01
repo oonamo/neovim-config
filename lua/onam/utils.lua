@@ -177,4 +177,16 @@ function utils:create_statusline()
 	end
 end
 
+utils.pmenu = {}
+
+function utils:create_pmenu()
+	if utils.pmenu.opts == nil then
+		print("utils.pmenu.opts is nil")
+		return
+	end
+	for _, hl in pairs(utils.pmenu.opts) do
+		vim.api.nvim_set_hl(0, hl[1], hl[2])
+	end
+end
+
 return utils

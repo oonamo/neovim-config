@@ -29,28 +29,33 @@ function M.setup()
 	-- StatusBarLong
 	-- StatusEmpty
 	-- StatusLineExtra
+	if vim.g.use_custom_statusline == true then
+		utils.statuscolors = {
+			opts = {
+				{ "StatusLineExtra", { fg = c.bg, bg = c.red } },
+				{ "StatuslineAccent", { bg = c.yellow, fg = "#27272a" } },
+				{ "StatuslineInsertAccent", { link = "CurSearch" } },
+				{ "StatuslineVisualAccent", { bg = c.cyan, fg = "#27272a" } },
+				{ "StatuslineCmdLineAccent", { bg = c.magenta, fg = "#27272a" } },
+				{ "StatusCmdLine", { bg = c.magenta, fg = "#27272a" } },
+				{ "StatuslineReplaceAccent", { bold = true, fg = c.green } },
+				{ "StatusEmpty", { bg = c.bg, blend = 10 } },
+				{ "StatusBarLong", { bg = c.bg, blend = 10, fg = "#ffffff" } },
+				{ "HarpoonActive", { bg = c.magenta, blend = 10, fg = "#000000" } },
+				{ "HarpoonInactive", { bg = c.green, blend = 10, fg = "#000000" } },
+			},
+		}
 
-	utils.statuscolors = {
-		opts = {
-			{ "StatusLineExtra", { fg = c.bg, bg = c.red } },
-			{ "StatuslineAccent", { bg = c.yellow, fg = "#27272a" } },
-			{ "StatuslineInsertAccent", { link = "CurSearch" } },
-			{ "StatuslineVisualAccent", { bg = c.cyan, fg = "#27272a" } },
-			{ "StatuslineCmdLineAccent", { bg = c.magenta, fg = "#27272a" } },
-			{ "StatusCmdLine", { bg = c.magenta, fg = "#27272a" } },
-			{ "StatuslineReplaceAccent", { bold = true, fg = c.green } },
-			{ "StatusEmpty", { bg = c.bg, blend = 10 } },
-			{ "StatusBarLong", { bg = c.bg, blend = 10, fg = "#ffffff" } },
-			{ "HarpoonActive", { bg = c.magenta, blend = 10, fg = "#000000" } },
-			{ "HarpoonInactive", { bg = c.green, blend = 10, fg = "#000000" } },
-		},
-	}
-
-	utils:create_statusline()
+		utils:create_statusline()
+	end
 
 	---Override Defaults
 	if colors.setup_status ~= nil then
 		colors.setup_status()
+	end
+
+	if colors.setup_pmenu ~= nil then
+		colors.setup_pmenu()
 	end
 end
 

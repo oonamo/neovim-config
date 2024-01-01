@@ -45,6 +45,8 @@ function M.setup()
 		opts = {},
 	}
 	vim.opt.background = "light"
+	vim.g.newpaper_lualine_bold = true
+	vim.g.new_paper_lualine_style = "line"
 end
 
 function M.setup_status()

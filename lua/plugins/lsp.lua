@@ -15,20 +15,22 @@ return {
 			vim.g.coq_settings = {
 				auto_start = true,
 				keymap = {
-					bigger_preview = "<C-r>",
-					jump_to_mark = "<C-m>",
+					jump_to_mark = "<C-x>",
+					bigger_preview = "<C-s>",
 					recommended = false,
 				},
 				display = {
+					ghost_text = {
+						enabled = false,
+					},
 					preview = {
 						border = "rounded",
 						enabled = true,
-						positions = { north = 1, south = 2, west = 4, east = 3 },
+						positions = { north = nil, south = 2, west = 3, east = 4 },
 					},
 					pum = {
 						x_max_len = 45,
-						y_max_len = 10,
-						fast_close = false,
+						fast_close = true,
 					},
 					statusline = {
 						helo = false,
@@ -74,6 +76,7 @@ return {
 				vim.keymap.set({ "i", "n" }, "<C-x>", function()
 					COQ.Nav_mark()
 				end)
+
 				if client.name == "rust_analyzer" then
 					vim.keymap.set("n", "<leader>h", ":RustHoverActions<cr>", {
 						desc = "Rust Hover Actions",
@@ -149,7 +152,7 @@ return {
 						settings = {
 							Lua = {
 								diagnostics = {
-									globals = { "vim" },
+									globals = { "vim", "COQ" },
 								},
 								workspace = {
 									library = {
@@ -193,5 +196,19 @@ return {
 			vim.wo.signcolumn = "yes"
 		end,
 	},
-	{},
+	{
+		"ms-jpq/coq.thirdparty",
+		dependencies = {
+			"ms-jpq/coq_nvim",
+			"ms-jpq/coq.artifacts",
+			"Exafunction/codeium.vim",
+		},
+		config = function()
+			require("coq_3p")({
+				{ src = "codeium", short_name = "COD" },
+				{ src = "nvimlua", short_name = "nLUA", conf_only = true },
+			})
+		end,
+		event = { "BufReadPre", "BufNewFile" },
+	},
 }

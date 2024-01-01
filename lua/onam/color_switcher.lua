@@ -1,3 +1,5 @@
+local popup = require("plenary.popup")
+local Win_id
 local M = {}
 
 local function persistance_path()
@@ -42,8 +44,43 @@ local function create_popup()
 	end)
 end
 
+local function create_plenary_popup(opts)
+	local borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" }
+	local width = 40
+
+	local function cb(_, choice)
+		if choice ~= nil then
+			print("selected " .. choice)
+			O.fn = choice
+			require("highlights").setup()
+			M.save_state({ colorschemes = colorschemes, index = choice })
+		end
+	end
+
+	Win_id = popup.create(opts, {
+		title = "Colorschemes",
+		minwidth = width,
+		minheight = #colorschemes + 1,
+		borderchars = borderchars,
+		callback = cb,
+		line = math.floor(((vim.o.lines - (#colorschemes + 1)) / 2) - 1),
+		col = math.floor((vim.o.columns - width) / 2),
+	})
+
+	local buffer = vim.api.nvim_win_get_buf(Win_id)
+	vim.api.nvim_buf_set_keymap(buffer, "n", "<Esc>", "<Cmd>lua Close_plenary_popup()<CR>", { silent = true })
+	vim.api.nvim_buf_set_keymap(buffer, "n", "q", "<Cmd>lua Close_plenary_popup()<CR>", { silent = true })
+end
+
+function Close_plenary_popup()
+	vim.api.nvim_win_close(Win_id, true)
+end
 M.show_popup = function()
 	vim.defer_fn(create_popup, 0)
+end
+
+M.show_plenary_popup = function()
+	create_plenary_popup(colorschemes)
 end
 
 M.setup_persistence = function()

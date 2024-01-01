@@ -1,3 +1,6 @@
+if vim.g.use_custom_statusline == false then
+	return
+end
 local fn = vim.fn
 local api = vim.api
 local harpoon = require("harpoon")
