@@ -13,22 +13,18 @@ return {
 			local function normalize_path(buf_name, root)
 				return Path:new(buf_name):make_relative(root)
 			end
-			--FIX: This
+			--TODO: Can probaly make cool stuff with this
+			--IE: grab current files with a warning or error
+			--Record macros or registers into the list
 			harpoon:setup({
 				["cmd"] = {
 					create_list_item = function(config, name)
 						name = name
-							-- TODO: should we do path normalization???
-							-- i know i have seen sometimes it becoming an absolute
-							-- path, if that is the case we can use the context to
-							-- store the bufname and then have value be the normalized
-							-- value
 							or normalize_path(
 								vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()),
 								config.get_root_dir()
 							)
 
-						print("create_list_item")
 						local bufnr = vim.fn.bufnr(name, false)
 
 						local pos = { 1, 0 }
@@ -125,11 +121,6 @@ return {
 				},
 			})
 
-			-- basic telescope configuration
-			-- vim.keymap.set("n", "<C-e>", function()
-			-- 	toggle_telescope(harpoon:list())
-			-- end, { desc = "Open harpoon window" })
-
 			vim.keymap.set("n", "<leader>a", function()
 				harpoon:list("cmd"):append()
 				-- harpoon:list():append()
@@ -138,43 +129,31 @@ return {
 				harpoon.ui:toggle_quick_menu(harpoon:list("cmd"))
 			end)
 
-			-- vim.keymap.set("n", "<leader>hsl", function()
-			-- 	harpoon.ui:toggle_quick_menu(harpoon:list("cmd"))
-			-- end)
-
 			vim.keymap.set("n", "<leader>1", function()
-				-- harpoon:list():select(1)
 				harpoon:list("cmd"):select(1)
 			end)
 			vim.keymap.set("n", "<leader>2", function()
-				-- harpoon:list():select(2)
 				harpoon:list("cmd"):select(2)
 			end)
 
 			vim.keymap.set("n", "<leader>3", function()
-				-- harpoon:list():select(3)
 				harpoon:list("cmd"):select(3)
 			end)
 
 			vim.keymap.set("n", "<leader>4", function()
-				-- harpoon:list():select(4)
 				harpoon:list("cmd"):select(4)
 			end)
 
 			vim.keymap.set("n", "<leader>5", function()
-				-- harpoon:list():select(4)
 				harpoon:list("cmd"):select(5)
 			end)
 			vim.keymap.set("n", "<leader>6", function()
-				-- harpoon:list():select(4)
 				harpoon:list("cmd"):select(6)
 			end)
 			vim.keymap.set("n", "<leader>7", function()
-				-- harpoon:list():select(4)
 				harpoon:list("cmd"):select(7)
 			end)
 			vim.keymap.set("n", "<leader>8", function()
-				-- harpoon:list():select(4)
 				harpoon:list("cmd"):select(8)
 			end)
 

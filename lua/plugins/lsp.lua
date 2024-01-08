@@ -104,14 +104,14 @@ return {
 					desc = "Open float menu",
 					buffer = buffer,
 				})
-				vim.keymap.set("n", "[d", vim.diagnostic.goto_next, {
-					desc = "Got to next diagnostic",
-					buffer = buffer,
-				})
-				vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, {
-					desc = "Go to previous diagnostic",
-					buffer = buffer,
-				})
+				-- vim.keymap.set("n", "[d", vim.diagnostic.goto_next, {
+				-- 	desc = "Got to next diagnostic",
+				-- 	buffer = buffer,
+				-- })
+				-- vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, {
+				-- 	desc = "Go to previous diagnostic",
+				-- 	buffer = buffer,
+				-- })
 				vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, {
 					desc = "Preview code actions",
 					buffer = buffer,

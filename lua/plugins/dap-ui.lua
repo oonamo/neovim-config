@@ -15,11 +15,11 @@ return {
 			dap.listeners.after.event_exited["dapui_config"] = function()
 				dapui.close()
 			end
-
-			vim.keymap.set("n", "<leader>dt", ":DapToggleBreakpoint<CR>")
-			vim.keymap.set("n", "<leader>dx", ":DapTerminate<CR>")
-			vim.keymap.set("n", "<leader>do", ":DapStepOver<CR>")
 		end,
-		event = "VeryLazy",
+		keys = {
+			{ "<leader>dt", ":DapToggleBreakpoint<CR>" },
+			{ "<leader>dx", ":DapTerminate<CR>" },
+			{ "<leader>do", ":DapStepOver<CR>" },
+		},
 	},
 }

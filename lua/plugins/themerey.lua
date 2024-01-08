@@ -1,33 +1,7 @@
 return {
 	{
-		"zaldih/themery.nvim",
-		config = function()
-			require("themery").setup({
-				themes = {
-					"rose-pine",
-					-- "rose-pine-dawn",
-					-- "rose-pine-main",
-					"mellow",
-					-- "oh-lucy",
-					-- "oh-lucy-evening",
-					-- "nordfox",
-					-- "carbonfox",
-					-- "duskfox",
-					"rusticated",
-					"nord",
-					"newpaper",
-				},
-				themeConfigFile = "~/.config/nvim/lua/onam/theme.lua",
-				livePreview = true,
-			})
-		end,
-		keys = {
-			{ "<leader>th", "<cmd>Themery<CR>", { desc = "open themery" } },
-		},
-	},
-	{
 		"haystackandroid/rusticated",
-		lazy = false,
+		lazy = true,
 		config = function()
 			O = { colorscheme = "rusticated", fn = "rusticated" }
 		end,
@@ -35,7 +9,7 @@ return {
 	{ "Yazeed1s/oh-lucy.nvim", lazy = true, enabled = false },
 	{
 		"kvrohit/mellow.nvim",
-		lazy = false,
+		lazy = true,
 		config = function()
 			O = {
 				colorscheme = "mellow",
@@ -52,6 +26,12 @@ return {
 				fn = "prime-pine",
 			}
 			require("rose-pine").setup({
+				extend_background_behind_borders = true,
+				styles = {
+					bold = true,
+					italic = true,
+					transparency = true,
+				},
 				highlight_groups = {
 					TelescopeBorder = { fg = "highlight_high", bg = "none" },
 					TelescopeNormal = { bg = "none" },
@@ -61,15 +41,11 @@ return {
 					TelescopeSelectionCaret = { fg = "rose", bg = "rose" },
 
 					StatusLineNC = { fg = "#ffffff", bg = "#ffffff" },
-					--TODO: Cool color combination
 					-- StatusLineExtra = { fg = "#698282", bg = "#27272a" },
 					StatuslineAccent = { bg = "surface", fg = "love" },
 					StatuslineInsertAccent = { bg = "love", fg = "surface" },
-					-- StatuslineAccent = { bg = "surface", fg = "love" },
-					-- StatuslineInsertAccent = { bg = "love", fg = "surface" },
-					-- StatuslineVisualAccent = { bg = "#b3c3c4", fg = "#27272a" },
-					-- StatuslineCmdAccent = { bg = "#dda0dd", fg = "#27272a" },
-					-- StatuslineReplaceAccent = { bold = true, fg = "#698282" },
+					CursorLine = { bg = "foam", blend = 10 },
+					ColorColumn = { bg = "_experimental_nc" },
 				},
 				disable_background = true,
 			})
@@ -77,7 +53,7 @@ return {
 	},
 	{
 		"yorik1984/newpaper.nvim",
-		lazy = false,
+		lazy = true,
 		config = function()
 			O = {
 				colorscheme = "newpaper",
@@ -85,6 +61,14 @@ return {
 			}
 		end,
 	},
-	{ "EdenEast/nightfox.nvim", lazy = true, enabled = false },
 	{ "nordtheme/vim", name = "nord", lazy = true },
+	{ "nyoom-engineering/oxocarbon.nvim", lazy = true },
+	{ "neanias/everforest-nvim", lazy = true },
+	{
+		"olivercederborg/poimandres.nvim",
+		config = function()
+			require("poimandres").setup()
+		end,
+		lazy = true,
+	},
 }
