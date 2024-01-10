@@ -102,7 +102,6 @@ function M.setup_status()
 			{ "HarpoonInactive", { link = "StatusBarLong" } },
 		},
 	}
-
 	utils:create_statusline()
 end
 

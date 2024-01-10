@@ -14,6 +14,11 @@ local colorschemes = {
 	"cafe",
 	"rusticated",
 	"whiteout",
+	-- "offwhite",
+	"everforest",
+	"oxocarbon",
+	"poimandres",
+	"sakura",
 }
 
 M.load_state = function()
