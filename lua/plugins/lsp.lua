@@ -1,3 +1,6 @@
+--TODO: Switch to nvim-cmp
+--TODO: Switch to rustaceanvim
+--https://github.com/mrcjkb/rustaceanvim
 return {
 	{
 		"ms-jpq/coq_nvim",
