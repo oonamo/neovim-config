@@ -44,7 +44,7 @@ vim.opt.colorcolumn = "80"
 
 vim.opt.completeopt = "menuone,noinsert,noselect"
 vim.opt.winblend = 30
-vim.opt.pumblend = 20
+-- vim.opt.pumblend = 20
 -- NetRW
 vim.g.netrw_browse_split = 0
 vim.g.netrw_banner = 0

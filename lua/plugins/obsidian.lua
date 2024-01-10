@@ -15,5 +15,17 @@ return {
 		"nvim-lua/plenary.nvim",
 
 		-- see below for full list of optional dependencies 👇
+		--
+		"hrsh7th/nvim-cmp",
+		"nvim-telescope/telescope.nvim",
+		"nvim-treesitter",
+	},
+	opts = {
+		workspaces = {
+			{
+				name = "o notes",
+				path = "/mnt/c/Users/onam7/Desktop/o notes/",
+			},
+		},
 	},
 }
