@@ -16,6 +16,7 @@ return {
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
 			"onsails/lspkind.nvim",
+			"barreiroleo/ltex_extra.nvim",
 		},
 		event = { "BufReadPre", "BufNewFile" },
 		config = function()
@@ -204,7 +205,6 @@ return {
 					{ name = "cmdline", keyword_length = 3 },
 				}),
 			})
-
 			local capabilites = require("cmp_nvim_lsp").default_capabilities()
 			require("mason-lspconfig").setup_handlers({
 				function(server_name)
@@ -226,6 +226,19 @@ return {
 									},
 								},
 							},
+						},
+					})
+				end,
+				["ltex"] = function()
+					-- on_attach = on_attach,
+					require("lspconfig").ltex.setup({
+						capabilities = capabilites,
+						on_attach = function(client, bufnr)
+							on_attach(client, bufnr)
+							require("ltex_extra").setup({})
+						end,
+						settings = {
+							-- ltex = { your settings }
 						},
 					})
 				end,

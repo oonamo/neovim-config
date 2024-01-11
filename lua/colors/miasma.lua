@@ -1,8 +1,7 @@
 local M = {}
 
 function M.setup()
-	O.colorscheme = "everforest"
-	vim.opt.background = "dark"
+	O.colorscheme = "miasma"
 	vim.cmd("colorscheme " .. O.colorscheme)
 end
 

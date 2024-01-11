@@ -19,6 +19,8 @@ local colorschemes = {
 	"oxocarbon",
 	"poimandres",
 	"sakura",
+	"gruvbox",
+	"miasma",
 }
 
 M.load_state = function()

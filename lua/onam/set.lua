@@ -5,7 +5,7 @@ vim.opt.termguicolors = true
 vim.opt.background = "dark"
 
 if vim.g.neovide then
-	vim.g.neovide_scale_factor = 1
+	vim.g.neovide_scale_factor = 0.8
 	vim.g.neovide_transparency = 1
 	vim.g.neovide_hide_mouse_when_typing = true
 end
@@ -93,7 +93,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 -- vim.api.nvim_create_autocmd("ColorScheme", {
 -- 	pattern = "rose-pine",
 -- 	callback = function()
--- 		
+--
 --
 -- 		utils.hl = {
 -- 			opts = {
