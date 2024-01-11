@@ -66,9 +66,9 @@ return {
 	{ "neanias/everforest-nvim", lazy = true },
 	{
 		"olivercederborg/poimandres.nvim",
-		config = function()
-			require("poimandres").setup()
-		end,
+		config = true,
 		lazy = true,
 	},
+	"sainnhe/gruvbox-material",
+	"xero/miasma.nvim",
 }
