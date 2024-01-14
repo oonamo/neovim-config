@@ -156,7 +156,6 @@ utils.hl = {}
 
 function utils:create_hl()
 	if utils.hl.opts == nil then
-		print("utils.hl.opts is nil")
 		return
 	end
 	for _, hl in pairs(utils.hl.opts) do
@@ -170,7 +169,6 @@ utils.statuscolors = {}
 
 function utils:create_statusline()
 	if utils.statuscolors.opts == nil then
-		print("utils.statuscolors.opts is nil")
 		return
 	end
 	for _, hl in pairs(utils.statuscolors.opts) do
@@ -182,7 +180,6 @@ utils.pmenu = {}
 
 function utils:create_pmenu()
 	if utils.pmenu.opts == nil then
-		print("utils.pmenu.opts is nil")
 		return
 	end
 	for _, hl in pairs(utils.pmenu.opts) do

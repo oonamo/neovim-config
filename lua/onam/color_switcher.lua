@@ -43,7 +43,6 @@ local function create_popup()
 		prompt = "Select colorscheme",
 	}, function(choice)
 		if choice ~= nil then
-			print("selected " .. choice)
 			O.fn = choice
 			require("highlights").setup()
 			M.save_state({ colorschemes = colorschemes, index = choice })
@@ -57,7 +56,6 @@ local function create_plenary_popup(opts)
 
 	local function cb(_, choice)
 		if choice ~= nil then
-			print("selected " .. choice)
 			O.fn = choice
 			require("highlights").setup()
 			M.save_state({ colorschemes = colorschemes, index = choice })

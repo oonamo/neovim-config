@@ -71,4 +71,6 @@ return {
 		end,
 		lazy = true,
 	},
+	"sainnhe/gruvbox-material",
+	"xero/miasma.nvim",
 }
