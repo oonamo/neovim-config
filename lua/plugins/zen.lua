@@ -1,5 +1,6 @@
 return {
 	"Pocco81/true-zen.nvim",
+	ft = { "markdown" },
 	opts = {
 		modes = { -- configurations per mode
 			ataraxis = {

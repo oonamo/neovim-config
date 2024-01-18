@@ -7,6 +7,5 @@ return {
 			{ "<C-k>", "<cmd> TmuxNavigateUp<CR>", desc = "window up" },
 			{ "<C-l>", "<cmd> TmuxNavigateRight<CR>", desc = "window right" },
 		},
-		lazy = false,
 	},
 }

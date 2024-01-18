@@ -7,4 +7,5 @@ return {
 		{ "<leader>gp", "<cmd>Git push<cr>", { desc = "git push" } },
 		{ "<leader>gd", "<cmd>Gdiffsplit<cr>", { desc = "git diff split" } },
 	},
+	lazy = true,
 }

@@ -6,7 +6,6 @@ return {
 			O = { colorscheme = "rusticated", fn = "rusticated" }
 		end,
 	},
-	{ "Yazeed1s/oh-lucy.nvim", lazy = true, enabled = false },
 	{
 		"kvrohit/mellow.nvim",
 		lazy = true,
@@ -66,11 +65,9 @@ return {
 	{ "neanias/everforest-nvim", lazy = true },
 	{
 		"olivercederborg/poimandres.nvim",
-		config = function()
-			require("poimandres").setup()
-		end,
+		config = true,
 		lazy = true,
 	},
 	"sainnhe/gruvbox-material",
-	"xero/miasma.nvim",
+	{ "xero/miasma.nvim", lazy = true },
 }

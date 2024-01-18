@@ -264,49 +264,51 @@ function Statusline.short()
 	return "%#StatusLineNC#   NvimTree"
 end
 
--- WARN: should be rose-pine, replace if you want with nord
-if vim.g.colors_name == "-pine" then
-	Statusline.pine = function()
-		return table.concat({
-			mode(),
-			" %f %m %= %l:%c ♥ ",
+if vim.g.use_custom_statusline == true then
+	-- WARN: should be rose-pine, replace if you want with nord
+	if vim.g.colors_name == "-pine" then
+		Statusline.pine = function()
+			return table.concat({
+				mode(),
+				" %f %m %= %l:%c ♥ ",
+			})
+		end
+		utils.augroup("Statusline", {
+			{
+				events = { "WinEnter,BufEnter" },
+				targets = { "*" },
+				command = "setlocal statusline=%!v:lua.Statusline.pine()",
+			},
+		})
+	else
+		utils.augroup("Statusline", {
+			{
+				events = { "WinEnter,BufEnter,VimEnter" },
+				targets = { "*" },
+				command = "setlocal statusline=%!v:lua.Statusline.active()",
+			},
+			-- {
+			-- 	events = { "WinLeave,BufLeave" },
+			-- 	targets = { "*" },
+			-- 	command = "setlocal statusline=%!v:lua.Statusline.inactive()",
+			-- },
+			{
+
+				events = { "WinEnter,BufEnter" },
+
+				targets = { "NeoTree" },
+				command = "setlocal statusline=%!v:lua.Statusline.short()",
+			},
+			{
+				events = { "CmdlineEnter", "CmdlineChanged", "BufWritePre" },
+				targets = { "*" },
+				command = "set cmdheight=1",
+			},
+			{
+				events = { "CmdlineLeave", "BufWritePost", "InsertLeave" },
+				targets = { "*" },
+				command = "set cmdheight=0 | redrawstatus!",
+			},
 		})
 	end
-	utils.augroup("Statusline", {
-		{
-			events = { "WinEnter,BufEnter" },
-			targets = { "*" },
-			command = "setlocal statusline=%!v:lua.Statusline.pine()",
-		},
-	})
-else
-	utils.augroup("Statusline", {
-		{
-			events = { "WinEnter,BufEnter,VimEnter" },
-			targets = { "*" },
-			command = "setlocal statusline=%!v:lua.Statusline.active()",
-		},
-		-- {
-		-- 	events = { "WinLeave,BufLeave" },
-		-- 	targets = { "*" },
-		-- 	command = "setlocal statusline=%!v:lua.Statusline.inactive()",
-		-- },
-		{
-
-			events = { "WinEnter,BufEnter" },
-
-			targets = { "NeoTree" },
-			command = "setlocal statusline=%!v:lua.Statusline.short()",
-		},
-		{
-			events = { "CmdlineEnter", "CmdlineChanged", "BufWritePre" },
-			targets = { "*" },
-			command = "set cmdheight=1",
-		},
-		{
-			events = { "CmdlineLeave", "BufWritePost", "InsertLeave" },
-			targets = { "*" },
-			command = "set cmdheight=0 | redrawstatus!",
-		},
-	})
 end

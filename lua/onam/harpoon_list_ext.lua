@@ -1,3 +1,4 @@
+-- Extension to show current harpoon list in winbar or statusline
 local harpoon = require("harpoon")
 local fn = vim.fn
 local api = vim.api

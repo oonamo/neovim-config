@@ -4,9 +4,9 @@ return {
 		branch = "0.1.x",
 		dependencies = { "nvim-lua/plenary.nvim" },
 		keys = {
-			{ "<leader>pf", "<cmd>Telescope find_files<CR>", { desc = "find files", silent = true } },
-			{ "<C-p>", "<cmd>Telescope git_files", { desc = "git files", silent = true } },
-			{ "<leader>ps", "<cmd>Telescope live_grep<CR>", desc = "search for a string" },
+			{ "<leader>ff", "<cmd>Telescope find_files theme=dropdown<CR>", { desc = "find files", silent = true } },
+			{ "<C-p>", "<cmd>Telescope git_files theme=dropdown<CR>", { desc = "git files", silent = true } },
+			{ "<leader>fs", "<cmd>Telescope live_grep<CR>", desc = "search for a string" },
 		},
 	},
 }

@@ -71,6 +71,7 @@ vim.opt.clipboard = {
 }
 
 vim.g.use_custom_statusline = false
+vim.g.use_custom_winbar = true
 
 O = {}
 

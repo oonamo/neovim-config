@@ -19,28 +19,3 @@ harponn.setup_tabline({
 		},
 	},
 })
-
--- vim.api.nvim_create_autocmd({ "BufEnter", "VimEnter" }, {
--- 	pattern = "*",
--- 	callback = function()
--- 		vim.opt.winbar = harponn.harpoon_list_as_statusline({
--- 			separator = "  |  ",
--- 			num_separator = " ",
--- 			show_active = false,
--- 			max_full_length_items = 6,
--- 		})
--- 	end,
--- })
-
--- vim.api.nvim_create_autocmd("User", {
--- 	pattern = "HarpoonListChange",
--- 	group = "HarpoonStatus",
--- 	callback = function()
--- 		vim.opt.winbar = harponn.harpoon_list_as_statusline({
--- 			separator = "  |  ",
--- 			num_separator = " ",
--- 			show_active = false,
--- 			max_full_length_items = 6,
--- 		})
--- 	end,
--- })

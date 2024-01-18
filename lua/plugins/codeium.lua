@@ -1,6 +1,6 @@
 return {
 	"Exafunction/codeium.vim",
-	event = { "BufReadPre", "BufNewFile" },
+	event = "BufEnter",
 	init = function()
 		vim.g.codeium_render = true
 		-- vim.g.codeium_no_map_tab = true

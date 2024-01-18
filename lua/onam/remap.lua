@@ -11,6 +11,7 @@ vim.keymap.set("", "<C-c>", "<Esc>", { desc = "esc" })
 --Move Command with J and K
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { silent = true })
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { silent = true })
+
 --Move directories
 vim.keymap.set("n", "<C-f>", "<cmd>silent !tms switch<CR>")
 vim.keymap.set("n", "<C-h>", "<cmd> TmuxNavigateLeft<CR>", { desc = "window left" })

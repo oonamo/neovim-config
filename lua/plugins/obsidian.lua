@@ -24,7 +24,7 @@ return {
 		workspaces = {
 			{
 				name = "o notes",
-				path = "C:/Users/onam7/Desktop/o notes",
+				path = "/mnt/c/Users/onam7/Desktop/o notes",
 			},
 		},
 		completion = {

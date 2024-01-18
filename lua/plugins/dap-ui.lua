@@ -1,7 +1,7 @@
 return {
 	{
 		"rcarriga/nvim-dap-ui",
-		dependencies = { "mfussenegger/nvim-dap" },
+		dependencies = { { "mfussenegger/nvim-dap", lazy = true } },
 		config = function()
 			require("dapui").setup()
 
@@ -21,5 +21,6 @@ return {
 			{ "<leader>dx", ":DapTerminate<CR>" },
 			{ "<leader>do", ":DapStepOver<CR>" },
 		},
+		lazy = true,
 	},
 }
