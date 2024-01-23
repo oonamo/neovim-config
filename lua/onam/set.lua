@@ -34,6 +34,7 @@ vim.opt.signcolumn = "yes"
 vim.opt.laststatus = 3 -- Or 3 for global statusline
 vim.opt.cmdheight = 0
 vim.opt.colorcolumn = "80"
+vim.opt_local.formatoptions:remove({ "r", "o" })
 -- vim.opt.statusline = " %f %m %= %l:%c ♥ "
 -- Popup Menu
 

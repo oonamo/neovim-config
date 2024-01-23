@@ -7,6 +7,11 @@ return {
 			-- local harpoon_list_ext = require("onam.harpoon_list_ext")
 			local autocmds = require("onam.autocmds")
 
+			local is_tmux
+			if os.getenv("TMUX") then
+				is_tmux = true
+			end
+
 			autocmds.setup_status_cmds()
 			-- harpoon_list_ext.setup_autocmds()
 			prime_pine.normal.c.bg = "#d4a38d"
@@ -23,6 +28,7 @@ return {
 					globalstatus = true,
 					component_separators = { left = "", right = "" },
 					section_separators = { left = "", right = "" },
+					icons_enabled = not is_tmux,
 				},
 				sections = {
 					lualine_a = { "mode" },

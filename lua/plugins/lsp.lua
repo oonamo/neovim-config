@@ -75,10 +75,10 @@ return {
 			{ "hrsh7th/cmp-cmdline", lazy = true },
 			{ "L3MON4D3/LuaSnip", event = "InsertEnter" },
 			{ "saadparwaiz1/cmp_luasnip", lazy = true },
-			"williamboman/mason.nvim",
-			"williamboman/mason-lspconfig.nvim",
-			"onsails/lspkind.nvim",
+			{ "onsails/lspkind.nvim", event = "InsertEnter" },
+			{ "williamboman/mason.nvim", event = "BufReadPre, BufNewFile" },
 			{ "barreiroleo/ltex_extra.nvim", ft = { "markdown", "latex" } },
+			"williamboman/mason-lspconfig.nvim",
 		},
 		event = { "BufReadPre", "BufNewFile" },
 		config = function()
@@ -169,32 +169,13 @@ return {
 					["<C-i>"] = cmp.mapping.complete(),
 					["<C-e>"] = cmp.mapping.abort(),
 					["<CR>"] = cmp.mapping.confirm({ select = true }),
-					["<Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.select_next_item()
-						elseif luasnip.expand_or_jumpable() then
-							luasnip.expand_or_jump()
-						elseif luasnip.expandable() then
-							luasnip.expand()
-						else
-							fallback()
-						end
-					end, { "i", "s" }),
-					["<S-Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.select_prev_item()
-						elseif luasnip.jumpable(-1) then
-							luasnip.jump(-1)
-						else
-							fallback()
-						end
-					end, { "i", "s" }),
 				}),
 				sources = cmp.config.sources({
 					{ name = "nvim_lsp" },
 					{ name = "luasnip" },
 				}, {
 					{ name = "buffer" },
+					{ name = "path" },
 				}),
 			})
 

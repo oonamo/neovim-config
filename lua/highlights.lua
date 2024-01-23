@@ -16,19 +16,6 @@ function M.setup()
 	colors.setup()
 	local c = colors.colors
 
-	--- Highlights
-	-- StatuslineAccent
-	-- StatuslineInsertAccent
-	-- StatuslineVisualAccent
-	-- StatuslineReplaceAccent
-	-- StatuslineCmdLineAccent
-	-- StatuslineTerminalAccent
-	-- HarpoonActive
-	-- HarpoonInactive
-	-- Statusline
-	-- StatusBarLong
-	-- StatusEmpty
-	-- StatusLineExtra
 	if vim.g.use_custom_statusline == true then
 		utils.statuscolors = {
 			opts = {

@@ -1,4 +1,10 @@
 return {
+	"rktjmp/lush.nvim",
+	{
+		"oonamo/sol-de-pine",
+		dir = "~/projects/sol-de-pine",
+		lazy = true,
+	},
 	{
 		"haystackandroid/rusticated",
 		lazy = true,
@@ -32,18 +38,18 @@ return {
 					transparency = true,
 				},
 				highlight_groups = {
-					TelescopeBorder = { fg = "highlight_high", bg = "none" },
-					TelescopeNormal = { bg = "none" },
-					TelescopePromptNormal = { bg = "base" },
-					TelescopeResultsNormal = { fg = "subtle", bg = "none" },
-					TelescopeSelection = { fg = "text", bg = "base" },
-					TelescopeSelectionCaret = { fg = "rose", bg = "rose" },
-
-					StatusLineNC = { fg = "#ffffff", bg = "#ffffff" },
-					-- StatusLineExtra = { fg = "#698282", bg = "#27272a" },
-					StatuslineAccent = { bg = "surface", fg = "love" },
-					StatuslineInsertAccent = { bg = "love", fg = "surface" },
-					CursorLine = { bg = "foam", blend = 10 },
+					-- 	TelescopeBorder = { fg = "highlight_high", bg = "none" },
+					-- 	TelescopeNormal = { bg = "none" },
+					-- 	TelescopePromptNormal = { bg = "base" },
+					-- 	TelescopeResultsNormal = { fg = "subtle", bg = "none" },
+					-- 	TelescopeSelection = { fg = "text", bg = "base" },
+					-- 	TelescopeSelectionCaret = { fg = "rose", bg = "rose" },
+					--
+					-- 	StatusLineNC = { fg = "#ffffff", bg = "#ffffff" },
+					-- 	-- StatusLineExtra = { fg = "#698282", bg = "#27272a" },
+					-- 	StatuslineAccent = { bg = "surface", fg = "love" },
+					-- 	StatuslineInsertAccent = { bg = "love", fg = "surface" },
+					-- 	CursorLine = { bg = "foam", blend = 10 },
 					ColorColumn = { bg = "_experimental_nc" },
 				},
 				disable_background = true,
