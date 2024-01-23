@@ -20,7 +20,7 @@ return {
 			dashboard.button("e", " " .. " New file", ":ene <BAR> startinsert <CR>"),
 			dashboard.button("r", " " .. " Recent files", ":Telescope oldfiles <CR>"),
 			dashboard.button("t", " " .. " Find text", ":Telescope live_grep <CR>"),
-			dashboard.button("o", " " .. " Open Obsidian", ":cd /mnt/c/Users/onam7/Desktop/o notes | e .<CR>"),
+			dashboard.button("o", " " .. " Open Obsidian", ":cd C:\\Users\\onam7\\Desktop\\o\\ notes\\ | e .<CR>"),
 			dashboard.button("q", " " .. " Quit", ":qa<CR>"),
 		}
 		alpha.setup(dashboard.config)

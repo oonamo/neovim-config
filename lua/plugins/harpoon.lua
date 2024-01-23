@@ -1,3 +1,6 @@
+-- if not pcall(require, "harpoon") then
+-- 	return
+-- end
 return {
 	{
 		"ThePrimeagen/harpoon",
@@ -77,12 +80,12 @@ return {
 			end)
 
 			-- Toggle previous & next buffers stored within Harpoon list
-			vim.keymap.set("n", "<leader>hp", function()
-				harpoon:list():prev()
-			end)
-			vim.keymap.set("n", "<leader>hn", function()
-				harpoon:list():next()
-			end)
+			-- vim.keymap.set("n", "<leader>hp", function()
+			-- 	harpoon:list():prev()
+			-- end)
+			-- vim.keymap.set("n", "<leader>hn", function()
+			-- 	harpoon:list():next()
+			-- end)
 		end,
 	},
 }

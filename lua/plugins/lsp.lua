@@ -3,7 +3,6 @@
 --https://github.com/mrcjkb/rustaceanvim
 --
 local M = {}
-
 local function on_attach(client, buffer)
 	-- TODO: change to rustacean
 	vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, {
@@ -63,18 +62,17 @@ local function on_attach(client, buffer)
 		group = diag_float_grp,
 	})
 end
-
 return {
 	{
 		"hrsh7th/nvim-cmp",
 		dependencies = {
-			{ "neovim/nvim-lspconfig", lazy = true },
-			{ "hrsh7th/cmp-nvim-lsp", lazy = true },
-			{ "hrsh7th/cmp-buffer", lazy = true },
-			{ "hrsh7th/cmp-path", lazy = true },
-			{ "hrsh7th/cmp-cmdline", lazy = true },
+			{ "neovim/nvim-lspconfig" }, -- lazy = true },
+			{ "hrsh7th/cmp-nvim-lsp" }, -- lazy = true },
+			{ "hrsh7th/cmp-buffer" }, -- lazy = true },
+			{ "hrsh7th/cmp-path" }, -- lazy = true },
+			{ "hrsh7th/cmp-cmdline" }, -- lazy = true },
 			{ "L3MON4D3/LuaSnip", event = "InsertEnter" },
-			{ "saadparwaiz1/cmp_luasnip", lazy = true },
+			{ "saadparwaiz1/cmp_luasnip" }, -- lazy = true },
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
 			"onsails/lspkind.nvim",
@@ -193,6 +191,8 @@ return {
 				sources = cmp.config.sources({
 					{ name = "nvim_lsp" },
 					{ name = "luasnip" },
+					{ name = "obsidian" },
+					{ name = "obsidian_new" },
 				}, {
 					{ name = "buffer" },
 				}),
@@ -254,21 +254,6 @@ return {
 						},
 					})
 				end,
-
-				-- ["rust_analyzer"] = function()
-				-- 	require("rust-tools").setup({
-				-- 		on_attach = on_attach,
-				-- 		capabilites = capabilites,
-				-- 		tools = {
-				-- 			hover_actions = {
-				-- 				auto_focus = true,
-				-- 			},
-				-- 		},
-				-- 		dap = {
-				-- 			adapter = require("rust-tools.dap").get_codelldb_adapter(codelldb_path, liblldb_path),
-				-- 		},
-				-- 	})
-				-- end,
 			})
 		end,
 	},
