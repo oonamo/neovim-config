@@ -1,7 +1,3 @@
---TODO: Switch to nvim-cmp
---TODO: Switch to rustaceanvim
---https://github.com/mrcjkb/rustaceanvim
---
 local M = {}
 local function on_attach(client, buffer)
 	-- TODO: change to rustacean
@@ -62,7 +58,69 @@ local function on_attach(client, buffer)
 		group = diag_float_grp,
 	})
 end
+
+local defaults = { on_attach = on_attach }
 return {
+	{
+		"williamboman/mason.nvim",
+		opts = {
+			ui = {
+				icons = {
+					package_installed = "✓",
+					package_pending = "➜",
+					package_uninstalled = "✗",
+				},
+			},
+		},
+	},
+	{
+		"neovim/nvim-lspconfig",
+		dependencies = {
+			"williamboman/mason.nvim",
+			"williamboman/mason-lspconfig.nvim",
+		},
+		opts = {
+			lua_ls = {
+				on_attach = on_attach,
+				settings = {
+					Lua = {
+						diagnostics = {
+							globals = { "vim" },
+						},
+						workspace = {
+							library = {
+								[vim.fn.expand("$VIMRUNTIME/lua")] = true,
+								[vim.fn.stdpath("config") .. "/lua"] = true,
+							},
+						},
+					},
+				},
+			},
+			tsserver = defaults,
+			html = defaults,
+			eslint = defaults,
+			powershell_es = defaults,
+			clangd = defaults,
+		},
+		config = function(_, opts)
+			local lspconfig = require("lspconfig")
+			local has_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
+			local capabilities = vim.tbl_deep_extend(
+				"force",
+				{},
+				vim.lsp.protocol.make_client_capabilities(),
+				has_cmp and cmp_nvim_lsp.default_capabilities() or {},
+				opts.capabilities or {}
+			)
+
+			for server, settings in pairs(opts) do
+				local server_opts = vim.tbl_deep_extend("force", {
+					capabilities = vim.deepcopy(capabilities),
+				}, settings or {})
+				lspconfig[server].setup(server_opts)
+			end
+		end,
+	},
 	{
 		"hrsh7th/nvim-cmp",
 		dependencies = {
@@ -71,29 +129,13 @@ return {
 			{ "hrsh7th/cmp-buffer" }, -- lazy = true },
 			{ "hrsh7th/cmp-path" }, -- lazy = true },
 			{ "hrsh7th/cmp-cmdline" }, -- lazy = true },
-			{ "L3MON4D3/LuaSnip", event = "InsertEnter" },
-			{ "saadparwaiz1/cmp_luasnip" }, -- lazy = true },
-			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
 			"onsails/lspkind.nvim",
-			{ "barreiroleo/ltex_extra.nvim", ft = { "markdown", "latex" } },
 		},
-		event = { "BufReadPre", "BufNewFile" },
+		event = "InsertEnter",
 		config = function()
-			local mason = require("mason")
 			local mason_lspconfig = require("mason-lspconfig")
 			local cmp = require("cmp")
-
-			mason.setup({
-				ui = {
-					icons = {
-						package_installed = "✓",
-						package_pending = "➜",
-						package_uninstalled = "✗",
-					},
-				},
-			})
-
 			mason_lspconfig.setup({
 				ensure_installed = {
 					"html",
@@ -116,36 +158,14 @@ return {
 			local liblldb_path = extension_path .. "lldb/lib/liblldb.so"
 			M.liblldb_path = liblldb_path
 
-			local luasnip = require("luasnip")
-			vim.keymap.set({ "i", "s" }, "<C-k>", function()
-				if luasnip.expand_or_jumpable() then
-					luasnip.expand_or_jump()
-				end
-			end, { silent = true })
-
-			vim.keymap.set({ "i", "s" }, "<C-j>", function()
-				if luasnip.jumpable(-1) then
-					luasnip.jump(-1)
-				end
-			end, { silent = true })
-
-			vim.keymap.set("i", "<C-l>", function()
-				if luasnip.choice_active() then
-					luasnip.change_choice(1)
-				end
-			end)
 			local lspkind = require("lspkind")
 			cmp.setup({
-				snippet = {
-					expand = function(args)
-						require("luasnip").lsp_expand(args.body)
-					end,
-				},
 				window = {
 					completion = {
-						winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,Search:None",
-						col_offset = -3,
-						side_padding = 0,
+						-- winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,Search:None",
+						documentation = cmp.config.window.bordered(),
+						-- col_offset = -3,
+						-- side_padding = 0,
 					},
 					documentation = cmp.config.window.bordered(),
 				},
@@ -167,34 +187,14 @@ return {
 					["<C-i>"] = cmp.mapping.complete(),
 					["<C-e>"] = cmp.mapping.abort(),
 					["<CR>"] = cmp.mapping.confirm({ select = true }),
-					["<Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.select_next_item()
-						elseif luasnip.expand_or_jumpable() then
-							luasnip.expand_or_jump()
-						elseif luasnip.expandable() then
-							luasnip.expand()
-						else
-							fallback()
-						end
-					end, { "i", "s" }),
-					["<S-Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.select_prev_item()
-						elseif luasnip.jumpable(-1) then
-							luasnip.jump(-1)
-						else
-							fallback()
-						end
-					end, { "i", "s" }),
 				}),
 				sources = cmp.config.sources({
 					{ name = "nvim_lsp" },
-					{ name = "luasnip" },
 					{ name = "obsidian" },
 					{ name = "obsidian_new" },
 				}, {
 					{ name = "buffer" },
+					{ name = "path" },
 				}),
 			})
 
@@ -213,49 +213,66 @@ return {
 					{ name = "cmdline", keyword_length = 3 },
 				}),
 			})
-			M.capabilites = require("cmp_nvim_lsp").default_capabilities()
-
-			require("mason-lspconfig").setup_handlers({
-				function(server_name)
-					if server_name == "rust_analyzer" then
-						return
-					end
-					require("lspconfig")[server_name].setup({ capabilities = M.capabilites, on_attach = on_attach })
-				end,
-				["lua_ls"] = function()
-					require("lspconfig").lua_ls.setup({
-						on_attach = on_attach,
-						capabilites = M.capabilites,
-						settings = {
-							Lua = {
-								diagnostics = {
-									globals = { "vim" },
-								},
-								workspace = {
-									library = {
-										[vim.fn.expand("$VIMRUNTIME/lua")] = true,
-										[vim.fn.stdpath("config") .. "/lua"] = true,
-									},
-								},
-							},
-						},
-					})
-				end,
-				["ltex"] = function()
-					-- on_attach = on_attach,
-					require("lspconfig").ltex.setup({
-						capabilities = M.capabilites,
-						on_attach = function(client, bufnr)
-							on_attach(client, bufnr)
-							require("ltex_extra").setup({})
-						end,
-						settings = {
-							-- ltex = { your settings }
-						},
-					})
-				end,
-			})
+			-- 	require("mason-lspconfig").setup_handlers({
+			-- 		function(server_name)
+			-- 			if server_name == "rust_analyzer" then
+			-- 				return
+			-- 			end
+			-- 			require("lspconfig")[server_name].setup({ capabilities = M.capabilites, on_attach = on_attach })
+			-- 		end,
+			-- 		["lua_ls"] = function()
+			-- 			require("lspconfig").lua_ls.setup({
+			-- 				on_attach = on_attach,
+			-- 				capabilites = M.capabilites,
+			-- 				settings = {
+			-- 					Lua = {
+			-- 						diagnostics = {
+			-- 							globals = { "vim" },
+			-- 						},
+			-- 						workspace = {
+			-- 							library = {
+			-- 								[vim.fn.expand("$VIMRUNTIME/lua")] = true,
+			-- 								[vim.fn.stdpath("config") .. "/lua"] = true,
+			-- 							},
+			-- 						},
+			-- 					},
+			-- 				},
+			-- 			})
+			-- 		end,
+			-- 		["tsserver"] = function()
+			-- 			require("lspconfig").tsserver.setup({
+			-- 				settings = {
+			-- 					typescript = {
+			-- 						inlayHints = {
+			-- 							includeInlayParameterNameHints = "literal",
+			-- 							includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+			-- 							includeInlayFunctionParameterTypeHints = true,
+			--
+			-- 							includeInlayVariableTypeHints = false,
+			-- 							includeInlayPropertyDeclarationTypeHints = true,
+			-- 							includeInlayFunctionLikeReturnTypeHints = true,
+			-- 							includeInlayEnumMemberValueHints = true,
+			-- 						},
+			-- 					},
+			-- 				},
+			-- 			})
+			-- 		end,
+			-- 	})
 		end,
+	},
+	{
+		"barreiroleo/ltex_extra.nvim",
+		ft = { "markdown", "latex" },
+		opts = {
+			capabilities = M.capabilites,
+			on_attach = function(client, bufnr)
+				on_attach(client, bufnr)
+				require("ltex_extra").setup({})
+			end,
+			settings = {
+				-- ltex = { your settings }
+			},
+		},
 	},
 	{
 		"mrcjkb/rustaceanvim",
@@ -263,7 +280,7 @@ return {
 		ft = { "rust" },
 		dependencies = {
 			"nvim-lua/plenary.nvim",
-			"mfussenegger/nvim-dap",
+			{ "mfussenegger/nvim-dap", lazy = true },
 			{ "lvimuser/lsp-inlayhints.nvim", config = true, ft = { "rust" } },
 		},
 		config = function()

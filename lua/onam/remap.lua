@@ -1,12 +1,15 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = ","
 
-vim.keymap.set("n", "<C-d>", "<C-d>zz")
-vim.keymap.set("n", "<C-u>", "<C-u>zz")
-vim.keymap.set("n", "n", "nzzzv")
-vim.keymap.set("n", "N", "Nzzzv")
+local opts = { silent = true }
 
-vim.keymap.set("", "<C-c>", "<Esc>", { desc = "esc" })
+vim.keymap.set("n", "<C-d>", "<C-d>zz", opts)
+vim.keymap.set("n", "<C-u>", "<C-u>zz", opts)
+vim.keymap.set("n", "n", "nzzzv", opts)
+vim.keymap.set("n", "N", "Nzzzv", opts)
+
+vim.keymap.set("", "<C-c>", "<Esc>", { desc = "esc" }, opts)
+vim.keymap.set("", "<C-]>", "<Esc>", { desc = "esc" }, opts)
 
 --Move Command with J and K
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { silent = true })
@@ -21,16 +24,16 @@ vim.keymap.set("n", "<C-l>", "<cmd> TmuxNavigateRight<CR>", { desc = "window rig
 
 --Set Copy and Paste
 --Copy to Keyboard
-vim.keymap.set("n", "<leader>y", '"+y')
-vim.keymap.set("v", "<leader>y", '"+y')
-vim.keymap.set("n", "<leader>Y", '"+Y')
-vim.keymap.set("n", "<leader>yy", '"+yy')
-vim.keymap.set("v", "<leader>yy", '"+yy')
+vim.keymap.set("n", "<leader>y", '"+y', opts)
+vim.keymap.set("v", "<leader>y", '"+y', opts)
+vim.keymap.set("n", "<leader>Y", '"+Y', opts)
+vim.keymap.set("n", "<leader>yy", '"+yy', opts)
+vim.keymap.set("v", "<leader>yy", '"+yy', opts)
 --Paste from Keyboard
-vim.keymap.set("n", "<leader>p", '"+p')
-vim.keymap.set("v", "<leader>p", '"+p')
-vim.keymap.set("n", "<leader>P", '"+P')
-vim.keymap.set("v", "<leader>P", '"+P')
+vim.keymap.set("n", "<leader>p", '"+p', opts)
+vim.keymap.set("v", "<leader>p", '"+p', opts)
+vim.keymap.set("n", "<leader>P", '"+P', opts)
+vim.keymap.set("v", "<leader>P", '"+P', opts)
 
 vim.keymap.set("n", "<leader>cs", function()
 	require("onam.color_switcher").show_popup()

@@ -13,13 +13,6 @@ function M.setup()
 		bg0 = { "#171717", "234" },
 	}
 	vim.cmd("colorscheme " .. O.colorscheme)
-
-	-- utils.hl = {
-	-- 	opts = {
-	-- 		{ "Normal", { fg = "#ebdbb2", bg = "#171717" } },
-	-- 	},
-	-- }
-	-- utils:create_hl()
 end
 
 return M

@@ -2,8 +2,27 @@
 local harpoon = require("harpoon")
 local fn = vim.fn
 local api = vim.api
+--
 
+---@class M
+---@field setup_autocmds function
+---@field Update_harpoon function
+---@field get_harpoon_list function
+---@field numbered_highlights function
+---@field harpoon_list_as_statusline function
 local M = {}
+
+---@class Opts
+---@field separator string?
+---@field num_separator string?
+---@field show_active boolean?
+---@field max_full_length_items number?
+---@field inactive_highlight string?
+---@field numbered_highlights table?
+---@field harpoon_list_as_statusline boolean?
+---@field harpoon_list_as_winbar boolean?
+---@field harpoon_list_as_tabline boolean?
+local config_opts = {}
 
 function M.setup_autocmds()
 	--==============================================================================
@@ -66,8 +85,7 @@ function M.setup_autocmds()
 		pattern = "HarpoonListAdd",
 		callback = function(event)
 			vim.schedule(function()
-				-- M.Update_harpoon(event)
-				M.add_harpoon_item(event.data)
+				M.Update_harpoon(event)
 			end)
 		end,
 	})
@@ -76,20 +94,24 @@ function M.setup_autocmds()
 		group = "HarpoonStatus",
 		pattern = "HarpoonListRemove",
 		callback = function(event)
-			-- print("HarpoonListRemove")
 			vim.schedule(function()
-				-- M.Update_harpoon(event)
 				M.remove_harpoon_item(event.data)
 			end)
 		end,
 	})
-
+	vim.api.nvim_create_autocmd("User", {
+		group = "HarpoonStatus",
+		pattern = "HarpoonNavigate",
+		callback = function(event)
+			vim.schedule(function()
+				Cachedlist = event.data.list
+			end)
+		end,
+	})
 	function Init_harpoon()
 		Cachedlist = harpoon:list()
 	end
 end
-
-local config_opts
 
 function M.Update_harpoon(event)
 	Cachedlist = event.data.list
@@ -99,20 +121,16 @@ function M.Update_harpoon(event)
 end
 
 function M.add_harpoon_item(list)
-	-- print("add_harpoon_item")
-	-- print(vim.inspect(list.item))
 	table.insert(Cachedlist.items, list.item)
 	vim.cmd("redrawtabline")
 end
 
 function M.remove_harpoon_item(list)
-	-- print("remove_harpoon_item")
 	table.remove(Cachedlist.items, list.idx)
 	vim.cmd("redrawtabline")
 end
 
----@alias Opts {separator?:string, num_separator?:string, show_active?:boolean, active_highlight?:string, inactive_highlight?:string, max_full_length_items?:number, numbered_highlights?:string[]}
---- @param opts Opts
+---@param opts Opts
 function M.setup_tabline(opts)
 	config_opts = opts
 	M.setup_autocmds()
@@ -139,7 +157,6 @@ function M.numbered_highlights(i, highlight, opts)
 	end
 end
 
---- @param opts Opts
 function M.harpoon_list_as_statusline(opts)
 	local file_name = fn.fnamemodify(api.nvim_buf_get_name(0), ":p:.")
 	local inactive = ""

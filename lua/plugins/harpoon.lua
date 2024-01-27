@@ -28,7 +28,15 @@ return {
 			harpoon:setup()
 			harpoon:extend(Extensions.builtins.navigate_with_number())
 			harpoon:extend({
-				NAVIGATE = function(bufnr) end,
+				NAVIGATE = function()
+					vim.api.nvim_exec_autocmds("User", {
+						pattern = "HarpoonNavigate",
+						group = "HarpoonStatus",
+						data = {
+							list = harpoon:list(),
+						},
+					})
+				end,
 				SELECT = function(list)
 					exec_harpoon_autocmds(list)
 				end,
@@ -37,7 +45,6 @@ return {
 				end,
 				ADD = function(list)
 					-- add_new_item(list)
-					-- print(vim.inspect(list.item))
 					exec_harpoon_autocmds(list, { pattern = "HarpoonListAdd" })
 				end,
 				REMOVE = function(list)

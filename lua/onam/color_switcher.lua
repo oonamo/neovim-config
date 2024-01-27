@@ -21,6 +21,7 @@ local colorschemes = {
 	"sakura",
 	"gruvbox",
 	"miasma",
+	"grim-pine",
 }
 
 M.load_state = function()

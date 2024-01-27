@@ -60,14 +60,11 @@ return {
 			}
 		end,
 	},
-	{ "nordtheme/vim", name = "nord", lazy = true },
-	{ "nyoom-engineering/oxocarbon.nvim", lazy = true },
-	{ "neanias/everforest-nvim", lazy = true },
 	{
 		"olivercederborg/poimandres.nvim",
 		config = true,
 		lazy = true,
 	},
-	"sainnhe/gruvbox-material",
+	{ "sainnhe/gruvbox-material", lazy = true },
 	{ "xero/miasma.nvim", lazy = true },
 }

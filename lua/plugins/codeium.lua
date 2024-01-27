@@ -1,6 +1,6 @@
 return {
 	"Exafunction/codeium.vim",
-	event = "BufEnter",
+	event = { "BufEnter", "InsertEnter" },
 	init = function()
 		vim.g.codeium_render = true
 		vim.g.codeium_filetypes = {

@@ -25,7 +25,7 @@ return {
 			workspaces = {
 				{
 					name = "o notes",
-					path = "~/Desktop/o notes/",
+					path = os.getenv("OBSIDIAN_VAULT"),
 				},
 			},
 			completion = {
@@ -72,10 +72,9 @@ return {
 			},
 
 			finder = "telescope.nvim",
-			finder_mappings = {
-				new = "<leader>fn",
-			},
-
+			-- finder_mappings = {
+			-- 	new = "<leader>fn",
+			-- },
 			ui = {
 				enable = true, -- set to false to disable all additional syntax features
 				update_debounce = 200, -- update delay after a text change (in milliseconds)
@@ -86,13 +85,7 @@ return {
 					["x"] = { char = "", hl_group = "ObsidianDone" },
 					[">"] = { char = "", hl_group = "ObsidianRightArrow" },
 					["~"] = { char = "󰰱", hl_group = "ObsidianTilde" },
-					-- Replace the above with this if you don't have a patched font:
-					-- [" "] = { char = "☐", hl_group = "ObsidianTodo" },
-					-- ["x"] = { char = "✔", hl_group = "ObsidianDone" },
-
-					-- You can also add more custom ones...
 				},
-				-- Use bullet marks for non-checkbox lists.
 				bullets = { char = "•", hl_group = "ObsidianBullet" },
 				external_link_icon = { char = "", hl_group = "ObsidianExtLinkIcon" },
 				-- Replace the above with this if you don't have a patched font:
@@ -114,12 +107,6 @@ return {
 				},
 			},
 		})
-		vim.opt.conceallevel = 2
-		-- vim.nvim_set_keymap("n", "gf", function()
-		-- 	require("obsidian").util.gf_passthrough()
-		-- end, { noremap = false, expr = true, buffer = true })
-		-- vim.nvim_set_keymap("n", "gf", function()
-		-- 	require("obsidian").util.toggle_checkbox()
-		-- end)
+		vim.opt.conceallevel = 1
 	end,
 }
