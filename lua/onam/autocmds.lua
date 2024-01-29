@@ -15,12 +15,12 @@ function M.setup_status_cmds()
 	})
 end
 
-function M.setup_qol()
-	utils.augroup("QOL", {
-		{
-			events = { "TextYankPost" },
-		},
-	})
-end
+-- function M.setup_qol()
+-- 	utils.augroup("QOL", {
+-- 		{
+-- 			events = { "TextYankPost" },
+-- 		},
+-- 	})
+-- end
 
 return M

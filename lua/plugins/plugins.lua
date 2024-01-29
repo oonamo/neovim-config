@@ -4,9 +4,17 @@ return {
 		lazy = true,
 	},
 	{
+		"JoosepAlviste/nvim-ts-context-commentstring",
+		lazy = true,
+		opts = {
+			enable_autocmd = false,
+		},
+	},
+	{
 		"numToStr/Comment.nvim",
-		config = true,
-		event = { "BufReadPre", "BufNewFile" },
+		dependencies = {},
+		opts = {},
+		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
 	},
 	{
 

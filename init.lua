@@ -25,4 +25,5 @@ require("lazy").setup("plugins")
 require("onam.color_switcher").setup_persistence()
 require("onam.statusline")
 require("onam.winbar")
+
 utils:create_hl()

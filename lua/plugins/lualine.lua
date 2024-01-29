@@ -19,6 +19,7 @@ M.colors = {
 	-- Conditional
 	blue = "#5f87af",
 }
+
 return {
 	{
 		"nvim-lualine/lualine.nvim",
@@ -78,5 +79,6 @@ return {
 			})
 		end,
 		enabled = not vim.g.use_custom_statusline,
+		cond = vim.g.use_lualine,
 	},
 }

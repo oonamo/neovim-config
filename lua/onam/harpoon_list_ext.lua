@@ -2,7 +2,6 @@
 local harpoon = require("harpoon")
 local fn = vim.fn
 local api = vim.api
---
 
 ---@class M
 ---@field setup_autocmds function
@@ -29,85 +28,107 @@ function M.setup_autocmds()
 	-- Harpoon
 	-- =============================================================================
 	-- Executes on harpoon select
-	vim.api.nvim_create_autocmd("User", {
-		pattern = "HarpoonListSelect",
-		group = "HarpoonStatus",
-		callback = function(event)
-			-- Update_harpoon(event)
-			vim.schedule(function()
+	-- vim.api.nvim_create_autocmd("User", {
+	-- 	pattern = "HarpoonListSelect",
+	-- 	group = "HarpoonStatus",
+	-- 	callback = function(event)
+	-- 		-- Update_harpoon(event)
+	-- 		vim.schedule(function()
+	-- 			M.Update_harpoon(event)
+	-- 		end)
+	-- 	end,
+	-- })
+	utils.augroup("HarpoonStatus", {
+		{
+			events = { "User" },
+			targets = {
+				"HarpoonListSelect",
+				"HarpoonListChange",
+				"HarpoonListAdd",
+				"HarpoonListRemove",
+				"HarpoonListClear",
+			},
+			command = function(event)
 				M.Update_harpoon(event)
-			end)
-		end,
+			end,
+		},
+		{
+			events = { "VimEnter" },
+			targets = { "*" },
+			command = function()
+				Init_harpoon()
+			end,
+		},
 	})
 	-- Executes on harpoon:append() or harpoon:prepend()
-	vim.api.nvim_create_autocmd("User", {
-		pattern = "HarpoonListChange",
-		group = "HarpoonStatus",
-		callback = function(event)
-			-- Update_harpoon(event)
-			vim.schedule(function()
-				M.Update_harpoon(event)
-			end)
-		end,
-	})
-
-	-- Executes on Harpoon UI Leave
-	vim.api.nvim_create_autocmd("User", {
-		pattern = "HarpoonBufLeave",
-		group = "HarpoonStatus",
-		callback = function(event)
-			vim.schedule(function()
-				M.Update_harpoon(event)
-			end)
-		end,
-	})
-
-	vim.api.nvim_create_autocmd("BufLeave, WinLeave, BufWinLeave, BufWriteCmd", {
-		pattern = "__harpooon-menu__*",
-		group = "HarpoonStatus",
-		callback = function(event)
-			vim.schedule(function()
-				M.Update_harpoon(event)
-			end)
-		end,
-	})
-
-	vim.api.nvim_create_autocmd("VimEnter", {
-		group = "HarpoonStatus",
-		pattern = "*",
-		callback = function()
-			Init_harpoon()
-		end,
-	})
-
-	vim.api.nvim_create_autocmd("User", {
-		group = "HarpoonStatus",
-		pattern = "HarpoonListAdd",
-		callback = function(event)
-			vim.schedule(function()
-				M.Update_harpoon(event)
-			end)
-		end,
-	})
-
-	vim.api.nvim_create_autocmd("User", {
-		group = "HarpoonStatus",
-		pattern = "HarpoonListRemove",
-		callback = function(event)
-			vim.schedule(function()
-				M.remove_harpoon_item(event.data)
-			end)
-		end,
-	})
-	vim.api.nvim_create_autocmd("User", {
-		group = "HarpoonStatus",
-		pattern = "HarpoonNavigate",
-		callback = function(event)
-			vim.schedule(function()
-				Cachedlist = event.data.list
-			end)
-		end,
-	})
+	-- vim.api.nvim_create_autocmd("User", {
+	-- 	pattern = "HarpoonListChange",
+	-- 	group = "HarpoonStatus",
+	-- 	callback = function(event)
+	-- 		-- Update_harpoon(event)
+	-- 		vim.schedule(function()
+	-- 			M.Update_harpoon(event)
+	-- 		end)
+	-- 	end,
+	-- })
+	--
+	-- -- Executes on Harpoon UI Leave
+	-- vim.api.nvim_create_autocmd("User", {
+	-- 	pattern = "HarpoonBufLeave",
+	-- 	group = "HarpoonStatus",
+	-- 	callback = function(event)
+	-- 		vim.schedule(function()
+	-- 			M.Update_harpoon(event)
+	-- 		end)
+	-- 	end,
+	-- })
+	--
+	-- vim.api.nvim_create_autocmd("BufLeave, WinLeave, BufWinLeave, BufWriteCmd", {
+	-- 	pattern = "__harpooon-menu__*",
+	-- 	group = "HarpoonStatus",
+	-- 	callback = function(event)
+	-- 		vim.schedule(function()
+	-- 			M.Update_harpoon(event)
+	-- 		end)
+	-- 	end,
+	-- })
+	--
+	-- vim.api.nvim_create_autocmd("VimEnter", {
+	-- 	group = "HarpoonStatus",
+	-- 	pattern = "*",
+	-- 	callback = function()
+	-- 		Init_harpoon()
+	-- 	end,
+	-- })
+	--
+	-- vim.api.nvim_create_autocmd("User", {
+	-- 	group = "HarpoonStatus",
+	-- 	pattern = "HarpoonListAdd",
+	-- 	callback = function(event)
+	-- 		vim.schedule(function()
+	-- 			M.Update_harpoon(event)
+	-- 		end)
+	-- 	end,
+	-- })
+	--
+	-- vim.api.nvim_create_autocmd("User", {
+	-- 	group = "HarpoonStatus",
+	-- 	pattern = "HarpoonListRemove",
+	-- 	callback = function(event)
+	-- 		vim.schedule(function()
+	-- 			M.remove_harpoon_item(event.data)
+	-- 		end)
+	-- 	end,
+	-- })
+	-- vim.api.nvim_create_autocmd("User", {
+	-- 	group = "HarpoonStatus",
+	-- 	pattern = "HarpoonNavigate",
+	-- 	callback = function(event)
+	-- 		vim.schedule(function()
+	-- 			Cachedlist = event.data.list
+	-- 		end)
+	-- 	end,
+	-- })
 	function Init_harpoon()
 		Cachedlist = harpoon:list()
 	end

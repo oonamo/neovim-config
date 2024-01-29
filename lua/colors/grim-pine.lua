@@ -29,6 +29,7 @@ function M.setup()
 			{ "@keyword", { fg = M.colors.dark_green, italic = true } },
 			{ "@property", { fg = M.colors.light_green, italic = true } },
 			{ "Function", { fg = M.colors.red, italic = true } },
+			{ "@function.builtin", { fg = M.colors.red, italic = true } },
 			{ "String", { fg = M.colors.yellow } },
 			{ "Special", { fg = M.colors.green } },
 			{ "Macro", { fg = M.colors.green, bg = "#262626" } },

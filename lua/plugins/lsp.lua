@@ -63,6 +63,7 @@ local defaults = { on_attach = on_attach }
 return {
 	{
 		"williamboman/mason.nvim",
+		cmd = { "Mason", "MasonInstall", "MasonUninstall", "MasonLog" },
 		opts = {
 			ui = {
 				icons = {
@@ -75,6 +76,7 @@ return {
 	},
 	{
 		"neovim/nvim-lspconfig",
+		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
 		dependencies = {
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
@@ -112,7 +114,6 @@ return {
 				has_cmp and cmp_nvim_lsp.default_capabilities() or {},
 				opts.capabilities or {}
 			)
-
 			for server, settings in pairs(opts) do
 				local server_opts = vim.tbl_deep_extend("force", {
 					capabilities = vim.deepcopy(capabilities),
@@ -122,30 +123,24 @@ return {
 		end,
 	},
 	{
+		"williamboman/mason-lspconfig.nvim",
+		opts = {
+			ensure_installed = { "lua_ls", "rust_analyzer" },
+			automatic_installation = false,
+		},
+	},
+	{
 		"hrsh7th/nvim-cmp",
 		dependencies = {
-			{ "neovim/nvim-lspconfig" }, -- lazy = true },
-			{ "hrsh7th/cmp-nvim-lsp" }, -- lazy = true },
-			{ "hrsh7th/cmp-buffer" }, -- lazy = true },
-			{ "hrsh7th/cmp-path" }, -- lazy = true },
-			{ "hrsh7th/cmp-cmdline" }, -- lazy = true },
-			"williamboman/mason-lspconfig.nvim",
+			"hrsh7th/cmp-nvim-lsp", -- lazy = true },
+			"hrsh7th/cmp-buffer", -- lazy = true },
+			"hrsh7th/cmp-path", -- lazy = true },
+			"hrsh7th/cmp-cmdline", -- lazy = true },
 			"onsails/lspkind.nvim",
 		},
 		event = "InsertEnter",
 		config = function()
-			local mason_lspconfig = require("mason-lspconfig")
 			local cmp = require("cmp")
-			mason_lspconfig.setup({
-				ensure_installed = {
-					"html",
-					"lua_ls",
-					"rust_analyzer",
-				},
-				-- enable automatic install
-				automatic_installation = false,
-			})
-
 			-- IMPORTANT: Run this after setting up mason
 			local mason_registry = require("mason-registry")
 			M.mason_registry = mason_registry
@@ -160,6 +155,11 @@ return {
 
 			local lspkind = require("lspkind")
 			cmp.setup({
+				snippet = {
+					expand = function(args)
+						require("luasnip").lsp_expand(args.body)
+					end,
+				},
 				window = {
 					completion = {
 						-- winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,Search:None",
@@ -187,9 +187,23 @@ return {
 					["<C-i>"] = cmp.mapping.complete(),
 					["<C-e>"] = cmp.mapping.abort(),
 					["<CR>"] = cmp.mapping.confirm({ select = true }),
+					["<C-j>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
 				}),
 				sources = cmp.config.sources({
-					{ name = "nvim_lsp" },
+					{
+						name = "nvim_lsp",
+						entry_filter = function(entry, _)
+							-- Filter snippets
+							if vim.g.use_custom_snippets then
+								return true
+							end
+
+							if entry:get_kind() == cmp.lsp.CompletionItemKind.Snippet then
+								return false
+							end
+							return true
+						end,
+					},
 					{ name = "obsidian" },
 					{ name = "obsidian_new" },
 				}, {
@@ -213,52 +227,40 @@ return {
 					{ name = "cmdline", keyword_length = 3 },
 				}),
 			})
-			-- 	require("mason-lspconfig").setup_handlers({
-			-- 		function(server_name)
-			-- 			if server_name == "rust_analyzer" then
-			-- 				return
-			-- 			end
-			-- 			require("lspconfig")[server_name].setup({ capabilities = M.capabilites, on_attach = on_attach })
-			-- 		end,
-			-- 		["lua_ls"] = function()
-			-- 			require("lspconfig").lua_ls.setup({
-			-- 				on_attach = on_attach,
-			-- 				capabilites = M.capabilites,
-			-- 				settings = {
-			-- 					Lua = {
-			-- 						diagnostics = {
-			-- 							globals = { "vim" },
-			-- 						},
-			-- 						workspace = {
-			-- 							library = {
-			-- 								[vim.fn.expand("$VIMRUNTIME/lua")] = true,
-			-- 								[vim.fn.stdpath("config") .. "/lua"] = true,
-			-- 							},
-			-- 						},
-			-- 					},
-			-- 				},
-			-- 			})
-			-- 		end,
-			-- 		["tsserver"] = function()
-			-- 			require("lspconfig").tsserver.setup({
-			-- 				settings = {
-			-- 					typescript = {
-			-- 						inlayHints = {
-			-- 							includeInlayParameterNameHints = "literal",
-			-- 							includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-			-- 							includeInlayFunctionParameterTypeHints = true,
-			--
-			-- 							includeInlayVariableTypeHints = false,
-			-- 							includeInlayPropertyDeclarationTypeHints = true,
-			-- 							includeInlayFunctionLikeReturnTypeHints = true,
-			-- 							includeInlayEnumMemberValueHints = true,
-			-- 						},
-			-- 					},
-			-- 				},
-			-- 			})
-			-- 		end,
-			-- 	})
 		end,
+	},
+	{
+		"L3MON4D3/LuaSnip",
+		dependencies = {
+			"nvim-cmp",
+			dependencies = {
+				"saadparwaiz1/cmp_luasnip",
+			},
+			opts = function(_, opts)
+				opts.snippet = {
+					expand = function(args)
+						require("luasnip").lsp_expand(args.body)
+					end,
+				}
+				table.insert(opts.sources or {}, { name = "luasnip" })
+			end,
+		},
+		opts = {
+			history = true,
+			delete_check_events = "TextChanged",
+		},
+        -- stylua: ignore
+        keys = {
+            {
+                "<C-j>",
+                function()
+                    return require("luasnip").jumpable(1) and "<Plug>luasnip-jump-next" or "<tab>"
+                end,
+                expr = true, silent = true, mode = "i",
+            },
+            { "<tab>", function() require("luasnip").jump(1) end, mode = "s" },
+            { "<C-k>", function() require("luasnip").jump(-1) end, mode = { "i", "s" } },
+        },
 	},
 	{
 		"barreiroleo/ltex_extra.nvim",

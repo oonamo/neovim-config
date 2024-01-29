@@ -16,7 +16,6 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { silent = true })
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { silent = true })
 
 --Move directories
-vim.keymap.set("n", "<C-f>", "<cmd>silent !tms switch<CR>")
 vim.keymap.set("n", "<C-h>", "<cmd> TmuxNavigateLeft<CR>", { desc = "window left" })
 vim.keymap.set("n", "<C-j>", "<cmd> TmuxNavigateDown<CR>", { desc = "window down" })
 vim.keymap.set("n", "<C-k>", "<cmd> TmuxNavigateUp<CR>", { desc = "window up" })
@@ -24,16 +23,14 @@ vim.keymap.set("n", "<C-l>", "<cmd> TmuxNavigateRight<CR>", { desc = "window rig
 
 --Set Copy and Paste
 --Copy to Keyboard
-vim.keymap.set("n", "<leader>y", '"+y', opts)
-vim.keymap.set("v", "<leader>y", '"+y', opts)
-vim.keymap.set("n", "<leader>Y", '"+Y', opts)
-vim.keymap.set("n", "<leader>yy", '"+yy', opts)
-vim.keymap.set("v", "<leader>yy", '"+yy', opts)
+vim.keymap.set({ "n", "v" }, "<leader>y", '"+y', opts)
+vim.keymap.set({ "n", "v" }, "<leader>yy", '"+yy', opts)
 --Paste from Keyboard
-vim.keymap.set("n", "<leader>p", '"+p', opts)
-vim.keymap.set("v", "<leader>p", '"+p', opts)
-vim.keymap.set("n", "<leader>P", '"+P', opts)
-vim.keymap.set("v", "<leader>P", '"+P', opts)
+vim.keymap.set({ "n", "v" }, "<leader>p", '"+p', opts)
+vim.keymap.set({ "n", "v" }, "<leader>P", '"+P', opts)
+
+-- Search and Replace
+vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 
 vim.keymap.set("n", "<leader>cs", function()
 	require("onam.color_switcher").show_popup()

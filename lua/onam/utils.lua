@@ -36,102 +36,38 @@ function utils.execute(id, args)
 	utils._functions[id](args)
 end
 
--- map factory
-local map = function(mode, key, cmd, opts, defaults)
-	opts = vim.tbl_deep_extend("force", { silent = true }, defaults or {}, opts or {})
-
-	if type(cmd) == "function" then
-		local fn_id = utils.create(cmd)
-		cmd = fmt("<CMD>lua utils.execute(%s)<CR>", fn_id)
-	end
-
-	if opts.buffer ~= nil then
-		local buffer = opts.buffer
-		opts.buffer = nil
-		return api.nvim_buf_set_keymap(buffer, mode, key, cmd, opts)
-	else
-		return api.nvim_set_keymap(mode, key, cmd, opts)
-	end
-end
-
-function utils.map(mode, key, cmd, opt, defaults)
-	return map(mode, key, cmd, opt, defaults)
-end
-
-function utils.nmap(key, cmd, opts)
-	return map("n", key, cmd, opts)
-end
-function utils.vmap(key, cmd, opts)
-	return map("v", key, cmd, opts)
-end
-function utils.xmap(key, cmd, opts)
-	return map("x", key, cmd, opts)
-end
-function utils.imap(key, cmd, opts)
-	return map("i", key, cmd, opts)
-end
-function utils.omap(key, cmd, opts)
-	return map("o", key, cmd, opts)
-end
-function utils.smap(key, cmd, opts)
-	return map("s", key, cmd, opts)
-end
-
-function utils.nnoremap(key, cmd, opts)
-	return map("n", key, cmd, opts, { noremap = true })
-end
-function utils.vnoremap(key, cmd, opts)
-	return map("v", key, cmd, opts, { noremap = true })
-end
-function utils.xnoremap(key, cmd, opts)
-	return map("x", key, cmd, opts, { noremap = true })
-end
-function utils.inoremap(key, cmd, opts)
-	return map("i", key, cmd, opts, { noremap = true })
-end
-function utils.onoremap(key, cmd, opts)
-	return map("o", key, cmd, opts, { noremap = true })
-end
-function utils.snoremap(key, cmd, opts)
-	return map("s", key, cmd, opts, { noremap = true })
-end
-
 ---@class Autocommand
 ---@field events string[] list of autocommand events
----@field targets string[] list of autocommand patterns
----@field modifiers string[] e.g. nested, once
+---@field targets string[]? list of autocommand patterns
+---@field modifiers string[]? e.g. nested, once
 ---@field command string | function
 
--- autocommand factory
--- @param name string
--- @param commands Autocommand[]
-
+---@param name string group name
+---@param autocmds Autocommand[]
+---@param noclear? boolean
 function utils.augroup(name, autocmds, noclear)
-	vim.cmd("augroup " .. name)
-	if not noclear then
-		vim.cmd("autocmd!")
-	end
+	api.nvim_create_augroup(name, {
+		clear = noclear or false,
+	})
+
 	for _, c in ipairs(autocmds) do
 		local command = c.command
-		if type(command) == "function" then
-			local fn_id = utils.create(command)
-
-			command = fmt("lua utils.execute(%s)", fn_id)
+		if type(command) == "string" then
+			api.nvim_create_autocmd(c.events, {
+				group = name,
+				pattern = c.targets,
+				command = function()
+					vim.cmd(command)
+				end,
+			})
+		else
+			api.nvim_create_autocmd(c.events, {
+				group = name,
+				pattern = c.targets,
+				callback = command,
+			})
 		end
-
-		vim.cmd(
-
-			fmt(
-				"autocmd %s %s %s %s",
-				table.concat(c.events, ","),
-				table.concat(c.targets or {}, ","),
-				table.concat(c.modifiers or {}, " "),
-				command
-			)
-		)
 	end
-
-	vim.cmd("augroup END")
 end
 
 -- command factory
@@ -153,7 +89,6 @@ end
 ---@class UtilHighlight
 ---@field opts table
 utils.hl = {}
-
 function utils:create_hl()
 	if utils.hl.opts == nil then
 		return

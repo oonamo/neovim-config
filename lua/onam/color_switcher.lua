@@ -10,17 +10,10 @@ local colorschemes = {
 	"prime-pine",
 	"newpaper",
 	"mellow",
-	"nord",
-	"cafe",
-	"rusticated",
-	"whiteout",
-	-- "offwhite",
 	"everforest",
-	"oxocarbon",
 	"poimandres",
 	"sakura",
 	"gruvbox",
-	"miasma",
 	"grim-pine",
 }
 

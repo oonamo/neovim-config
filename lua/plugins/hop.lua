@@ -3,6 +3,6 @@ return {
 		"echasnovski/mini.ai",
 		version = false,
 		config = true,
-		event = { "BufReadPre", "BufNewFile" },
+		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
 	},
 }

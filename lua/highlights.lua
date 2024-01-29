@@ -6,29 +6,8 @@ function M.setup()
 	end
 
 	local colors = require("colors." .. O.fn)
-
-	-- if colors.type == "base16" then
-	-- 	colors.setup()
-	-- 	colors.create_statusline()
-	-- 	return
-	-- end
-
 	colors.setup()
 	local c = colors.colors
-
-	--- Highlights
-	-- StatuslineAccent
-	-- StatuslineInsertAccent
-	-- StatuslineVisualAccent
-	-- StatuslineReplaceAccent
-	-- StatuslineCmdLineAccent
-	-- StatuslineTerminalAccent
-	-- HarpoonActive
-	-- HarpoonInactive
-	-- Statusline
-	-- StatusBarLong
-	-- StatusEmpty
-	-- StatusLineExtra
 	if vim.g.use_custom_statusline == true then
 		utils.statuscolors = {
 			opts = {

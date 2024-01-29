@@ -66,5 +66,4 @@ return {
 		lazy = true,
 	},
 	{ "sainnhe/gruvbox-material", lazy = true },
-	{ "xero/miasma.nvim", lazy = true },
 }

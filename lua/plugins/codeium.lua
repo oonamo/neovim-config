@@ -1,13 +1,13 @@
 return {
 	"Exafunction/codeium.vim",
-	event = { "BufEnter", "InsertEnter" },
+	event = { "InsertEnter" },
 	init = function()
 		vim.g.codeium_render = true
 		vim.g.codeium_filetypes = {
 			["markdown"] = false,
+			["norg"] = false,
 			["*"] = true,
 		}
-		-- vim.g.codeium_no_map_tab = true
 	end,
 	config = function()
 		vim.keymap.set("i", "<C-x>", function()

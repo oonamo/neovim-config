@@ -2,7 +2,7 @@ return {
 	{
 		"echasnovski/mini.surround",
 		version = false,
-		event = { "BufReadPre", "BufNewFile" },
+		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
 		config = true,
 	},
 }
