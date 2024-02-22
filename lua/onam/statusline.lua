@@ -1,10 +1,7 @@
-if vim.g.use_custom_statusline == false then
-	if vim.g.use_lualine == false then
-		vim.opt.cmdheight = 1
-		-- local autocmds = require("onam.autocmds")
-		-- autocmds.setup_status_cmds()
-		return
-	end
+if vim.g.use_lualine == false then
+	vim.opt.cmdheight = 1
+	-- local autocmds = require("onam.autocmds")
+	-- autocmds.setup_status_cmds()
 	return
 end
 local fn = vim.fn

@@ -5,22 +5,31 @@ function M.setup_status_cmds()
 		{
 			events = { "CmdlineEnter", "CmdlineChanged", "BufWritePre" },
 			targets = { "*" },
-			command = "set cmdheight=1",
+			command = function()
+				vim.opt.cmdheight = 1
+			end,
 		},
 		{
 			events = { "CmdlineLeave", "BufWritePost", "InsertLeave" },
 			targets = { "*" },
-			command = "set cmdheight=0 | redrawstatus!",
+			command = function()
+				vim.opt.cmdheight = 0
+			end,
 		},
 	})
 end
-
--- function M.setup_qol()
--- 	utils.augroup("QOL", {
--- 		{
--- 			events = { "TextYankPost" },
--- 		},
--- 	})
--- end
-
+function M.norg_autocmds()
+	utils.augroup("NorgAutocmds", {
+		{
+			events = { "BufReadPost" },
+			targets = { "*.norg" },
+			command = function()
+				vim.schedule(function()
+					vim.fn.feedkeys("ggzc", "n")
+					vim.notify("Closing Document Meta")
+				end)
+			end,
+		},
+	})
+end
 return M

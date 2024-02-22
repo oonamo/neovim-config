@@ -1,6 +1,5 @@
 return {
-	"NvChad/nvim-colorizer.lua",
-	lazy = true,
+	"RaafatTurki/corn.nvim",
 	config = true,
 	event = { "BufReadPost", "BufNewFile", "BufWritePre" },
 }

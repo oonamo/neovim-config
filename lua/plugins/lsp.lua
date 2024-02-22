@@ -101,7 +101,10 @@ return {
 			tsserver = defaults,
 			html = defaults,
 			eslint = defaults,
-			powershell_es = defaults,
+			powershell_es = {
+				shell = "pwsh",
+				bundle_path = "c:/w/PowerShellEditorServices",
+			},
 			clangd = defaults,
 		},
 		config = function(_, opts)
@@ -187,7 +190,7 @@ return {
 					["<C-i>"] = cmp.mapping.complete(),
 					["<C-e>"] = cmp.mapping.abort(),
 					["<CR>"] = cmp.mapping.confirm({ select = true }),
-					["<C-j>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+					-- ["<C-j>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
 				}),
 				sources = cmp.config.sources({
 					{
@@ -204,9 +207,26 @@ return {
 							return true
 						end,
 					},
+				}, {
+					{ name = "buffer" },
+					{ name = "path" },
+				}),
+			})
+			cmp.setup.filetype("markdown", {
+				sources = cmp.config.sources({
 					{ name = "obsidian" },
 					{ name = "obsidian_new" },
 				}, {
+					{ name = "buffer" },
+					{ name = "path" },
+					{ name = "rg" },
+				}),
+			})
+
+			cmp.setup.filetype("norg", {
+				sources = cmp.config.sources({
+					{ name = "neorg" },
+					{ name = "rg" },
 					{ name = "buffer" },
 					{ name = "path" },
 				}),
@@ -264,54 +284,105 @@ return {
 	},
 	{
 		"barreiroleo/ltex_extra.nvim",
-		ft = { "markdown", "latex" },
+		dependencies = { "neovim/nvim-lspconfig" },
+		ft = { "markdown", "latex", "norg" },
 		opts = {
 			capabilities = M.capabilites,
 			on_attach = function(client, bufnr)
 				on_attach(client, bufnr)
-				require("ltex_extra").setup({})
+				-- require("ltex_extra").setup({})
 			end,
 			settings = {
 				-- ltex = { your settings }
 			},
 		},
+		config = function(_, opts)
+			require("ltex_extra").setup({
+				server_opts = opts,
+			})
+		end,
 	},
 	{
 		"mrcjkb/rustaceanvim",
-		version = "^3", -- Recommended
+		version = "^4", -- Recommended
 		ft = { "rust" },
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			{ "mfussenegger/nvim-dap", lazy = true },
 			{ "lvimuser/lsp-inlayhints.nvim", config = true, ft = { "rust" } },
 		},
-		config = function()
-			vim.g.rustaceanvim = {
-				server = {
-					["rust-analyzer"] = {
-						cargo = {
-							allFeatures = true,
-							loadOutDirsFromCheck = true,
-							runBuildScripts = true,
+		opts = {
+			server = {
+				["rust-analyzer"] = {
+					cargo = {
+						allFeatures = true,
+						loadOutDirsFromCheck = true,
+						runBuildScripts = true,
+					},
+					files = {
+						watcherExclude = {
+							["**/_build"] = true,
+							["**/.classpath"] = true,
+							["**/.dart_tool"] = true,
+							["**/.factorypath"] = true,
+							["**/.flatpak-builder"] = true,
+							["**/.git/objects/**"] = true,
+							["**/.git/subtree-cache/**"] = true,
+							["**/.idea"] = true,
+							["**/.project"] = true,
+							["**/.scannerwork"] = true,
+							["**/.settings"] = true,
+							["**/.venv"] = true,
+							["**/node_modules"] = true,
+						},
+						excludeDirs = {
+							"_build",
+							".dart_tool",
+							".flatpak-builder",
+							".git",
+							".gitlab",
+							".gitlab-ci",
+							".gradle",
+							".idea",
+							".next",
+							".project",
+							".scannerwork",
+							".settings",
+							".venv",
+							"archetype-resources",
+							"bin",
+							"hooks",
+							"node_modules",
+							"po",
+							"screenshots",
+							"target",
 						},
 					},
-					on_attach = function(client, buffer)
-						on_attach(client, buffer)
+				},
+				on_attach = function(client, buffer)
+					on_attach(client, buffer)
 
-						local lsp_inlay_hints = require("lsp-inlayhints")
-						lsp_inlay_hints.on_attach(client, buffer)
-						lsp_inlay_hints.show()
-					end,
+					local lsp_inlay_hints = require("lsp-inlayhints")
+					lsp_inlay_hints.on_attach(client, buffer)
+					lsp_inlay_hints.show()
+				end,
+			},
+			tools = {
+				hover_actions = {
+					auto_focus = true,
 				},
-				tools = {
-					hover_actions = {
-						auto_focus = true,
-					},
-				},
-				dap = {
-					adapter = require("rustaceanvim.config").get_codelldb_adapter(M.codelldb_path, M.liblldb_path),
-				},
+			},
+			-- dap = {
+			-- 	adapter = require("rustaceanvim.config").get_codelldb_adapter(M.codelldb_path, M.liblldb_path),
+			-- },
+		},
+		config = function(_, opts)
+			local cfg = require("rustaceanvim.config")
+			local dap = {
+				adapter = cfg.get_codelldb_adapter(M.codelldb_path, M.liblldb_path),
 			}
+			vim.tbl_deep_extend("force", opts, dap)
+			vim.g.rustaceanvim = opts
 		end,
 	},
 }

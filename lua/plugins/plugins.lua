@@ -1,9 +1,5 @@
 return {
 	{
-		"echasnovski/mini.base16",
-		lazy = true,
-	},
-	{
 		"JoosepAlviste/nvim-ts-context-commentstring",
 		lazy = true,
 		opts = {
@@ -17,7 +13,6 @@ return {
 		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
 	},
 	{
-
 		"xiyaowong/transparent.nvim",
 		config = true,
 		lazy = true,

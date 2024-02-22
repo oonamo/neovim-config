@@ -6,17 +6,23 @@ return {
 		"ThePrimeagen/harpoon",
 		dependencies = { "nvim-lua/plenary.nvim" },
 		branch = "harpoon2",
-		config = function()
+		opts = {
+			setting = {
+				save_on_toggle = true,
+			},
+		},
+		config = function(_, opts)
 			local harpoon = require("harpoon")
 			local Extensions = require("harpoon.extensions")
 			vim.api.nvim_create_augroup("HarpoonStatus", {
 				clear = true,
 			})
+
 			--TODO: Add opts for different harpoon modes
-			local function exec_harpoon_autocmds(list, opts)
-				opts = opts or { pattern = "HarpoonListChange" }
+			local function exec_harpoon_autocmds(list, cmd_opts)
+				cmd_opts = cmd_opts or { pattern = "HarpoonListChange" }
 				vim.api.nvim_exec_autocmds("User", {
-					pattern = opts.pattern,
+					pattern = cmd_opts.pattern,
 					group = "HarpoonStatus",
 					data = {
 						list = list.list,
@@ -25,7 +31,7 @@ return {
 					},
 				})
 			end
-			harpoon:setup()
+			harpoon:setup(opts)
 			harpoon:extend(Extensions.builtins.navigate_with_number())
 			harpoon:extend({
 				NAVIGATE = function()
@@ -55,7 +61,6 @@ return {
 
 			vim.keymap.set("n", "<leader>a", function()
 				harpoon:list():append()
-				-- harpoon:list():append()
 			end)
 			vim.keymap.set("n", "<C-e>", function()
 				harpoon.ui:toggle_quick_menu(harpoon:list())

@@ -29,8 +29,8 @@ function M.setup()
 			{ "@keyword", { fg = M.colors.green } },
 			{ "Statement", { link = "@keyword" } },
 			{ "Function", { fg = M.colors.yellow } },
-			{ "String", { fg = M.colors.orange } },
-			{ "@property", { fg = M.colors.cyan } },
+			-- { "String", { fg = M.colors.orange } },
+			{ "@property", { link = "@variable.member" } },
 			{ "NormalFloat", { blend = 15 } },
 			{ "FloatBorder", { blend = 15 } },
 			{ "Title", { bold = true, fg = M.colors.green } },
@@ -39,6 +39,24 @@ function M.setup()
 			{ "DiagnosticVirtualTextHint", { fg = "#c4a7e7", bg = "#2a2538", blend = 10 } },
 			{ "DiagnosticVirtualTextInfo", { fg = "#9ccfd8", bg = "#292936", blend = 10 } },
 			{ "DiagnosticVirtualTextWarn", { fg = "#f6c177", bg = "#2f282c", blend = 10 } },
+
+			{ "CursorLine", { bg = "#262626" } }, -- fg = "#d7d7ff" } },
+			{ "CursorLineNr", { fg = M.colors.orange } },
+			{ "StatusLine", { bg = "#262626", fg = "#d7d7ff" } },
+			{ "@attribute", { fg = M.colors.blue } },
+			{ "@text.uri", { fg = M.colors.blue, underline = true } },
+			{ "@neorg.headings.1.title.norg", { fg = M.colors.blue } },
+			{ "@neorg", { fg = M.colors.red } },
+			{ "Float", { fg = M.colors.orange } },
+			{ "ModeMsg", { fg = M.colors.green } },
+			-- { "TelescopeBorder", { fg = "#262626", bg = "none" } },
+			-- { "TelescopeNormal", { bg = "none" } },
+			-- { "TelescopePromptNormal", { bg = "#262626" } },
+			-- { "TelescopeResultsNormal", { fg = M.colors.text, bg = M.colors.bg } },
+			-- { "TelescopeTitle", { fg = M.colors.bg, bg = M.colors.red } },
+			{ "TelescopeSelection", { fg = M.colors.text, bg = M.colors.bg } },
+			{ "TelescopeSelectionCaret", { fg = M.colors.red, bg = M.colors.red } },
+			{ "BufferVisible", { bg = "none", fg = M.colors.text, bold = true, italic = true } },
 		},
 	}
 	utils:create_hl()
@@ -51,44 +69,6 @@ function M.setup_pmenu()
 			{ "PmenuSel", { bold = true, fg = M.colors.yellow } },
 			{ "PmenuExtra", { fg = M.colors.bg, bg = M.colors.green, bold = true } },
 			{ "PmenuSel", { bg = "#282C34", fg = "NONE" } },
-			-- { "Pmenu", { fg = "#C5CDD9", bg = "#22252A" } },
-			-- { "CmpItemAbbrDeprecated", { fg = "#7E8294", bg = "NONE", strikethrough = true } },
-			-- { "CmpItemAbbrMatch", { fg = "#82AAFF", bg = "NONE", bold = true } },
-			-- { "CmpItemAbbrMatchFuzzy", { fg = "#82AAFF", bg = "NONE", bold = true } },
-			-- { "CmpItemMenu", { fg = "#C792EA", bg = "NONE", italic = true } },
-			--
-			-- { "CmpItemKindField", { fg = "#EED8DA", bg = "#B5585F" } },
-			-- { "CmpItemKindProperty", { fg = "#EED8DA", bg = "#B5585F" } },
-			-- { "CmpItemKindEvent", { fg = "#EED8DA", bg = "#B5585F" } },
-			--
-			-- { "CmpItemKindText", { fg = "#C3E88D", bg = "#9FBD73" } },
-			-- { "CmpItemKindEnum", { fg = "#C3E88D", bg = "#9FBD73" } },
-			-- { "CmpItemKindKeyword", { fg = "#C3E88D", bg = "#9FBD73" } },
-			--
-			-- { "CmpItemKindConstant", { fg = "#FFE082", bg = "#D4BB6C" } },
-			-- { "CmpItemKindConstructor", { fg = "#FFE082", bg = "#D4BB6C" } },
-			-- { "CmpItemKindReference", { fg = "#FFE082", bg = "#D4BB6C" } },
-			--
-			-- { "CmpItemKindFunction", { fg = "#EADFF0", bg = "#A377BF" } },
-			-- { "CmpItemKindStruct", { fg = "#EADFF0", bg = "#A377BF" } },
-			-- { "CmpItemKindClass", { fg = "#EADFF0", bg = "#A377BF" } },
-			-- { "CmpItemKindModule", { fg = "#EADFF0", bg = "#A377BF" } },
-			-- { "CmpItemKindOperator", { fg = "#EADFF0", bg = "#A377BF" } },
-			--
-			-- { "CmpItemKindVariable", { fg = "#C5CDD9", bg = "#7E8294" } },
-			-- { "CmpItemKindFile", { fg = "#C5CDD9", bg = "#7E8294" } },
-			--
-			-- { "CmpItemKindUnit", { fg = "#F5EBD9", bg = "#D4A959" } },
-			-- { "CmpItemKindSnippet", { fg = "#F5EBD9", bg = "#D4A959" } },
-			-- { "CmpItemKindFolder", { fg = "#F5EBD9", bg = "#D4A959" } },
-			--
-			-- { "CmpItemKindMethod", { fg = "#DDE5F5", bg = "#6C8ED4" } },
-			-- { "CmpItemKindValue", { fg = "#DDE5F5", bg = "#6C8ED4" } },
-			-- { "CmpItemKindEnumMember", { fg = "#DDE5F5", bg = "#6C8ED4" } },
-			--
-			-- { "CmpItemKindInterface", { fg = "#D8EEEB", bg = "#58B5A8" } },
-			-- { "CmpItemKindColor", { fg = "#D8EEEB", bg = "#58B5A8" } },
-			-- { "CmpItemKindTypeParameter", { fg = "#D8EEEB", bg = "#58B5A8" } },
 		},
 	}
 	utils:create_pmenu()
