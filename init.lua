@@ -1,7 +1,5 @@
 vim.loader.enable()
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-print("hello from neovim")
-
 if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({
 		"git",
@@ -16,16 +14,26 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 vim.g.MUtils = {}
+G = {}
 
 require("onam.remap")
 require("onam.utils")
 require("onam.set") -- Set before theme and stausline
--- require("lazy").setup("plugins")
+
 require("lazy").setup({
-	{ import = "plugins" },
+	spec = {
+		{ import = "plugins.ui" },
+		{ import = "plugins.writing" },
+		{ import = "plugins.coding" },
+		{ import = "plugins.editor" },
+		{ import = "plugins.lsp" },
+	},
+	change_detection = {
+		notify = false,
+	},
 })
+
 require("onam.color_switcher").setup_persistence()
 require("onam.statusline")
 require("onam.winbar")
-
 utils:create_hl()

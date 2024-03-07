@@ -18,18 +18,38 @@ function M.setup_status_cmds()
 		},
 	})
 end
-function M.norg_autocmds()
-	utils.augroup("NorgAutocmds", {
+function M.setup_writing_cmds()
+	utils.augroup("Writing", {
+		{
+			events = { "BufEnter" },
+			targets = { "*.md", "*.norg", "*.org", "*.tex" },
+			command = function()
+				vim.opt.shiftwidth = 2
+			end,
+		},
 		{
 			events = { "BufReadPost" },
 			targets = { "*.norg" },
 			command = function()
 				vim.schedule(function()
-					vim.fn.feedkeys("ggzc", "n")
-					vim.notify("Closing Document Meta")
+					vim.cmd("1 foldc")
 				end)
 			end,
 		},
 	})
+end
+function M.norg_autocmds()
+	-- utils.augroup("NorgAutocmds", {
+	-- 	{
+	-- 		-- events = { "BufReadPost" },
+	-- 		-- targets = { "*.norg" },
+	-- 		-- command = function()
+	-- 		-- 	vim.schedule(function()
+	-- 		-- 		vim.fn.feedkeys("ggzc", "n")
+	-- 		-- 		vim.notify("Closing Document Meta")
+	-- 		-- 	end)
+	-- 		-- end,
+	-- 	},
+	-- })
 end
 return M

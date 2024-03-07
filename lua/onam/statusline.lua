@@ -1,17 +1,29 @@
-if vim.g.use_lualine == false then
-	vim.opt.cmdheight = 1
+if vim.g.use_lualine == true or vim.g.use_default_statusline == true then
 	-- local autocmds = require("onam.autocmds")
 	-- autocmds.setup_status_cmds()
 	return
 end
+
 local fn = vim.fn
 local api = vim.api
-local harpoon = require("harpoon")
 
---@alias event {}
---@alias CachedList {items: {value: string, index: number}[]}
-CachedList = {}
+local opts = {
+	---@type string | "simple" | "lualine"
+	style = "simple",
+	enabled_modules = {
+		"modes",
+		"macros",
+		"file",
+		"filetype",
+		"fileformat",
+		"fileencoding",
+		"progress",
+		"location",
+		"diagnostics",
+	},
+}
 
+---@enum Mode
 local modes = {
 	["n"] = "NORMAL",
 	["no"] = "NORMAL",
@@ -42,12 +54,6 @@ local function mode()
 	local current_mode = api.nvim_get_mode().mode
 	return string.format(" %s ", modes[current_mode]):upper()
 end
-
---TODO: Not working
--- local function keys()
--- 	local key = ""
--- 	return key
--- end
 
 local function update_mode_colors()
 	local current_mode = api.nvim_get_mode().mode
@@ -97,93 +103,6 @@ local function lineinfo()
 	return " %P %l:%c "
 end
 
---==============================================================================
--- Harpoon
--- =============================================================================
--- Executes on harpoon select
-vim.api.nvim_create_autocmd("User", {
-	pattern = "HarpoonListSelect",
-	group = "HarpoonStatus",
-	callback = function(event)
-		-- Update_harpoon(event)
-		vim.schedule(function()
-			Update_harpoon(event)
-		end)
-	end,
-})
--- Executes on harpoon:append() or harpoon:prepend()
-vim.api.nvim_create_autocmd("User", {
-	pattern = "HarpoonListChange",
-	group = "HarpoonStatus",
-	callback = function(event)
-		-- Update_harpoon(event)
-		vim.schedule(function()
-			Update_harpoon(event)
-		end)
-	end,
-})
-
--- Executes on Harpoon UI Leave
-vim.api.nvim_create_autocmd("User", {
-	pattern = "HarpoonBufLeave",
-	group = "HarpoonStatus",
-	callback = function(event)
-		vim.schedule(function()
-			Update_harpoon(event)
-		end)
-	end,
-})
-
-vim.api.nvim_create_autocmd("BufLeave, WinLeave, BufWinLeave, BufWriteCmd", {
-	pattern = "__harpooon-menu__*",
-	group = "HarpoonStatus",
-	callback = function(event)
-		vim.schedule(function()
-			Update_harpoon(event)
-		end)
-	end,
-})
-vim.api.nvim_create_autocmd("VimEnter", {
-	group = "HarpoonStatus",
-	pattern = "*",
-	callback = function()
-		Init_harpoon()
-	end,
-})
-
-function Init_harpoon()
-	Cachedlist = harpoon:list("cmd")
-end
-
-function Update_harpoon(event)
-	Cachedlist = event.data.list
-	vim.cmd("redrawstatus")
-end
-
-local function harpoon_list()
-	local file_name = fn.fnamemodify(api.nvim_buf_get_name(0), ":p:.")
-	local inactive = ""
-	local active = ""
-	local modifier = ""
-
-	if Cachedlist.items == nil then
-		return ""
-	end
-	if #Cachedlist.items > 4 then
-		modifier = ":t"
-	end
-	for i, item in ipairs(Cachedlist.items) do
-		if item.value ~= file_name then
-			inactive = inactive .. " %=%#HarpoonInactive# " .. i .. " " .. fn.fnamemodify(item.value, modifier)
-		else
-			--FIX: Redundant to have the active harpoon item in the statusline
-			-- active = " %#HarpoonActive# " .. i .. " " .. item.value
-		end
-	end
-
-	return active .. inactive
-end
-
 local function lsp()
 	local count = {}
 	local levels = {
@@ -227,6 +146,17 @@ end
 
 Statusline = {}
 
+local Modules = {
+	["modes"] = mode,
+	["mode_color"] = update_mode_colors,
+	["macros"] = macro,
+	["filename"] = filename,
+	["filepath"] = filepath,
+	["filetype"] = filetype,
+	["location"] = lineinfo,
+	["diagnostics"] = lsp,
+}
+
 --- Highlights
 -- StatuslineAccent
 -- StatuslineInsertAccent
@@ -241,22 +171,7 @@ Statusline = {}
 -- StatusEmpty
 -- StatusLineExtra
 Statusline.active = function()
-	return table.concat({
-		"%#Statusline#",
-		update_mode_colors(),
-		mode(),
-		"%#StatusBarLong#",
-		filepath(),
-		filename(),
-		macro(),
-		"%#StatusEmpty#",
-		" ",
-		-- "%=",
-		harpoon_list(),
-		"%=%#StatusLineExtra#",
-		filetype(),
-		lineinfo(),
-	})
+	return Statusline.builder(opts)
 end
 
 function Statusline.inactive()
@@ -267,51 +182,70 @@ function Statusline.short()
 	return "%#StatusLineNC#   NvimTree"
 end
 
-if vim.g.use_custom_statusline == true then
-	-- WARN: should be rose-pine, replace if you want with nord
-	if vim.g.colors_name == "-pine" then
-		Statusline.pine = function()
-			return table.concat({
-				mode(),
-				" %f %m %= %l:%c ♥ ",
-			})
-		end
-		utils.augroup("Statusline", {
-			{
-				events = { "WinEnter,BufEnter" },
-				targets = { "*" },
-				command = "setlocal statusline=%!v:lua.Statusline.pine()",
-			},
-		})
-	else
-		utils.augroup("Statusline", {
-			{
-				events = { "WinEnter,BufEnter,VimEnter" },
-				targets = { "*" },
-				command = "setlocal statusline=%!v:lua.Statusline.active()",
-			},
-			-- {
-			-- 	events = { "WinLeave,BufLeave" },
-			-- 	targets = { "*" },
-			-- 	command = "setlocal statusline=%!v:lua.Statusline.inactive()",
-			-- },
-			{
-
-				events = { "WinEnter,BufEnter" },
-
-				targets = { "NeoTree" },
-				command = "setlocal statusline=%!v:lua.Statusline.short()",
-			},
-			{
-				events = { "CmdlineEnter", "CmdlineChanged", "BufWritePre" },
-				targets = { "*" },
-				command = "set cmdheight=1",
-			},
-			{
-				events = { "CmdlineLeave", "BufWritePost", "InsertLeave" },
-				targets = { "*" },
-				command = "set cmdheight=0 | redrawstatus!",
-			},
+Statusline.builder = function(local_opts)
+	if local_opts.style == "simple" then
+		return table.concat({
+			"%#Statusline#",
+			update_mode_colors(),
+			mode(),
+			"%#CursorLine# ",
+			filepath(),
+			filename(),
+			lsp(),
+			"%=%#StatusLineExtra#",
+			filetype(),
+			lineinfo(),
 		})
 	end
+	local enabled_modules = local_opts.enabled_modules
+	local statusline = ""
+	local mods = {}
+	for _, module in ipairs(enabled_modules) do
+		if Modules[module] ~= nil then
+			table.insert(mods, Modules[module]())
+		end
+	end
+	statusline = table.concat(mods)
+	return statusline
 end
+
+utils.augroup("Statusline", {
+	{
+		events = { "WinEnter,BufEnter,VimEnter" },
+		targets = { "*" },
+		command = "set statusline=%!v:lua.Statusline.active()",
+		exec = true,
+	},
+})
+
+-- if vim.g.use_custom_statusline == true then
+-- 	utils.augroup("Statusline", {
+-- 		{
+-- 			events = { "WinEnter,BufEnter,VimEnter" },
+-- 			targets = { "*" },
+-- 			command = "setlocal statusline=%!v:lua.Statusline.active()",
+-- 		},
+-- 		-- {
+-- 		-- 	events = { "WinLeave,BufLeave" },
+-- 		-- 	targets = { "*" },
+-- 		-- 	command = "setlocal statusline=%!v:lua.Statusline.inactive()",
+-- 		-- },
+-- 		{
+--
+-- 			events = { "WinEnter,BufEnter" },
+--
+-- 			targets = { "NeoTree" },
+-- 			command = "setlocal statusline=%!v:lua.Statusline.short()",
+-- 		},
+-- 		{
+-- 			events = { "CmdlineEnter", "CmdlineChanged", "BufWritePre" },
+-- 			targets = { "*" },
+-- 			command = "set cmdheight=1",
+-- 		},
+-- 		{
+-- 			events = { "CmdlineLeave", "BufWritePost", "InsertLeave" },
+-- 			targets = { "*" },
+-- 			command = "set cmdheight=0 | redrawstatus!",
+-- 		},
+-- 	})
+-- end

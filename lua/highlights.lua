@@ -1,8 +1,14 @@
 local M = {}
-function M.setup()
+function M.setup(light)
 	if O.fn == nil then
 		print("O.fn is nil")
 		return
+	end
+
+	if light then
+		vim.opt.background = "light"
+	else
+		vim.opt.background = "dark"
 	end
 
 	local colors = require("colors." .. O.fn)
@@ -36,6 +42,10 @@ function M.setup()
 	if colors.setup_pmenu ~= nil then
 		colors.setup_pmenu()
 	end
+	vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", { undercurl = true, sp = "#ff0000" })
+	vim.api.nvim_set_hl(0, "DiagnosticUnderlineWarn", { undercurl = true, sp = "#ffff00" })
+	vim.api.nvim_set_hl(0, "DiagnosticUnderlineInfo", { undercurl = true, sp = "#00ffff" })
+	vim.api.nvim_set_hl(0, "DiagnosticUnderlineHint", { undercurl = true, sp = "#00ff00" })
 end
 
 return M

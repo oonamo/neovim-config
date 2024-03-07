@@ -30,10 +30,10 @@ vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { silent = true })
 -- vim.keymap.set("n", "<C-l>", "<cmd> NavigatorRight<CR>", { desc = "window right" })
 --
 
-vim.keymap.set({ "n", "t" }, "<C-h>", "<CMD>NavigatorLeft<CR>")
-vim.keymap.set({ "n", "t" }, "<C-l>", "<CMD>NavigatorRight<CR>")
-vim.keymap.set({ "n", "t" }, "<C-k>", "<CMD>NavigatorUp<CR>")
-vim.keymap.set({ "n", "t" }, "<C-j>", "<CMD>NavigatorDown<CR>")
+vim.keymap.set({ "n", "t" }, "<C-h>", "<CMD>NavigatorLeft<CR>", { desc = "window left" })
+vim.keymap.set({ "n", "t" }, "<C-l>", "<CMD>NavigatorRight<CR>", { desc = "window right" })
+vim.keymap.set({ "n", "t" }, "<C-k>", "<CMD>NavigatorUp<CR>", { desc = "window up" })
+vim.keymap.set({ "n", "t" }, "<C-j>", "<CMD>NavigatorDown<CR>", { desc = "window down" })
 --Set Copy and Paste
 --Copy to Keyboard
 vim.keymap.set({ "n", "v" }, "<leader>y", '"+y', opts)
@@ -45,7 +45,6 @@ vim.keymap.set({ "n", "v" }, "<leader>P", '"+P', opts)
 -- Search and Replace
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 
--- Use Shift-Space as a mapping that prints shift-space
 vim.keymap.set("n", "<leader>cp", function()
 	require("onam.color_switcher").show_plenary_popup()
 end, { desc = "color switcher" })
@@ -54,18 +53,6 @@ vim.keymap.set("n", "<leader>cb", function()
 	require("onam.color_switcher").show_plenary_popup(true)
 end, { desc = "color switcher" })
 
-vim.keymap.set("n", "<leader>cn", function()
-	require("onam.theme_switcher").next_theme()
-end, { desc = "color switcher" })
-
 vim.keymap.set("n", "<leader>cl", function()
-	require("onam.theme_switcher").previous_theme()
-end, { desc = "color switcher" })
-
-vim.keymap.set("n", "<leader>cc", function()
-	require("onam.theme_switcher").add_candidate()
-end, { desc = "color switcher" })
-
-vim.keymap.set("n", "<leader>cg", function()
-	vim.print(require("onam.theme_switcher").get_canidates())
-end, { desc = "color switcher" })
+	require("onam.color_switcher").show_plenary_popup(false, true)
+end, { desc = "color switcher light" })

@@ -1,6 +1,7 @@
 return {
 	{ "plugins.lsp" },
 	{ "plugins.ui" },
-	{ "plugins.writting" },
+	{ "plugins.writing" },
 	{ "plugins.coding" },
+	{ "plugins.editor" },
 }

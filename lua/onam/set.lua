@@ -1,17 +1,17 @@
 -- GUI
 --
 --
-vim.opt.guicursor = ""
+-- vim.opt.guicursor = ""
+vim.opt.guicursor:append("a:blinkwait900-blinkon900-blinkoff900")
 vim.opt.termguicolors = true
 vim.opt.background = "dark"
 
 if vim.g.neovide then
 	vim.g.neovide_scale_factor = 1.0
-	-- vim.g.neovide_transparency = 1
 	vim.g.neovide_hide_mouse_when_typing = true
 	vim.o.guifont = "BlexMono Nerd Font Mono:h14"
 	vim.g.neovide_scroll_animation_length = 0
-	vim.g.neovide_transparency = 0.9999
+	vim.g.neovide_transparency = 1.0
 end
 
 -- Editor
@@ -40,13 +40,16 @@ vim.opt.conceallevel = 2
 -- vim.opt.statusline = " %f %m %= %l:%c ♥ "
 -- Popup Menu
 vim.opt.completeopt = "menuone,noinsert,noselect"
-vim.g.use_custom_snippets = false
+
+-- Custom
+vim.g.use_custom_snippets = true
 vim.g.use_lualine = true
 vim.g.use_custom_statusline = false
 vim.g.use_custom_winbar = true
+vim.g.use_FZF = true
 
 vim.opt.foldlevel = 99
-vim.opt.foldmethod = "expr"
+-- vim.opt.foldmethod = "expr"
 vim.opt.clipboard = {
 	name = "WslClipboard",
 	copy = {

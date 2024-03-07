@@ -53,6 +53,10 @@ function M.setup()
 			{ "@neorg.headings.4.title", { link = "markdownH4" } },
 			{ "@neorg.headings.5.title", { link = "markdownH5" } },
 			{ "@neorg.headings.6.title", { link = "markdownH6" } },
+
+			{ "FloatBorder", { blend = 15 } },
+			{ "Visual", { bg = M.colors.purple } },
+			{ "Normal", { fg = M.colors.fg } },
 		},
 	}
 	utils:create_hl()

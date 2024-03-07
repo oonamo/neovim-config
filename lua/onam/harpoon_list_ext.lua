@@ -1,5 +1,8 @@
 -- Extension to show current harpoon list in winbar or statusline
-local harpoon = require("harpoon")
+local ok, harpoon = pcall(require, "harpoon")
+if not ok then
+	return
+end
 local fn = vim.fn
 local api = vim.api
 local has, webdevicons = pcall(require, "nvim-web-devicons")

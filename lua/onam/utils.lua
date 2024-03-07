@@ -26,6 +26,15 @@ function utils.inspect(...)
 	return ...
 end
 
+function utils.always(val)
+	return function()
+		return val
+	end
+end
+function utils.trim(s)
+	return (s:gsub("^%s*(.-)%s*$", "%1"))
+end
+
 ---@class BlockingKey
 ---@field keys keys[]
 local blockingKey = {}
@@ -67,6 +76,7 @@ end
 ---@field events string[] list of autocommand events
 ---@field targets string[]? list of autocommand patterns
 ---@field modifiers string[]? e.g. nested, once
+---@field exec boolean?
 ---@field command string | function
 
 ---@param name string group name
@@ -83,9 +93,7 @@ function utils.augroup(name, autocmds, noclear)
 			api.nvim_create_autocmd(c.events, {
 				group = name,
 				pattern = c.targets,
-				command = function()
-					vim.cmd(command)
-				end,
+				command = command,
 			})
 		elseif type(command) == "function" then
 			api.nvim_create_autocmd(c.events, {
@@ -167,7 +175,11 @@ end
 ---@param property string|nil
 ---@return string
 function utils.brighten(color, percent, property)
-	-- local hl = vim.api.nvim_get_hl_by_name(color, true) or {}
+	local ok, hl = pcall(vim.api.nvim_get_hl_by_name, color, true)
+	if not ok then
+		vim.notify("Invalid color: " .. color)
+		return "#000000"
+	end
 	local result = {}
 	for k, v in pairs(vim.api.nvim_get_hl_by_name(color, true)) do
 		if type(v) == "boolean" then
