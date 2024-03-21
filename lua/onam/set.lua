@@ -1,17 +1,16 @@
 -- GUI
 --
 --
--- vim.opt.guicursor = ""
-vim.opt.guicursor:append("a:blinkwait900-blinkon900-blinkoff900")
+
+vim.opt.guicursor = "c-ci-ve:ver25,r-cr:hor20,o:hor20,a:blinkwait900-blinkon900-blinkoff900"
 vim.opt.termguicolors = true
 vim.opt.background = "dark"
-
 if vim.g.neovide then
 	vim.g.neovide_scale_factor = 1.0
 	vim.g.neovide_hide_mouse_when_typing = true
-	vim.o.guifont = "BlexMono Nerd Font Mono:h14"
+	vim.o.guifont = "GohuFont 11 Nerd Font Propo:h15"
 	vim.g.neovide_scroll_animation_length = 0
-	vim.g.neovide_transparency = 1.0
+	vim.g.neovide_transparency = 0.9
 end
 
 -- Editor
@@ -45,8 +44,9 @@ vim.opt.completeopt = "menuone,noinsert,noselect"
 vim.g.use_custom_snippets = true
 vim.g.use_lualine = true
 vim.g.use_custom_statusline = false
-vim.g.use_custom_winbar = true
+vim.g.use_custom_winbar = false
 vim.g.use_FZF = true
+vim.g.use_noice = false
 
 vim.opt.foldlevel = 99
 -- vim.opt.foldmethod = "expr"
@@ -63,8 +63,23 @@ vim.opt.clipboard = {
 	cache_enabled = 0,
 }
 
-O = {}
+-- better spell
+vim.keymap.set("n", "z=", function()
+	local word = vim.fn.expand("<cword>")
+	local suggestions = vim.fn.spellsuggest(word)
+	vim.ui.select(
+		suggestions,
+		{},
+		vim.schedule_wrap(function(selected)
+			if selected then
+				vim.api.nvim_feedkeys("ciw" .. selected, "n", true)
+				vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, true, true), "n", true)
+			end
+		end)
+	)
+end)
 
+O = {}
 utils.augroup("QOL", {
 	{
 		events = { "ColorScheme" },

@@ -1,4 +1,4 @@
-if vim.g.use_lualine == true or vim.g.use_default_statusline == true then
+if vim.g.use_lualine == true or vim.g.use_default_statusline == true or vim.g.use_custom_statusline == false then
 	-- local autocmds = require("onam.autocmds")
 	-- autocmds.setup_status_cmds()
 	return

@@ -45,54 +45,55 @@ return {
 
 			local theme = "auto"
 			if vim.g.colors_name == "rose-pine" and vim.o.background == "dark" then
-				vim.notify("lualine theme: rose-pine")
-				local prime_pine = require("lualine.themes.rose-pine")
-				M.pine_colors = {
-					-- Special
-					green = "#afd7d7",
-					-- String
-					yellow = "#d7af87",
-					-- function
-					red = "#ffafd7",
-					-- Keyword
-					dark_green = "#5f8787",
-					-- Constant
-					orange = "#ffaf87",
-					-- Variable
-					text = "#d7d7ff",
-					-- Propertu
-					light_green = "#bcbcbc",
-					-- Keyword Operator
-					gray = "#8787af",
-					-- Conditional
-					blue = "#5f87af",
-				}
-
-				prime_pine.normal.a.bg = M.pine_colors.orange
-				prime_pine.normal.b.fg = M.pine_colors.orange
-
-				prime_pine.insert.a.bg = M.pine_colors.green
-				prime_pine.insert.b.fg = M.pine_colors.green
-
-				prime_pine.visual.a.bg = M.pine_colors.blue
-				prime_pine.visual.b.fg = M.pine_colors.blue
-
-				prime_pine.replace.a.bg = M.pine_colors.gray
-				prime_pine.replace.b.fg = M.pine_colors.gray
-
-				prime_pine.command.a.bg = M.pine_colors.red
-				prime_pine.command.b.fg = M.pine_colors.red
-
-				prime_pine.inactive.a.bg = M.pine_colors.orange
-				prime_pine.inactive.b.fg = M.pine_colors.orange
-
-				prime_pine.normal.c.bg = "#282c34"
-				prime_pine.insert.c.bg = "#282c34"
-				prime_pine.visual.c.bg = "#282c34"
-				prime_pine.replace.c.bg = "#282c34"
-				prime_pine.command.c.bg = "#282c34"
-				prime_pine.inactive.c.bg = "#282c34"
-				theme = prime_pine
+				vim.notify("lualine theme: rose-pine-alt")
+				theme = "rose-pine-alt"
+				-- local prime_pine = require("lualine.themes.rose-pine")
+				-- M.pine_colors = {
+				-- 	-- Special
+				-- 	green = "#afd7d7",
+				-- 	-- String
+				-- 	yellow = "#d7af87",
+				-- 	-- function
+				-- 	red = "#ffafd7",
+				-- 	-- Keyword
+				-- 	dark_green = "#5f8787",
+				-- 	-- Constant
+				-- 	orange = "#ffaf87",
+				-- 	-- Variable
+				-- 	text = "#d7d7ff",
+				-- 	-- Propertu
+				-- 	light_green = "#bcbcbc",
+				-- 	-- Keyword Operator
+				-- 	gray = "#8787af",
+				-- 	-- Conditional
+				-- 	blue = "#5f87af",
+				-- }
+				--
+				-- prime_pine.normal.a.bg = M.pine_colors.orange
+				-- prime_pine.normal.b.fg = M.pine_colors.orange
+				--
+				-- prime_pine.insert.a.bg = M.pine_colors.green
+				-- prime_pine.insert.b.fg = M.pine_colors.green
+				--
+				-- prime_pine.visual.a.bg = M.pine_colors.blue
+				-- prime_pine.visual.b.fg = M.pine_colors.blue
+				--
+				-- prime_pine.replace.a.bg = M.pine_colors.gray
+				-- prime_pine.replace.b.fg = M.pine_colors.gray
+				--
+				-- prime_pine.command.a.bg = M.pine_colors.red
+				-- prime_pine.command.b.fg = M.pine_colors.red
+				--
+				-- prime_pine.inactive.a.bg = M.pine_colors.orange
+				-- prime_pine.inactive.b.fg = M.pine_colors.orange
+				--
+				-- prime_pine.normal.c.bg = "#282c34"
+				-- prime_pine.insert.c.bg = "#282c34"
+				-- prime_pine.visual.c.bg = "#282c34"
+				-- prime_pine.replace.c.bg = "#282c34"
+				-- prime_pine.command.c.bg = "#282c34"
+				-- prime_pine.inactive.c.bg = "#282c34"
+				-- theme = prime_pine
 			elseif vim.g.colors_name == "gruvbox" then
 				local gruvbox = require("lualine.themes.gruvbox")
 				M.gruvbox = {
@@ -197,6 +198,7 @@ return {
 							icon = "",
 						},
 						"filename",
+						"grapple",
 					},
 					lualine_x = {
 						{

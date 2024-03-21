@@ -1,4 +1,7 @@
 local M = {}
+M.colors = {
+	bg = "#191724",
+}
 
 function M.setup()
 	O.colorscheme = "rose-pine"

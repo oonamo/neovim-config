@@ -19,6 +19,7 @@ M.colors = {
 	gray = "#8787af",
 	-- Conditional
 	blue = "#5f87af",
+	bg = "#282828",
 }
 
 function M.setup(_)

@@ -63,7 +63,6 @@ return {
 			desc = "Open Neorg index and cd",
 			silent = true,
 		},
-		{ "<leader>ntoc", "<cmd>Neorg toc<cr>", desc = "Open Neorg toc" },
 		{ "<leader>nr", "<cmd>Neorg return<cr>", desc = "Return from neorg" },
 		{ "<leader>no", "<cmd>Neorg index<cr>", desc = "Open Neorg index locally" },
 	},

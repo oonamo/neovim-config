@@ -33,6 +33,10 @@ function M.setup(light)
 
 		utils:create_statusline()
 	end
+	if vim.g.neovide and c.bg then
+		vim.api.nvim_set_hl(0, "Normal", { bg = c.bg })
+		vim.api.nvim_set_hl(0, "NormalFloat", { bg = c.bg })
+	end
 
 	---Override Defaults
 	if colors.setup_status ~= nil then

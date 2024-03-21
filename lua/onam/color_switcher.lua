@@ -31,17 +31,15 @@ M.colorschemes = {
 	use_light = false,
 	colors = {
 		"prime-pine",
+		"kanagawa",
 		"newpaper",
-		"mellow",
-		"everforest",
-		"poimandres",
 		"gruvbox",
-		"gruvbox-material",
 		"grim-pine",
-		"paramount",
-		"venom",
 		"normal-pine",
+		"rose-moon",
 		"rose-light",
+		"flesh-and-blood",
+		"noirbuddy",
 	},
 }
 

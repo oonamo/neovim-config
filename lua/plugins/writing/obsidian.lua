@@ -19,7 +19,7 @@ return {
 			workspaces = {
 				{
 					name = "DB",
-					path = "~/Desktop/DB",
+					path = "~/Desktop/DB/DB/",
 				},
 			},
 			completion = {
@@ -29,19 +29,30 @@ return {
 				min_chars = 2,
 			},
 
+			templates = {
+				subdir = "templates",
+			},
+
+			daily_notes = {
+				folder = "dailies/",
+				date_format = "%Y-%m-%d",
+				alias_format = "%B %d, %Y",
+			},
+
 			note_id_func = function(title)
 				if title ~= nil then
 					return title:gsub("%s+", "-")
 				else
 					local note_title
-					vim.ui.input({ prompt = "Title: " }, function(title)
-						note_title = title:gsub("%s+", "-")
+					vim.ui.input({ prompt = "Title: " }, function(new_title)
+						note_title = new_title:gsub("%s+", "-")
 					end)
 					return note_title
 				end
 			end,
 
-			new_notes_location = "current_dir",
+			new_notes_location = "notes_subdir",
+
 			-- For windows only
 			follow_url_func = function(url)
 				-- Open the URL in the default web browser.
@@ -56,6 +67,18 @@ return {
 				name = "fzf-lua",
 				mappings = {},
 			},
+
+			callbacks = {
+				enter_note = function()
+					vim.schedule(function()
+						vim.cmd("SoftWrapMode")
+					end)
+				end,
+				post_setup = function()
+					vim.cmd("set spell")
+				end,
+			},
+
 			ui = {
 				enable = true, -- set to false to disable all additional syntax features
 				update_debounce = 200, -- update delay after a text change (in milliseconds)
@@ -90,14 +113,88 @@ return {
 		})
 		vim.opt.conceallevel = 1
 		vim.g.markdown_folding = 1
+		vim.keymap.set({ "n", "v" }, "j", "gj")
+		vim.keymap.set({ "n", "v" }, "k", "gk")
 	end,
 	keys = {
-		{ "<leader>og", "<cmd>ObsidianWorkspace<CR>", desc = "[O]bsidian [G]o" },
-		{ "<leader>of", "<cmd>ObsidianQuickSwitch<CR>", desc = "[O]bsidian [F]ind" },
-		{ "<leader>on", "<cmd>ObsidianNew<CR>", desc = "[O]bsidian [N]ew" },
+		{ "<leader>ow", "<cmd>ObsidianWorkspace<CR>", desc = "[O]bsidian [G]o" },
+		{ "<leader>oq", "<cmd>ObsidianQuickSwitch<CR>", desc = "[O]bsidian [F]ind" },
+		{
+			"<leader>on",
+			function()
+				vim.ui.input({ prompt = "Note name (optional): " }, function(name)
+					if name == nil then
+						return
+					end
+					local note_title = name:gsub("%s+", "-")
+					vim.cmd("ObsidianNew " .. note_title)
+				end)
+			end,
+			desc = "[O]bsidian [N]ew",
+		},
 		{ "<leader>os", "<cmd>ObsidianSearch<CR>", desc = "[O]bsidian [S]earch" },
+		{ "<leader>ot", "<cmd>ObsidianToday<CR>", desc = "[O]bsidian [T]oday" },
+		{ "<leader>oy", "<cmd>ObsidianYesterday<CR>", desc = "[O]bsidian [Y]esterday" },
+		{ "<leader>oo", "<cmd>ObsidianOpen<CR>", desc = "[O]bsidian [O]pen" },
+		{ "<leader>ol", "<cmd>ObsidianLinks<CR>", desc = "[O]bsidian [L]inks" },
+		{ "<leader>ob", "<cmd>ObsidianBacklinks<CR>", desc = "[O]bsidian [B]acklinks" },
 		{ "<leader>or", "<cmd>ObsidianRename<CR>", desc = "[O]bsidian [R]ename" },
-		{ "g?", require("onam.helpers.obsidian_helpers").open, desc = "Open" },
+		{
+			"<leader>oe",
+			function()
+				vim.ui.input({ prompt = "Enter title (optional): " }, function(input)
+					vim.cmd("ObsidianExtractNote " .. input)
+				end)
+			end,
+			desc = "[O]bsidian [E]xtract",
+		},
+		{
+			"<leader>ol",
+			function()
+				vim.cmd("ObsidianLink")
+			end,
+			desc = "[O]bsidian [L]ink",
+		},
+		{
+			"<leader>od",
+			function()
+				local day_of_week = os.date("%A")
+
+				print(day_of_week)
+				assert(type(day_of_week) == "string")
+				local offset_start
+
+				require("onam.fn").switch(day_of_week, {
+					["Monday"] = function()
+						offset_start = 1
+					end,
+					["Tuesday"] = function()
+						offset_start = 0
+					end,
+					["Wednesday"] = function()
+						offset_start = -1
+					end,
+					["Thursday"] = function()
+						offset_start = -2
+					end,
+					["Friday"] = function()
+						offset_start = -3
+					end,
+					["Saturday"] = function()
+						offset_start = -4
+					end,
+					["Sunday"] = function()
+						offset_start = 2
+					end,
+				})
+
+				if offset_start ~= nil then
+					vim.cmd(string.format("ObsidianDailies %d %d", offset_start, offset_start + 4))
+				end
+			end,
+			desc = "[O]bsidian [D]ailies",
+		},
 		{ "<leader>t", require("onam.helpers.obsidian_helpers").find_tasks, desc = "Open" },
+		{ "g?", require("onam.helpers.obsidian_helpers").open, desc = "Open" },
 	},
 }

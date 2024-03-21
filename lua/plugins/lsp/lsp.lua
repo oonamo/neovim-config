@@ -45,7 +45,7 @@ local function on_attach(client, buffer)
 		desc = "Rename variable",
 		buffer = buffer,
 	})
-	vim.keymap.set("i", "<C-h>", vim.lsp.buf.signature_help, {
+	vim.keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, {
 		desc = "Signature help",
 		buffer = buffer,
 	})
@@ -58,6 +58,9 @@ local function on_attach(client, buffer)
 			group = diag_float_grp,
 		})
 	end
+	require("lsp_signature").on_attach({
+		hint_prefix = "",
+	}, buffer)
 end
 
 local defaults = { on_attach = on_attach }
@@ -107,7 +110,7 @@ return {
 			},
 			clangd = defaults,
 			arduino_language_server = defaults,
-			harper_ls = defaults,
+			-- harper_ls = defaults,
 		},
 		config = function(_, opts)
 			local lspconfig = require("lspconfig")
@@ -335,26 +338,6 @@ return {
 					ls.change_choice(1)
 				end
 			end, { silent = true })
-		end,
-	},
-	{
-		"barreiroleo/ltex_extra.nvim",
-		dependencies = { "neovim/nvim-lspconfig" },
-		ft = { "latex", "norg" },
-		opts = {
-			capabilities = M.capabilites,
-			on_attach = function(client, bufnr)
-				on_attach(client, bufnr)
-				-- require("ltex_extra").setup({})
-			end,
-			settings = {
-				-- ltex = { your settings }
-			},
-		},
-		config = function(_, opts)
-			require("ltex_extra").setup({
-				server_opts = opts,
-			})
 		end,
 	},
 	{

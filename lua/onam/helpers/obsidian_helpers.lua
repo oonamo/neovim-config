@@ -1,5 +1,56 @@
 local fn = require("onam.fn")
 local M = {}
+local function search(filter_item)
+	local fzf = require("fzf-lua")
+	local cmd =
+		string.format('rg "[-] \\[%s\\]" --color=never -n -g *.md C:\\Users\\onam7\\Desktop\\DB\\DB', filter_item)
+	local list = {}
+	fzf.fzf_exec(cmd, {
+		fn_transform = function(line)
+			local colon = line:gmatch("([^:]+)")
+			local until_second_colon = colon()
+			until_second_colon = colon()
+			local file_path = "C:" .. until_second_colon
+			local ln = colon()
+			until_second_colon = vim.fn.fnamemodify(until_second_colon, ":p:t")
+			local after_second_colon = colon()
+
+			if after_second_colon:match("\\[x\\]") then
+				after_second_colon = fzf.utils.ansi_codes.magenta(after_second_colon)
+			elseif after_second_colon:match("%[%s%]") then
+				after_second_colon = fzf.utils.ansi_codes.red(after_second_colon)
+			end
+
+			table.insert(list, { file_path = file_path, ln = ln, short_fn = until_second_colon })
+			return fzf.make_entry.file(until_second_colon, { file_icons = true, color_icons = true })
+				.. " "
+				.. after_second_colon
+		end,
+		actions = {
+			["default"] = function(selected)
+				print("selected: " .. selected[1])
+				selected = vim.split(selected[1], " ")
+				for _, item in ipairs(list) do
+					print(item.short_fn)
+					if item.short_fn == selected[1] then
+						print(item.file_path)
+						vim.schedule(function()
+							vim.cmd("e " .. item.file_path)
+							vim.schedule(function()
+								vim.api.nvim_win_set_cursor(0, { tonumber(item.ln), 0 })
+							end)
+						end)
+						return
+					end
+				end
+			end,
+			["ctrl-q"] = function()
+				vim.fn.setqflist(list)
+			end,
+		},
+	})
+end
+
 function M.open()
 	vim.ui.select({
 		"Open ... ",
@@ -72,58 +123,42 @@ function M.open()
 end
 
 function M.find_tasks(filter)
-	local fzf = require("fzf-lua")
 	if filter == nil then
 		vim.ui.input({ prompt = "Filter: " }, function(input)
+			vim.print(input)
 			if input ~= nil or input ~= "" then
 				filter = input
 			else
 				filter = ".*"
 			end
+			search(filter)
 		end)
+	else
+		search(filter)
 	end
+end
 
-	local cmd = string.format('rg "[-] \\[%s\\]" --color=never -n -g *.md C:\\Users\\onam7\\Desktop\\DB\\DB', filter)
-	local list = {}
-	fzf.fzf_exec(cmd, {
-		fn_transform = function(line)
-			local colon = line:gmatch("([^:]+)")
-			local until_second_colon = colon()
-			until_second_colon = colon()
-			local file_path = "C:" .. until_second_colon
-			local ln = colon()
-			until_second_colon = vim.fn.fnamemodify(until_second_colon, ":p:t")
-			local after_second_colon = colon()
-
-			if after_second_colon:match("\\[x\\]") then
-				after_second_colon = fzf.utils.ansi_codes.magenta(after_second_colon)
-			elseif after_second_colon:match("%[%s%]") then
-				after_second_colon = fzf.utils.ansi_codes.red(after_second_colon)
-			end
-
-			table.insert(list, { file_path = file_path, ln = ln, short_fn = until_second_colon })
-			return fzf.make_entry.file(until_second_colon, { file_icons = true, color_icons = true })
-				.. " "
-				.. after_second_colon
-		end,
-		actions = {
-			["default"] = function(selected)
-				selected = vim.split(selected[1], " ")
-				for _, item in ipairs(list) do
-					if item.short_fn == selected[1] then
-						vim.schedule(function()
-							vim.cmd("e " .. item.file_path)
-							vim.schedule(function()
-								vim.api.nvim_win_set_cursor(0, { tonumber(item.ln), 0 })
-							end)
-						end)
-						return
-					end
-				end
-			end,
-			["ctrl-q"] = function()
-				vim.fn.setqflist(list)
-			end,
+function M.hyrda()
+	local Hydra = require("hydra")
+	Hydra({
+		name = "Obsidian",
+		hint = [[
+            _t_: Table mode
+            _p_: Physics
+            _l_: Linear Algebra
+            _d_: Diff Eq
+            _c_: CS
+        ]],
+		config = {
+			invoke_on_body = true,
+			hint = {
+				border = "rounded",
+			},
+		},
+		mode = "n",
+		body = "<leader>ohm",
+		heads = {
+			{ "t", ":ObsidianOpenInTableMode<cr>", { desc = "Table mode" } },
 		},
 	})
 end

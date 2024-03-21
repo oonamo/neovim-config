@@ -9,6 +9,7 @@ local function normalize(path)
 	if vim.fn.has("win32") == 1 then
 		return path:gsub("\\", "_")
 	end
+	-- print("normalized: " .. path:gsub("\\", "_"))
 	return path:gsub("/", "_")
 end
 
@@ -19,6 +20,3 @@ end
 local save_p = save_path()
 save_p = save_p:gsub("/$", "")
 -- save_p = vim.fn.fnamemodify(save_p, ":p:h")
-print("modified: " .. save_p)
-
-print("save_p: " .. save_p .. "/" .. handle_save_key())

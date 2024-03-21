@@ -1,4 +1,7 @@
 local M = {}
+M.colors = {
+	bg = "#282828",
+}
 
 function M.setup()
 	O.colorscheme = "gruvbox-material"

@@ -1,6 +1,5 @@
 return {
 	"stevearc/oil.nvim",
-	opts = {},
 	dependencies = {
 		"nvim-tree/nvim-web-devicons",
 		config = function()
@@ -14,8 +13,13 @@ return {
 			end
 		end,
 	},
-	config = function()
-		require("oil").setup()
+	opts = {
+		keymaps = {
+			["<C-h>"] = false,
+		},
+	},
+	config = function(_, opts)
+		require("oil").setup(opts)
 		vim.keymap.set("n", "<leader>e", "<cmd>Oil<cr>", { desc = "Open oil" })
 	end,
 }

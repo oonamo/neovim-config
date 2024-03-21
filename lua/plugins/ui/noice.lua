@@ -1,6 +1,7 @@
 return {
 	"folke/noice.nvim",
 	dependencies = { "MunifTanjim/nui.nvim" },
+	cond = vim.g.use_noice,
 	event = "VeryLazy",
 	opts = {
 		routes = {

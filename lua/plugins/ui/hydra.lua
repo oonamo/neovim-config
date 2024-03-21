@@ -3,38 +3,6 @@ return {
 	dependencies = { "ibhagwan/fzf-lua" },
 	config = function()
 		local Hydra = require("hydra")
-		-- 		local hint = [[
-		--  Arrow^^^^^^   Select region with <C-v>
-		--  ^ ^ _K_ ^ ^   _f_: surround it with box
-		--  _H_ ^ ^ _L_
-		--  ^ ^ _J_ ^ ^                      _<Esc>_
-		-- ]]
-		--
-		-- 		Hydra({
-		-- 			name = "Draw Diagram",
-		-- 			hint = hint,
-		-- 			config = {
-		-- 				color = "pink",
-		-- 				invoke_on_body = true,
-		-- 				hint = {
-		-- 					border = "rounded",
-		-- 				},
-		-- 				on_enter = function()
-		-- 					vim.o.virtualedit = "all"
-		-- 					vim.cmd("Hardtime disable")
-		-- 				end,
-		-- 			},
-		-- 			mode = "n",
-		-- 			body = "<leader>d",
-		-- 			heads = {
-		-- 				{ "H", "<C-v>h:VBox<CR>" },
-		-- 				{ "J", "<C-v>j:VBox<CR>" },
-		-- 				{ "K", "<C-v>k:VBox<CR>" },
-		-- 				{ "L", "<C-v>l:VBox<CR>" },
-		-- 				{ "f", ":VBox<CR>", { mode = "v" } },
-		-- 				{ "<Esc>", nil, { exit = true } },
-		-- 			},
-		-- 		})
 		local function search_norg_files(filter)
 			if filter == nil then
 				filter = ".*"
@@ -80,51 +48,51 @@ return {
 			})
 		end
 
-		Hydra({
-			name = "tasks",
-			hint = [[
-                _d_: done
-                _u_: undone
-                _i_: important
-                _q_: quit
-            ]],
-			config = {
-				color = "teal",
-				invoke_on_body = true,
-				hint = {
-					position = "middle",
-					border = "rounded",
-				},
-			},
-			mode = "n",
-			body = "<leader>t",
-			heads = {
-				{
-					"d",
-					function()
-						search_norg_files("x")
-					end,
-					desc = "done tasks",
-				},
-				{
-					"u",
-					function()
-						search_norg_files(" ")
-					end,
-					desc = "undone tasks",
-				},
-				{
-					"i",
-					function()
-						search_norg_files("!")
-					end,
-					desc = "important tasks",
-				},
-				{ "q", nil, { exit = true } },
-				{ "<Esc>", nil, { exit = true } },
-			},
-		})
+		-- Hydra({
+		-- 	name = "tasks",
+		-- 	hint = [[
+		--               _d_: done
+		--               _u_: undone
+		--               _i_: important
+		--               _q_: quit
+		--           ]],
+		-- 	config = {
+		-- 		color = "teal",
+		-- 		invoke_on_body = true,
+		-- 		hint = {
+		-- 			position = "middle",
+		-- 			border = "rounded",
+		-- 		},
+		-- 	},
+		-- 	mode = "n",
+		-- 	body = "<leader>nt",
+		-- 	heads = {
+		-- 		{
+		-- 			"d",
+		-- 			function()
+		-- 				search_norg_files("x")
+		-- 			end,
+		-- 			desc = "done tasks",
+		-- 		},
+		-- 		{
+		-- 			"u",
+		-- 			function()
+		-- 				search_norg_files(" ")
+		-- 			end,
+		-- 			desc = "undone tasks",
+		-- 		},
+		-- 		{
+		-- 			"i",
+		-- 			function()
+		-- 				search_norg_files("!")
+		-- 			end,
+		-- 			desc = "important tasks",
+		-- 		},
+		-- 		{ "q", nil, { exit = true } },
+		-- 		{ "<Esc>", nil, { exit = true } },
+		-- 	},
+		-- })
 	end,
-	-- keys = { "<leader>t" },
+	-- keys = { "<leader>nt" },
 	lazy = true,
 }

@@ -1,12 +1,10 @@
--- if not pcall(require, "harpoon") then
--- 	return
--- end
+-- going to use grapple instead
 return {
 	{
 		"ThePrimeagen/harpoon",
 		dependencies = { "nvim-lua/plenary.nvim" },
 		branch = "harpoon2",
-		enabled = true,
+		enabled = false,
 		opts = {
 			setting = {
 				save_on_toggle = true,

@@ -1,28 +1,23 @@
 return {
 	{
-		"RRethy/base16-nvim",
+		"jesseleite/nvim-noirbuddy",
+		dependencies = {
+			{ "tjdevries/colorbuddy.nvim" },
+		},
 		lazy = true,
+		priority = 1000,
+		opts = {
+			-- All of your `setup(opts)` will go here
+		},
 	},
 	{
-		"mcchrish/zenbones.nvim",
+		"sainttttt/flesh-and-blood",
 		lazy = true,
-		config = function()
-			vim.g.zenbones_compat = 1
-		end,
-	},
-	{
-		"kvrohit/mellow.nvim",
-		lazy = true,
-		config = function()
-			O = {
-				colorscheme = "mellow",
-				fn = "mellow",
-			}
-		end,
 	},
 	{
 		"oonamo/neovim",
 		name = "rose-pine",
+		lazy = true,
 		config = function()
 			require("rose-pine").setup({
 				-- variant = "",
@@ -72,12 +67,6 @@ return {
 		end,
 	},
 	{
-		"olivercederborg/poimandres.nvim",
-		config = true,
-		lazy = true,
-	},
-	{ "sainnhe/gruvbox-material", lazy = true },
-	{
 		"ellisonleao/gruvbox.nvim",
 		lazy = true,
 		opts = {
@@ -90,7 +79,9 @@ return {
 				DiagnosticSignWarn = { fg = "#fabd2f", bg = "#282828" },
 				DiagnosticSignHint = { fg = "#8ec07c", bg = "#282828" },
 				DiagnosticSignInfo = { fg = "#d3869b", bg = "#282828" },
-
+				Headline = { bg = "#282828", fg = "#d4be98" },
+				Headline2 = { bg = "#3e4934", fg = "#d4be98" },
+				Headline3 = { bg = "#722529", fg = "#d4be98" },
 				-- Normal = { bg = "#171717", fg = "#d4be98" },
 			},
 			-- transparent_mode = true,
@@ -103,23 +94,15 @@ return {
 	},
 	{
 		"rebelot/kanagawa.nvim",
-		lazy = true,
 		opts = {
-			transparent = false,
-			colors = {
-				theme = {
-					all = {
-						ui = {
-							bg_gutter = "none",
-						},
-					},
-				},
-			},
+			overrides = function(colors)
+				return {
+					Headline = { bg = colors.waveRed, fg = colors.sumiInk6 },
+					Headline2 = { bg = colors.autumnGreen, fg = colors.sumiInk6 },
+					Headline3 = { bg = colors.lightBlue, fg = colors.sumiInk6 },
+				}
+			end,
 		},
-	},
-	{
-		"chrsm/paramount-ng.nvim",
-		dependencies = { "rktjmp/lush.nvim" },
 		lazy = true,
 	},
 }

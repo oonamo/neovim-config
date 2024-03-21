@@ -9,6 +9,7 @@ return {
 			sessions = {
 				{
 					"~/Documents/School/spring2024",
+					name = "neorg",
 					after = function()
 						vim.schedule(function()
 							vim.cmd("Neorg index")
@@ -16,25 +17,31 @@ return {
 						end)
 					end,
 				},
-				"~/Desktop/DB",
-				"~/AppData/Local/nvim",
+				{
+					"~/Desktop/DB/DB",
+					name = "obsidian",
+					after = function()
+						vim.schedule(function()
+							vim.cmd("e base.md")
+						end)
+					end,
+				},
+				{ "~/AppData/Local/nvim", name = "nvim config" },
+				{ "~/projects/cs216", name = "cs216" },
+				{ "~/.glaze-wm", name = "glaze-wm" },
 				"~/projects",
-				"~/.glaze-wm",
-				"~/projects/cs216",
 				"~/.config",
-				"~/Arduino/projects",
-				os.getenv("OBSIDIAN_VAULT") or "",
 			},
 			term_cd = true,
 		},
 		keys = {
 			{ "<leader>ms", "<cmd>ManageMySessions<cr>", desc = "[M]anage My [S]essions" },
-			-- {
-			-- 	"<leader>mf",
-			-- 	function()
-			-- 		require("manage_my_sessions.fzf.sessions"):run()
-			-- 	end,
-			-- },
+			{
+				"<leader>mf",
+				function()
+					require("manage_my_sessions.fzf.sessions"):run()
+				end,
+			},
 		},
 	},
 }

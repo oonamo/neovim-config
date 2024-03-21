@@ -1,6 +1,7 @@
 return {
 	"Exafunction/codeium.vim",
 	event = { "InsertEnter" },
+	ft = { "!markdown", "!norg" },
 	init = function()
 		vim.g.codeium_render = true
 		vim.g.codeium_filetypes = {

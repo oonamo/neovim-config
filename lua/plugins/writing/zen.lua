@@ -9,7 +9,7 @@ return {
 				-- * an absolute number of cells when > 1
 				-- * a percentage of the width / height of the editor when <= 1
 				-- * a function that returns the width or the height
-				width = 70, -- width of the Zen window
+				width = 80, -- width of the Zen window
 				height = 1, -- height of the Zen window
 				-- by default, no options are changed for the Zen window
 				-- uncomment any of the options below, or add other vim.wo options you want to apply
@@ -32,10 +32,10 @@ return {
 					showcmd = false, -- disables the command in the last line of the screen
 					-- you may turn on/off statusline in zen mode by setting 'laststatus'
 					-- statusline will be shown only if 'laststatus' == 3
-					laststatus = 3, -- turn off the statusline in zen mode
+					laststatus = 0, -- turn off the statusline in zen mode
 					colorcolumn = false,
 				},
-				twilight = { enabled = false }, -- enable to start Twilight when zen mode opens
+				twilight = { enabled = true }, -- enable to start Twilight when zen mode opens
 				gitsigns = { enabled = true }, -- disables git signs
 				tmux = { enabled = false }, -- disables the tmux statusline
 				-- this will change the font size on kitty when in zen mode
@@ -56,9 +56,9 @@ return {
 				-- this will change the font size on wezterm when in zen mode
 				-- See alse also the Plugins/Wezterm section in this projects README
 				wezterm = {
-					enabled = false,
+					enabled = true,
 					-- can be either an absolute font size or the number of incremental steps
-					font = "+1", -- (10% increase per step)
+					font = "+3", -- (10% increase per step)
 				},
 			},
 			-- callback where you can add custom code when the Zen window opens
@@ -66,8 +66,17 @@ return {
 			-- callback where you can add custom code when the Zen window closes
 			on_close = function() end,
 		},
+		keys = {
+			{
+				"<leader>fm",
+				function()
+					vim.cmd("ZenMode")
+					vim.cmd("TimerStart 30m")
+				end,
+				desc = "Toggle Zen Mode",
+			},
+		},
 	},
-	-- Lua
 	{
 		"folke/twilight.nvim",
 		cmd = "Twilight",

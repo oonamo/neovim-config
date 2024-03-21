@@ -10,8 +10,7 @@ local fmta = require("luasnip.extras.fmt").fmta
 local rep = require("luasnip.extras").rep
 local c = ls.choice_node
 
-local tex = require("luasnip-latex-snippets.luasnippets.tex.utils.conditions")
-vim.notify("math snippets loaded", vim.log.levels.INFO)
+vim.notify("markdown snippets loaded", vim.log.levels.INFO)
 
 local snippets, autosnippets = {}, {}
 ---@param count number
@@ -89,7 +88,6 @@ autosnippets = {
 			}
 		)
 	),
-	s({ trig = "frc", regTrig = true }, fmta("\\frac{<>}{<>}", { i(1), i(2) }, { condition = tex.math_mode })),
 	s({ trig = "(.+)/(.+);", regTrig = true }, {
 		f(function(_, snip)
 			return "\\frac{" .. snip.captures[1] .. "}{" .. snip.captures[2] .. "}"
@@ -102,7 +100,7 @@ autosnippets = {
 	-- 	end)
 	-- ),
 	s(
-		"init",
+		";;init",
 		fmta(
 			[[
 \documentclass{article}

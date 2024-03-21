@@ -6,7 +6,7 @@ return {
 		-- require("alpha").setup(require("alpha.themes.startify").config)
 		local alpha = require("alpha")
 		local dashboard = require("alpha.themes.dashboard")
-		local obsidian = os.getenv("OBSIDIAN_VAULT") or "~/notes"
+		local obsidian = "C:/Users/onam7/Desktop/DB/DB/"
 
 		dashboard.section.header.val = {
 			[[ ▐ ▄ ▄▄▄ .       ▌ ▐·▪  • ▌ ▄ ·. ]],
@@ -17,12 +17,9 @@ return {
 		}
 
 		dashboard.section.buttons.val = {
-			dashboard.button("f", " " .. " Find file", ":FzfLua find_files <CR>"),
-			dashboard.button("e", " " .. " New file", ":ene <BAR> startinsert <CR>"),
-			dashboard.button("r", " " .. " Recent files", ":FzfLua oldfiles <CR>"),
-			dashboard.button("t", " " .. " Find text", ":FzfLua live_grep <CR>"),
-			dashboard.button("o", " " .. " Open Obsidian", ":cd " .. obsidian .. " | e .<CR>"),
-			dashboard.button("n", " " .. " Open neorg for school", ":cd ~/Documents/School/ |  Neorg index<CR>"),
+			dashboard.button("f", " " .. " Find file", ":FzfLua files<CR>"),
+			dashboard.button("s", " " .. " Manage My Sessions", "<cmd>ManageMySessions<CR>"),
+			dashboard.button("o", " " .. " Open Obsidian", ":cd " .. obsidian .. " | e base.md<CR>"),
 			dashboard.button("q", " " .. " Quit", ":qa<CR>"),
 		}
 

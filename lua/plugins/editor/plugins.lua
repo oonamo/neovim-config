@@ -1,22 +1,16 @@
 return {
 	{
-		"JoosepAlviste/nvim-ts-context-commentstring",
-		lazy = true,
-		opts = {
-			enable_autocmd = false,
-		},
-	},
-	{
 		"numToStr/Comment.nvim",
 		dependencies = {},
 		opts = {},
 		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
+		keys = { "gcc" },
 	},
 	{
 		"xiyaowong/transparent.nvim",
-		config = true,
-		lazy = true,
+		lazy = false,
 		cmd = { "TransparentEnable", "TransparentDisable" },
+		cond = vim.g.neovide == nil,
 		opts = {
 			exclude_groups = {
 				"CursorLine",

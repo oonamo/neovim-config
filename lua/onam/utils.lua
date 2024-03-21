@@ -177,7 +177,7 @@ end
 function utils.brighten(color, percent, property)
 	local ok, hl = pcall(vim.api.nvim_get_hl_by_name, color, true)
 	if not ok then
-		vim.notify("Invalid color: " .. color)
+		-- vim.notify("Invalid color: " .. color)
 		return "#000000"
 	end
 	local result = {}
@@ -190,8 +190,11 @@ function utils.brighten(color, percent, property)
 	end
 
 	local r, g, b = to_rgb(result[property or "foreground"])
+	---@diagnostic disable-next-line: param-type-mismatch
 	r = clamp_color(math.floor(tonumber(r * (100 + percent) / 100)))
+	---@diagnostic disable-next-line: param-type-mismatch
 	g = clamp_color(math.floor(tonumber(g * (100 + percent) / 100)))
+	---@diagnostic disable-next-line: param-type-mismatch
 	b = clamp_color(math.floor(tonumber(b * (100 + percent) / 100)))
 
 	local rgb = "#" .. fmt("%0x", r) .. fmt("%0x", g) .. fmt("%0x", b)

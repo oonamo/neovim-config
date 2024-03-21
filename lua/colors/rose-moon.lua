@@ -1,12 +1,11 @@
 local M = {}
 M.colors = {
-	bg = "#191724",
+	bg = "#232136",
 }
-
 function M.setup()
 	O.colorscheme = "rose-pine"
 	require("rose-pine").setup({
-		-- variant = "moon",
+		variant = "moon",
 		styles = {
 			bold = true,
 			italic = true,
