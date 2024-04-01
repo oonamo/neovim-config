@@ -12,13 +12,12 @@ if not vim.loop.fs_stat(lazypath) then
 end
 
 vim.opt.rtp:prepend(lazypath)
-
 vim.g.MUtils = {}
 G = {}
 
 require("onam.remap")
 require("onam.utils")
-require("onam.set") -- Set before theme and stausline
+require("onam.set")
 
 require("lazy").setup({
 	spec = {
@@ -33,7 +32,5 @@ require("lazy").setup({
 	},
 })
 
-require("onam.color_switcher").setup_persistence()
-require("onam.statusline")
-require("onam.winbar")
+require("onam.theme_switcher").init()
 utils:create_hl()

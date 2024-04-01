@@ -23,8 +23,7 @@ M.colors = {
 }
 
 function M.setup(_)
-	O.colorscheme = "rose-pine"
-	O.fn = "grim-pine"
+	vim.opt.cursorline = true
 	require("rose-pine").setup({
 		styles = {
 			bold = true,
@@ -108,7 +107,6 @@ function M.setup_pmenu()
 	}
 	utils:create_pmenu()
 end
-
 function M.preview()
 	vim.cmd("colorscheme " .. O.colorscheme)
 end

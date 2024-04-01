@@ -1,0 +1,3 @@
+local tabline = {}
+
+return tabline

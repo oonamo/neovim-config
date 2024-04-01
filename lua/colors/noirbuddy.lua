@@ -4,8 +4,8 @@ M.colors = {
 }
 
 function M.setup()
-	O.colorscheme = "noirbuddy"
-	O.fn = "noirbuddy"
+	vim.cmd.hi("clear")
+	vim.opt.cursorline = true
 	require("noirbuddy").setup()
 end
 

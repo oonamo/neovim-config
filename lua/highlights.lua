@@ -1,19 +1,14 @@
 local M = {}
-function M.setup(light)
-	if O.fn == nil then
-		print("O.fn is nil")
-		return
-	end
+function M.setup(fn, flavour)
+	local utils = require("onam.utils")
+	local colors = require("colors." .. fn)
 
-	if light then
-		vim.opt.background = "light"
-	else
-		vim.opt.background = "dark"
-	end
-
-	local colors = require("colors." .. O.fn)
-	colors.setup()
+	colors.setup(flavour)
 	local c = colors.colors
+	if not c then
+		c = {}
+	end
+
 	if vim.g.use_custom_statusline == true then
 		utils.statuscolors = {
 			opts = {
@@ -30,9 +25,9 @@ function M.setup(light)
 				{ "HarpoonInactive", { bg = c.green, blend = 10, fg = "#000000" } },
 			},
 		}
-
 		utils:create_statusline()
 	end
+
 	if vim.g.neovide and c.bg then
 		vim.api.nvim_set_hl(0, "Normal", { bg = c.bg })
 		vim.api.nvim_set_hl(0, "NormalFloat", { bg = c.bg })
@@ -40,16 +35,17 @@ function M.setup(light)
 
 	---Override Defaults
 	if colors.setup_status ~= nil then
-		colors.setup_status()
+		colors.setup_status(flavour)
 	end
 
 	if colors.setup_pmenu ~= nil then
-		colors.setup_pmenu()
+		colors.setup_pmenu(flavour)
 	end
 	vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", { undercurl = true, sp = "#ff0000" })
 	vim.api.nvim_set_hl(0, "DiagnosticUnderlineWarn", { undercurl = true, sp = "#ffff00" })
 	vim.api.nvim_set_hl(0, "DiagnosticUnderlineInfo", { undercurl = true, sp = "#00ffff" })
 	vim.api.nvim_set_hl(0, "DiagnosticUnderlineHint", { undercurl = true, sp = "#00ff00" })
+	-- require("heirline.utils").on_colorscheme(require("heirline-components.all").hl.get_colors())
 end
 
 return M

@@ -60,7 +60,7 @@ return {
 				if local_file ~= nil then
 					vim.cmd("e " .. local_file)
 				else
-					vim.fn.jobstart({ url })
+					vim.fn.jobstart({ "explorer", url })
 				end
 			end,
 			picker = {
@@ -72,10 +72,12 @@ return {
 				enter_note = function()
 					vim.schedule(function()
 						vim.cmd("SoftWrapMode")
+						vim.opt.shiftwidth = 2
 					end)
 				end,
 				post_setup = function()
 					vim.cmd("set spell")
+					require("grapple").use_scope("obsidian")
 				end,
 			},
 

@@ -1,10 +1,9 @@
 return {
 	{
 		"andrewferrier/wrapping.nvim",
-		config = function()
-			require("wrapping").setup()
-			local utils = require("onam.utils")
-		end,
+		opts = {
+			notify_on_switch = false,
+		},
 		lazy = true,
 		cmd = { "SoftWrapMode", "HardWrapMode" },
 		keys = { "[ow", "]ow" },

@@ -1,16 +1,8 @@
 return {
 	{
-		"iamcco/markdown-preview.nvim",
-		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-		build = "cd app && npm install",
-		init = function()
-			vim.g.mkdp_filetypes = { "markdown" }
-		end,
-		ft = { "markdown" },
-	},
-	{
 		"lukas-reineke/headlines.nvim",
 		dependencies = "nvim-treesitter/nvim-treesitter",
+		enabled = false,
 		ft = { "norg", "markdown", "org" },
 		opts = {
 			headline_highlights = { "Headline", "Headline2", "Headline3" },
@@ -24,8 +16,8 @@ return {
 			rmd = {},
 		},
 		config = function(_, opts)
-			local _, has_highlight = pcall(require, vim.api.nvim_get_hl_by_name, "Headline")
-			if not has_highlight then
+			local has_highlight, res = pcall(vim.api.nvim_get_hl, 0, { name = "Headline" })
+			if has_highlight and res.bg == nil then
 				for i, v in ipairs(opts.headline_highlights) do
 					-- local md_hl = vim.api.nvim_get_hl_by_name("markdownH" .. i, true)
 					local hl = "markdownH" .. i
@@ -37,7 +29,6 @@ return {
 						md_hl.bg = utils.brighten(hl, 80)
 					end
 					if #md_hl.bg < 7 then
-						print(md_hl.bg)
 						md_hl.bg = md_hl.bg .. string.sub(md_hl.bg, string.len(md_hl.bg))
 					end
 					vim.api.nvim_set_hl(0, v, { bg = md_hl.bg, fg = "NONE" })
@@ -65,6 +56,16 @@ return {
 		end,
 	},
 	{
+		"MeanderingProgrammer/markdown.nvim",
+		name = "render-markdown", -- Only needed if you have another plugin named markdown.nvim
+		dependencies = { "nvim-treesitter/nvim-treesitter" },
+		ft = { "markdown" },
+		opts = {
+			headings = { "❯", "❯", "❯", "❯", "❯", "❯" },
+			bullet = "",
+		},
+	},
+	{
 		"dhruvasagar/vim-table-mode",
 		ft = { "markdown" },
 		keys = { "<leader>tm" },
@@ -84,13 +85,15 @@ return {
 		keys = {
 			{
 				"<leader>nt",
-				"<cmd>lua require('nabla').popup()<cr>",
+				function()
+					require("nabla").popup()
+				end,
 				desc = "nabla",
 			},
 			{
 				"<leader>nv",
 				function()
-					require("nabla").toggle_virt()
+					require("nabla").toggle_virt({ align_center = true })
 				end,
 				desc = "nabla",
 			},

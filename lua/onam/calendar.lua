@@ -82,6 +82,7 @@ local function zellers_congruence(month, year)
 	-- return 1 + floor((13(month + 1)) / 5) + k + floor(k / 4) + floor(j / 4) - 2 * j) % 7
 	return (1 + floor((13 * (month + 1)) / 5) + k + floor(k / 4) + floor(j / 4) - 2 * j) % 7
 end
+
 local round = function(x)
 	return math.floor(x + 0.5)
 end

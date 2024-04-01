@@ -15,6 +15,7 @@ return {
 				json = { "prettier" },
 				yaml = { "prettier" },
 				markdown = { "prettier" },
+				cpp = { "clang-format" },
 			},
 			timeout_ms = 500,
 

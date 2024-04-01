@@ -57,10 +57,86 @@ M.colors = {
 	gray = "#928374",
 }
 
-function M.setup(opts)
-	O.colorscheme = "gruvbox"
-	vim.opt.background = "dark"
+function M.setup(flavour)
+	vim.cmd.hi("clear")
+	vim.o.background = flavour[1] or "dark"
+	vim.opt.cursorline = true
+	local opts = {
+		contrast = flavour[2],
+		undercurl = true,
+		underline = true,
+		bold = true,
+		italic = {
+			comments = true,
+			strings = true,
+			emphasis = true,
+			operators = true,
+			folds = true,
+		},
+		strikethrough = true,
+		inverse = false,
+		invert_selection = true,
+		invert_signs = true,
+		invert_tabline = true,
+		invert_intend_guides = true,
+	}
+	local colors = {}
+	if vim.o.background == "dark" then
+		-- opts.overrides = {
+		-- 	SignColumn = { bg = "#282828" },
+		-- 	NvimTreeCutHL = { fg = "#fb4934", bg = "#282828" },
+		-- 	NvimTreeCopiedHL = { fg = "#b8bb26", bg = "#282828" },
+		-- 	DiagnosticSignError = { fg = "#fb4934", bg = "#282828" },
+		-- 	DiagnosticSignWarn = { fg = "#fabd2f", bg = "#282828" },
+		-- 	DiagnosticSignHint = { fg = "#8ec07c", bg = "#282828" },
+		-- 	DiagnosticSignInfo = { fg = "#d3869b", bg = "#282828" },
+		-- 	Headline = { bg = "#282828", fg = "#d4be98" },
+		-- 	Headline2 = { bg = "#3e4934", fg = "#d4be98" },
+		-- 	Headline3 = { bg = "#722529", fg = "#d4be98" },
+		-- 	CursorLine = { bg = "#262626" }, -- fg = "#d7d7ff" } },
+		-- 	CursorLineNr = { fg = "#d7d7ff" },
+		-- }
+		colors = {
+			none = "NONE",
+			fg = "#d7d7ff",
+			bg = "#282828",
+			dark_bg = "#2c323c",
+			blue = "#61afef",
+			green = "#98c379",
+			grey = "#5c6370",
+			bright_grey = "#777d86",
+			dark_grey = "#5c5c5c",
+			orange = "#ff9640",
+			purple = "#c678dd",
+			bright_purple = "#a9a1e1",
+			red = "#e06c75",
+			bright_red = "#ec5f67",
+			white = "#c9c9c9",
+			yellow = "#e5c07b",
+			bright_yellow = "#ebae34",
+		}
+	else
+		colors = {
+			none = "NONE",
+			fg = "#d7d7ff",
+			bg = "#d7d7ff",
+			dark_bg = "#2c323c",
+			blue = "#61afef",
+			green = "#98c379",
+			grey = "#5c6370",
+			bright_grey = "#777d86",
+			dark_grey = "#5c5c5c",
+			orange = "#ff9640",
+			purple = "#c678dd",
+			bright_purple = "#a9a1e1",
+			red = "#e06c75",
+			bright_red = "#ec5f67",
+			white = "#c9c9c9",
+			yellow = "#e5c07b",
+			bright_yellow = "#ebae34",
+		}
+	end
 	require("gruvbox").setup(opts)
-	vim.cmd("colorscheme " .. O.colorscheme)
+	vim.cmd.colorscheme("gruvbox")
 end
 return M

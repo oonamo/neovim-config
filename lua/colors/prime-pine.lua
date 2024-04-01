@@ -20,10 +20,9 @@ M.colors = {
 
 -- test.nvim_set_hl(0, "CursorLine", { bg = M.colors.bg, blend = 40 })
 function M.setup()
-	O.colorscheme = "rose-pine"
-	O.fn = M.fn
-	vim.cmd("colorscheme " .. O.colorscheme)
+	vim.cmd.colorscheme("rose-pine")
 	vim.opt.cursorline = true
+	vim.o.background = "dark"
 	utils.hl = {
 		opts = {
 			{ "@keyword", { fg = M.colors.green } },

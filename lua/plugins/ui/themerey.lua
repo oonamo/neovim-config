@@ -1,13 +1,35 @@
 return {
 	{
-		"jesseleite/nvim-noirbuddy",
-		dependencies = {
-			{ "tjdevries/colorbuddy.nvim" },
-		},
+		"AstroNvim/astrotheme",
 		lazy = true,
-		priority = 1000,
 		opts = {
-			-- All of your `setup(opts)` will go here
+			background = { -- :h background, palettes to use when using the core vim background colors
+				light = "astrolight",
+				dark = "astrodark",
+			},
+			palettes = {
+				astrolight = {
+					ui = {
+						base = "#feeeee",
+					},
+				},
+			},
+			highlights = {
+				astrolight = {
+					CursorLineNr = { fg = "#ead0dd" },
+					CursorLine = { bg = "#E8E9EA" },
+				},
+			},
+			style = {
+				transparent = false, -- Bool value, toggles transparency.
+				inactive = false, -- Bool value, toggles inactive window color.
+				float = true, -- Bool value, toggles floating windows background colors.
+				neotree = false, -- Bool value, toggles neo-trees background color.
+				border = true, -- Bool value, toggles borders.
+				title_invert = true, -- Bool value, swaps text and background colors.
+				italic_comments = true, -- Bool value, toggles italic comments.
+				simple_syntax_colors = true, -- Bool value, simplifies the amounts of colors used for syntax highlighting.
+			},
 		},
 	},
 	{
@@ -24,7 +46,7 @@ return {
 				styles = {
 					bold = true,
 					italic = true,
-					transparency = true,
+					transparency = false,
 				},
 				highlight_groups = {
 					-- _nc = "#16141f",
@@ -57,52 +79,27 @@ return {
 		end,
 	},
 	{
-		"yorik1984/newpaper.nvim",
-		lazy = true,
-		config = function()
-			O = {
-				colorscheme = "newpaper",
-				fn = "newpaper",
-			}
-		end,
-	},
-	{
 		"ellisonleao/gruvbox.nvim",
 		lazy = true,
-		opts = {
-			overrides = {
-				-- THIS BLOCK
-				SignColumn = { bg = "#282828" },
-				NvimTreeCutHL = { fg = "#fb4934", bg = "#282828" },
-				NvimTreeCopiedHL = { fg = "#b8bb26", bg = "#282828" },
-				DiagnosticSignError = { fg = "#fb4934", bg = "#282828" },
-				DiagnosticSignWarn = { fg = "#fabd2f", bg = "#282828" },
-				DiagnosticSignHint = { fg = "#8ec07c", bg = "#282828" },
-				DiagnosticSignInfo = { fg = "#d3869b", bg = "#282828" },
-				Headline = { bg = "#282828", fg = "#d4be98" },
-				Headline2 = { bg = "#3e4934", fg = "#d4be98" },
-				Headline3 = { bg = "#722529", fg = "#d4be98" },
-				-- Normal = { bg = "#171717", fg = "#d4be98" },
-			},
-			-- transparent_mode = true,
-			contrast = "hard",
-			bold = true,
-		},
-		config = function(_, opts)
-			require("gruvbox").setup(opts)
-		end,
 	},
 	{
 		"rebelot/kanagawa.nvim",
-		opts = {
-			overrides = function(colors)
-				return {
-					Headline = { bg = colors.waveRed, fg = colors.sumiInk6 },
-					Headline2 = { bg = colors.autumnGreen, fg = colors.sumiInk6 },
-					Headline3 = { bg = colors.lightBlue, fg = colors.sumiInk6 },
-				}
-			end,
-		},
+		lazy = true,
+	},
+	{
+		"comfysage/evergarden",
+		lazy = true,
+	},
+	{
+		"EdenEast/nightfox.nvim",
+		lazy = true,
+	},
+	{
+		"catppuccin/nvim",
+		lazy = true,
+	},
+	{
+		"mcauley-penney/ice-cave.nvim",
 		lazy = true,
 	},
 }

@@ -6,6 +6,7 @@ local Win_id
 
 ---@class Colorscheme
 ---@field index string
+---@field flavour string
 ---@field colors string[]
 
 ---@class ColorSwitcher
@@ -29,6 +30,7 @@ end
 M.colorschemes = {
 	index = "grim-pine",
 	use_light = false,
+	flavour = "grim-pine",
 	colors = {
 		"prime-pine",
 		"kanagawa",
@@ -40,33 +42,47 @@ M.colorschemes = {
 		"rose-light",
 		"flesh-and-blood",
 		"noirbuddy",
+		"astro",
 	},
 }
 
-M.light_colorschemes = {
-	index = "rose-light",
+M.flavours = {
+	index = "roses",
+	use_light = false,
 	colors = {
-		"everforest",
-		"gruvbox",
-		"gruvbox-material",
-		"paramount",
-		"rose-light",
+		{ "rose", name = "rose-pine*", flavours = { "", "prime", "dawn" } },
+		{ "kanagawa", name = "kanagawa*", flavours = { "kanagawa-wave", "kanagawa-dragon", "kanagawa-lotus" } },
+		{ "gruvbox", name = "gruvbox*", flavours = { { "dark", "soft" }, { "light", "soft" } } },
+		{ "noirbuddy", name = "noirbuddy*" },
+		{ "astro", name = "astro*" },
+		{ "everforest", name = "everforest*", flavours = { "medium", "hard", "soft" } },
 	},
 }
 
-M.base16_colors = {
-	index = "irblack",
-	colors = {
-		"mocha",
-		"ashes",
-		"chalk",
-		"decaf",
-		"porple",
-		"circus",
-		"qualia",
-		"irblack",
-	},
-}
+-- M.light_colorschemes = {
+-- 	index = "rose-light",
+-- 	colors = {
+-- 		"everforest",
+-- 		"gruvbox",
+-- 		"gruvbox-material",
+-- 		"paramount",
+-- 		"rose-light",
+-- 	},
+-- }
+
+-- M.base16_colors = {
+-- 	index = "irblack",
+-- 	colors = {
+-- 		"mocha",
+-- 		"ashes",
+-- 		"chalk",
+-- 		"decaf",
+-- 		"porple",
+-- 		"circus",
+-- 		"qualia",
+-- 		"irblack",
+-- 	},
+-- }
 
 M.wezterm_sync = function(colorscheme, light)
 	local file_path = vim.fn.expand("~") .. "/.config/wezterm/colorscheme"
@@ -101,8 +117,10 @@ end
 
 ---@param state State
 M.save_state = function(state)
-	local file_path = persistance_path()
-	vim.fn.writefile({ vim.json.encode(state) }, file_path)
+	if not vim.g.neovide then
+		local file_path = persistance_path()
+		vim.fn.writefile({ vim.json.encode(state) }, file_path)
+	end
 end
 
 ---@param use_base16 boolean?
@@ -127,17 +145,20 @@ local function create_plenary_popup(use_base16, light)
 					M.light_colorschemes.index = choice
 				else
 					M.colorschemes.index = choice
+					M.colorschemes.flavour = M.colorschemes.colors[choice]
 				end
 				M.prefer_base16 = false
 			end
-			M.save_state({
-				prefer_base16 = M.prefer_base16,
-				base16_colors = M.base16_colors,
-				colorschemes = M.colorschemes,
-				light_colorschemes = M.light_colorschemes,
-				prefer_light = light or false,
-			})
-			M.wezterm_sync(choice, light)
+			if not vim.g.neovide then
+				M.save_state({
+					prefer_base16 = M.prefer_base16,
+					base16_colors = M.base16_colors,
+					colorschemes = M.colorschemes,
+					light_colorschemes = M.light_colorschemes,
+					prefer_light = light or false,
+				})
+				M.wezterm_sync(choice, light)
+			end
 		end
 	end
 
@@ -176,16 +197,55 @@ M.show_plenary_popup = function(use_base16, light)
 	create_plenary_popup(use_base16, light)
 end
 
+---@class FlavourOpts
+-- -@field name string
+-- -@field flavours string[]
+-- -@field toggle fun(flavour: string)?
+local color_state = {}
+---@param opts table
+local function change_flavour(opts)
+	if opts.name == color_state.name then
+		return
+	end
+	color_state.name = opts.name
+	color_state.current = 1
+	vim.keymap.set("n", "<leader>cf", function()
+		color_state.current = color_state.current == #opts.flavours and 1 or color_state.current + 1
+		local flavour = opts.flavours[color_state.current]
+		if opts.toggle then
+			opts.toggle(flavour)
+		else
+			require("highlights").setup(flavour)
+		end
+	end)
+end
 M.setup_persistence = function()
 	local state = M.load_state()
-	local light = state.prefer_light
 	O.fn = state.colorschemes.index
 	if state.prefer_base16 then
 		vim.cmd("colorscheme base16-" .. state.base16_colors.index)
 	else
-		require("highlights").setup(light)
+		require("highlights").setup(state.colorschemes.flavour)
+		change_flavour({
+			name = state.colorschemes.flavour,
+			flavours = state.colorschemes.colors,
+			toggle = function(flavour)
+				require("highlights").setup(flavour)
+			end,
+		})
 	end
 	G.__color_loaded = true
+end
+
+---@param pattern string|table
+---@param opts FlavourOpts
+function M.add_flavour(pattern, opts)
+	vim.api.nvim_create_autocmd("ColorScheme", {
+		pattern = type(pattern) == "string" and { pattern } or pattern,
+		callback = function()
+			change_flavour(opts)
+		end,
+	})
 end
 
 return M

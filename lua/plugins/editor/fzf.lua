@@ -8,21 +8,55 @@ return {
 			-- "fzf-native",
 			"telescope",
 			winopts = {
-				hls = {},
+				hls = {
+					normal = "TelescopeNormal", -- FzfLuaNormal 	hls.normal 	Main win fg/bg
+					border = "TelescopeBorder", -- FzfLuaBorder 	hls.border 	Main win border
+					title = "TelescopeTitle", -- FzfLuaTitle 	hls.title 	Main win title
+					preview_normal = "TelescopePreviewNormal", -- FzfLuaPreviewNormal 	hls.preview_normal 	Builtin preview fg/bg
+					preview_border = "TelescopePreviewBorder", -- FzfLuaPreviewBorder 	hls.preview_border 	Builtin preview border
+					preview_title = "TelescopePreviewTitle", -- FzfLuaPreviewTitle 	hls.preview_title 	Builtin preview title
+					cursor = "Cursor", -- FzfLuaCursor 	hls.cursor 	Builtin preview Cursor
+					cursorline = "TelescopePreviewLine", -- FzfLuaCursorLine 	hls.cursorline 	Builtin preview Cursorline
+					cursorlinenr = "CursorLineNr", -- FzfLuaCursorLineNr 	hls.cursorlinenr 	Builtin preview CursorLineNr
+					search = "IncSearch", -- FzfLuaSearch 	hls.search 	Builtin preview search matches
+					scrollborder = "FzfLuaBorder", -- FzfLuaScrollBorderEmpty 	hls.scrollborder_e 	Builtin preview border scroll empty
+					-- link = "FzfLuaBorder", -- FzfLuaScrollBorderFull 	hls.scrollborder_f 	Builtin preview border scroll full
+					-- link = "PmenuSbar", -- FzfLuaScrollFloatEmpty 	hls.scrollfloat_e 	Builtin preview float scroll empty
+					-- link = "PmenuThumb", -- FzfLuaScrollFloatFull 	hls.scrollfloat_f 	Builtin preview float scroll full
+					-- link = "FzfLuaNormal", -- FzfLuaHelpNormal 	hls.help_normal 	Help win fg/bg
+					-- link = "FzfLuaBorder", -- FzfLuaHelpBorder 	hls.help_border 	Help win border
+					-- link = "TelescopeResultsNormal", -- FzfLuaHeaderBind 	hls.header_bind 	Header keybind
+					-- link = "TelescopeResultsTitle", -- FzfLuaHeaderText 	hls.header_text 	Header text
+				},
+				fzf_colors = {
+					["hl"] = { "fg", "TelescopeMatching" },
+					["fg+"] = { "fg", "TelescopeSelection" },
+					["bg+"] = { "bg", "TelescopeSelection" },
+					["hl+"] = { "fg", "TelescopeMatching" },
+					["info"] = { "fg", "TelescopeCounter" },
+					["prompt"] = { "fg", "TelescopePrefix" },
+					["pointer"] = { "fg", "TelescopeSelectionCaret" },
+					["marker"] = { "fg", "TelescopeMultiIcon" },
+				},
 				-- split = "aboveleft vnew",
 				-- split = "belowright new",
 				preview = {
 					-- default = 'bat_native',
-					border = "border",
-					layout = "flex",
-					horizontal = "right:70%",
-					vertical = "up:50%",
+					-- border = "border",
+					layout = "vertical",
+					-- horizontal = "right:70%",
+					-- vertical = "up:50%",
 					-- using winopts_fn to set truncation
 					-- flip_columns = truncation.truncation_limit_s_terminal
 					-- builtin previewer
 					scrollbar = false,
 					delay = 50,
+					border = "border",
 				},
+				height = 0.85, -- window height
+				width = 0.80, -- window width
+				row = 0.35, -- window row position (0=top, 1=bottom)
+				col = 0.50, -- window col position (0=left, 1=right)
 			},
 			keymap = {
 				builtin = {
@@ -56,7 +90,44 @@ return {
 				},
 			},
 			fzf_opts = {
+				-- 	["--ansi"] = "",
+				-- 	["--info"] = "inline",
+				-- 	["--height"] = "100%",
 				["--layout"] = "reverse",
+				-- 	["--border"] = "none",
+				-- 	["--prompt"] = "❯",
+				-- 	["--pointer"] = "❯",
+				-- 	["--marker"] = "❯",
+				-- 	["--no-scrollbar"] = "",
+			},
+			-- fzf_colors = {
+			-- 	["fg"] = { "fg", "FzfLuaColorsFg" },
+			-- 	["fg+"] = { "fg", "FzfLuaColorsFgSel", "reverse:-1" },
+			-- 	["bg"] = { "fg", "FzfLuaColorsBg" },
+			-- 	["bg+"] = { "fg", "FzfLuaColorsBgSel" },
+			-- 	["hl"] = { "fg", "FzfLuaColorsHl" },
+			-- 	["hl+"] = { "fg", "FzfLuaColorsHlSel", "underline:reverse:-1" },
+			-- 	["info"] = { "fg", "FzfLuaColorsInfo" },
+			-- 	["prompt"] = { "fg", "FzfLuaColorsPrompt" },
+			-- 	["pointer"] = { "fg", "FzfLuaColorsPointer" },
+			-- 	["marker"] = { "fg", "FzfLuaColorsMarker" },
+			-- 	["spinner"] = { "fg", "FzfLuaColorsSpinner" },
+			-- 	["header"] = { "fg", "FzfLuaColorsHeader" },
+			-- },
+			fzf_colors = {
+				["fg"] = { "fg", "CursorLine" },
+				["bg"] = { "bg", "Normal" },
+				["hl"] = { "fg", "Comment" },
+				["fg+"] = { "fg", "Normal" },
+				["bg+"] = { "bg", "CursorLine" },
+				["hl+"] = { "fg", "Statement" },
+				["info"] = { "fg", "PreProc" },
+				["prompt"] = { "fg", "Conditional" },
+				["pointer"] = { "fg", "Exception" },
+				["marker"] = { "fg", "Keyword" },
+				["spinner"] = { "fg", "Label" },
+				["header"] = { "fg", "Comment" },
+				["gutter"] = { "bg", "Normal" },
 			},
 			files = {
 				actions = {
@@ -67,6 +138,7 @@ return {
 	end,
 	config = function(_, opts)
 		require("fzf-lua").setup(opts)
+		require("onam.utils").create_fzf_lua_hls()
 		-- vim.cmd.FzfLua("register_ui_select")
 	end,
 	cond = vim.g.use_FZF,

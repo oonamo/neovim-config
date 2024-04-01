@@ -28,12 +28,9 @@ local function search(filter_item)
 		end,
 		actions = {
 			["default"] = function(selected)
-				print("selected: " .. selected[1])
 				selected = vim.split(selected[1], " ")
 				for _, item in ipairs(list) do
-					print(item.short_fn)
 					if item.short_fn == selected[1] then
-						print(item.file_path)
 						vim.schedule(function()
 							vim.cmd("e " .. item.file_path)
 							vim.schedule(function()
@@ -125,7 +122,6 @@ end
 function M.find_tasks(filter)
 	if filter == nil then
 		vim.ui.input({ prompt = "Filter: " }, function(input)
-			vim.print(input)
 			if input ~= nil or input ~= "" then
 				filter = input
 			else

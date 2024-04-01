@@ -1,6 +1,8 @@
 return {
-	"NvChad/nvim-colorizer.lua",
-	cmd = { "ColorizerToggle" },
+	"brenoprata10/nvim-highlight-colors",
+	cmd = { "HighlightColors" },
 	lazy = true,
-	config = true,
+	opts = {
+		render = "virtual",
+	},
 }

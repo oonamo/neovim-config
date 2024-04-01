@@ -3,21 +3,25 @@ local M = {}
 function M.setup_status_cmds()
 	utils.augroup("Statusline", {
 		{
-			events = { "CmdlineEnter", "CmdlineChanged", "BufWritePre" },
+			events = { "BufWritePost", "CmdlineLeave" },
+			targets = { "*" },
+			command = function()
+				vim.opt.cmdheight = 0
+				vim.schedule(function()
+					vim.cmd("redrawstatus!")
+				end)
+			end,
+		},
+		{
+			events = { "BufWritePre", "CmdlineEnter" },
 			targets = { "*" },
 			command = function()
 				vim.opt.cmdheight = 1
 			end,
 		},
-		{
-			events = { "CmdlineLeave", "BufWritePost", "InsertLeave" },
-			targets = { "*" },
-			command = function()
-				vim.opt.cmdheight = 0
-			end,
-		},
 	})
 end
+
 function M.setup_writing_cmds()
 	utils.augroup("Writing", {
 		{
@@ -38,6 +42,7 @@ function M.setup_writing_cmds()
 		},
 	})
 end
+
 function M.norg_autocmds()
 	-- utils.augroup("NorgAutocmds", {
 	-- 	{

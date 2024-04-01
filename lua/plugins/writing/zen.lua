@@ -9,7 +9,7 @@ return {
 				-- * an absolute number of cells when > 1
 				-- * a percentage of the width / height of the editor when <= 1
 				-- * a function that returns the width or the height
-				width = 80, -- width of the Zen window
+				width = 85, -- width of the Zen window
 				height = 1, -- height of the Zen window
 				-- by default, no options are changed for the Zen window
 				-- uncomment any of the options below, or add other vim.wo options you want to apply
@@ -32,10 +32,10 @@ return {
 					showcmd = false, -- disables the command in the last line of the screen
 					-- you may turn on/off statusline in zen mode by setting 'laststatus'
 					-- statusline will be shown only if 'laststatus' == 3
-					laststatus = 0, -- turn off the statusline in zen mode
+					laststatus = 3, -- turn off the statusline in zen mode
 					colorcolumn = false,
 				},
-				twilight = { enabled = true }, -- enable to start Twilight when zen mode opens
+				twilight = { enabled = false }, -- enable to start Twilight when zen mode opens
 				gitsigns = { enabled = true }, -- disables git signs
 				tmux = { enabled = false }, -- disables the tmux statusline
 				-- this will change the font size on kitty when in zen mode
@@ -55,11 +55,11 @@ return {
 				},
 				-- this will change the font size on wezterm when in zen mode
 				-- See alse also the Plugins/Wezterm section in this projects README
-				wezterm = {
-					enabled = true,
-					-- can be either an absolute font size or the number of incremental steps
-					font = "+3", -- (10% increase per step)
-				},
+				-- wezterm = {
+				-- 	enabled = true,
+				-- 	-- can be either an absolute font size or the number of incremental steps
+				-- 	font = "+3", -- (10% increase per step)
+				-- },
 			},
 			-- callback where you can add custom code when the Zen window opens
 			on_open = function(win) end,
@@ -71,7 +71,6 @@ return {
 				"<leader>fm",
 				function()
 					vim.cmd("ZenMode")
-					vim.cmd("TimerStart 30m")
 				end,
 				desc = "Toggle Zen Mode",
 			},
@@ -93,16 +92,22 @@ return {
 			-- treesitter is used to automatically expand the visible text,
 			-- but you can further control the types of nodes that should always be fully expanded
 			expand = { -- for treesitter, we we always try to expand to the top-most ancestor with these types
+				"atx_heading",
+				"atx_h1_marker",
+				"atx_h2_marker",
+				"atx_h3_marker",
+				"atx_h4_marker",
+				"atx_h5_marker",
+				"atx_h6_marker",
 				"function",
-				"ranged_verbatim_tag",
-				"heading1",
-				"@markup.heading.1.markdown",
-				-- "heading1_prefix",
 				"method",
 				"table",
 				"if_statement",
+				"paragraph",
+				"fenced_code_block",
+				"list",
 			},
-			exclude = { "tex", "latex" }, -- exclude these filetypes
+			exclude = { "tex", "latex", "markdown" }, -- exclude these filetypes
 		},
 	},
 	{

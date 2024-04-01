@@ -1,4 +1,6 @@
 --TODO:
+-- split utils into seperate files depending on the
+-- usecase
 local api = vim.api
 local fmt = string.format
 
@@ -247,6 +249,80 @@ function utils.hsl_to_rgb(h, s, l)
 	r, g, b = fmt("%d", r * 255), fmt("%d", g * 255), fmt("%d", b * 255)
 	local rgb = "#" .. fmt("%0x", r) .. fmt("%0x", g) .. fmt("%0x", b)
 	return rgb -- rgb
+end
+
+function utils.get_hl(name)
+	local ok, hl = pcall(vim.api.nvim_get_hl_by_name, name, true)
+	if not ok then
+		return
+	end
+	return utils.format_color(hl.foreground), utils.format_color(hl.background), hl
+end
+
+function utils.create_fzf_lua_hls()
+	local function get_attibutes(hl_name, attr)
+		local _, _, hl = utils.get_hl(hl_name)
+		if not hl then
+			return "NONE"
+		end
+		return hl[attr]
+	end
+	utils.hl = {
+		opts = {
+			-- { "FzfLuaNormal", { link = "TelescopeNormal" } }, -- FzfLuaNormal 	hls.normal 	Main win fg/bg
+			-- { "FzfLuaBorder", { link = "TelescopeBorder" } }, -- FzfLuaBorder 	hls.border 	Main win border
+			-- { "FzfLuaTitle", { link = "TelescopeTitle" } }, -- FzfLuaTitle 	hls.title 	Main win title
+			-- { "FzfLuaPreviewNormal", { link = "TelescopePreviewNormal" } }, -- FzfLuaPreviewNormal 	hls.preview_normal 	Builtin preview fg/bg
+			-- { "FzfLuaPreviewBorder", { link = "TelescopePreviewBorder" } }, -- FzfLuaPreviewBorder 	hls.preview_border 	Builtin preview border
+			-- { "FzfLuaPreviewTitle", { link = "TelescopePreviewTitle" } }, -- FzfLuaPreviewTitle 	hls.preview_title 	Builtin preview title
+			-- { "FzfLuaCursor", { link = "Cursor" } }, -- FzfLuaCursor 	hls.cursor 	Builtin preview Cursor
+			-- { "FzfLuaCursorLine", { link = "CursorLine" } }, -- FzfLuaCursorLine 	hls.cursorline 	Builtin preview Cursorline
+			-- { "FzfLuaCursorLineNr", { link = "CursorLineNr" } }, -- FzfLuaCursorLineNr 	hls.cursorlinenr 	Builtin preview CursorLineNr
+			-- { "FzfLuaSearch", { link = "IncSearch" } }, -- FzfLuaSearch 	hls.search 	Builtin preview search matches
+			-- { "FzfLuaScrollBorderEmpty", { link = "FzfLuaBorder" } }, -- FzfLuaScrollBorderEmpty 	hls.scrollborder_e 	Builtin preview border scroll empty
+			-- { "FzfLuaScrollBorderFull", { link = "FzfLuaBorder" } }, -- FzfLuaScrollBorderFull 	hls.scrollborder_f 	Builtin preview border scroll full
+			-- { "FzfLuaScrollFloatEmpty", { link = "PmenuSbar" } }, -- FzfLuaScrollFloatEmpty 	hls.scrollfloat_e 	Builtin preview float scroll empty
+			-- { "FzfLuaScrollFloatFull", { link = "PmenuThumb" } }, -- FzfLuaScrollFloatFull 	hls.scrollfloat_f 	Builtin preview float scroll full
+			-- { "FzfLuaHelpNormal", { link = "FzfLuaNormal" } }, -- FzfLuaHelpNormal 	hls.help_normal 	Help win fg/bg
+			-- { "FzfLuaHelpBorder", { link = "FzfLuaBorder" } }, -- FzfLuaHelpBorder 	hls.help_border 	Help win border
+			-- { "FzfLuaHeaderBind", { link = "TelescopeResultsNormal" } }, -- FzfLuaHeaderBind 	hls.header_bind 	Header keybind
+			-- { "FzfLuaHeaderText", { link = "TelescopeResultsTitle" } }, -- FzfLuaHeaderText 	hls.header_text 	Header text
+			{ "FzfLuaBufFlagAlt", {} },
+			{ "FzfLuaBufFlagCur", {} },
+			{ "FzfLuaBufName", {} },
+			{ "FzfLuaBufNr", {} },
+			{ "FzfLuaBufLineNr", { link = "LineNr" } },
+			{ "FzfLuaCursor", { link = "None" } },
+			{ "FzfLuaHeaderBind", { link = "Special" } },
+			{ "FzfLuaHeaderText", { link = "Special" } },
+			{ "FzfLuaTabMarker", { link = "Keyword" } },
+			{ "FzfLuaTabTitle", { link = "Title" } },
+			{ "FzfLuaNormal", { link = "TelescopeNormal" } },
+			{ "FzfLuaTitle", { link = "TelescopeTitle" } },
+			{ "FzfLuaScrollFloatEmpty", { link = "PmenuSbar" } },
+			-- fzf-lua is configured to only pass down the .fg attribute.
+			{ "FzfLuaColorsFg", { fg = get_attibutes("Normal", "foreground") } },
+			{ "FzfLuaColorsFgSel", { link = "FzfLuaColorsFg" } },
+			{ "FzfLuaColorsBg", { fg = get_attibutes("StatusLine", "background") } },
+			{ "FzfLuaColorsBgSel", { link = "FzfLuaColorsBg" } },
+			{ "FzfLuaColorsHl", { link = "Directory" } },
+			{ "FzfLuaColorsHlSel", { link = "FzfLuaColorsHl" } },
+			{ "FzfLuaColorsInfo", { fg = get_attibutes("DiagnosticInfo", "foreground") } },
+			{ "FzfLuaColorsPrompt", { fg = get_attibutes("TelescopePromptBorder", "foreground") } },
+			{ "FzfLuaColorsPointer", { fg = get_attibutes("TelescopeResultsBorder", "foreground") } },
+			{ "FzfLuaColorsMarker", { fg = get_attibutes("TelescopeResultsBorder", "foreground") } },
+			{ "FzfLuaColorsSpinner", { link = "FzfLuaColorsInfo" } },
+			{ "FzfLuaColorsHeader", { link = "FzfLuaColorsHl" } },
+		},
+	}
+	utils:create_hl()
+end
+
+function utils.format_color(color)
+	if color == nil then
+		return
+	end
+	return fmt("#%06x", color)
 end
 
 return utils

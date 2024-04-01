@@ -4,7 +4,8 @@ M.colors = {
 }
 
 function M.setup()
-	O.colorscheme = "rose-pine"
+	vim.cmd.hi("clear")
+	vim.opt.cursorline = true
 	require("rose-pine").setup({
 		-- variant = "moon",
 		styles = {
