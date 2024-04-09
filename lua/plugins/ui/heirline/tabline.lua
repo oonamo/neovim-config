@@ -1,9 +1,40 @@
 local utils = require("heirline.utils")
+
+local FileIcon = {
+	init = function(self)
+		local filename = self.filename
+		local extension = vim.fn.fnamemodify(filename, ":e")
+		self.icon, self.icon_color =
+			require("nvim-web-devicons").get_icon_color(filename, extension, { default = true })
+	end,
+	provider = function(self)
+		return self.icon and (self.icon .. " ")
+	end,
+	hl = function(self)
+		return { fg = self.icon_color }
+	end,
+	condition = function()
+		return O.ui.tabline.fancy
+	end,
+}
+
 local TablineBufnr = {
 	provider = function(self)
+		if O.ui.tabline.minimal then
+			return tostring(self.bufnr) .. ":"
+		end
 		return tostring(self.bufnr) .. ". "
 	end,
-	hl = "Comment",
+	hl = function(self)
+		if O.ui.tabline.minimal then
+			if self.is_active or self.is_visible then
+				return { fg = "red" }
+			end
+			return { fg = "white" }
+			-- return "white"
+		end
+		return "Comment"
+	end,
 }
 
 -- we redefine the filename component, as we probably only want the tail and not the relative path
@@ -12,9 +43,18 @@ local TablineFileName = {
 		-- self.filename will be defined later, just keep looking at the example!
 		local filename = self.filename
 		filename = filename == "" and "[No Name]" or vim.fn.fnamemodify(filename, ":t")
+		if O.ui.tabline.minimal then
+			return "[" .. filename .. "]"
+		end
 		return filename
 	end,
 	hl = function(self)
+		if O.ui.tabline.minimal then
+			if self.is_active or self.is_visible then
+				return { fg = "red" }
+			end
+			return { fg = "white" }
+		end
 		return { bold = self.is_active or self.is_visible, italic = true }
 	end,
 }
@@ -36,6 +76,9 @@ local TablineFileFlags = {
 				or vim.api.nvim_get_option_value("readonly", { buf = self.bufnr })
 		end,
 		provider = function(self)
+			if O.ui.tabline.minimal then
+				return ""
+			end
 			if vim.api.nvim_get_option_value("buftype", { buf = self.bufnr }) == "terminal" then
 				return "  "
 			else
@@ -53,12 +96,12 @@ local TablineFileNameBlock = {
 	end,
 	hl = function(self)
 		if self.is_active then
-			return "TabLineSel"
+			return O.ui.tabline.fancy and "TabLineSel" or { fg = "red" }
 		-- why not?
 		-- elseif not vim.api.nvim_buf_is_loaded(self.bufnr) then
 		--     return { fg = "gray" }
 		else
-			return "TabLine"
+			return O.ui.tabline.fancy and "TabLine" or { fg = "blue" }
 		end
 	end,
 	on_click = {
@@ -77,7 +120,7 @@ local TablineFileNameBlock = {
 		name = "heirline_tabline_buffer_callback",
 	},
 	TablineBufnr,
-	require("plugins.ui.heirline.components").FileIcon, -- turns out the version defined in #crash-course-part-ii-filename-and-friends can be reutilized as is here!
+	FileIcon, -- turns out the version defined in #crash-course-part-ii-filename-and-friends can be reutilized as is here!
 	TablineFileName,
 	TablineFileFlags,
 }
@@ -85,7 +128,7 @@ local TablineFileNameBlock = {
 -- a nice "x" button to close the buffer
 local TablineCloseButton = {
 	condition = function(self)
-		return not vim.api.nvim_get_option_value("modified", { buf = self.bufnr })
+		return not vim.api.nvim_get_option_value("modified", { buf = self.bufnr }) and O.ui.tabline.fancy
 	end,
 	{ provider = " " },
 	{
@@ -130,12 +173,17 @@ local TablinePicker = {
 	hl = { fg = "red", bold = true },
 }
 
+local sepatators = { "", "" }
+-- local sepatators = { "|", "|" }
+if O.ui.tabline.minimal then
+	sepatators = { "", "" }
+end
 -- The final touch!
-local TablineBufferBlock = utils.surround({ "", "" }, function(self)
+local TablineBufferBlock = utils.surround(sepatators, function(self)
 	if self.is_active then
-		return utils.get_highlight("TabLineSel").bg
+		return utils.get_highlight("TabLineSel").bg -- and O.ui.tabline.fancy or { fg = "gray" }
 	else
-		return utils.get_highlight("TabLine").bg
+		return utils.get_highlight("TabLine").bg -- and O.ui.tabline.fancy or { fg = "blue" }
 	end
 end, { TablinePicker, TablineFileNameBlock, TablineCloseButton })
 
@@ -225,6 +273,7 @@ local TabPages = {
 	utils.make_tablist(Tabpage),
 	TabpageClose,
 }
+
 local TabLineOffset = {
 	condition = function(self)
 		local win = vim.api.nvim_tabpage_list_wins(0)[1]

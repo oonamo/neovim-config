@@ -1,5 +1,6 @@
 local conditions = require("heirline.conditions")
 local components = require("plugins.ui.heirline.components")
+local simple = require("plugins.ui.heirline.simple")
 
 local defaultStatus = {
 	hl = { bg = "bg", fg = "fg" },
@@ -29,7 +30,9 @@ local defaultStatus = {
 }
 
 local writerStatus = {
-	components.mode_block,
+	hl = { bg = "bg", fg = "fg" },
+	-- components.mode_block,
+	components.ViMode,
 	components.space,
 	components.Git,
 	components.space,
@@ -43,12 +46,59 @@ local writerStatus = {
 	components.space,
 	components.SpaceCount,
 }
+-- local brighter_fg = utils.brighten("Normal", 30, "background")
+-- print(brighter_fg)
+local minimalStatusLine = {
+	hl = { bg = "bg", fg = "fg" },
+	components.ViMode,
+	components.space,
+	components.Git,
+	components.space,
+	components.FileNameBlock,
+	components.space,
+	-- components.grapple,
+	components.space,
+	components.Diagnostics,
+	components.align,
+	components.FileSize,
+	components.space,
+	components.Ruler,
+	components.space,
+	components.FilledFileType,
+
+	-- components.space,
+	-- components.Git,
+	-- components.space,
+	-- simple.FilePath,
+	-- simple.trunc,
+	-- components.FileNameModifer,
+	-- components.align,
+	-- components.wordcount,
+}
+
+local simpleStatusLine = {
+	components.space,
+	components.Git,
+	components.space,
+	simple.FilePath,
+	simple.trunc,
+	components.FileNameModifer,
+	components.align,
+	components.wordcount,
+}
 
 local function get_status()
-	if vim.bo.filetype == "markdown" then
+	if vim.bo.filetype == "markdown" or vim.g.neovide then
 		return writerStatus
-	else
+	end
+	if O.ui.statusline.fancy then
 		return defaultStatus
+	end
+	if O.ui.statusline.minimal then
+		return minimalStatusLine
+	end
+	if O.ui.statusline.simple then
+		return simpleStatusLine
 	end
 end
 
@@ -65,5 +115,4 @@ local StatusLine = {
 }
 
 local Winbar = components.Winbar
-
 return { statusline = StatusLine, winbar = Winbar }

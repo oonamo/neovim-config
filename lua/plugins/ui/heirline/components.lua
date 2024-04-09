@@ -1,6 +1,7 @@
 local M = {}
 local conditions = require("heirline.conditions")
 local utils = require("heirline.utils")
+local minimal_fg = vim.o.background == "light" and "white" or "black"
 
 M.icons = {
 	-- ✗   󰅖 󰅘 󰅚 󰅙 󱎘 
@@ -55,7 +56,7 @@ M.ViMode = {
 			rm = "M",
 			["r?"] = "?",
 			["!"] = "!",
-			t = "T",
+			t = "Term",
 		},
 		mode_colors = {
 			n = "cyan",
@@ -81,11 +82,14 @@ M.ViMode = {
 	-- control the padding and make sure our string is always at least 2
 	-- characters long. Plus a nice Icon.
 	provider = function(self)
-		return "%2(" .. self.mode_names[self.mode] .. "%)"
+		return " %2(" .. self.mode_names[self.mode] .. "%) "
 	end,
 	-- Same goes for the highlight. Now the foreground will change according to the current mode.
 	hl = function(self)
 		local mode = self.mode:sub(1, 1) -- get only the first mode character
+		if O.ui.statusline.minimal then
+			return { bg = self.mode_colors[mode], bold = true, fg = minimal_fg }
+		end
 		return { fg = self.mode_colors[mode], bold = true }
 	end,
 	update = {
@@ -151,6 +155,9 @@ M.FileIcon = {
 	hl = function(self)
 		return { fg = self.icon_color }
 	end,
+	condition = function()
+		return O.ui.statusline.fancy
+	end,
 }
 
 M.FileName = {
@@ -167,7 +174,12 @@ M.FileName = {
 		end
 		return filename
 	end,
-	hl = { fg = utils.get_highlight("Directory").fg },
+	hl = function()
+		-- if O.ui.statusline.minimal then
+		-- 	return { fg = minimal_fg }
+		-- end
+		return { fg = utils.get_highlight("Directory").fg }
+	end,
 }
 
 M.block = {
@@ -208,6 +220,13 @@ M.FileNameBlock = utils.insert(
 	-- M.FileFlags,
 	{ provider = "%<" } -- this means that the statusline is cut here when there's not enough space
 )
+
+M.FilledFileType = {
+	provider = function()
+		return " " .. M.icons.hamburger .. " " .. vim.bo.filetype
+	end,
+	hl = { bg = "purple", bold = true, fg = minimal_fg },
+}
 
 M.FileType = {
 	provider = function()
@@ -304,37 +323,37 @@ M.Diagnostics = {
 		self.hints = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.HINT })
 		self.info = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO })
 	end,
-	{
-		provider = "![",
-	},
+	-- {
+	-- 	provider = "![",
+	-- },
 	{
 		provider = function(self)
 			-- 0 is just another output, we can decide to print it or not!
-			return self.errors > 0 and (self.error_icon .. self.errors .. " ")
+			return self.errors > 0 and ((O.ui.statusline.fancy and self.error_icon or "E ") .. self.errors .. " ")
 		end,
 		hl = "DiagnosticError",
 	},
 	{
 		provider = function(self)
-			return self.warnings > 0 and (self.warn_icon .. self.warnings .. " ")
+			return self.warnings > 0 and ((O.ui.statusline.fancy and self.warn_icon or "W ") .. self.warnings .. " ")
 		end,
 		hl = "DiagnosticWarn",
 	},
 	{
 		provider = function(self)
-			return self.info > 0 and (self.info_icon .. self.info .. " ")
+			return self.info > 0 and ((O.ui.statusline.fancy and self.info_icon or "I ") .. self.info .. " ")
 		end,
 		hl = "DiagnosticInfo",
 	},
 	{
 		provider = function(self)
-			return self.hints > 0 and (self.hint_icon .. self.hints)
+			return self.hints > 0 and ((O.ui.statusline.fancy and self.hint_icon or "H ") .. self.hints)
 		end,
 		hl = "DiagnosticHint",
 	},
-	{
-		provider = "]",
-	},
+	-- {
+	-- 	provider = "]",
+	-- },
 }
 
 M.Git = {
@@ -345,13 +364,23 @@ M.Git = {
 		self.has_changes = self.status_dict.added ~= 0 or self.status_dict.removed ~= 0 or self.status_dict.changed ~= 0
 	end,
 
-	hl = { fg = "orange" },
+	hl = function()
+		-- if O.ui.tabline.minimal then
+		-- 	return { fg = "fg" }
+		-- end
+		return { fg = "orange" }
+	end,
 
 	{ -- git branch name
 		provider = function(self)
 			return " " .. self.status_dict.head
 		end,
-		hl = { fg = "purple", bold = true },
+		hl = function()
+			-- if O.ui.statusline.minimal then
+			-- 	return { fg = minimal_fg }
+			-- end
+			return { fg = "purple", bold = true }
+		end,
 	},
 }
 M.SearchCount = {
@@ -473,14 +502,16 @@ M.grapple = {
 	provider = function()
 		return require("grapple").statusline()
 	end,
-	hl = { fg = "fg", bold = true },
+	hl = function()
+		-- if O.ui.statusline.minimal then
+		-- 	return { fg = minimal_fg, bold = true }
+		-- end
+		return { fg = "fg", bold = true }
+	end,
 	update = { "BufEnter" },
 }
 
 M.wordcount = {
-	condition = function()
-		return vim.wo.spell
-	end,
 	init = function(self)
 		local wc = vim.fn.wordcount()
 		if wc.visual_words and wc.visual_chars then
@@ -488,11 +519,11 @@ M.wordcount = {
 			raw_count = raw_count < 0 and raw_count - 0 or raw_count + 1
 			self.linecount = tostring(math.abs(raw_count))
 			self.wordcount = wc.visual_words
-			self.charcount = wc.visual_chars
+			-- self.charcount = wc.visual_chars
 		else
 			self.linecount = tostring(vim.fn.line("."))
 			self.wordcount = wc.words
-			self.charcount = wc.chars
+			-- self.charcount = wc.chars
 		end
 		self.bytecount = wc.bytes or 0
 	end,
@@ -520,11 +551,11 @@ M.wordcount = {
 			return self.wordcount .. " words "
 		end,
 	},
-	{
-		provider = function(self)
-			return self.charcount .. " chars "
-		end,
-	},
+	-- {
+	-- 	provider = function(self)
+	-- 		return self.charcount .. " chars "
+	-- 	end,
+	-- },
 }
 
 M.SpaceCount = {

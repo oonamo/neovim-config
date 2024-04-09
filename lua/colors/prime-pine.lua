@@ -19,9 +19,16 @@ M.colors = {
 }
 
 -- test.nvim_set_hl(0, "CursorLine", { bg = M.colors.bg, blend = 40 })
-function M.setup()
+function M.setup(flavour)
 	vim.cmd.colorscheme("rose-pine")
 	vim.opt.cursorline = true
+	-- if flavour == "transparent" then
+	-- 	require("rose-pine").setup({
+	-- 		styles = {
+	-- 			transparent = true,
+	-- 		},
+	-- 	})
+	-- end
 	vim.o.background = "dark"
 	utils.hl = {
 		opts = {
@@ -56,6 +63,8 @@ function M.setup()
 			{ "TelescopeSelection", { fg = M.colors.text, bg = M.colors.bg } },
 			{ "TelescopeSelectionCaret", { fg = M.colors.red, bg = M.colors.red } },
 			{ "BufferVisible", { bg = "none", fg = M.colors.text, bold = true, italic = true } },
+			{ "Pmenu", { bold = true, fg = M.colors.fg, bg = M.colors.bg } },
+			{ "StatusLine", { link = "Pmenu" } },
 		},
 	}
 	utils:create_hl()

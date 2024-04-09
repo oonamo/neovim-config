@@ -1,0 +1,56 @@
+local M = {}
+function M.setup(flavour)
+	vim.cmd.hi("clear")
+	if flavour == "day" then
+		vim.o.background = "light"
+	else
+		vim.o.background = "dark"
+	end
+	if flavour == "night" then
+		local bg = "#011628"
+		local bg_dark = "#011423"
+		local bg_highlight = "#143652"
+		local bg_search = "#0A64AC"
+		local bg_visual = "#275378"
+		local fg = "#CBE0F0"
+		local fg_dark = "#B4D0E9"
+		local fg_gutter = "#627E97"
+		local border = "#547998"
+
+		local tokyonight = require("tokyonight")
+		-- require("tokyonight").setup({
+		-- 	style = "night",
+		-- 	on_colors = function(colors)
+		-- 		if tokyonight._style == "night" then
+		-- 			colors.bg = bg
+		-- 			colors.bg_dark = bg_dark
+		-- 			colors.bg_float = bg_dark
+		-- 			colors.bg_highlight = bg_highlight
+		-- 			colors.bg_popup = bg_dark
+		-- 			colors.bg_search = bg_search
+		-- 			colors.bg_sidebar = bg_dark
+		-- 			colors.bg_statusline = bg_dark
+		-- 			colors.bg_visual = bg_visual
+		-- 			colors.border = border
+		-- 			colors.fg = fg
+		-- 			colors.fg_dark = fg_dark
+		-- 			colors.fg_float = fg
+		-- 			colors.fg_gutter = fg_gutter
+		-- 			colors.fg_sidebar = fg_dark
+		-- 		end
+		-- 	end,
+		-- })
+	end
+
+	vim.cmd.colorscheme("tokyonight-" .. flavour)
+	-- local cyan = "#7dcfff"
+	-- utils.hl = {
+	-- 	opts = {
+	-- 		{ "StatusLine", { fg = "#ffffff", bg = cyan } },
+	-- 	},
+	-- }
+	-- local dark3 = "#545c7e"
+	-- local dark5 = "#737aa2"
+end
+
+return M

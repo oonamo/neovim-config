@@ -50,16 +50,30 @@ M.themes = {
 			},
 		},
 		{
+			file_name = "solarized",
+			name = "solarized*",
+			flavours = { "light", "dark" },
+		},
+		{
 			file_name = "kanagawa",
 			name = "kanagawa*",
 			flavours = { "wave", "dragon", "lotus" },
 		},
-		{ file_name = "catppuccin", name = "catppuccin*", flavours = { "frappe", "latte", "macchiato", "mocha" } },
 		{ file_name = "astro", name = "astro*", flavours = { "astrolight", "astrodark", "astromars" } },
 		{ file_name = "roses", name = "roses*", flavours = { "", "prime", "dawn" } },
 		{ file_name = "flesh_and_blood", name = "flesh_and_blood*", flavours = { "" } },
-		{ file_name = "evergarden", name = "evergarden*", flavours = { "medium", "hard", "soft" } },
-		{ file_name = "cockatoo", name = "cockatoo*", flavours = { "dark", "light" } },
+		{
+			file_name = "everforest",
+			name = "everforest*",
+			flavours = {
+				{ "dark", "medium" },
+				{ "dark", "hard" },
+				{ "dark", "soft" },
+				{ "light", "medium" },
+				{ "light", "hard" },
+				{ "light", "soft" },
+			},
+		},
 		{ file_name = "macro", name = "macro*", flavours = { "dark", "light" } },
 		{
 			file_name = "fox",
@@ -67,7 +81,12 @@ M.themes = {
 			flavours = { "nightfox", "dayfox", "dawnfox", "nordfox", "terafox", "carbonfox" },
 			append_file_name = false,
 		},
+		{ file_name = "onenord", name = "onenord*", flavours = { "dark", "light" } },
+		{ file_name = "papercolor", name = "papercolor*", flavours = { "dark", "light" } },
+		{ file_name = "tokyonight", name = "tokyonight*", flavours = { "night", "storm", "day" } },
+		{ file_name = "mountain", name = "mountain*", flavours = { "" } },
 		{ file_name = "ice-cave", name = "ice-cave*", flavours = { "" } },
+		{ file_name = "chad", name = "chad*", flavours = { "rosepine-dawn" } },
 	},
 }
 
@@ -126,12 +145,12 @@ local function create_plenary_popup(schemes)
 	-- local colorschemes = M.colorschemes.colors
 	local colorschemes = {}
 	for _, v in pairs(schemes) do
-		table.insert(colorschemes, v.name)
+		table.insert(colorschemes, v.file_name)
 	end
 	local function cb(_, choice)
 		if choice ~= nil then
 			for _, v in pairs(schemes) do
-				if v.name == choice then
+				if v.file_name == choice then
 					M.active_theme = v
 					if not vim.g.neovide then
 						M.color_state = { name = v.name, current = 1 }
@@ -145,6 +164,7 @@ local function create_plenary_popup(schemes)
 					return
 				end
 			end
+			print("could not find theme: " .. choice)
 		end
 	end
 

@@ -10,15 +10,13 @@ if not vim.loop.fs_stat(lazypath) then
 		lazypath,
 	})
 end
-
 vim.opt.rtp:prepend(lazypath)
 vim.g.MUtils = {}
-G = {}
-
+require("globals")
 require("onam.remap")
 require("onam.utils")
 require("onam.set")
-
+require("onam.plug_opts")
 require("lazy").setup({
 	spec = {
 		{ import = "plugins.ui" },
@@ -30,7 +28,11 @@ require("lazy").setup({
 	change_detection = {
 		notify = false,
 	},
+	ui = {
+		backdrop = 80,
+		border = tools.ui.cur_border,
+		icons = tools.ui.bullet,
+	},
 })
-
 require("onam.theme_switcher").init()
 utils:create_hl()

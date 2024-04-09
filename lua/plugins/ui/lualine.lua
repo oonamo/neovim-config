@@ -228,7 +228,7 @@ return {
 				},
 			}
 		end,
-		enabled = not vim.g.use_custom_statusline,
-		cond = vim.g.use_lualine,
+		-- cond = O.ui.statusline.lualine,
+		cond = false,
 	},
 }

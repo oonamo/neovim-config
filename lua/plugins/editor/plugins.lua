@@ -3,7 +3,7 @@ return {
 		"numToStr/Comment.nvim",
 		opts = {},
 		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
-		keys = { "gcc" },
+		keys = { "gcc", "gbc" },
 	},
 	{
 		"xiyaowong/transparent.nvim",

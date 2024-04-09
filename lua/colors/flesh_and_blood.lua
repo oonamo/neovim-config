@@ -40,13 +40,15 @@ M.setup = function()
 			{ "Search", { bg = M.colors.bright_yellow, fg = M.colors.bg } },
 			{ "Visual", { bg = M.colors.bright_yellow, fg = M.colors.bg } },
 			{ "IncSearch", { bg = M.colors.bright_yellow, fg = M.colors.bg } },
+			{ "StatusLine", { bg = "#5f666d", fg = M.colors.bg } },
+			{ "StatusLineNC", { bg = "#272a30", fg = M.colors.bg } },
+			{ "MatchParen", { fg = M.colors.orange } },
+			-- { "TabLine", { bg = "#272a30", fg = M.colors.fg } },
 		},
 	}
-	require("heirline-components").setup({
-		colors = M.colors,
-	})
 	vim.cmd.colorscheme("flesh-and-blood")
 	utils:create_hl()
+	utils.create_virt_diagnostics_hl()
 end
 
 return M

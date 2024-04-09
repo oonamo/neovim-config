@@ -6,57 +6,74 @@ return {
 		local actions = require("fzf-lua.actions")
 		return {
 			-- "fzf-native",
-			"telescope",
+			-- "telescope",
+			buffers = {
+				cwd_prompt = false,
+				ignore_current_buffer = true,
+				prompt = "   ",
+			},
+			files = {
+				cwd_prompt = false,
+				prompt = "   ",
+			},
+			grep = {
+				cmd = "rg -o -r '' --column --no-heading --color=never --smart-case",
+				prompt = "   ",
+				fzf_opts = {
+					["--keep-right"] = "",
+				},
+			},
 			winopts = {
+				cursorline = true,
+				border = tools.ui.cur_border,
+				height = 0.35,
+				width = 1,
+				row = 1,
 				hls = {
-					normal = "TelescopeNormal", -- FzfLuaNormal 	hls.normal 	Main win fg/bg
-					border = "TelescopeBorder", -- FzfLuaBorder 	hls.border 	Main win border
-					title = "TelescopeTitle", -- FzfLuaTitle 	hls.title 	Main win title
-					preview_normal = "TelescopePreviewNormal", -- FzfLuaPreviewNormal 	hls.preview_normal 	Builtin preview fg/bg
-					preview_border = "TelescopePreviewBorder", -- FzfLuaPreviewBorder 	hls.preview_border 	Builtin preview border
-					preview_title = "TelescopePreviewTitle", -- FzfLuaPreviewTitle 	hls.preview_title 	Builtin preview title
-					cursor = "Cursor", -- FzfLuaCursor 	hls.cursor 	Builtin preview Cursor
-					cursorline = "TelescopePreviewLine", -- FzfLuaCursorLine 	hls.cursorline 	Builtin preview Cursorline
-					cursorlinenr = "CursorLineNr", -- FzfLuaCursorLineNr 	hls.cursorlinenr 	Builtin preview CursorLineNr
-					search = "IncSearch", -- FzfLuaSearch 	hls.search 	Builtin preview search matches
-					scrollborder = "FzfLuaBorder", -- FzfLuaScrollBorderEmpty 	hls.scrollborder_e 	Builtin preview border scroll empty
-					-- link = "FzfLuaBorder", -- FzfLuaScrollBorderFull 	hls.scrollborder_f 	Builtin preview border scroll full
-					-- link = "PmenuSbar", -- FzfLuaScrollFloatEmpty 	hls.scrollfloat_e 	Builtin preview float scroll empty
-					-- link = "PmenuThumb", -- FzfLuaScrollFloatFull 	hls.scrollfloat_f 	Builtin preview float scroll full
-					-- link = "FzfLuaNormal", -- FzfLuaHelpNormal 	hls.help_normal 	Help win fg/bg
-					-- link = "FzfLuaBorder", -- FzfLuaHelpBorder 	hls.help_border 	Help win border
-					-- link = "TelescopeResultsNormal", -- FzfLuaHeaderBind 	hls.header_bind 	Header keybind
-					-- link = "TelescopeResultsTitle", -- FzfLuaHeaderText 	hls.header_text 	Header text
+					border = "FloatBorder",
+					header_bind = "NonText",
+					header_text = "NonText",
+					help_normal = "NonText",
+					normal = "NormalFloat",
+					preview_border = "NormalFloat",
+					preview_normal = "NormalFloat",
+					search = "IncSearch",
+					title = "FloatTitle",
 				},
 				fzf_colors = {
-					["hl"] = { "fg", "TelescopeMatching" },
-					["fg+"] = { "fg", "TelescopeSelection" },
-					["bg+"] = { "bg", "TelescopeSelection" },
-					["hl+"] = { "fg", "TelescopeMatching" },
-					["info"] = { "fg", "TelescopeCounter" },
-					["prompt"] = { "fg", "TelescopePrefix" },
-					["pointer"] = { "fg", "TelescopeSelectionCaret" },
-					["marker"] = { "fg", "TelescopeMultiIcon" },
+					["bg"] = { "bg", "NormalFloat" },
+					["bg+"] = { "bg", "CursorLine" },
+					["fg+"] = { "fg", "CursorLine" },
+					["gutter"] = { "bg", "NormalFloat" },
+					["header"] = { "fg", "NonText" },
+					["info"] = { "fg", "NonText" },
+					["pointer"] = { "bg", "Cursor" },
+					--  ["prompt"]    = { "fg", "Number" },
+					["separator"] = { "bg", "NormalFloat" },
+					["spinner"] = { "fg", "NonText" },
 				},
 				-- split = "aboveleft vnew",
 				-- split = "belowright new",
 				preview = {
 					-- default = 'bat_native',
 					-- border = "border",
-					layout = "vertical",
+					-- layout = "vertical",
 					-- horizontal = "right:70%",
 					-- vertical = "up:50%",
 					-- using winopts_fn to set truncation
 					-- flip_columns = truncation.truncation_limit_s_terminal
 					-- builtin previewer
-					scrollbar = false,
-					delay = 50,
-					border = "border",
+					-- scrollbar = false,
+					-- delay = 50,
+					-- border = "border",
+					layout = "horizontal",
+					scrollbar = "border",
+					vertical = "up:65%",
 				},
-				height = 0.85, -- window height
-				width = 0.80, -- window width
-				row = 0.35, -- window row position (0=top, 1=bottom)
-				col = 0.50, -- window col position (0=left, 1=right)
+				-- height = 0.85, -- window height
+				-- width = 0.80, -- window width
+				-- row = 0.35, -- window row position (0=top, 1=bottom)
+				-- col = 0.50, -- window col position (0=left, 1=right)
 			},
 			keymap = {
 				builtin = {
@@ -129,11 +146,11 @@ return {
 				["header"] = { "fg", "Comment" },
 				["gutter"] = { "bg", "Normal" },
 			},
-			files = {
-				actions = {
-					["ctrl-q"] = false,
-				},
-			},
+			-- files = {
+			-- 	actions = {
+			-- 		["ctrl-q"] = false,
+			-- 	},
+			-- },
 		}
 	end,
 	config = function(_, opts)
@@ -148,6 +165,7 @@ return {
 		{ "<leader>fr", "<cmd>FzfLua live_grep_resume<cr>", desc = "fzf grep resume" },
 		{ "<leader>flr", "<cmd>FzfLua lsp_references<cr>", desc = "fzf grep resume" },
 		{ "<leader>g?", "<cmd>FzfLua help_tags<cr>", desc = "fzf help" },
+		{ "<leader>fb", "<cmd>FzfLua buffers<cr>", desc = "fzf commands" },
 		{
 			"<leader>fc",
 			function()

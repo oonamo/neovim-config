@@ -1,9 +1,15 @@
--- GUI
---
---
-vim.opt.guicursor = "c-ci-ve:ver25,r-cr:hor20,o:hor20,a:blinkwait900-blinkon900-blinkoff900"
-vim.opt.termguicolors = true
-vim.opt.background = "dark"
+local o, opt = vim.o, vim.opt
+
+-- opt.guicursor = "c-ci-ve:ver25,r-cr:hor20,o:hor20,a:blinkwait900-blinkon900-blinkoff900"
+opt.guicursor = {
+	"n-sm:block",
+	"v:hor50",
+	"c-ci-cr-i-ve:ver10",
+	"o-r:hor10",
+	"a:Cursor/Cursor-blinkwait1-blinkon1-blinkoff1",
+}
+opt.termguicolors = true
+opt.background = "dark"
 if vim.g.neovide then
 	vim.g.neovide_scale_factor = 1.0
 	vim.g.neovide_hide_mouse_when_typing = true
@@ -18,63 +24,68 @@ if vim.g.neovide then
 	end)
 	vim.g.neovide_transparency = 0.9
 end
+o.cursorline = true
+-- o.cursorlineopt = "number"
+o.emoji = true
 
 -- Editor
-vim.opt.nu = true
-vim.opt.relativenumber = true
-vim.opt.tabstop = 4
-vim.opt.softtabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.expandtab = true
-vim.opt.smartindent = true
-vim.opt.wrap = false
-vim.opt.scrolloff = 8
+opt.nu = true
+opt.relativenumber = true
+opt.tabstop = 4
+opt.softtabstop = 4
+opt.shiftwidth = 4
+opt.expandtab = true
+opt.smartindent = true
+opt.wrap = false
+opt.scrolloff = 8
+opt.fillchars = {
+	eob = " ",
+	diff = "╱",
+	fold = " ",
+	foldclose = tools.ui.icons.r_chev,
+	foldopen = tools.ui.icons.d_chev,
+	foldsep = " ",
+	msgsep = "━",
+	horiz = "━",
+	horizup = "┻",
+	horizdown = "┳",
+	vert = "┃",
+	vertleft = "┫",
+	vertright = "┣",
+	verthoriz = "╋",
+}
+opt.isfname:append("@-@")
+opt.updatetime = 50
+opt.swapfile = false
+opt.backup = false
+opt.undofile = true
+opt.incsearch = true
+opt.hlsearch = false
+opt.wildmenu = true
+opt.signcolumn = "yes"
+opt.laststatus = 3 -- Or 3 for global statusline
+opt.colorcolumn = "80"
+opt.conceallevel = 2
+opt.showmode = false
+opt.completeopt = "menuone,noinsert,noselect"
+o.grepprg = [[rg --glob "!.git" --hidden --smart-case  --vimgrep]]
+o.helpheight = 70
+o.ignorecase = true
+o.foldcolumn = "1"
+opt.foldlevel = 99
+opt.foldmethod = "indent"
+o.list = true
+opt.listchars = {
+	nbsp = "▬",
 
-vim.opt.isfname:append("@-@")
-vim.opt.updatetime = 50
-vim.opt.swapfile = false
-vim.opt.backup = false
-vim.opt.undofile = true
-vim.opt.incsearch = true
-vim.opt.hlsearch = false
-vim.opt.wildmenu = true
-vim.opt.signcolumn = "yes"
-vim.opt.laststatus = 3 -- Or 3 for global statusline
-vim.opt.colorcolumn = "80"
-vim.opt.conceallevel = 2
--- vim.opt.shortmess:append("C")
--- vim.opt.shortmess:append("S")
--- vim.opt.shortmess:append("c")
--- vim.opt.shortmess:append("s")
--- vim.opt.shortmess:append("W")
--- vim.opt.shortmess:append("o")
--- vim.opt.shortmess = {
--- 	C = true,
--- 	S = true,
--- 	c = true,
--- 	s = true,
--- 	W = true,
--- 	o = true,
--- 	a = true,
--- }
--- vim.opt.statusline = " %f %m %= %l:%c ♥ "
--- Popup Menu
-vim.opt.completeopt = "menuone,noinsert,noselect"
+	tab = "  ",
+	trail = "·",
+}
+o.shortmess = "acstFOSW"
+o.splitkeep = "screen"
 
--- Custom
-vim.g.use_custom_snippets = true
-vim.g.use_lualine = false
-vim.g.heirline_enabled = true
-vim.g.use_custom_statusline = false
-vim.g.use_custom_winbar = false
-vim.g.use_FZF = true
-vim.g.use_noice = true
-vim.g.no_cmd_height = true
-
-vim.opt.foldlevel = 99
--- vim.opt.foldmethod = "expr"
 if not vim.fn.has("win32") then
-	vim.opt.clipboard = {
+	opt.clipboard = {
 		name = "WslClipboard",
 		copy = {
 			["+"] = "clip.exe",
@@ -87,32 +98,14 @@ if not vim.fn.has("win32") then
 		cache_enabled = 0,
 	}
 end
-
--- better spell
-
 O = {}
 
 utils.augroup("QOL", {
-	-- {
-	-- 	events = { "ColorScheme" },
-	-- 	targets = { "*" },
-	-- 	command = function()
-	-- 		require("highlights")
-	-- 	end,
-	-- },
 	{
 		events = { "TextYankPost" },
 		targets = { "*" },
 		command = function()
 			vim.highlight.on_yank({ timeout = 500 })
-		end,
-	},
-	{
-		events = { "BufReadPost" },
-		targets = { "*.c", "*.h", "*.cpp", "*.hpp" },
-		command = function()
-			vim.opt.tabstop = 2
-			vim.opt.shiftwidth = 2
 		end,
 	},
 })

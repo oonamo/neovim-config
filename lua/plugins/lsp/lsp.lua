@@ -1,5 +1,6 @@
 local M = {}
 local function on_attach(client, buffer)
+	local conf = require("onam.helpers.lsp.signature")
 	if client.name == "rust_analyzer" then
 		vim.keymap.set("n", "<leader>h", function()
 			vim.cmd.RustLsp({ "hover", "actions" })
@@ -25,7 +26,9 @@ local function on_attach(client, buffer)
 		desc = "Go to workspace_symbol",
 		buffer = buffer,
 	})
-	vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, {
+	vim.keymap.set("n", "<leader>vd", function()
+		vim.diagnostic.open_float({ border = tools.ui.cur_border })
+	end, {
 		desc = "Open float menu",
 		buffer = buffer,
 	})
@@ -58,9 +61,23 @@ local function on_attach(client, buffer)
 			group = diag_float_grp,
 		})
 	end
-	require("lsp_signature").on_attach({
-		hint_prefix = "",
-	}, buffer)
+	if O.ui.signature == "custom" then
+		-- require("lsp_signature").on_attach(conf, buffer)
+		require("onam.helpers.lsp.signature").setup(client, buffer)
+	else
+		require("lsp_signature").on_attach({
+			hint_prefix = "",
+		}, buffer)
+	end
+	--
+	-- refresh codelens on TextChanged and InsertLeave as well
+	vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach" }, {
+		buffer = buffer,
+		callback = vim.lsp.codelens.refresh,
+	})
+
+	-- trigger codelens refresh
+	vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
 end
 
 local defaults = { on_attach = on_attach }
@@ -108,7 +125,18 @@ return {
 				shell = "pwsh",
 				bundle_path = "c:/w/PowerShellEditorServices",
 			},
-			-- clangd = defaults,
+			clangd = {
+				on_attach = on_attach,
+				-- cmd = { "clangd", "--fallback-style=Microsoft" },
+			},
+			omnisharp = {
+				on_attach = on_attach,
+				cmd = {
+					"dotnet",
+					"C:\\Users\\onam7\\AppData\\Local\\nvim-data\\mason\\packages\\omnisharp\\libexec\\OmniSharp.dll",
+				},
+				root_dir = { "*.sln", "*.csproj", "omnisharp.json", "function.json", "*.log" },
+			},
 			-- arduino_language_server = {
 			-- 	cmd = {
 			-- 		"arduino-language-server",
@@ -361,18 +389,28 @@ return {
 			-- 	},
 			-- },
 			-- harper_ls = defaults,
-			ccls = {
-				on_attach = on_attach,
-				flags = {
-					debounce_text_changes = 150,
-				},
-			},
+			-- ccls = {
+			-- 	on_attach = on_attach,
+			-- 	flags = {
+			-- 		debounce_text_changes = 150,
+			-- 	},
+			-- },
+			-- markdown_oxide = {
+			-- 	on_attach = on_attach,
+			-- 	root_dir = { ".git", ".obsidian", vim.uv.cwd() },
+			-- },
 		},
 		config = function(_, opts)
 			local lspconfig = require("lspconfig")
-			local has_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
 			capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
+			capabilities.workspace = {
+				didChangeWatchedFiles = {
+					dynamicRegistration = true,
+				},
+			}
+			require("lspconfig.ui.windows").default_options = tools.ui.cur_border
+			vim.api.nvim_set_hl(0, "LspInfoBorder", { link = "FloatBorder" })
 			-- local capabilities = vim.tbl_deep_extend(
 			-- 	"force",
 			-- 	{},
@@ -384,7 +422,10 @@ return {
 				local server_opts = vim.tbl_deep_extend("force", {
 					capabilities = vim.deepcopy(capabilities),
 				}, settings or {})
-				lspconfig[server].setup(server_opts)
+				if server_opts.root_dir then
+					print("opts")
+					server_opts.root_dir = lspconfig.util.root_pattern(unpack(server_opts.root_dir))
+				end
 				if server == "arduino_language_server" then
 					lspconfig.arduino_language_server.setup({
 						cmd = {
@@ -392,19 +433,38 @@ return {
 							"-cli-config",
 							"C:\\Users\\onam7\\AppData\\Local\\Arduino15\\arduino-cli.yaml",
 						},
+						unpack(server_opts),
 					})
+				else
+					lspconfig[server].setup(server_opts)
 				end
 			end
+			vim.diagnostic.config({
+				underline = true,
+				severity_sort = true,
+				float = {
+					header = " ",
+					border = tools.ui.cur_border,
+					source = "if_many",
+					title = { { " 󰌶 Diagnostics ", "FloatTitle" } },
+					prefix = function(diag)
+						local severity = vim.diagnostic.severity[diag.severity]
+						local level = severity:sub(1, 1) .. severity:sub(2):lower()
+						local prefix = string.format(" %s  ", tools.ui.lsp_signs[diag.severity].sym)
+						return prefix, "Diagnostic" .. level:gsub("^%l", string.upper)
+					end,
+				},
+			})
 		end,
 	},
-	{
-		"micangl/cmp-vimtex",
-		ft = { "tex", "plaintex", "latex" },
-	},
-	{
-		"f3fora/cmp-spell",
-		ft = { "markdown", "norg", "tex", "latex" },
-	},
+	-- {
+	-- 	"micangl/cmp-vimtex",
+	-- 	ft = { "tex", "plaintex", "latex" },
+	-- },
+	-- {
+	-- 	"f3fora/cmp-spell",
+	-- 	ft = { "markdown", "norg", "tex", "latex" },
+	-- },
 	{
 		"hrsh7th/nvim-cmp",
 		dependencies = {
@@ -418,9 +478,12 @@ return {
 		config = function()
 			local C = {}
 			local cmp = require("cmp")
+			local compare = cmp.config.compare
+			local pad_len = 3
 			if vim.g.use_custom_snippets then
 				C.luasnip = require("luasnip")
 			end
+
 			-- IMPORTANT: Run this after setting up mason
 			local mason_registry = require("mason-registry")
 			M.mason_registry = mason_registry
@@ -432,8 +495,36 @@ return {
 			M.codelldb_path = codelldb_path
 			local liblldb_path = extension_path .. "lldb/lib/liblldb.so"
 			M.liblldb_path = liblldb_path
+			local function get_lsp_completion_context(completion, source)
+				local ok, source_name = pcall(function()
+					return source.source.client.config.name
+				end)
+				if not ok then
+					return nil
+				end
 
-			local lspkind = require("lspkind")
+				if source_name == "tsserver" then
+					return completion.detail
+				elseif source_name == "pyright" then
+					if completion.labelDetails ~= nil then
+						return completion.labelDetails.description
+					end
+				elseif source_name == "clangd" then
+					local doc = completion.documentation
+					if doc == nil then
+						return
+					end
+
+					local import_str = doc.value
+
+					local i, j = string.find(import_str, '["<].*[">]')
+					if i == nil then
+						return
+					end
+
+					return string.sub(import_str, i, j)
+				end
+			end
 
 			cmp.setup({
 				view = {
@@ -446,21 +537,75 @@ return {
 						require("luasnip").lsp_expand(args.body)
 					end,
 				},
+				sorting = {
+					comparators = {
+						compare.score,
+						compare.offset,
+						compare.recently_used,
+						compare.order,
+						compare.exact,
+						compare.kind,
+						compare.locality,
+						compare.length,
+						-- copied from TJ Devries; cmp-under
+						function(entry1, entry2)
+							local _, entry1_under = entry1.completion_item.label:find("^_+")
+							local _, entry2_under = entry2.completion_item.label:find("^_+")
+							entry1_under = entry1_under or 0
+							entry2_under = entry2_under or 0
+							if entry1_under > entry2_under then
+								return false
+							elseif entry1_under < entry2_under then
+								return true
+							end
+						end,
+					},
+				},
 				window = {
-					completion = cmp.config.window.bordered(),
-					documentation = cmp.config.window.bordered(),
+					-- completion = cmp.config.window.bordered(),
+					-- documentation = cmp.config.window.bordered(),
+					documentation = {
+						border = tools.ui.cur_border,
+						max_height = 75,
+						max_width = 75,
+					},
+					completion = {
+						border = tools.ui.cur_border,
+						col_offset = 1,
+						scrolloff = 10,
+					},
 				},
 				formatting = {
-					format = lspkind.cmp_format({
-						mode = "symbol_text",
-						menu = {
-							buffer = "[Buffer]",
-							nvim_lsp = "[LSP]",
-							luasnip = "[LuaSnip]",
-							nvim_lua = "[Lua]",
-							latex_symbols = "[Latex]",
-						},
-					}),
+					-- format = lspkind.cmp_format({
+					-- 	mode = "symbol_text",
+					-- 	menu = {
+					-- 		buffer = "[Buffer]",
+					-- 		nvim_lsp = "[LSP]",
+					-- 		luasnip = "[LuaSnip]",
+					-- 		nvim_lua = "[Lua]",
+					-- 		latex_symbols = "[Latex]",
+					-- 	},
+					-- }),
+					fields = { "kind", "abbr", "menu" },
+					format = function(entry, vim_item)
+						local choice = require("lspkind").cmp_format({
+							ellipsis_char = "…",
+							maxwidth = 25,
+							mode = "symbol",
+						})(entry, vim_item)
+
+						choice.abbr = vim.trim(choice.abbr)
+						choice.menu = ""
+
+						local cmp_ctx = get_lsp_completion_context(entry.completion_item, entry.source)
+						if cmp_ctx ~= nil and cmp_ctx ~= "" then
+							choice.menu = table.concat({ "  → ", cmp_ctx })
+						end
+
+						choice.menu = choice.menu .. string.rep(" ", pad_len)
+
+						return choice
+					end,
 				},
 				mapping = cmp.mapping.preset.insert({
 					["<C-b>"] = cmp.mapping.scroll_docs(-4),
@@ -507,6 +652,14 @@ return {
 			})
 			cmp.setup.filetype("markdown", {
 				sources = cmp.config.sources({
+					{
+						name = "nvim_lsp",
+						option = {
+							markdown_oxide = {
+								keyword_pattern = [[\(\k\| \|\/\|#\)\+]],
+							},
+						},
+					},
 					{ name = "obsidian" },
 					{ name = "obsidian_new" },
 				}, {
@@ -576,6 +729,18 @@ return {
 					{ name = "cmdline", keyword_length = 3 },
 				}),
 			})
+
+			for k, v in pairs({
+				CmpItemAbbrMatch = "Number",
+				CmpItemAbbrMatchFuzzy = "CmpItemAbbrMatch",
+				CmpItemKindInterface = "CmpItemKindVariable",
+				CmpItemKindText = "CmpItemKindVariable",
+				CmpItemKindMethod = "CmpItemKindFunction",
+				CmpItemKindProperty = "CmpItemKindKeyword",
+				CmpItemKindUnit = "CmpItemKindKeyword",
+			}) do
+				vim.api.nvim_set_hl(0, k, { link = v })
+			end
 		end,
 	},
 	{

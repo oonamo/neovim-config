@@ -4,15 +4,22 @@ return {
 	enabled = true,
 	opts = {
 		input = {
-			enable = true,
+			enabled = true,
+			insert_only = false,
+			start_in_insert = false,
+			prefer_width = 25,
+			max_width = { 80, 0.5 },
+			min_width = { 10, 0.2 },
 			--- Set window transparency to 0.
-			win_options = {
-				winblend = 0,
-			},
+			border = tools.ui.cur_border,
+			-- win_options = {
+			-- 	winblend = 0,
+			-- },
 			title_pos = "center",
 		},
 		select = {
-			backend = { "fzf-lua", "fzf", "builtin" },
+			enabled = true,
+			backend = { "fzf-lua", "builtin" },
 			builtin = {
 				relative = "editor",
 			},

@@ -75,10 +75,10 @@ function M.setup(flavour)
 		},
 		strikethrough = true,
 		inverse = false,
-		invert_selection = true,
-		invert_signs = true,
-		invert_tabline = true,
-		invert_intend_guides = true,
+		invert_selection = false,
+		invert_signs = false,
+		invert_tabline = false,
+		invert_intend_guides = false,
 	}
 	local colors = {}
 	if vim.o.background == "dark" then

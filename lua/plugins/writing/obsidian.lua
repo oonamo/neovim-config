@@ -1,6 +1,6 @@
 return {
 	"epwalsh/obsidian.nvim",
-	version = "*", -- recommended, use latest release instead of latest commit
+	-- version = "*", -- recommended, use latest release instead of latest commit
 	lazy = true,
 	cmd = "ObsidianOpen",
 	ft = "markdown",
@@ -77,7 +77,7 @@ return {
 				end,
 				post_setup = function()
 					vim.cmd("set spell")
-					require("grapple").use_scope("obsidian")
+					-- require("grapple").use_scope("obsidian")
 				end,
 			},
 

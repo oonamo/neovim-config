@@ -163,6 +163,9 @@ end
 ---@param color string
 ---@return number, number, number
 local function to_rgb(color)
+	if color == nil then
+		return 0, 0, 0
+	end
 	return tonumber(color:sub(2, 3), 16), tonumber(color:sub(4, 5), 16), tonumber(color:sub(6, 7), 16)
 end
 
@@ -190,7 +193,6 @@ function utils.brighten(color, percent, property)
 			result[k] = string.format("#%06x", v)
 		end
 	end
-
 	local r, g, b = to_rgb(result[property or "foreground"])
 	---@diagnostic disable-next-line: param-type-mismatch
 	r = clamp_color(math.floor(tonumber(r * (100 + percent) / 100)))
@@ -198,8 +200,16 @@ function utils.brighten(color, percent, property)
 	g = clamp_color(math.floor(tonumber(g * (100 + percent) / 100)))
 	---@diagnostic disable-next-line: param-type-mismatch
 	b = clamp_color(math.floor(tonumber(b * (100 + percent) / 100)))
-
-	local rgb = "#" .. fmt("%0x", r) .. fmt("%0x", g) .. fmt("%0x", b)
+	-- r, g, b = r < 255 and r or 255, g < 255 and g or 255, b < 255 and b or 255
+	-- local rgb = "#" .. fmt("%0x", r) .. fmt("%0x", g) .. fmt("%0x", b)
+	local rgb = "#" .. string.format("%02x%02x%02x", r, g, b)
+	-- while not utils.valid_rgb_str(rgb) do
+	-- 	rgb = rgb .. "0"
+	-- 	if #rgb > 7 then
+	-- 		print("could not create hl for", color)
+	-- 		return "#000000"
+	-- 	end
+	-- end
 	return rgb
 end
 
@@ -251,10 +261,16 @@ function utils.hsl_to_rgb(h, s, l)
 	return rgb -- rgb
 end
 
+---@class Highlight
+---@field forground? string
+---@field background? string
+---@field special? table
+
+---@return string|nil, string|nil, Highlight|nil
 function utils.get_hl(name)
 	local ok, hl = pcall(vim.api.nvim_get_hl_by_name, name, true)
 	if not ok then
-		return
+		return nil, nil, nil
 	end
 	return utils.format_color(hl.foreground), utils.format_color(hl.background), hl
 end
@@ -318,11 +334,126 @@ function utils.create_fzf_lua_hls()
 	utils:create_hl()
 end
 
+---@param rgb string
+---@return boolean
+function utils.valid_rgb_str(rgb)
+	return #rgb == 7
+end
+
+function utils.create_virt_diagnostics_hl()
+	local diagnostics = {
+		"DiagnosticVirtualTextError",
+		"DiagnosticVirtualTextWarn",
+		"DiagnosticVirtualTextInfo",
+		"DiagnosticVirtualTextHint",
+	}
+	local percent = vim.o.background == "light" and 55 or -55
+	for _, diagnostic in ipairs(diagnostics) do
+		local fg, bg, hl = utils.get_hl(diagnostic)
+		if not bg and hl then
+			bg = utils.brighten(diagnostic, percent)
+			while not utils.valid_rgb_str(bg) do
+				bg = bg .. "0"
+				if #bg > 7 then
+					print("could not create hl for", diagnostic)
+				end
+			end
+			hl.bg = bg
+			vim.api.nvim_set_hl(0, diagnostic, hl)
+		end
+	end
+end
+
 function utils.format_color(color)
 	if color == nil then
 		return
 	end
 	return fmt("#%06x", color)
+end
+
+utils.get_path_root = function(path)
+	if path == "" then
+		return
+	end
+
+	local root = vim.b.path_root
+	if root ~= nil then
+		return root
+	end
+
+	local root_items = {
+		".git",
+	}
+
+	root = vim.fs.find(root_items, {
+		path = path,
+		upward = true,
+		type = "directory",
+	})[1]
+	if root == nil then
+		return nil
+	end
+
+	root = vim.fs.dirname(root)
+	vim.b.path_root = root
+
+	return root
+end
+
+local remote_cache = {}
+local branch_cache = {}
+
+function utils.get_git_remote_name(root)
+	if root == nil then
+		return
+	end
+
+	local remote = remote_cache[root]
+	if remote ~= nil then
+		return remote
+	end
+
+	-- see https://stackoverflow.com/a/42543006
+	-- "basename" "-s" ".git" "`git config --get remote.origin.url`"
+	local cmd = table.concat({ "git", "config", "--get remote.origin.url" }, " ")
+	remote = vim.fn.system(cmd)
+
+	if vim.v.shell_error ~= 0 then
+		return nil
+	end
+
+	remote = vim.fs.basename(remote)
+	if remote == nil then
+		return
+	end
+
+	remote = vim.fn.fnamemodify(remote, ":r")
+	remote_cache[root] = remote
+
+	return remote
+end
+
+utils.set_git_branch = function(root)
+	local cmd = table.concat({ "git", "-C", root, "branch --show-current" }, " ")
+	local branch = vim.fn.system(cmd)
+	if branch == nil then
+		return nil
+	end
+	branch = branch:gsub("\n", "")
+	branch_cache[root] = branch
+
+	return branch
+end
+
+utils.get_git_branch = function(root)
+	if root == nil then
+		return
+	end
+	local branch = branch_cache[root]
+	if branch ~= nil then
+		return branch
+	end
+	return utils.set_git_branch(root)
 end
 
 return utils

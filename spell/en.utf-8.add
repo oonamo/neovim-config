@@ -26,3 +26,6 @@ HC
 SR04
 AtMega2560
 MCU
+esp32
+IDF
+VCC

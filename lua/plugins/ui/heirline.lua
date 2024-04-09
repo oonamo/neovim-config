@@ -1,12 +1,6 @@
--- TODO:
--- make heirline work with gruvbox light themes
 return {
 	"rebelot/heirline.nvim",
-	-- dependencies = { "Zeioth/heirline-components.nvim" },
 	cond = function()
-		if not vim.g.heirline_enabled then
-			return false
-		end
 		return true
 	end,
 	lazy = true,
@@ -15,6 +9,8 @@ return {
 		local heirline_utils = require("heirline.utils")
 		local heirline = require("heirline")
 		local function get_colors()
+			local onam_utils = require("onam.utils")
+			local fg, bg, hl = onam_utils.get_hl("StatusLine")
 			local colors = {
 				bright_bg = heirline_utils.get_highlight("Folded").bg,
 				bright_fg = heirline_utils.get_highlight("Folded").fg,
@@ -33,28 +29,40 @@ return {
 				git_del = heirline_utils.get_highlight("diffDeleted").fg,
 				git_add = heirline_utils.get_highlight("diffAdded").fg,
 				git_change = heirline_utils.get_highlight("diffChanged").fg,
-				fg = heirline_utils.get_highlight("StatusLine").fg,
-				bg = heirline_utils.get_highlight("StatusLine").bg,
+				fg = fg,
+				bg = bg,
 			}
-			if vim.g.colors_name == "gruvbox" then
-				vim.notify("gruvbox theme not supported", vim.log.levels.WARN)
-				-- local tmp = colors.fg
-				-- colors.fg = colors.bg
-				colors.bg = "#000000"
-				-- tmp = colors.bright_fg
-				colors.bright_fg = "#000000"
-				colors.bright_bg = "#000000"
+			if vim.g.colors_name == "gruvbox" or vim.g.colors_name == "hybrid" then
+				local fg, bg, _ = onam_utils.get_hl("StatusLine")
+				colors.fg = bg
+				colors.bg = fg
+				fg, bg, _ = onam_utils.get_hl("Folded")
+				colors.bright_fg = bg
+				colors.bright_bg = fg
+			end
+			if not vim.g.use_noice then
+				vim.o.cmdheight = 1
+				vim.g.noshowmode = true
+				-- require("onam.autocmds").setup_status_cmds()
 			end
 			return colors
 		end
 		local statusline = require("plugins.ui.heirline.statusline")
 		local tabline = require("plugins.ui.heirline.tabline")
+		local conditions = require("heirline.conditions")
 		heirline.setup({
 			statusline = statusline.statusline,
 			tabline = tabline,
-			winbar = statusline.winbar,
+			statuscolumn = require("plugins.ui.heirline.statuscolumn"),
+			-- winbar = statusline.winbar,
 			opts = {
 				colors = get_colors(),
+				disable_winbar_cb = function(args)
+					return conditions.buffer_matches({
+						buftype = { "nofile", "prompt", "help", "quickfix" },
+						filetype = { "^git.*", "fugitive", "Trouble", "dashboard" },
+					}, args.buf)
+				end,
 			},
 		})
 		vim.o.showtabline = 2

@@ -10,7 +10,7 @@ local fmta = require("luasnip.extras.fmt").fmta
 local rep = require("luasnip.extras").rep
 local c = ls.choice_node
 
-vim.notify("markdown snippets loaded", vim.log.levels.INFO)
+-- vim.notify("markdown snippets loaded", vim.log.levels.INFO)
 
 local snippets, autosnippets = {}, {}
 ---@param count number
