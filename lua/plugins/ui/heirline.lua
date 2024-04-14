@@ -48,13 +48,12 @@ return {
 			return colors
 		end
 		local statusline = require("plugins.ui.heirline.statusline")
-		local tabline = require("plugins.ui.heirline.tabline")
 		local conditions = require("heirline.conditions")
 		heirline.setup({
 			statusline = statusline.statusline,
-			tabline = tabline,
+			-- tabline = tabline,
 			statuscolumn = require("plugins.ui.heirline.statuscolumn"),
-			-- winbar = statusline.winbar,
+			winbar = require("plugins.ui.heirline.winbar").winbar,
 			opts = {
 				colors = get_colors(),
 				disable_winbar_cb = function(args)
@@ -65,7 +64,7 @@ return {
 				end,
 			},
 		})
-		vim.o.showtabline = 2
+		-- vim.o.showtabline = 2
 		vim.cmd([[au FileType * if index(['wipe', 'delete'], &bufhidden) >= 0 | set nobuflisted | endif]])
 		vim.api.nvim_create_augroup("Heirline", { clear = true })
 		vim.api.nvim_create_autocmd({ "ColorScheme" }, {

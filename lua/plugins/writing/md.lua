@@ -5,9 +5,15 @@ return {
 		dependencies = { "nvim-treesitter/nvim-treesitter" },
 		ft = { "markdown" },
 		opts = {
-			headings = { "❯", "❯", "❯", "❯", "❯", "❯" },
-			bullet = "",
+			-- headings = { "❯", "❯", "❯", "❯", "❯", "❯" },
+			headings = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
+			-- bullet = "",
 		},
+	},
+	{
+		"tadmccorkle/markdown.nvim",
+		name = "markdown-keys",
+		ft = { "markdown" },
 	},
 	{
 		"dhruvasagar/vim-table-mode",

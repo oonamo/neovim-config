@@ -3,6 +3,19 @@ local conditions = require("heirline.conditions")
 local utils = require("heirline.utils")
 local minimal_fg = vim.o.background == "light" and "white" or "black"
 
+local default = { left = "", right = "" }
+local function ChadSeps(highlight)
+	return {
+		condition = function()
+			return O.ui.statusline.chad == true
+		end,
+		provider = function()
+			return default.right
+		end,
+		hl = highlight,
+	}
+end
+
 M.icons = {
 	-- ✗   󰅖 󰅘 󰅚 󰅙 󱎘 
 	close = "󰅙 ",
@@ -20,6 +33,17 @@ M.icons = {
 M.ViMode = {
 	init = function(self)
 		self.mode = vim.fn.mode(1) -- :h mode()
+		self.icon = "󰈚"
+		local path = vim.api.nvim_buf_get_name(0)
+		local name = (path == "" and "Empty ") or path:match("([^/\\]+)[/\\]*$")
+		if name ~= "Empty " then
+			local devicons_present, devicons = pcall(require, "nvim-web-devicons")
+
+			if devicons_present then
+				local ft_icon = devicons.get_icon(name)
+				self.icon = (ft_icon ~= nil and ft_icon) or self.icon
+			end
+		end
 	end,
 	static = {
 		mode_names = { -- change the strings if you like it vvvvverbose!
@@ -82,15 +106,12 @@ M.ViMode = {
 	-- control the padding and make sure our string is always at least 2
 	-- characters long. Plus a nice Icon.
 	provider = function(self)
-		return " %2(" .. self.mode_names[self.mode] .. "%) "
+		return "  " .. self.mode_names[self.mode]
 	end,
 	-- Same goes for the highlight. Now the foreground will change according to the current mode.
 	hl = function(self)
 		local mode = self.mode:sub(1, 1) -- get only the first mode character
-		if O.ui.statusline.minimal then
-			return { bg = self.mode_colors[mode], bold = true, fg = minimal_fg }
-		end
-		return { fg = self.mode_colors[mode], bold = true }
+		return { bg = self.mode_colors[mode], fg = "bg", bold = true }
 	end,
 	update = {
 		"ModeChanged",
@@ -99,6 +120,12 @@ M.ViMode = {
 			vim.cmd("redrawstatus")
 		end),
 	},
+	ChadSeps(function(self)
+		return { fg = self.mode_colors[self.mode:sub(1, 1)], bg = "gray", bold = true }
+	end),
+	-- ChadSeps({ fg = "gray", bg = "gray" }),
+	ChadSeps({ fg = "gray", bg = "bright_bg" }),
+	-- ChadSeps({ bg = "bright_bg", fg = "gray" }),
 }
 
 M.mode_block = {
@@ -145,6 +172,8 @@ M.FileNameBlock = {
 	init = function(self)
 		self.filename = vim.api.nvim_buf_get_name(0)
 	end,
+	hl = { bg = "bright_bg", fg = "white" },
+	-- ChadSeps({ fg = "bright_bg", bg = "bg" }),
 }
 
 M.FileIcon = {
@@ -160,9 +189,9 @@ M.FileIcon = {
 	hl = function(self)
 		return { fg = self.icon_color }
 	end,
-	condition = function()
-		return O.ui.statusline.fancy
-	end,
+	-- condition = function()
+	-- 	return O.ui.statusline.fancy
+	-- end,
 }
 
 M.FileName = {
@@ -179,12 +208,12 @@ M.FileName = {
 		end
 		return filename
 	end,
-	hl = function()
-		-- if O.ui.statusline.minimal then
-		-- 	return { fg = minimal_fg }
-		-- end
-		return { fg = utils.get_highlight("Directory").fg }
-	end,
+	-- hl = function()
+	-- 	-- if O.ui.statusline.minimal then
+	-- 	-- 	return { fg = minimal_fg }
+	-- 	-- end
+	-- 	return { fg = utils.get_highlight("Directory").fg }
+	-- end,
 }
 
 M.block = {
@@ -219,12 +248,16 @@ M.FileNameModifer = {
 }
 
 M.FileNameBlock = utils.insert(
+	-- M.FileIcon,
 	M.FileNameBlock,
-	M.FileIcon,
+	-- M.Space,
 	utils.insert(M.FileNameModifer, M.FileName), -- a new table where FileName is a child of FileNameModifier
 	-- M.FileFlags,
-	{ provider = "%<" } -- this means that the statusline is cut here when there's not enough space
+	{ provider = "%<" }, -- this means that the statusline is cut here when there's not enough space
 	-- ChadSeps({ bg = "bg", fg = "white" })
+	-- ChadSeps({ bg = "bright_bg", fg = "white" })
+	-- ChadSeps({ fg = "bright_bg", bg = "bright_bg" }),
+	ChadSeps({ fg = "bright_bg", bg = "bg" })
 )
 
 M.FilledFileType = {
@@ -720,4 +753,16 @@ M.Navic = {
 	hl = { fg = "gray" },
 	update = "CursorMoved",
 }
-return M
+return {
+	M.ViMode,
+	-- M.space,
+	M.FileNameBlock,
+	M.space,
+	M.Git,
+	M.space,
+	M.Diagnostics,
+	M.space,
+	M.align,
+	M.WorkDir,
+	M.Ruler,
+}

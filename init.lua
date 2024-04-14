@@ -10,6 +10,7 @@ if not vim.loop.fs_stat(lazypath) then
 		lazypath,
 	})
 end
+
 vim.opt.rtp:prepend(lazypath)
 vim.g.MUtils = {}
 require("globals")
@@ -17,6 +18,7 @@ require("onam.remap")
 require("onam.utils")
 require("onam.set")
 require("onam.plug_opts")
+
 require("lazy").setup({
 	spec = {
 		{ import = "plugins.ui" },
@@ -34,5 +36,11 @@ require("lazy").setup({
 		icons = tools.ui.bullet,
 	},
 })
+
+require("onam.autocmds").set_qol()
 require("onam.theme_switcher").init()
+
+if not O.ui.tree.oil and not O.ui.tree.neotree then
+	vim.keymap.set("n", "<leader>e", "<cmd>Ex<CR>", { desc = "explorer" })
+end
 utils:create_hl()

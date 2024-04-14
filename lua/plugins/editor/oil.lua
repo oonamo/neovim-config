@@ -1,6 +1,9 @@
 --- Bekaboo/nvim
 return {
 	"stevearc/oil.nvim",
+	cond = function()
+		return O.ui.tree.oil == true
+	end,
 	dependencies = {
 		"nvim-tree/nvim-web-devicons",
 	},

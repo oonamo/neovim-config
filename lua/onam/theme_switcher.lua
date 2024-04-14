@@ -60,7 +60,7 @@ M.themes = {
 			flavours = { "wave", "dragon", "lotus" },
 		},
 		{ file_name = "astro", name = "astro*", flavours = { "astrolight", "astrodark", "astromars" } },
-		{ file_name = "roses", name = "roses*", flavours = { "", "prime", "dawn" } },
+		{ file_name = "roses", name = "roses*", flavours = { "main", "prime", "dawn" } },
 		{ file_name = "flesh_and_blood", name = "flesh_and_blood*", flavours = { "" } },
 		{
 			file_name = "everforest",
@@ -87,6 +87,10 @@ M.themes = {
 		{ file_name = "mountain", name = "mountain*", flavours = { "" } },
 		{ file_name = "ice-cave", name = "ice-cave*", flavours = { "" } },
 		{ file_name = "chad", name = "chad*", flavours = { "rosepine-dawn" } },
+		{ file_name = "deepwhite", name = "deepwhite*", flavours = { "" } },
+		{ file_name = "darkrose", name = "darkrose*", flavours = { "" } },
+		{ file_name = "horizon", name = "horizon*", flavours = { "" } },
+		{ file_name = "darkplus", name = "darkplus*", flavours = { "" } },
 	},
 }
 

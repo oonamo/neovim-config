@@ -31,6 +31,9 @@ local defaultStatus = {
 
 local writerStatus = {
 	hl = { bg = "bg", fg = "fg" },
+	condition = function()
+		return vim.bo.filetype == "markdown"
+	end,
 	-- components.mode_block,
 	components.ViMode,
 	components.space,
@@ -82,6 +85,8 @@ local simpleStatusLine = {
 	components.space,
 	simple.FilePath,
 	simple.trunc,
+	components.space,
+	components.grapple,
 	components.FileNameModifer,
 	components.align,
 	components.wordcount,
@@ -100,6 +105,9 @@ local function get_status()
 	if O.ui.statusline.simple then
 		return simpleStatusLine
 	end
+	if O.ui.statusline.chad then
+		return require("plugins.ui.heirline.chad")
+	end
 end
 
 local StatusLine = {
@@ -112,6 +120,7 @@ local StatusLine = {
 	end,
 	fallthrough = false,
 	get_status(),
+	writerStatus,
 }
 
 local Winbar = components.Winbar

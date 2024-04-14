@@ -19,6 +19,9 @@ local FileIcon = {
 }
 
 local TablineBufnr = {
+	condition = function()
+		return O.ui.tabline.fancy == true
+	end,
 	provider = function(self)
 		if O.ui.tabline.minimal then
 			return tostring(self.bufnr) .. ":"
@@ -26,13 +29,13 @@ local TablineBufnr = {
 		return tostring(self.bufnr) .. ". "
 	end,
 	hl = function(self)
-		if O.ui.tabline.minimal then
-			if self.is_active or self.is_visible then
-				return { fg = "red" }
-			end
-			return { fg = "white" }
-			-- return "white"
-		end
+		-- if O.ui.tabline.minimal then
+		-- 	if self.is_active or self.is_visible then
+		-- 		return { fg = "red" }
+		-- 	end
+		-- 	return { fg = "white" }
+		-- 	-- return "white"
+		-- end
 		return "Comment"
 	end,
 }
@@ -43,18 +46,9 @@ local TablineFileName = {
 		-- self.filename will be defined later, just keep looking at the example!
 		local filename = self.filename
 		filename = filename == "" and "[No Name]" or vim.fn.fnamemodify(filename, ":t")
-		if O.ui.tabline.minimal then
-			return "[" .. filename .. "]"
-		end
 		return filename
 	end,
 	hl = function(self)
-		if O.ui.tabline.minimal then
-			if self.is_active or self.is_visible then
-				return { fg = "red" }
-			end
-			return { fg = "white" }
-		end
 		return { bold = self.is_active or self.is_visible, italic = true }
 	end,
 }
@@ -96,12 +90,12 @@ local TablineFileNameBlock = {
 	end,
 	hl = function(self)
 		if self.is_active then
-			return O.ui.tabline.fancy and "TabLineSel" or { fg = "red" }
+			return "TabLineSel"
 		-- why not?
 		-- elseif not vim.api.nvim_buf_is_loaded(self.bufnr) then
 		--     return { fg = "gray" }
 		else
-			return O.ui.tabline.fancy and "TabLine" or { fg = "blue" }
+			return "TabLine"
 		end
 	end,
 	on_click = {
@@ -121,8 +115,20 @@ local TablineFileNameBlock = {
 	},
 	TablineBufnr,
 	FileIcon, -- turns out the version defined in #crash-course-part-ii-filename-and-friends can be reutilized as is here!
+	{
+		provider = " ",
+		condition = function()
+			return O.ui.tabline.minimal == true
+		end,
+	},
 	TablineFileName,
 	TablineFileFlags,
+	{
+		provider = " ",
+		condition = function()
+			return O.ui.tabline.minimal == true
+		end,
+	},
 }
 
 -- a nice "x" button to close the buffer

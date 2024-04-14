@@ -10,11 +10,20 @@ O.ui = {
 	statusline = {
 		minimal = false,
 		fancy = false,
-		simple = true,
+		simple = false,
+		chad = true,
 	},
 	tabline = {
 		minimal = false,
-		fancy = true,
+		fancy = false,
+	},
+	indent = {
+		mini = true,
+		lines = false,
 	},
 	signature = "custom",
+	tree = {
+		neotree = false,
+		oil = true,
+	},
 }

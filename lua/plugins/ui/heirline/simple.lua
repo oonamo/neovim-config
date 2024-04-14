@@ -4,6 +4,9 @@ local utils = require("heirline.utils")
 local o_tools = require("onam.utils")
 
 M.FilePath = {
+	condition = function()
+		return package.loaded["incline"] == nil
+	end,
 	init = function(self)
 		self.filename = vim.fn.fnamemodify(vim.fn.expand("%:p"), ":.")
 	end,

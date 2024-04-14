@@ -1,6 +1,5 @@
 local o, opt = vim.o, vim.opt
 
--- opt.guicursor = "c-ci-ve:ver25,r-cr:hor20,o:hor20,a:blinkwait900-blinkon900-blinkoff900"
 opt.guicursor = {
 	"n-sm:block",
 	"v:hor50",
@@ -11,6 +10,7 @@ opt.guicursor = {
 opt.termguicolors = true
 opt.background = "dark"
 if vim.g.neovide then
+	opt.guicursor = "c-ci-ve:ver25,r-cr:hor20,o:hor20,a:blinkwait900-blinkon900-blinkoff900"
 	vim.g.neovide_scale_factor = 1.0
 	vim.g.neovide_hide_mouse_when_typing = true
 	vim.o.guifont = "BlexMono Nerd Font:h16"
@@ -42,6 +42,7 @@ opt.fillchars = {
 	eob = " ",
 	diff = "╱",
 	fold = " ",
+	-- eol = "⏎ ",
 	foldclose = tools.ui.icons.r_chev,
 	foldopen = tools.ui.icons.d_chev,
 	foldsep = " ",
@@ -75,14 +76,20 @@ o.foldcolumn = "1"
 opt.foldlevel = 99
 opt.foldmethod = "indent"
 o.list = true
+
 opt.listchars = {
 	nbsp = "▬",
-
 	tab = "  ",
 	trail = "·",
+	-- eol = "⏎",
 }
 o.shortmess = "acstFOSW"
 o.splitkeep = "screen"
+
+opt.formatoptions:remove("o")
+
+vim.g.netrw_banner = 0
+vim.g.netrw_mouse = 2
 
 if not vim.fn.has("win32") then
 	opt.clipboard = {
@@ -98,14 +105,15 @@ if not vim.fn.has("win32") then
 		cache_enabled = 0,
 	}
 end
+
 O = {}
 
-utils.augroup("QOL", {
-	{
-		events = { "TextYankPost" },
-		targets = { "*" },
-		command = function()
-			vim.highlight.on_yank({ timeout = 500 })
-		end,
-	},
-})
+-- utils.augroup("QOL", {
+-- 	{
+-- 		events = { "TextYankPost" },
+-- 		targets = { "*" },
+-- 		command = function()
+-- 			vim.highlight.on_yank({ timeout = 500 })
+-- 		end,
+-- 	},
+-- })

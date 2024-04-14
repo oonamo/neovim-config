@@ -18,6 +18,9 @@ local function on_attach(client, buffer)
 			buffer = buffer,
 		})
 	end
+	if client.server_capabilities.documentSymbolProvider then
+		require("nvim-navic").attach(client, buffer)
+	end
 	vim.keymap.set("n", "gd", vim.lsp.buf.definition, {
 		desc = "go to buffer definition",
 		buffer = buffer,
@@ -107,7 +110,7 @@ return {
 				settings = {
 					Lua = {
 						diagnostics = {
-							globals = { "vim" },
+							globals = { "vim", "bit" },
 						},
 						workspace = {
 							library = {
@@ -127,7 +130,6 @@ return {
 			},
 			clangd = {
 				on_attach = on_attach,
-				-- cmd = { "clangd", "--fallback-style=Microsoft" },
 			},
 			omnisharp = {
 				on_attach = on_attach,
@@ -137,268 +139,7 @@ return {
 				},
 				root_dir = { "*.sln", "*.csproj", "omnisharp.json", "function.json", "*.log" },
 			},
-			-- arduino_language_server = {
-			-- 	cmd = {
-			-- 		"arduino-language-server",
-			-- 		"-clang",
-			-- 		"C:\\Users\\onam7\\scoop\\shims\\clangd.exe",
-			-- 		"-cli",
-			-- 		"C:\\Users\\onam7\\scoop\\shims\\arduino-cli.exe",
-			-- 		"-cli-config",
-			-- 		"C:\\Users\\onam7\\AppData\\Local\\Arduino15\\arduino-cli.yaml",
-			-- 		"-fqbn",
-			-- 		"arduino:avr:mega",
-			-- 	},
-			-- 	capabilities = {
-			-- 		general = {
-			-- 			positionEncodings = { "utf-16" },
-			-- 		},
-			-- 		textDocument = {
-			-- 			callHierarchy = {
-			-- 				dynamicRegistration = false,
-			-- 			},
-			-- 			codeAction = {
-			-- 				codeActionLiteralSupport = {
-			-- 					codeActionKind = {
-			-- 						valueSet = {
-			-- 							"",
-			-- 							"quickfix",
-			-- 							"refactor",
-			-- 							"refactor.extract",
-			-- 							"refactor.inline",
-			-- 							"refactor.rewrite",
-			-- 							"source",
-			-- 							"source.organizeImports",
-			-- 						},
-			-- 					},
-			-- 				},
-			-- 				dataSupport = true,
-			-- 				dynamicRegistration = true,
-			-- 				isPreferredSupport = true,
-			-- 				resolveSupport = {
-			-- 					properties = { "edit" },
-			-- 				},
-			-- 			},
-			-- 			completion = {
-			-- 				completionItem = {
-			-- 					commitCharactersSupport = false,
-			-- 					deprecatedSupport = false,
-			-- 					documentationFormat = { "markdown", "plaintext" },
-			-- 					preselectSupport = false,
-			-- 					snippetSupport = false,
-			-- 				},
-			-- 				completionItemKind = {
-			-- 					valueSet = {
-			-- 						1,
-			-- 						2,
-			-- 						3,
-			-- 						4,
-			-- 						5,
-			-- 						6,
-			-- 						7,
-			-- 						8,
-			-- 						9,
-			-- 						10,
-			-- 						11,
-			-- 						12,
-			-- 						13,
-			-- 						14,
-			-- 						15,
-			-- 						16,
-			-- 						17,
-			-- 						18,
-			-- 						19,
-			-- 						20,
-			-- 						21,
-			-- 						22,
-			-- 						23,
-			-- 						24,
-			-- 						25,
-			-- 					},
-			-- 				},
-			-- 				completionList = {
-			-- 					itemDefaults = { "editRange", "insertTextFormat", "insertTextMode", "data" },
-			-- 				},
-			-- 				contextSupport = false,
-			-- 				dynamicRegistration = false,
-			-- 			},
-			-- 			declaration = {
-			-- 				linkSupport = true,
-			-- 			},
-			-- 			definition = {
-			-- 				dynamicRegistration = true,
-			-- 				linkSupport = true,
-			-- 			},
-			-- 			diagnostic = {
-			-- 				dynamicRegistration = false,
-			-- 			},
-			-- 			documentHighlight = {
-			-- 				dynamicRegistration = false,
-			-- 			},
-			-- 			documentSymbol = {
-			-- 				dynamicRegistration = false,
-			-- 				hierarchicalDocumentSymbolSupport = true,
-			-- 				symbolKind = {
-			-- 					valueSet = {
-			-- 						1,
-			-- 						2,
-			-- 						3,
-			-- 						4,
-			-- 						5,
-			-- 						6,
-			-- 						7,
-			-- 						8,
-			-- 						9,
-			-- 						10,
-			-- 						11,
-			-- 						12,
-			-- 						13,
-			-- 						14,
-			-- 						15,
-			-- 						16,
-			-- 						17,
-			-- 						18,
-			-- 						19,
-			-- 						20,
-			-- 						21,
-			-- 						22,
-			-- 						23,
-			-- 						24,
-			-- 						25,
-			-- 						26,
-			-- 					},
-			-- 				},
-			-- 			},
-			-- 			formatting = {
-			-- 				dynamicRegistration = true,
-			-- 			},
-			-- 			hover = {
-			-- 				contentFormat = { "markdown", "plaintext" },
-			-- 				dynamicRegistration = true,
-			-- 			},
-			-- 			implementation = {
-			-- 				linkSupport = true,
-			-- 			},
-			-- 			inlayHint = {
-			-- 				dynamicRegistration = true,
-			-- 				resolveSupport = {
-			-- 					properties = { "textEdits", "tooltip", "location", "command" },
-			-- 				},
-			-- 			},
-			-- 			publishDiagnostics = {
-			-- 				dataSupport = true,
-			-- 				relatedInformation = true,
-			-- 				tagSupport = {
-			-- 					valueSet = { 1, 2 },
-			-- 				},
-			-- 			},
-			-- 			rangeFormatting = {
-			-- 				dynamicRegistration = true,
-			-- 			},
-			-- 			references = {
-			-- 				dynamicRegistration = false,
-			-- 			},
-			-- 			rename = {
-			-- 				dynamicRegistration = true,
-			-- 				prepareSupport = true,
-			-- 			},
-			-- 			semanticTokens = vim.NIL,
-			-- 			signatureHelp = {
-			-- 				dynamicRegistration = false,
-			-- 				signatureInformation = {
-			-- 					activeParameterSupport = true,
-			-- 					documentationFormat = { "markdown", "plaintext" },
-			-- 					parameterInformation = {
-			-- 						labelOffsetSupport = true,
-			-- 					},
-			-- 				},
-			-- 			},
-			-- 			synchronization = {
-			-- 				didSave = true,
-			-- 				dynamicRegistration = false,
-			-- 				willSave = true,
-			-- 				willSaveWaitUntil = true,
-			-- 			},
-			-- 			typeDefinition = {
-			-- 				linkSupport = true,
-			-- 			},
-			-- 		},
-			-- 		window = {
-			-- 			showDocument = {
-			-- 				support = true,
-			-- 			},
-			-- 			showMessage = {
-			-- 				messageActionItem = {
-			-- 					additionalPropertiesSupport = false,
-			-- 				},
-			-- 			},
-			-- 			workDoneProgress = true,
-			-- 		},
-			-- 		workspace = {
-			-- 			applyEdit = true,
-			-- 			configuration = true,
-			-- 			didChangeConfiguration = {
-			-- 				dynamicRegistration = false,
-			-- 			},
-			-- 			didChangeWatchedFiles = {
-			-- 				dynamicRegistration = true,
-			-- 				relativePatternSupport = true,
-			-- 			},
-			-- 			inlayHint = {
-			-- 				refreshSupport = true,
-			-- 			},
-			-- 			semanticTokens = vim.NIL,
-			-- 			symbol = {
-			-- 				dynamicRegistration = false,
-			-- 				symbolKind = {
-			-- 					valueSet = {
-			-- 						1,
-			-- 						2,
-			-- 						3,
-			-- 						4,
-			-- 						5,
-			-- 						6,
-			-- 						7,
-			-- 						8,
-			-- 						9,
-			-- 						10,
-			-- 						11,
-			-- 						12,
-			-- 						13,
-			-- 						14,
-			-- 						15,
-			-- 						16,
-			-- 						17,
-			-- 						18,
-			-- 						19,
-			-- 						20,
-			-- 						21,
-			-- 						22,
-			-- 						23,
-			-- 						24,
-			-- 						25,
-			-- 						26,
-			-- 					},
-			-- 				},
-			-- 			},
-			-- 			workspaceEdit = {
-			-- 				resourceOperations = { "rename", "create", "delete" },
-			-- 			},
-			-- 			workspaceFolders = true,
-			-- 		},
-			-- 	},
-			-- },
-			-- harper_ls = defaults,
-			-- ccls = {
-			-- 	on_attach = on_attach,
-			-- 	flags = {
-			-- 		debounce_text_changes = 150,
-			-- 	},
-			-- },
-			-- markdown_oxide = {
-			-- 	on_attach = on_attach,
-			-- 	root_dir = { ".git", ".obsidian", vim.uv.cwd() },
-			-- },
+			ruff_lsp = defaults,
 		},
 		config = function(_, opts)
 			local lspconfig = require("lspconfig")
@@ -409,15 +150,8 @@ return {
 					dynamicRegistration = true,
 				},
 			}
-			require("lspconfig.ui.windows").default_options = tools.ui.cur_border
-			vim.api.nvim_set_hl(0, "LspInfoBorder", { link = "FloatBorder" })
-			-- local capabilities = vim.tbl_deep_extend(
-			-- 	"force",
-			-- 	{},
-			-- 	vim.lsp.protocol.make_client_capabilities(),
-			-- 	has_cmp and cmp_nvim_lsp.default_capabilities() or {},
-			-- 	opts.capabilities or {}
-			-- )
+			-- require("lspconfig.ui.windows").default_options = tools.ui.cur_border
+			-- vim.api.nvim_set_hl(0, "LspInfoBorder", { link = "FloatBorder" })
 			for server, settings in pairs(opts) do
 				local server_opts = vim.tbl_deep_extend("force", {
 					capabilities = vim.deepcopy(capabilities),
@@ -439,9 +173,16 @@ return {
 					lspconfig[server].setup(server_opts)
 				end
 			end
+			for _, icon in ipairs(tools.ui.lsp_signs) do
+				local hl = "DiagnosticSign" .. icon.name
+				vim.fn.sign_define(hl, { text = icon.sym, texthl = hl, numhl = hl })
+			end
 			vim.diagnostic.config({
 				underline = true,
 				severity_sort = true,
+				virtual_text = {
+					prefix = tools.ui.icons.x,
+				},
 				float = {
 					header = " ",
 					border = tools.ui.cur_border,
@@ -457,14 +198,6 @@ return {
 			})
 		end,
 	},
-	-- {
-	-- 	"micangl/cmp-vimtex",
-	-- 	ft = { "tex", "plaintex", "latex" },
-	-- },
-	-- {
-	-- 	"f3fora/cmp-spell",
-	-- 	ft = { "markdown", "norg", "tex", "latex" },
-	-- },
 	{
 		"hrsh7th/nvim-cmp",
 		dependencies = {
