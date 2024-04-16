@@ -1,54 +1,54 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = ";"
 
-local opts = { silent = true }
+-- local opts = { silent = true }
+local function opts(desc, silent, options)
+	silent = silent or false
+	options = options or {}
+	options.desc = desc or ""
+	options.silent = silent
+	return options
+end
 
-vim.keymap.set("n", "<C-d>", "<C-d>zz", opts)
-vim.keymap.set("n", "<C-u>", "<C-u>zz", opts)
-vim.keymap.set("n", "n", "nzzzv", opts)
-vim.keymap.set("n", "N", "Nzzzv", opts)
+vim.keymap.set("n", "<C-d>", "<C-d>zz", opts("smooth scroll down", true))
+vim.keymap.set("n", "<C-u>", "<C-u>zz", opts("smooth scroll up", true))
+vim.keymap.set("n", "n", "nzzzv", opts("smooth search down", true))
+vim.keymap.set("n", "N", "Nzzzv", opts("smooth search up", true))
 
-vim.api.nvim_set_keymap("i", "<C-c>", "<Esc>", { desc = "esc" })
+vim.api.nvim_set_keymap("i", "<C-c>", "<Esc>", opts("escape insert mode", true))
 
 --Move Command with J and K
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { silent = true })
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { silent = true })
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", opts("move line up", true)) -- Move line up { silent = true })
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", opts("move line down", true)) -- Move line down { silent = true })
+
 -- Quickfix list
-vim.keymap.set("n", "<leader>q", ":cnext<CR>", opts)
-vim.keymap.set("n", "<leader>Q", ":cprev<CR>", opts)
+vim.keymap.set("n", "<leader>q", ":cnext<CR>", opts("quickfix next", true))
+vim.keymap.set("n", "<leader>Q", ":cprev<CR>", opts("quickfix prev", true))
 
 --Set Copy and Paste
 --Copy to Keyboard
-vim.keymap.set({ "n", "v" }, "<leader>y", '"+y', opts)
-vim.keymap.set({ "n", "v" }, "<leader>yy", '"+yy', opts)
+vim.keymap.set({ "n", "v" }, "<leader>y", '"+y', opts("copy to clipboard", true))
+vim.keymap.set({ "n", "v" }, "<leader>yy", '"+yy', opts("copy to clipboard", true))
 
 --Paste from Keyboard
-vim.keymap.set({ "n", "v" }, "<leader>p", '"+p', opts)
-vim.keymap.set({ "n", "v" }, "<leader>P", '"+P', opts)
+vim.keymap.set({ "n", "v" }, "<leader>p", '"+p', opts("paste from clipboard", true))
+vim.keymap.set({ "n", "v" }, "<leader>P", '"+P', opts("paste from clipboard", true))
 
 -- buffers
-vim.keymap.set("n", "<leader>bn", ":bnext<CR>", opts)
-vim.keymap.set("n", "<leader>bp", ":bprev<CR>", opts)
-vim.keymap.set("n", "<leader>bc", ":bdelete<CR>", opts)
+vim.keymap.set("n", "<leader>bn", ":bnext<CR>", opts("buffer next", true))
+vim.keymap.set("n", "<leader>bp", ":bprev<CR>", opts("buffer prev", true))
+vim.keymap.set("n", "<leader>bc", ":bdelete<CR>", opts("buffer delete", true))
 
 -- Search and Replace
-vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
+vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], opts("search and replace"))
 
 vim.keymap.set("n", "<leader>cp", function()
 	require("onam.theme_switcher").open_plenary_popup()
-end, { desc = "color switcher" })
+end, opts("color switcher", true)) -- { desc = "color switcher" })
 
 vim.keymap.set("n", "<leader>cf", function()
 	require("onam.theme_switcher").toggle_flavour()
-end, { desc = "color switcher" })
-
-vim.keymap.set("n", "<leader>cb", function()
-	require("onam.color_switcher").show_plenary_popup(true)
-end, { desc = "color switcher" })
-
-vim.keymap.set("n", "<leader>cl", function()
-	require("onam.color_switcher").show_plenary_popup(false, true)
-end, { desc = "color switcher light" })
+end, opts("color switcher", true)) -- { desc = "color switcher" })
 
 vim.keymap.set("n", "z=", function()
 	local word = vim.fn.expand("<cword>")
@@ -63,29 +63,9 @@ vim.keymap.set("n", "z=", function()
 			end
 		end)
 	)
-end)
--- vim.keymap.set("n", "<leader>ct", function()
--- 	require("onam.theme_switcher").next_theme()
--- end, { desc = "theme switcher" })
--- vim.keymap.set("n", "<leader>cT", function()
--- 	require("onam.theme_switcher").previous_theme()
--- end, { desc = "theme switcher" })
---
--- vim.keymap.set("n", "<leader>ca", function()
--- 	require("onam.theme_switcher").add_candidate()
--- end, { desc = "theme switcher" })
---
--- vim.keymap.set("n", "<leader>cc", function()
--- 	require("onam.theme_switcher").get_canidates()
--- end, { desc = "theme switcher" })
+end, opts("spell suggestions"))
 
--- ARDUINO
-vim.keymap.set("n", "<leader>ip", function()
-	require("onam.helpers.arduino_helper").arduino_compile()
-end, { desc = "arduino compile" })
-vim.keymap.set("n", "<leader>ii", function()
-	require("onam.helpers.arduino_helper").init_arduino()
-end, { desc = "arduino init" })
-vim.keymap.set("n", "<leader>ih", function()
-	require("onam.helpers.arduino_helper").hydra()
-end, { desc = "arduino hydra" })
+-- window options
+vim.keymap.set("n", "<leader>vs", "<CMD>vsplit<CR>", opts("vertical split", true))
+vim.keymap.set("n", "<leader>vh", "<CMD>split<CR>", opts("horizontal split", true))
+vim.keymap.set("n", "<leader>vn", "<CMD>vnew<CR>", opts("horizontal split", true))

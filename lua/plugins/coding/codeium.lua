@@ -1,5 +1,6 @@
 return {
 	"Exafunction/codeium.vim",
+	enable = false,
 	event = { "InsertEnter" },
 	ft = { "!markdown", "!norg" },
 	init = function()

@@ -5,8 +5,6 @@ return {
 	opts = function()
 		local actions = require("fzf-lua.actions")
 		return {
-			-- "fzf-native",
-			-- "telescope",
 			buffers = {
 				cwd_prompt = false,
 				ignore_current_buffer = true,
@@ -14,6 +12,7 @@ return {
 			},
 			files = {
 				cwd_prompt = false,
+
 				prompt = "   ",
 			},
 			grep = {
@@ -162,8 +161,8 @@ return {
 	keys = {
 		{ "<leader>ff", "<cmd>FzfLua files<cr>", desc = "[f]zf [f]iles" },
 		{ "<leader>fs", "<cmd>FzfLua live_grep<cr>", desc = "fzf grep" },
-		{ "<leader>fr", "<cmd>FzfLua live_grep_resume<cr>", desc = "fzf grep resume" },
-		{ "<leader>flr", "<cmd>FzfLua lsp_references<cr>", desc = "fzf grep resume" },
+		-- { "<leader>fr", "<cmd>FzfLua live_grep_resume<cr>", desc = "fzf grep resume" },
+		{ "<leader>fr", "<cmd>FzfLua lsp_references<cr>", desc = "fzf grep resume" },
 		{ "<leader>g?", "<cmd>FzfLua help_tags<cr>", desc = "fzf help" },
 		{ "<leader>fb", "<cmd>FzfLua buffers<cr>", desc = "fzf commands" },
 		{

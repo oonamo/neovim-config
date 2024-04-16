@@ -33,6 +33,7 @@ function M.setup(flavour)
 	utils.hl = {
 		opts = {
 			{ "@keyword", { fg = M.colors.green } },
+			{ "Normal", { fg = M.colors.fg, bg = M.colors.bg } },
 			{ "Statement", { link = "@keyword" } },
 			{ "Function", { fg = M.colors.yellow } },
 			-- { "String", { fg = M.colors.orange } },

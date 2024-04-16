@@ -347,7 +347,8 @@ function utils.create_virt_diagnostics_hl()
 		"DiagnosticVirtualTextInfo",
 		"DiagnosticVirtualTextHint",
 	}
-	local percent = vim.o.background == "light" and 55 or -55
+	-- local percent = vim.o.background == "light" and 55 or -55
+	local percent = -55
 	for _, diagnostic in ipairs(diagnostics) do
 		local fg, bg, hl = utils.get_hl(diagnostic)
 		if not bg and hl then
@@ -460,8 +461,51 @@ function utils.change_hl_attribute(highlight, attribute, value)
 	local _, _, hl = utils.get_hl(highlight)
 	hl[attribute] = value
 	if hl ~= nil then
-		vim.api.nvim_set_hl("0", highlight, hl)
+		vim.api.nvim_set_hl(0, highlight, hl)
 	end
+end
+
+function utils.reverse_hl(highlight, swap_fg, swap_bg)
+	local fg, bg, hl = utils.get_hl(highlight)
+	if hl == nil then
+		return
+	end
+	if swap_fg and not swap_bg then
+		hl.foreground = bg or "NONE"
+		hl.background = "NONE"
+	elseif swap_bg and not swap_fg then
+		hl.background = fg or "NONE"
+		hl.foreground = "NONE"
+	else
+		hl.background = bg or "NONE"
+		hl.foreground = fg or "NONE"
+	end
+	vim.api.nvim_set_hl(0, highlight, hl)
+end
+
+function utils.fix_git_hls()
+	-- #162918
+	-- #c6cfd1
+	-- utils.reverse_hl("GitSignsAdd", true)
+	-- utils.change_hl_attribute("GitSignsAdd", "foreground", "NONE")
+	-- utils.reverse_hl("GitSignsAddNr")
+	-- utils.reverse_hl("GitSignsAddLn")
+	-- utils.reverse_hl("GitSignsChange")
+	-- utils.reverse_hl("GitSignsChangeNr")
+	-- utils.reverse_hl("GitSignsChangeLn")
+	-- utils.reverse_hl("GitSignsDelete")
+	-- utils.reverse_hl("GitSignsDeleteNr")
+	-- utils.reverse_hl("GitSignsDeleteLn")
+	-- utils.reverse_hl("GitSignsChangedelete")
+	-- utils.reverse_hl("GitSignsChangedeleteNr")
+	-- utils.reverse_hl("GitSignsChangedeleteLn")
+	-- utils.reverse_hl("GitSignsTopdelete")
+	-- utils.reverse_hl("GitSignsTopdeleteNr")
+	-- utils.reverse_hl("GitSignsTopdeleteLn")
+	-- utils.reverse_hl("GitSignsUntracked")
+	-- utils.reverse_hl("GitSignsUntrackedNr")
+	-- utils.reverse_hl("GitSignsUntrackedLn")
+	-- utils.reverse_hl("GitSignsDelete")
 end
 
 return utils

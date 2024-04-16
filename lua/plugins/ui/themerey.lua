@@ -8,11 +8,11 @@ return {
 				dark = "astrodark",
 			},
 			palettes = {
-				astrolight = {
-					ui = {
-						base = "#feeeee",
-					},
-				},
+				-- astrolight = {
+				-- 	ui = {
+				-- 		base = "#feeeee",
+				-- 	},
+				-- },
 			},
 			highlights = {
 				astrolight = {

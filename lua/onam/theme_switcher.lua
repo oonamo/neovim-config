@@ -84,7 +84,6 @@ M.themes = {
 		{ file_name = "mountain", name = "mountain*", flavours = { "" } },
 		{ file_name = "ice-cave", name = "ice-cave*", flavours = { "" } },
 		{ file_name = "chad", name = "chad*", flavours = { "rosepine-dawn" } },
-		{ file_name = "deepwhite", name = "deepwhite*", flavours = { "" } },
 		{ file_name = "horizon", name = "horizon*", flavours = { "" } },
 		{ file_name = "darkplus", name = "darkplus*", flavours = { "" } },
 		{ file_name = "blue-moon", name = "blue-moon*", flavours = { "" } },
