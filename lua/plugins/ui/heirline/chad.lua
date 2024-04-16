@@ -504,14 +504,14 @@ M.WorkDir = {
 	flexible = 1,
 	{
 		provider = function(self)
-			local trail = self.cwd:sub(-1) == "/" and "" or "/"
+			local trail = self.cwd:sub(-1) == "\\" and "" or "\\"
 			return self.icon .. self.cwd .. trail .. " "
 		end,
 	},
 	{
 		provider = function(self)
 			local cwd = vim.fn.pathshorten(self.cwd)
-			local trail = self.cwd:sub(-1) == "/" and "" or "/"
+			local trail = self.cwd:sub(-1) == "\\" and "" or "\\"
 			return self.icon .. cwd .. trail .. " "
 		end,
 	},
@@ -753,16 +753,18 @@ M.Navic = {
 	hl = { fg = "gray" },
 	update = "CursorMoved",
 }
-return {
-	M.ViMode,
-	-- M.space,
-	M.FileNameBlock,
-	M.space,
-	M.Git,
-	M.space,
-	M.Diagnostics,
-	M.space,
-	M.align,
-	M.WorkDir,
-	M.Ruler,
-}
+
+return M
+-- M.ViMode,
+-- -- M.space,
+-- M.FileNameBlock,
+-- M.space,
+-- M.Git,
+-- M.space,
+-- M.grapple,
+-- M.space,
+-- M.Diagnostics,
+-- M.space,
+-- M.align,
+-- M.WorkDir,
+-- M.Ruler,

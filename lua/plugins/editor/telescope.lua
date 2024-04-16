@@ -22,12 +22,12 @@ return {
 				},
 			},
 		},
-		cond = not vim.g.use_FZF,
-		keys = {
-			{ "<leader>ff", "<cmd>Telescope find_files <CR>", { desc = "find files", silent = true } },
-			{ "<C-p>", "<cmd>Telescope git_files <CR>", { desc = "git files", silent = true } },
-			{ "<leader>fs", "<cmd>Telescope live_grep<CR>", desc = "search for a string" },
-			{ "<leader>g?", "<cmd>Telescope help_tags<CR>", desc = "help" },
-		},
+		-- cond = not vim.g.use_FZF,
+		-- keys = {
+		-- 	{ "<leader>ff", "<cmd>Telescope find_files <CR>", { desc = "find files", silent = true } },
+		-- 	{ "<C-p>", "<cmd>Telescope git_files <CR>", { desc = "git files", silent = true } },
+		-- 	{ "<leader>fs", "<cmd>Telescope live_grep<CR>", desc = "search for a string" },
+		-- 	{ "<leader>g?", "<cmd>Telescope help_tags<CR>", desc = "help" },
+		-- },
 	},
 }

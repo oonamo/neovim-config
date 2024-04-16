@@ -13,6 +13,11 @@ return {
 		"hrsh7th/nvim-cmp",
 		"nvim-treesitter",
 		"ibhagwan/fzf-lua",
+		-- {
+		-- 	"oflisback/obsidian-bridge.nvim",
+		-- 	dependencies = { "nvim-telescope/telescope.nvim" },
+		-- 	config = true,
+		-- },
 	},
 	config = function()
 		require("obsidian").setup({

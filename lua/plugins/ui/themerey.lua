@@ -187,4 +187,8 @@ return {
 		"LunarVim/darkplus.nvim",
 		lazy = true,
 	},
+	{
+		"kyazdani42/blue-moon",
+		lazy = true,
+	},
 }

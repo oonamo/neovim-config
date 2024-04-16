@@ -11,9 +11,20 @@ return {
 		local function get_colors()
 			local onam_utils = require("onam.utils")
 			local fg, bg, hl = onam_utils.get_hl("StatusLine")
+			local bright_fg, bright_bg, hl = onam_utils.get_hl("Folded")
+			if not bright_bg then
+				-- bright_bg = bg
+				-- bright_fg = fg
+				_, bright_bg, _ = onam_utils.get_hl("CursorLine")
+			end
+			if not bright_fg then
+				bright_fg, _, _ = onam_utils.get_hl("CursorLine")
+			end
 			local colors = {
-				bright_bg = heirline_utils.get_highlight("Folded").bg,
-				bright_fg = heirline_utils.get_highlight("Folded").fg,
+				-- bright_bg = heirline_utils.get_highlight("Folded").bg,
+				-- bright_fg = heirline_utils.get_highlight("Folded").fg,
+				bright_bg = bright_bg,
+				bright_fg = bright_fg,
 				red = heirline_utils.get_highlight("DiagnosticError").fg,
 				dark_red = heirline_utils.get_highlight("DiffDelete").bg,
 				green = heirline_utils.get_highlight("String").fg,

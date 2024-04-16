@@ -57,12 +57,12 @@ local function on_attach(client, buffer)
 	})
 	if package.loaded["corn"] == nil then
 		local diag_float_grp = vim.api.nvim_create_augroup("DiagnosticFloat", { clear = true })
-		vim.api.nvim_create_autocmd("CursorHold", {
-			callback = function()
-				vim.diagnostic.open_float(nil, { focusable = false })
-			end,
-			group = diag_float_grp,
-		})
+		-- vim.api.nvim_create_autocmd("CursorHold", {
+		-- 	callback = function()
+		-- 		vim.diagnostic.open_float(nil, { focusable = false })
+		-- 	end,
+		-- 	group = diag_float_grp,
+		-- })
 	end
 	if O.ui.signature == "custom" then
 		-- require("lsp_signature").on_attach(conf, buffer)

@@ -7,7 +7,13 @@ return {
 		opts = {
 			-- headings = { "❯", "❯", "❯", "❯", "❯", "❯" },
 			headings = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
-			-- bullet = "",
+			bullets = { "●", "○", "◆", "◇" },
+			checkbox = {
+				-- Character that will replace the [ ] in unchecked checkboxes
+				unchecked = "",
+				-- Character that will replace the [x] in checked checkboxes
+				checked = "",
+			},
 		},
 	},
 	{

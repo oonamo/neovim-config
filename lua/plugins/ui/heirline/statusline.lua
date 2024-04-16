@@ -1,6 +1,7 @@
 local conditions = require("heirline.conditions")
 local components = require("plugins.ui.heirline.components")
 local simple = require("plugins.ui.heirline.simple")
+local chad = require("plugins.ui.heirline.chad")
 
 local defaultStatus = {
 	hl = { bg = "bg", fg = "fg" },
@@ -35,11 +36,14 @@ local writerStatus = {
 		return vim.bo.filetype == "markdown"
 	end,
 	-- components.mode_block,
-	components.ViMode,
-	components.space,
-	components.Git,
-	components.space,
-	components.FileNameBlock,
+	-- components.ViMode,
+	chad.ViMode,
+	chad.FileNameBlock,
+	chad.space,
+	-- components.space,
+	-- components.Git,
+	-- components.space,
+	-- components.FileNameBlock,
 	components.space,
 	components.grapple,
 	components.align,
@@ -48,6 +52,7 @@ local writerStatus = {
 	components.wordcount,
 	components.space,
 	components.SpaceCount,
+	components.FileEncoding,
 }
 -- local brighter_fg = utils.brighten("Normal", 30, "background")
 -- print(brighter_fg)
@@ -92,6 +97,22 @@ local simpleStatusLine = {
 	components.wordcount,
 }
 
+local chadline = {
+	chad.ViMode,
+	-- M.space,
+	chad.FileNameBlock,
+	chad.space,
+	chad.Git,
+	chad.space,
+	chad.grapple,
+	chad.space,
+	chad.Diagnostics,
+	chad.space,
+	chad.align,
+	chad.WorkDir,
+	chad.Ruler,
+}
+
 local function get_status()
 	if vim.bo.filetype == "markdown" or vim.g.neovide then
 		return writerStatus
@@ -106,7 +127,7 @@ local function get_status()
 		return simpleStatusLine
 	end
 	if O.ui.statusline.chad then
-		return require("plugins.ui.heirline.chad")
+		return chadline
 	end
 end
 
@@ -119,8 +140,8 @@ local StatusLine = {
 		end
 	end,
 	fallthrough = false,
-	get_status(),
 	writerStatus,
+	get_status(),
 }
 
 local Winbar = components.Winbar

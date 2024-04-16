@@ -456,4 +456,12 @@ utils.get_git_branch = function(root)
 	return utils.set_git_branch(root)
 end
 
+function utils.change_hl_attribute(highlight, attribute, value)
+	local _, _, hl = utils.get_hl(highlight)
+	hl[attribute] = value
+	if hl ~= nil then
+		vim.api.nvim_set_hl("0", highlight, hl)
+	end
+end
+
 return utils

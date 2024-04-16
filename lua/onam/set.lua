@@ -75,14 +75,14 @@ o.ignorecase = true
 o.foldcolumn = "1"
 opt.foldlevel = 99
 opt.foldmethod = "indent"
-o.list = true
+-- o.list = true
 
-opt.listchars = {
-	nbsp = "▬",
-	tab = "  ",
-	trail = "·",
-	-- eol = "⏎",
-}
+-- opt.listchars = {
+-- 	nbsp = "▬",
+-- 	tab = "  ",
+-- 	trail = "·",
+-- 	-- eol = "⏎",
+-- }
 o.shortmess = "acstFOSW"
 o.splitkeep = "screen"
 
