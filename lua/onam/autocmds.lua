@@ -45,6 +45,33 @@ function M.set_qol()
 				end)
 			end,
 		},
+		{
+			events = { "VimEnter" },
+			targets = { "*" },
+			command = function()
+				-- vim.env.IS_NVIM = true
+				local stdout = vim.loop.new_tty(1, false)
+				stdout:write(
+					("\x1bPtmux;\x1b\x1b]1337;SetUserVar=%s=%s\b\x1b\\"):format(
+						"IS_NVIM",
+						vim.fn.system({ "base64" }, "1")
+					)
+				)
+			end,
+		},
+		{
+			events = { "VimLeave" },
+			targets = { "*" },
+			command = function()
+				local stdout = vim.loop.new_tty(1, false)
+				stdout:write(
+					("\x1bPtmux;\x1b\x1b]1337;SetUserVar=%s=%s\b\x1b\\"):format(
+						"IS_NVIM",
+						vim.fn.system({ "base64" }, "-1")
+					)
+				)
+			end,
+		},
 		-- Treesitter does not load using this.
 		-- {
 		-- 	events = { "VimEnter" },
