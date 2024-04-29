@@ -30,7 +30,7 @@ function M.setup()
 		},
 	}
 	utils:create_hl()
-	vim.opt.cursorline = true
+	vim.opt.cursorline = false
 end
 
 return M

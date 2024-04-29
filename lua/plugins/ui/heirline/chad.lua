@@ -2,7 +2,6 @@ local M = {}
 local conditions = require("heirline.conditions")
 local utils = require("heirline.utils")
 local minimal_fg = vim.o.background == "light" and "white" or "black"
-
 local default = { left = "", right = "" }
 local function ChadSeps(highlight)
 	return {
@@ -164,11 +163,11 @@ M.mode_block = {
 }
 
 M.FileNameBlock = {
-	-- {
-	-- 	condition = function()
-	-- 		return package.loaded["incline"] == nil
-	-- 	end,
-	-- },
+	{
+		condition = function()
+			return package.loaded["incline"] == nil
+		end,
+	},
 	init = function(self)
 		self.filename = vim.api.nvim_buf_get_name(0)
 	end,
@@ -249,6 +248,11 @@ M.FileNameModifer = {
 
 M.FileNameBlock = utils.insert(
 	-- M.FileIcon,
+	{
+		condition = function()
+			return package.loaded["incline"] == nil
+		end,
+	},
 	M.FileNameBlock,
 	-- M.Space,
 	utils.insert(M.FileNameModifer, M.FileName), -- a new table where FileName is a child of FileNameModifier

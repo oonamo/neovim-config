@@ -1,6 +1,7 @@
 local M = {}
 local function on_attach(client, buffer)
-	local conf = require("onam.helpers.lsp.signature")
+	local fzf = require("fzf-lua")
+	-- local conf = require("onam.helpers.lsp.signature")
 	if client.name == "rust_analyzer" then
 		vim.keymap.set("n", "<leader>h", function()
 			vim.cmd.RustLsp({ "hover", "actions" })
@@ -18,17 +19,20 @@ local function on_attach(client, buffer)
 			buffer = buffer,
 		})
 	end
-	if client.server_capabilities.documentSymbolProvider then
-		require("nvim-navic").attach(client, buffer)
-	end
-	vim.keymap.set("n", "gd", vim.lsp.buf.definition, {
+	-- if client.server_capabilities.documentSymbolProvider then
+	-- 	require("nvim-navic").attach(client, buffer)
+	-- end
+	vim.keymap.set("n", "gd", function()
+		vim.lsp.buf.definition()
+	end, {
 		desc = "go to buffer definition",
 		buffer = buffer,
 	})
-	vim.keymap.set("n", "<leader>vws", vim.lsp.buf.workspace_symbol, {
-		desc = "Go to workspace_symbol",
-		buffer = buffer,
-	})
+	-- vim.keymap.set("n", "<leader>vws", vim.lsp.buf.workspace_symbol, {
+	-- 	desc = "Go to workspace_symbol",
+	-- 	buffer = buffer,
+	-- })
+	vim.keymap.set("n", "<leader>vws", fzf.lsp_workspace_symbols, { desc = "Find workspace_symbol", buffer = buffer })
 	vim.keymap.set("n", "<leader>vd", function()
 		vim.diagnostic.open_float({ border = tools.ui.cur_border })
 	end, {
@@ -43,7 +47,11 @@ local function on_attach(client, buffer)
 		desc = "Go to previous diagnostic",
 		buffer = buffer,
 	})
-	vim.keymap.set("n", "<leader>vrr", vim.lsp.buf.references, {
+	-- vim.keymap.set("n", "<leader>vrr", vim.lsp.buf.references, {
+	-- 	desc = "Go to lsp references",
+	-- 	buffer = buffer,
+	-- })
+	vim.keymap.set("n", "<leader>vrr", fzf.lsp_references, {
 		desc = "Go to lsp references",
 		buffer = buffer,
 	})
@@ -228,6 +236,7 @@ return {
 			M.codelldb_path = codelldb_path
 			local liblldb_path = extension_path .. "lldb/lib/liblldb.so"
 			M.liblldb_path = liblldb_path
+
 			local function get_lsp_completion_context(completion, source)
 				local ok, source_name = pcall(function()
 					return source.source.client.config.name
@@ -595,18 +604,4 @@ return {
 			vim.g.rustaceanvim = opts
 		end,
 	},
-	-- {
-	-- 	"glebzlat/arduino-nvim",
-	-- 	ft = { "arduino" },
-	-- 	opts = {
-	-- 		default_fqbn = "arduino:avr:mega",
-	-- 		callbacks = {
-	-- 			on_attach = on_attach,
-	-- 		},
-	--            capabilities = capabilities
-	-- 	},
-	-- 	config = function(_, opts)
-	-- 		require("arduino-nvim").setup(opts)
-	-- 	end,
-	-- },
 }

@@ -31,7 +31,6 @@
 
 ---@type ThemeSwitcher
 local M = {}
-
 ---@class Themes
 M.themes = {
 	index = "gruvbox",
@@ -48,11 +47,6 @@ M.themes = {
 				{ "light", "" },
 				{ "light", "hard" },
 			},
-		},
-		{
-			file_name = "solarized",
-			name = "solarized*",
-			flavours = { "light", "dark" },
 		},
 		{
 			file_name = "kanagawa",
@@ -80,13 +74,10 @@ M.themes = {
 			flavours = { "nightfox", "dayfox", "dawnfox", "nordfox", "terafox", "carbonfox" },
 			append_file_name = false,
 		},
-		{ file_name = "papercolor", name = "papercolor*", flavours = { "dark", "light" } },
-		{ file_name = "mountain", name = "mountain*", flavours = { "" } },
 		{ file_name = "ice-cave", name = "ice-cave*", flavours = { "" } },
 		{ file_name = "chad", name = "chad*", flavours = { "rosepine-dawn" } },
-		{ file_name = "horizon", name = "horizon*", flavours = { "" } },
 		{ file_name = "darkplus", name = "darkplus*", flavours = { "" } },
-		{ file_name = "blue-moon", name = "blue-moon*", flavours = { "" } },
+		{ file_name = "dracula", name = "dracula*", flavours = { "dark", "light" } },
 	},
 }
 
@@ -140,7 +131,8 @@ end
 
 ---@param schemes Themes
 local function create_plenary_popup(schemes)
-	local borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" }
+	-- local borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" }
+	local borderchars = tools.ui.cur_border
 	local width = 40
 	-- local colorschemes = M.colorschemes.colors
 	local colorschemes = {}

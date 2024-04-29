@@ -11,7 +11,8 @@ O.ui = {
 		minimal = false,
 		fancy = false,
 		simple = false,
-		chad = true,
+		chad = false,
+		tj = true,
 	},
 	tabline = {
 		minimal = false,
@@ -24,6 +25,7 @@ O.ui = {
 	signature = "custom",
 	tree = {
 		neotree = false,
-		oil = true,
+		oil = false,
 	},
+	incline = true,
 }

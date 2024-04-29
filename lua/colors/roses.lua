@@ -1,9 +1,37 @@
 local M = {}
+M.fn = "prime-pine"
+M.name = "rose-pine"
+
+M.colors = {
+	fg = "#e0def4",
+	-- bg = "#28272a",
+	bg = "#1c1c1c",
+	green = "#698282",
+	yellow = "#ffc2c6",
+	magenta = "#dda0dd",
+	red = "#ea83a5",
+	blue = "#31748f",
+	cyan = "#b3c3c4",
+	gray = "#3d3d3d",
+	orange = "#d3a38d",
+	white = "#e0def4",
+	black = "#21202e",
+}
 function M.setup(flavour)
 	vim.cmd.hi("clear")
 	vim.opt.cursorline = true
 	if flavour == "dawn" then
 		vim.o.background = "light"
+		utils.hl = {
+			opts = {
+				{ "@property", { fg = "#b4637a" } }, -- love
+				{ "@variable", { fg = "#575279" } }, -- text
+				-- { "@keyword", { fg = "#ea9d34" } }, -- gold
+				-- { "@lsp.type.parameter", { fg = "#286983" } }, -- foam
+				{ "@function", { fg = "#907aa9" } }, -- iris
+				{ "@function.builtin", { fg = "#907aa9" } },
+			},
+		}
 	elseif flavour == "prime" then
 		require("colors.prime-pine").setup()
 		require("colors.prime-pine").setup_pmenu()
@@ -47,8 +75,14 @@ function M.setup(flavour)
 			h5 = "pine",
 			h6 = "foam",
 		},
+		highlight_groups = {
+			StatusLineNC = { bg = "foam", fg = "text" },
+		},
 	})
 	vim.cmd("colorscheme rose-pine-" .. flavour)
+	if flavour == "dawn" then
+		utils:create_hl()
+	end
 end
 
 return M

@@ -4,6 +4,7 @@ return {
 		branch = "0.1.x",
 		cmd = "Telescope",
 		lazy = true,
+		-- enabled = tr,
 		dependencies = { "nvim-lua/plenary.nvim" },
 		opts = {
 			pickers = {

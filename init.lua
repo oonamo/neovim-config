@@ -34,7 +34,6 @@ require("lazy").setup({
 		icons = tools.ui.bullet,
 	},
 })
-
 require("onam.autocmds").set_qol()
 require("onam.theme_switcher").init()
 if not O.ui.tree.oil and not O.ui.tree.neotree then

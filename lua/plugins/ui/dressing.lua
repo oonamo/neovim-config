@@ -11,7 +11,7 @@ return {
 			max_width = { 80, 0.5 },
 			min_width = { 10, 0.2 },
 			--- Set window transparency to 0.
-			border = tools.ui.cur_border,
+			border = tools.ui.borders.invis,
 			-- win_options = {
 			-- 	winblend = 0,
 			-- },

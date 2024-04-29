@@ -8,12 +8,18 @@ M.FilePath = {
 		return package.loaded["incline"] == nil
 	end,
 	init = function(self)
-		self.filename = vim.fn.fnamemodify(vim.fn.expand("%:p"), ":.")
+		self.filename = vim.fn.fnamemodify(vim.fn.expand("%:p"), ":p:.")
 	end,
 	provider = function(self)
 		return tools.ui.icons.file .. " " .. self.filename
 	end,
 	hl = utils.get_highlight("NonText").fg,
+}
+
+M.obsidian_path = {
+	init = function(self)
+		self.filename = vim.fn.fnamemodify(vim.fn.expand("%:p"), ":.")
+	end,
 }
 
 M.trunc = { provider = "%<" }

@@ -4,7 +4,11 @@ return {
 	lazy = true,
 	opts = function()
 		local actions = require("fzf-lua.actions")
+		local bg_plus_hl =
+			{ vim.o.background == "dark" and "bg" or "fg", vim.o.background == "dark" and "CursorLine" or "Normal" }
+		-- local bg_plus_hl = { "bg", "CursorLine" }
 		return {
+			"max-perf",
 			buffers = {
 				cwd_prompt = false,
 				ignore_current_buffer = true,
@@ -12,7 +16,6 @@ return {
 			},
 			files = {
 				cwd_prompt = false,
-
 				prompt = "   ",
 			},
 			grep = {
@@ -22,6 +25,19 @@ return {
 					["--keep-right"] = "",
 				},
 			},
+			fzf_colors = {
+				["bg"] = { "bg", "NormalFloat" },
+				["bg+"] = { "bg", "CursorLine" },
+				["fg+"] = { "fg", "Function" },
+				["gutter"] = { "bg", "NormalFloat" },
+				["header"] = { "fg", "NonText" },
+				["info"] = { "fg", "NonText" },
+				["pointer"] = { "bg", "Cursor" },
+				--  ["prompt"]    = { "fg", "Number" },
+				["separator"] = { "bg", "NormalFloat" },
+				["spinner"] = { "fg", "NonText" },
+			},
+			fzf_opts = { ["--keep-right"] = "" },
 			winopts = {
 				cursorline = true,
 				border = tools.ui.cur_border,
@@ -39,6 +55,20 @@ return {
 					search = "IncSearch",
 					title = "FloatTitle",
 				},
+				-- border = "single",
+				fullscreen = false,
+				-- preview = {
+				-- 	delay = 150,
+				-- 	scrollbar = false,
+				-- 	default = "builtin",
+				-- 	wrap = "wrap",
+				-- 	horizontal = "right:45%",
+				-- 	vertical = "down:40%",
+				-- 	winopts = {
+				-- 		cursorlineopt = "line",
+				-- 		foldcolumn = 0,
+				-- 	},
+				-- },
 				fzf_colors = {
 					["bg"] = { "bg", "NormalFloat" },
 					["bg+"] = { "bg", "CursorLine" },
@@ -57,7 +87,7 @@ return {
 					-- default = 'bat_native',
 					-- border = "border",
 					-- layout = "vertical",
-					-- horizontal = "right:70%",
+					horizontal = "right:30%",
 					-- vertical = "up:50%",
 					-- using winopts_fn to set truncation
 					-- flip_columns = truncation.truncation_limit_s_terminal
@@ -105,17 +135,20 @@ return {
 					["ctrl-t"] = actions.buf_tabedit,
 				},
 			},
-			fzf_opts = {
-				-- 	["--ansi"] = "",
-				-- 	["--info"] = "inline",
-				-- 	["--height"] = "100%",
-				["--layout"] = "reverse",
-				-- 	["--border"] = "none",
-				-- 	["--prompt"] = "❯",
-				-- 	["--pointer"] = "❯",
-				-- 	["--marker"] = "❯",
-				-- 	["--no-scrollbar"] = "",
-			},
+			-- TODO: OLD
+			--
+			-- fzf_opts = {
+			-- 	-- 	["--ansi"] = "",
+			-- 	-- 	["--info"] = "inline",
+			-- 	-- 	["--height"] = "100%",
+			-- 	["--layout"] = "reverse",
+			-- 	-- 	["--border"] = "none",
+			-- 	-- 	["--prompt"] = "❯",
+			-- 	-- 	["--pointer"] = "❯",
+			-- 	-- 	["--marker"] = "❯",
+			-- 	-- 	["--no-scrollbar"] = "",
+			-- },
+
 			-- fzf_colors = {
 			-- 	["fg"] = { "fg", "FzfLuaColorsFg" },
 			-- 	["fg+"] = { "fg", "FzfLuaColorsFgSel", "reverse:-1" },
@@ -130,21 +163,22 @@ return {
 			-- 	["spinner"] = { "fg", "FzfLuaColorsSpinner" },
 			-- 	["header"] = { "fg", "FzfLuaColorsHeader" },
 			-- },
-			fzf_colors = {
-				["fg"] = { "fg", "CursorLine" },
-				["bg"] = { "bg", "Normal" },
-				["hl"] = { "fg", "Comment" },
-				["fg+"] = { "fg", "Normal" },
-				["bg+"] = { "bg", "CursorLine" },
-				["hl+"] = { "fg", "Statement" },
-				["info"] = { "fg", "PreProc" },
-				["prompt"] = { "fg", "Conditional" },
-				["pointer"] = { "fg", "Exception" },
-				["marker"] = { "fg", "Keyword" },
-				["spinner"] = { "fg", "Label" },
-				["header"] = { "fg", "Comment" },
-				["gutter"] = { "bg", "Normal" },
-			},
+			-- OLD
+			-- fzf_colors = {
+			-- 	["fg"] = { "fg", "CursorLine" },
+			-- 	["bg"] = { "bg", "Normal" },
+			-- 	["hl"] = { "fg", "Comment" },
+			-- 	["fg+"] = { "fg", "Normal" },
+			-- 	["bg+"] = { "bg", "CursorLine" },
+			-- 	["hl+"] = { "fg", "Statement" },
+			-- 	["info"] = { "fg", "PreProc" },
+			-- 	["prompt"] = { "fg", "Conditional" },
+			-- 	["pointer"] = { "fg", "Exception" },
+			-- 	["marker"] = { "fg", "Keyword" },
+			-- 	["spinner"] = { "fg", "Label" },
+			-- 	["header"] = { "fg", "Comment" },
+			-- 	["gutter"] = { "bg", "Normal" },
+			-- },
 			-- files = {
 			-- 	actions = {
 			-- 		["ctrl-q"] = false,
@@ -165,6 +199,20 @@ return {
 		{ "<leader>fr", "<cmd>FzfLua lsp_references<cr>", desc = "fzf grep resume" },
 		{ "<leader>g?", "<cmd>FzfLua help_tags<cr>", desc = "fzf help" },
 		{ "<leader>fb", "<cmd>FzfLua buffers<cr>", desc = "fzf commands" },
+		-- { "<C-p>", "<cmd>FzfLua files<cr>", desc = "Find files" },
+		{
+			"<C-p>",
+			function()
+				require("fzf-lua").files({
+					-- winopts = {
+					-- 	fullscreen = false,
+					-- 	height = 0.90,
+					-- 	width = 1,
+					-- },
+				})
+			end,
+		},
+		{ "<C-f>", "<cmd>FzfLua live_grep_glob<cr>", desc = "Live grep glob" },
 		{
 			"<leader>fc",
 			function()

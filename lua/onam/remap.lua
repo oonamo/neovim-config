@@ -69,3 +69,9 @@ end, opts("spell suggestions"))
 vim.keymap.set("n", "<leader>vs", "<CMD>vsplit<CR>", opts("vertical split", true))
 vim.keymap.set("n", "<leader>vh", "<CMD>split<CR>", opts("horizontal split", true))
 vim.keymap.set("n", "<leader>vn", "<CMD>vnew<CR>", opts("horizontal split", true))
+
+-- move in wezterm
+vim.keymap.set("n", "<C-;>", function()
+	local command = { "wezterm", "cli", "activate-pane-direction", "Down" }
+	return vim.fn.system(command)
+end)

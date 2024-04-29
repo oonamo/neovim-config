@@ -1,5 +1,4 @@
 local M = {}
-
 function M.set_qol()
 	utils.augroup("QOL", {
 		{
@@ -16,35 +15,29 @@ function M.set_qol()
 				vim.cmd("wincmd =")
 			end,
 		},
-		{
-			events = { "FileType" },
-			targets = {
-				"netrw",
-				"Jaq",
-				"qf",
-				"git",
-				"help",
-				"man",
-				"lspinfo",
-				"spectre_panel",
-				"lir",
-				"DressingSelect",
-				"tsplayground",
-			},
-			command = function()
-				-- vim.cmd("set nobuflisted")
-				vim.bo.buflisted = false
-				vim.schedule(function()
-					vim.api.nvim_buf_set_keymap(
-						0,
-						"n",
-						"<leader>e",
-						"<cmd>close<cr>",
-						{ noremap = true, silent = true }
-					)
-				end)
-			end,
-		},
+		-- {
+		-- 	events = { "FileType" },
+		-- 	targets = {
+		-- 		"netrw",
+		-- 		"Jaq",
+		-- 		"qf",
+		-- 		"git",
+		-- 		"help",
+		-- 		"man",
+		-- 		"lspinfo",
+		-- 		"spectre_panel",
+		-- 		"lir",
+		-- 		"DressingSelect",
+		-- 		"tsplayground",
+		-- 	},
+		-- 	command = function()
+		-- 		-- vim.cmd("set nobuflisted")
+		-- 		vim.bo.buflisted = false
+		-- 		vim.schedule(function()
+		-- 			vim.api.nvim_buf_set_keymap(0, "n", "q", "<cmd>close<cr>", { noremap = true, silent = true })
+		-- 		end)
+		-- 	end,
+		-- },
 		{
 			events = { "VimEnter" },
 			targets = { "*" },
@@ -72,6 +65,21 @@ function M.set_qol()
 				)
 			end,
 		},
+		{
+			events = { "BufEnter", "CursorMoved", "CursorHoldI" },
+			command = function()
+				local win_h = vim.api.nvim_win_get_height(0)
+				local off = math.min(vim.o.scrolloff, math.floor(win_h / 2))
+				local dist = vim.fn.line("$") - vim.fn.line(".")
+				local rem = vim.fn.line("w$") - vim.fn.line("w0") + 1
+
+				if dist < off and win_h - rem + dist < off then
+					local view = vim.fn.winsaveview()
+					view.topline = view.topline + off - (win_h - rem + dist)
+					vim.fn.winrestview(view)
+				end
+			end,
+		},
 		-- Treesitter does not load using this.
 		-- {
 		-- 	events = { "VimEnter" },
@@ -84,18 +92,40 @@ function M.set_qol()
 		-- 	end,
 		-- },
 	})
+	do
+		SEARCH_REG = ""
+		utils.augroup("SearchCommand", {
+			{
+				events = { "CmdlineEnter" },
+				targets = { "*" },
+				command = function()
+					SEARCH_REG = vim.fn.getreg("/")
+					vim.fn.setreg("/", "")
+					vim.opt.hlsearch = true
+				end,
+			},
+			{
+				events = { "CmdlineLeave" },
+				targets = { "*" },
+				command = function()
+					vim.fn.setreg("/", SEARCH_REG)
+					vim.opt.hlsearch = false
+				end,
+			},
+		})
+	end
 end
 
 function M.set_netrw()
-	utils.augroup("Netrw", {
-		{
-			events = { "FileType" },
-			targets = { "netrw" },
-			command = function()
-				vim.api.nvim_buf_set_keymap(0, "n", "q", "<cmd>quit<cr>", { noremap = true, silent = true })
-			end,
-		},
-	})
+	-- utils.augroup("Netrw", {
+	-- 	{
+	-- 		events = { "FileType" },
+	-- 		targets = { "netrw" },
+	-- 		command = function()
+	-- 			vim.api.nvim_buf_set_keymap(0, "n", "q", "<cmd>quit<cr>", { noremap = true, silent = true })
+	-- 		end,
+	-- 	},
+	-- })
 end
 
 function M.setup_status_cmds()

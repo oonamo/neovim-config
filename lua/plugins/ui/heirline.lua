@@ -60,10 +60,13 @@ return {
 		end
 		local statusline = require("plugins.ui.heirline.statusline")
 		local conditions = require("heirline.conditions")
+		local statuscolumn = require("plugins.ui.heirline.statuscolumn")
 		heirline.setup({
 			statusline = statusline.statusline,
+			-- statusline = require("plugins.ui.heirline.tjline"),
 			-- tabline = tabline,
-			statuscolumn = require("plugins.ui.heirline.statuscolumn"),
+			-- statuscolumn = require("plugins.ui.heirline.statuscolumn"),
+			statuscolumn = statuscolumn,
 			winbar = require("plugins.ui.heirline.winbar").winbar,
 			opts = {
 				colors = get_colors(),

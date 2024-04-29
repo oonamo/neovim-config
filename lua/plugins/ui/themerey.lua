@@ -42,76 +42,76 @@ return {
 		name = "rose-pine",
 		lazy = true,
 		config = function()
-			require("rose-pine").setup({
-				-- variant = "",
-				styles = {
-					bold = true,
-					italic = true,
-					transparency = false,
-				},
-				enable = {
-					terminal = true,
-					legacy_highlights = true, -- Improve compatibility for previous versions of Neovim
-					migrations = true, -- Handle deprecated options automatically
-				},
-				groups = {
-					border = "muted",
-					link = "iris",
-					panel = "surface",
-
-					error = "love",
-					hint = "iris",
-					info = "foam",
-					note = "pine",
-					todo = "rose",
-					warn = "gold",
-
-					git_add = "foam",
-					git_change = "rose",
-					git_delete = "love",
-					git_dirty = "rose",
-					git_ignore = "muted",
-					git_merge = "iris",
-					git_rename = "pine",
-					git_stage = "iris",
-					git_text = "rose",
-					git_untracked = "subtle",
-
-					h1 = "iris",
-					h2 = "foam",
-					h3 = "rose",
-					h4 = "gold",
-					h5 = "pine",
-					h6 = "foam",
-				},
-				highlight_groups = {
-					-- _nc = "#16141f",
-					-- base = "#191724",
-					-- surface = "#1f1d2e",
-					-- overlay = "#26233a",
-					-- muted = "#6e6a86",
-					-- subtle = "#908caa",
-					-- text = "#e0def4",
-					-- love = "#eb6f92",
-					-- gold = "#f9bd98",
-					-- rose = "#ebbcba",
-					-- pine = "#7f9f9f",
-					-- foam = "#bedfe0",
-					-- iris = "#debee2",
-					-- highlight_low = "#21202e",
-					-- highlight_med = "#403d52",
-					-- highlight_high = "#524f67",
-					-- none = "NONE",
-					TreesitterContext = { bg = "highlight_low" },
-					TreesitterContextBottom = { sp = "rose", underline = true },
-					TreesitterContextNumberBottom = { sp = "rose", underline = true },
-					TelescopeTitle = { fg = "base", bg = "love" },
-					TelescopePromptTitle = { fg = "base", bg = "pine" },
-					TelescopePreviewTitle = { fg = "base", bg = "iris" },
-					BufferVisible = { bg = "none", fg = "text", bold = true, italic = true },
-					NoiceCmdlinePopupBorder = { fg = "subtle", bg = "subtle" },
-				},
-			})
+			-- require("rose-pine").setup({
+			-- 	-- variant = "",
+			-- 	styles = {
+			-- 		bold = true,
+			-- 		italic = true,
+			-- 		transparency = false,
+			-- 	},
+			-- 	enable = {
+			-- 		terminal = true,
+			-- 		legacy_highlights = true, -- Improve compatibility for previous versions of Neovim
+			-- 		migrations = true, -- Handle deprecated options automatically
+			-- 	},
+			-- 	groups = {
+			-- 		border = "muted",
+			-- 		link = "iris",
+			-- 		panel = "surface",
+			--
+			-- 		error = "love",
+			-- 		hint = "iris",
+			-- 		info = "foam",
+			-- 		note = "pine",
+			-- 		todo = "rose",
+			-- 		warn = "gold",
+			--
+			-- 		git_add = "foam",
+			-- 		git_change = "rose",
+			-- 		git_delete = "love",
+			-- 		git_dirty = "rose",
+			-- 		git_ignore = "muted",
+			-- 		git_merge = "iris",
+			-- 		git_rename = "pine",
+			-- 		git_stage = "iris",
+			-- 		git_text = "rose",
+			-- 		git_untracked = "subtle",
+			--
+			-- 		h1 = "iris",
+			-- 		h2 = "foam",
+			-- 		h3 = "rose",
+			-- 		h4 = "gold",
+			-- 		h5 = "pine",
+			-- 		h6 = "foam",
+			-- 	},
+			-- 	highlight_groups = {
+			-- 		-- _nc = "#16141f",
+			-- 		-- base = "#191724",
+			-- 		-- surface = "#1f1d2e",
+			-- 		-- overlay = "#26233a",
+			-- 		-- muted = "#6e6a86",
+			-- 		-- subtle = "#908caa",
+			-- 		-- text = "#e0def4",
+			-- 		-- love = "#eb6f92",
+			-- 		-- gold = "#f9bd98",
+			-- 		-- rose = "#ebbcba",
+			-- 		-- pine = "#7f9f9f",
+			-- 		-- foam = "#bedfe0",
+			-- 		-- iris = "#debee2",
+			-- 		-- highlight_low = "#21202e",
+			-- 		-- highlight_med = "#403d52",
+			-- 		-- highlight_high = "#524f67",
+			-- 		-- none = "NONE",
+			-- 		TreesitterContext = { bg = "highlight_low" },
+			-- 		TreesitterContextBottom = { sp = "rose", underline = true },
+			-- 		TreesitterContextNumberBottom = { sp = "rose", underline = true },
+			-- 		TelescopeTitle = { fg = "base", bg = "love" },
+			-- 		TelescopePromptTitle = { fg = "base", bg = "pine" },
+			-- 		TelescopePreviewTitle = { fg = "base", bg = "iris" },
+			-- 		BufferVisible = { bg = "none", fg = "text", bold = true, italic = true },
+			-- 		NoiceCmdlinePopupBorder = { fg = "subtle", bg = "subtle" },
+			-- 	},
+			-- })
 		end,
 	},
 	{
@@ -129,23 +129,118 @@ return {
 	{
 		"EdenEast/nightfox.nvim",
 		lazy = true,
-	},
-	{
-		"Tsuzat/NeoSolarized.nvim",
-		lazy = true,
-		opts = {
-			transparent = false,
-		},
-	},
-	{
-		"NLKNguyen/papercolor-theme",
-		lazy = true,
-	},
-	{
-		"mountain-theme/vim",
-		name = "mountain",
-		branch = "master",
-		lazy = true,
+		opts = function()
+			local S = require("nightfox.lib.shade")
+			return {
+				options = {
+					transparent = false,
+					-- dim_inactive = true,
+					styles = { -- Style to be applied to different syntax groups
+						functions = "bold",
+						keywords = "bold",
+						conditional = "italic",
+					},
+					inverse = { -- Inverse highlight for different types
+						match_paren = false,
+						visual = false,
+						search = true,
+					},
+				},
+				palettes = {
+					nightfox = {
+						red = { base = "#df6959", bright = "#df6959", dim = "#df6959" },
+						sel0 = "#284263", -- Popup bg, visual selection bg
+						orange_br = "#e49464",
+					},
+					nordfox = {
+						comment = "#60728a",
+					},
+					dayfox = {
+						-- commit = "c88664b18e593319aea1ded731dd252d4f9e0f9a", -- before day-fox refactor, not looking goodd
+						black = S.new("#1d344f", "#24476f", "#1c2f44", true),
+						red = S.new("#b95d76", "#c76882", "#ac5169", true),
+						green = S.new("#618774", "#629f81", "#597668", true),
+						yellow = S.new("#ba793e", "#ca884a", "#a36f3e", true),
+						blue = S.new("#4d688e", "#4e75aa", "#485e7d", true),
+						magenta = S.new("#8e6f98", "#9f75ac", "#806589", true),
+						-- cyan    = S.new("#6ca7bd", "#74b2c9", "#5a99b0", true),
+						cyan = { base = "#208990", bright = "#259495", dim = "#107980" }, -- darken
+						-- white   = S.new("#cdd1d5", "#cfd6dd", "#b6bcc2", true),
+						white = { base = "#ee9310", bright = "#f19615", dim = "#d38305" },
+						orange = S.new("#e3786c", "#e8857a", "#d76558", true),
+						pink = S.new("#d685af", "#de8db7", "#c9709e", true),
+
+						comment = "#7f848e",
+
+						bg0 = "#dfdfdf", -- Dark bg (status line and float)
+						bg1 = "#F7F7FA", -- Default bg
+						bg2 = "#E8E8EC", -- Lighter bg (colorcolm folds)
+						bg3 = "#DbEAfB", -- Lighter bg (cursor line)
+						bg4 = "#dcdcdc", -- Conceal, border fg
+
+						fg0 = "#182a40", -- Lighter fg
+						fg1 = "#1d344f", -- Default fg
+						fg2 = "#233f5e", -- Darker fg (status line)
+						fg3 = "#2e537d", -- Darker fg (line numbers, fold colums)
+
+						sel0 = "#D8E7fB", -- Popup bg, visual selection bg
+						sel1 = "#dcdcdc", -- Popup sel bg, search bg
+					},
+					dawnfox = {
+						bg1 = "#FFFAF3", -- brighter
+						bg2 = "#eae1e3", -- brighter
+						yellow = { base = "#ee9310", bright = "#f19615", dim = "#d38305" },
+					},
+				},
+				specs = {
+					all = {
+						git = {
+							added = "#a4cf69",
+							changed = "#63c1e6",
+							removed = "#d74f56",
+						},
+					},
+					dayfox = {
+						syntax = {
+							func = "blue.bright", -- was blue.dim
+							ident = "magenta", -- cyan by default
+						},
+					},
+					dawnfox = {
+						syntax = {
+							func = "blue.bright", -- was blue.dim
+						},
+					},
+					nightfox = {
+						git = {
+							added = "#a4cf69",
+							changed = "#63c1e6",
+							removed = "#d74f56",
+						},
+						syntax = {
+							func = "blue.bright", -- was blue.dim
+						},
+					},
+				},
+				groups = {
+					all = {
+						["@keyword.function"] = { link = "@keyword.return" }, -- make them reddish
+						["@keyword.repeat"] = { link = "@keyword.return" }, -- make them reddish
+						["@keyword.conditional"] = { link = "@keyword.return" }, -- make them reddish
+						["@keyword.exception"] = { link = "@keyword.return" }, -- make them reddish
+						-- ["@conditional"] = { link = "@keyword.return" },
+						["@repeat"] = { link = "@keyword.return" },
+						["@keyword.operator"] = { link = "@keyword.return" },
+						["@keyword"] = { link = "@keyword.return" }, -- from blueish, to red
+						["@function.builtin"] = { link = "@keyword" }, -- blueish - list, enumerate, range...
+						["MatchParen"] = { fg = "palette.green", style = "reverse" }, -- blueish - list, enumerate, range...
+						-- DiffAdd = {bg = "#a4cf69" }, -- does not seem to work...
+						-- DiffChange = {bg = "#63c1e6" },
+						-- DiffDelete = {bg = "#d74f56" },
+					},
+				},
+			}
+		end,
 	},
 	{
 		"mcauley-penney/ice-cave.nvim",
@@ -158,37 +253,11 @@ return {
 		lazy = true,
 	},
 	{
-		"Verf/deepwhite.nvim",
-		lazy = true,
-	},
-	{
-		"akinsho/horizon.nvim",
-		opts = {
-			plugins = {
-				cmp = true,
-				telescope = true,
-				gitsigns = true,
-			},
-		},
-		lazy = true,
-	},
-	{
-		"water-sucks/darkrose.nvim",
-		opts = {
-			styles = {
-				bold = true,
-				italic = true,
-				underline = true,
-			},
-		},
-		lazy = true,
-	},
-	{
 		"LunarVim/darkplus.nvim",
 		lazy = true,
 	},
 	{
-		"kyazdani42/blue-moon",
+		"towry/dracula-mini.nvim",
 		lazy = true,
 	},
 }

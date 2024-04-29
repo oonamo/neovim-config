@@ -1,6 +1,7 @@
 return {
 	"SmiteshP/nvim-navic",
 	lazy = true,
+	enabled = false,
 	cond = not vim.g.use_noice,
 	opts = {
 		icons = tools.ui.icons.kind,

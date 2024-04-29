@@ -22,6 +22,8 @@ local icons = {
 	ballot_x = " ",
 	up_tri = " ",
 	info_i = " ",
+	v_border = "▐",
+	v_pipe = "▎",
 
 	ArrowCircleDown = "",
 	ArrowCircleLeft = "",
@@ -141,11 +143,25 @@ local icons = {
 	--  up_tri = '▲',
 	--  info_i = '¡',
 	x = "✘",
+	LineAdded = "",
+	LineModified = "",
+	LineRemoved = "",
+	FileDeleted = "",
+	FileIgnored = "◌",
+	FileRenamed = "",
+	FileStaged = "S",
+	FileUnmerged = "",
+	FileUnstaged = "",
+	FileUntracked = "U",
+	Diff = "",
+	Repo = "",
+	Octoface = "",
+	Branch = "",
 }
 
 _G.tools = {
 	ui = {
-		cur_border = borders.invis,
+		cur_border = borders.none,
 		borders = borders,
 		icons = icons,
 		lsp_signs = {

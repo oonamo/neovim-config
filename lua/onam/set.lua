@@ -1,12 +1,13 @@
 local o, opt = vim.o, vim.opt
 
-opt.guicursor = {
-	"n-sm:block",
-	"v:hor50",
-	"c-ci-cr-i-ve:ver10",
-	"o-r:hor10",
-	"a:Cursor/Cursor-blinkwait1-blinkon1-blinkoff1",
-}
+-- opt.guicursor = {
+-- 	"n-sm:block",
+-- 	"v:hor50",
+-- 	"c-ci-cr-i-ve:ver10",
+-- 	"o-r:hor10",
+-- 	"a:Cursor/Cursor-blinkwait1-blinkon1-blinkoff1",
+-- }
+opt.guicursor = ""
 opt.termguicolors = true
 opt.background = "dark"
 if vim.g.neovide then
@@ -61,11 +62,11 @@ opt.swapfile = false
 opt.backup = false
 opt.undofile = true
 opt.incsearch = true
-opt.hlsearch = false
+-- opt.hlsearch = false
 opt.wildmenu = true
-opt.signcolumn = "yes"
-opt.laststatus = 3 -- Or 3 for global statusline
-opt.colorcolumn = "80"
+opt.signcolumn = "yes:1"
+opt.laststatus = 2 -- Or 3 for global statusline
+-- opt.colorcolumn = "80"
 opt.conceallevel = 2
 opt.showmode = false
 opt.completeopt = "menuone,noinsert,noselect"
@@ -75,6 +76,7 @@ o.ignorecase = true
 o.foldcolumn = "1"
 opt.foldlevel = 99
 opt.foldmethod = "indent"
+-- o.statuscolumn = "%!v:lua.get_statuscol()"
 -- o.list = true
 
 -- opt.listchars = {
@@ -108,12 +110,9 @@ end
 
 O = {}
 
--- utils.augroup("QOL", {
--- 	{
--- 		events = { "TextYankPost" },
--- 		targets = { "*" },
--- 		command = function()
--- 			vim.highlight.on_yank({ timeout = 500 })
--- 		end,
--- 	},
--- })
+if vim.fn.executable("rg") == 1 then
+	-- credit: https://github.com/nicknisi/dotfiles/blob/1360edda1bbb39168637d0dff13dd12c2a23d095/config/nvim/init.lua#L73
+	-- if ripgrep installed, use that as a grepper
+	o.grepprg = "rg --vimgrep --color=never --with-filename --line-number --no-heading --smart-case --"
+	o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
+end

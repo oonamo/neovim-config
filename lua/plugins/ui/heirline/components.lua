@@ -137,11 +137,11 @@ M.mode_block = {
 }
 
 M.FileNameBlock = {
-	-- {
-	-- 	condition = function()
-	-- 		return package.loaded["incline"] == nil
-	-- 	end,
-	-- },
+	{
+		condition = function()
+			return package.loaded["incline"] == nil
+		end,
+	},
 	init = function(self)
 		self.filename = vim.api.nvim_buf_get_name(0)
 	end,
@@ -627,6 +627,9 @@ M.Winbar = {
 
 M.Navic = {
 	condition = function()
+		if not package.loaded["nvim-navic"] then
+			return false
+		end
 		return require("nvim-navic").is_available()
 	end,
 	static = {

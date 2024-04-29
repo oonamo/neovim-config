@@ -37,9 +37,11 @@ local writerStatus = {
 	end,
 	-- components.mode_block,
 	-- components.ViMode,
-	chad.ViMode,
-	chad.FileNameBlock,
-	chad.space,
+	-- chad.ViMode,
+	-- chad.FileNameBlock,
+	-- chad.space,
+	simple.FilePath,
+	simple.trunc,
 	-- components.space,
 	-- components.Git,
 	-- components.space,
@@ -47,12 +49,12 @@ local writerStatus = {
 	components.space,
 	components.grapple,
 	components.align,
-	components.Spell,
+	-- components.Spell,
 	components.space,
 	components.wordcount,
-	components.space,
-	components.SpaceCount,
-	components.FileEncoding,
+	-- components.space,
+	-- components.SpaceCount,
+	-- components.FileEncoding,
 }
 -- local brighter_fg = utils.brighten("Normal", 30, "background")
 -- print(brighter_fg)
@@ -63,6 +65,8 @@ local minimalStatusLine = {
 	components.Git,
 	components.space,
 	components.FileNameBlock,
+	simple.FilePath,
+	simple.trunc,
 	components.space,
 	-- components.grapple,
 	components.space,
@@ -129,6 +133,9 @@ local function get_status()
 	if O.ui.statusline.chad then
 		return chadline
 	end
+	if O.ui.statusline.tj then
+		return require("plugins.ui.heirline.tjline")
+	end
 end
 
 local StatusLine = {
@@ -145,4 +152,7 @@ local StatusLine = {
 }
 
 local Winbar = components.Winbar
+-- if TJ_STL_BG then
+-- 	vim.api.nvim_set_hl(0, "StatusLine", { fg = utils.get_single_hl("Normal").background, bg = TJ_STL_BG })
+-- end
 return { statusline = StatusLine, winbar = Winbar }

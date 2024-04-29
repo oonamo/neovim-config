@@ -508,4 +508,25 @@ function utils.fix_git_hls()
 	-- utils.reverse_hl("GitSignsDelete")
 end
 
+utils.diagnostics_available = function()
+	local clients = vim.lsp.buf_get_clients(0)
+	local diagnostics = vim.lsp.protocol.Methods.textDocument_publishDiagnostics
+
+	for _, cfg in pairs(clients) do
+		if cfg.supports_method(diagnostics) then
+			return true
+		end
+	end
+
+	return false
+end
+
+function utils.get_single_hl(name)
+	local ok, hl = pcall(vim.api.nvim_get_hl_by_name, name, true)
+	if ok then
+		return hl
+	end
+	return nil
+end
+
 return utils
