@@ -1,149 +1,118 @@
--- GUI
---
-vim.opt.guicursor = ""
-vim.opt.termguicolors = true
-vim.opt.background = "dark"
+local o, opt = vim.o, vim.opt
 
+-- opt.guicursor = {
+-- 	"n-sm:block",
+-- 	"v:hor50",
+-- 	"c-ci-cr-i-ve:ver10",
+-- 	"o-r:hor10",
+-- 	"a:Cursor/Cursor-blinkwait1-blinkon1-blinkoff1",
+-- }
+opt.guicursor = ""
+opt.termguicolors = true
+opt.background = "dark"
 if vim.g.neovide then
-	vim.g.neovide_scale_factor = 0.8
-	vim.g.neovide_transparency = 1
+	opt.guicursor = "c-ci-ve:ver25,r-cr:hor20,o:hor20,a:blinkwait900-blinkon900-blinkoff900"
+	vim.g.neovide_scale_factor = 1.0
 	vim.g.neovide_hide_mouse_when_typing = true
+	vim.o.guifont = "BlexMono Nerd Font:h16"
+	vim.g.neovide_scroll_animation_length = 0
+	vim.keymap.set("n", "<leader>nt", function()
+		if vim.g.neovide_transparency ~= 1.0 then
+			vim.g.neovide_transparency = 1.0
+		else
+			vim.g.neovide_transparency = 0.9
+		end
+	end)
+	vim.g.neovide_transparency = 0.9
 end
+o.cursorline = true
+-- o.cursorlineopt = "number"
+o.emoji = true
+
 -- Editor
-vim.opt.nu = true
-vim.opt.relativenumber = true
-vim.opt.tabstop = 4
-vim.opt.softtabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.expandtab = true
-vim.opt.smartindent = true
-vim.opt.wrap = false
-vim.opt.scrolloff = 8
+opt.nu = true
+opt.relativenumber = true
+opt.tabstop = 4
+opt.softtabstop = 4
+opt.shiftwidth = 4
+opt.expandtab = true
+opt.smartindent = true
+opt.wrap = false
+opt.scrolloff = 8
+opt.fillchars = {
+	eob = " ",
+	diff = "╱",
+	fold = " ",
+	-- eol = "⏎ ",
+	foldclose = tools.ui.icons.r_chev,
+	foldopen = tools.ui.icons.d_chev,
+	foldsep = " ",
+	msgsep = "━",
+	horiz = "━",
+	horizup = "┻",
+	horizdown = "┳",
+	vert = "┃",
+	vertleft = "┫",
+	vertright = "┣",
+	verthoriz = "╋",
+}
+opt.isfname:append("@-@")
+opt.updatetime = 50
+opt.swapfile = false
+opt.backup = false
+opt.undofile = true
+opt.incsearch = true
+-- opt.hlsearch = false
+opt.wildmenu = true
+opt.signcolumn = "yes:1"
+opt.laststatus = 2 -- Or 3 for global statusline
+-- opt.colorcolumn = "80"
+opt.conceallevel = 2
+opt.showmode = false
+opt.completeopt = "menuone,noinsert,noselect"
+o.grepprg = [[rg --glob "!.git" --hidden --smart-case  --vimgrep]]
+o.helpheight = 70
+o.ignorecase = true
+o.foldcolumn = "1"
+opt.foldlevel = 99
+opt.foldmethod = "indent"
+-- o.statuscolumn = "%!v:lua.get_statuscol()"
+-- o.list = true
 
-vim.opt.isfname:append("@-@")
-vim.opt.updatetime = 50
-vim.opt.swapfile = false
-vim.opt.backup = false
--- vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
-vim.opt.undofile = true
-vim.opt.incsearch = true
-vim.opt.hlsearch = false
-vim.opt.wildmenu = true
-vim.opt.statuscolumn = "%r"
-vim.opt.signcolumn = "yes"
-vim.opt.laststatus = 3 -- Or 3 for global statusline
-vim.opt.cmdheight = 0
-vim.opt.colorcolumn = "80"
--- vim.opt.statusline = " %f %m %= %l:%c ♥ "
--- Popup Menu
+-- opt.listchars = {
+-- 	nbsp = "▬",
+-- 	tab = "  ",
+-- 	trail = "·",
+-- 	-- eol = "⏎",
+-- }
+o.shortmess = "acstFOSW"
+o.splitkeep = "screen"
 
-vim.opt.completeopt = "menuone,noinsert,noselect"
-vim.opt.winblend = 30
--- vim.opt.pumblend = 20
--- NetRW
-vim.g.netrw_browse_split = 0
+opt.formatoptions:remove("o")
+
 vim.g.netrw_banner = 0
-vim.g.netrw_winsize = 25
+vim.g.netrw_mouse = 2
 
-vim.g.clipboard = {
-	name = "WslClipboard",
-	copy = {
-		["+"] = "clip.exe",
-		["*"] = "clip.exe",
-	},
-	paste = {
-		["+"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-		["*"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-	},
-	cache_enabled = 0,
-}
-vim.opt.clipboard = {
-	name = "WslClipboard",
-	copy = {
-		["+"] = "clip.exe",
-		["*"] = "clip.exe",
-	},
-	paste = {
-		["+"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-		["*"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-	},
-	cache_enabled = 0,
-}
-
-vim.g.use_custom_statusline = false
+if not vim.fn.has("win32") then
+	opt.clipboard = {
+		name = "WslClipboard",
+		copy = {
+			["+"] = "clip.exe",
+			["*"] = "clip.exe",
+		},
+		paste = {
+			["+"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+			["*"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+		},
+		cache_enabled = 0,
+	}
+end
 
 O = {}
 
-vim.api.nvim_create_autocmd("ColorScheme", {
-	pattern = "*",
-	callback = function()
-		require("highlights")
-	end,
-})
-
--- vim.api.nvim_create_autocmd("ColorScheme", {
--- 	pattern = "mellow",
--- 	callback = function()
--- 		vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#27272a", blend = 15 })
--- 		vim.api.nvim_set_hl(0, "FloatBorder", { bg = "#ea83a5", blend = 15, fg = "#dda0dd" })
--- 		vim.api.nvim_set_hl(0, "Pmenu", { bg = "#27272a" })
--- 		vim.api.nvim_set_hl(0, "PmenuSel", { bold = true, fg = "#dda0dd", bg = "#353539" })
--- 	end,
--- })
--- vim.api.nvim_create_autocmd("ColorScheme", {
--- 	pattern = "rose-pine",
--- 	callback = function()
---
---
--- 		utils.hl = {
--- 			opts = {
--- 				{ "@keyword", { fg = "#698282" } },
--- 				{ "Statement", { fg = "#698282" } },
---
--- 				{ "Function", { fg = "#ffc2c6" } },
--- 				{ "String", { fg = "#d3a38d" } },
--- 				{ "@property", { fg = "#b3c3c4" } },
--- 				{ "NormalFloat", { blend = 15 } },
--- 				{ "FloatBorder", { blend = 15 } },
--- 				{ "PmenuSel", { bold = true, fg = "#ffc2c6" } },
--- 				{ "Title", { bold = true, fg = "#698282" } },
--- 				{ "Directory", { bold = true, fg = "#698282" } },
--- 				{ "StatusLineExtra", { fg = "#28272a", bg = "#ea83a5" } },
--- 				{ "StatuslineAccent", { bg = "#ffc2c6", fg = "#27272a" } },
--- 				{ "StatuslineInsertAccent", { link = "CurSearch" } },
--- 				{ "StatuslineVisualAccent", { bg = "#b3c3c4", fg = "#27272a" } },
--- 				{ "StatuslineCmdLineAccent", { bg = "#dda0dd", fg = "#27272a" } },
--- 				{ "StatusCmdLine", { bg = "#dda0dd", fg = "#27272a" } },
--- 				{ "StatuslineReplaceAccent", { bold = true, fg = "#698282" } },
--- 				{ "StatusEmpty", { bg = "#28272a", blend = 10 } },
--- 				{ "StatusBarLong", { bg = "#28272a", blend = 10, fg = "#ffffff" } },
--- 				{ "HarpoonActive", { bg = "#dda0dd", blend = 10, fg = "#000000" } },
--- 				{ "HarpoonInactive", { bg = "#698282", blend = 10, fg = "#000000" } },
--- 			},
--- 		}
---
--- vim.api.nvim_create_autocmd("ColorScheme", {
--- 	pattern = "nord",
--- 	callback = function()
--- 		vim.api.nvim_set_hl(0, "NormalFloat", { blend = 25 })
--- 		vim.api.nvim_set_hl(0, "FloatBorder", { blend = 15 })
--- 	end,
--- })
---
-vim.api.nvim_create_autocmd("TextYankPost", {
-	pattern = "*",
-	callback = function()
-		vim.highlight.on_yank({ timeout = 500 })
-	end,
-})
--- Return to last edit position when opening files
-vim.api.nvim_create_autocmd("BufReadPost", {
-	pattern = "*",
-	callback = function()
-		if vim.fn.line("'\"") > 0 and vim.fn.line("'\"") <= vim.fn.line("$") then
-			vim.fn.setpos(".", vim.fn.getpos("'\""))
-			-- vim.cmd('normal zz') -- how do I center the buffer in a sane way??
-			vim.cmd("silent! foldopen")
-		end
-	end,
-})
+if vim.fn.executable("rg") == 1 then
+	-- credit: https://github.com/nicknisi/dotfiles/blob/1360edda1bbb39168637d0dff13dd12c2a23d095/config/nvim/init.lua#L73
+	-- if ripgrep installed, use that as a grepper
+	o.grepprg = "rg --vimgrep --color=never --with-filename --line-number --no-heading --smart-case --"
+	o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
+end
