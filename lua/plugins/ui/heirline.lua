@@ -67,7 +67,7 @@ return {
 			-- tabline = tabline,
 			-- statuscolumn = require("plugins.ui.heirline.statuscolumn"),
 			statuscolumn = statuscolumn,
-			winbar = require("plugins.ui.heirline.winbar").winbar,
+			-- winbar = require("plugins.ui.heirline.winbar").winbar,
 			opts = {
 				colors = get_colors(),
 				disable_winbar_cb = function(args)

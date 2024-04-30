@@ -25,6 +25,7 @@ O.ui = {
 	signature = "custom",
 	tree = {
 		neotree = false,
+		nvimtree = true,
 		oil = false,
 	},
 	incline = true,

@@ -76,6 +76,8 @@ function M.setup(flavour)
 			h6 = "foam",
 		},
 		highlight_groups = {
+			-- StatusLine = { bg = "foam", fg = "foam", blend = 10 },
+			StatusLine = { bg = "foam", fg = "text", blend = 5 },
 			StatusLineNC = { bg = "foam", fg = "text" },
 		},
 	})

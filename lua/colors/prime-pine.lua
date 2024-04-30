@@ -111,7 +111,9 @@ function M.setup(flavour)
 			Statement = { link = "@keyword" },
 			Function = { fg = M.colors.yellow },
 			CursorLineNr = { fg = M.colors.orange },
-			StatusLine = { fg = "iris", bg = "iris", blend = 10 },
+			-- StatusLine = { fg = "iris", bg = "iris", blend = 10 },
+			-- StatusLine = { fg = "#9ccfd8", bg = "#9ccfd8", blend = 10 },
+			-- StatusLine = { bg = M.colors.blue, fg = "base" },
 			StatusLineNC = { fg = "subtle", bg = "surface" },
 		},
 		before_highlight = function(_, highlight, palette)
@@ -181,7 +183,7 @@ function M.setup(flavour)
 	})
 	-- utils:create_hl()
 	vim.cmd.colorscheme("rose-pine")
-	-- vim.api.nvim_set_hl(0, "StatusLine", { fg = M.colors.bg, bg = "#9ccfd8" })
+	vim.api.nvim_set_hl(0, "StatusLine", { fg = M.colors.bg, bg = "#9ccfd8" })
 	TJ_STL_BG = "#9ccfd8"
 end
 

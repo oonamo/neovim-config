@@ -7,6 +7,7 @@ local o, opt = vim.o, vim.opt
 -- 	"o-r:hor10",
 -- 	"a:Cursor/Cursor-blinkwait1-blinkon1-blinkoff1",
 -- }
+
 opt.guicursor = ""
 opt.termguicolors = true
 opt.background = "dark"
@@ -76,6 +77,8 @@ o.ignorecase = true
 o.foldcolumn = "1"
 opt.foldlevel = 99
 opt.foldmethod = "indent"
+o.winbar = 0
+o.tabline = 0
 -- o.statuscolumn = "%!v:lua.get_statuscol()"
 -- o.list = true
 

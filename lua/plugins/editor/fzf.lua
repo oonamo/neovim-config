@@ -1,3 +1,75 @@
+local function dropdown(opts)
+	opts = opts or {}
+	local title = vim.tbl_get(opts, "winopts", "title")
+	return vim.tbl_deep_extend("force", {
+		prompt = "   ",
+		fzf_opts = { ["--layout"] = "reverse" },
+		winopts = {
+			title_pos = opts.winopts.title and "center" or nil,
+			height = 0.70,
+			width = 0.45,
+			row = 0.1,
+			preview = { hidden = "hidden", layout = "vertical", vertical = "up:50%" },
+		},
+	}, opts)
+end
+
+local function bottom_split(opts)
+	return vim.tbl_deep_extend("force", {
+		prompt = "   ",
+		fzf_opts = { ["--layout"] = "reverse" },
+		winopts = {
+			title_pos = opts.winopts.title and "center" or nil,
+			cursorline = true,
+			border = tools.ui.cur_border,
+			height = 0.35,
+			width = 1,
+			row = 1,
+			hls = {
+				border = "FloatBorder",
+				header_bind = "NonText",
+				header_text = "NonText",
+				help_normal = "NonText",
+				normal = "NormalFloat",
+				preview_border = "NormalFloat",
+				preview_normal = "NormalFloat",
+				search = "IncSearch",
+				title = "FloatTitle",
+			},
+			preview = {
+				-- default = 'bat_native',
+				-- border = "border",
+				-- layout = "vertical",
+				horizontal = "right:30%",
+				-- vertical = "up:50%",
+				-- using winopts_fn to set truncation
+				-- flip_columns = truncation.truncation_limit_s_terminal
+				-- builtin previewer
+				-- scrollbar = false,
+				-- delay = 50,
+				-- border = "border",
+				layout = "horizontal",
+				scrollbar = "border",
+				vertical = "up:65%",
+			},
+		},
+	}, opts)
+end
+
+local function cursor_dropdown(opts)
+	return dropdown(vim.tbl_deep_extend("force", {
+		fzf_opts = { ["--keep-right"] = "" },
+		winopts = {
+			row = 1,
+			relative = "cursor",
+			height = 0.33,
+			width = 0.25,
+		},
+	}, opts))
+end
+
+local fzf_lua = require("fzf-lua")
+
 return {
 	"ibhagwan/fzf-lua",
 	cmd = "FzfLua",
@@ -14,17 +86,23 @@ return {
 				ignore_current_buffer = true,
 				prompt = "   ",
 			},
-			files = {
+			keymaps = dropdown({
+				winopts = { title = "keymaps", width = 0.7 },
+			}),
+			files = bottom_split({
 				cwd_prompt = false,
 				prompt = "   ",
-			},
-			grep = {
+				-- winopts = { title = "files" },
+				winopts = { title = "files" },
+			}),
+			grep = bottom_split({
+				winopts = { title = "grep" },
 				cmd = "rg -o -r '' --column --no-heading --color=never --smart-case",
 				prompt = "   ",
 				fzf_opts = {
 					["--keep-right"] = "",
 				},
-			},
+			}),
 			fzf_colors = {
 				["bg"] = { "bg", "NormalFloat" },
 				["bg+"] = { "bg", "CursorLine" },
@@ -37,7 +115,10 @@ return {
 				["separator"] = { "bg", "NormalFloat" },
 				["spinner"] = { "fg", "NonText" },
 			},
-			fzf_opts = { ["--keep-right"] = "" },
+			fzf_opts = {
+				["--keep-right"] = "",
+				["--scrollbar"] = "▓",
+			},
 			winopts = {
 				cursorline = true,
 				border = tools.ui.cur_border,
@@ -55,20 +136,7 @@ return {
 					search = "IncSearch",
 					title = "FloatTitle",
 				},
-				-- border = "single",
 				fullscreen = false,
-				-- preview = {
-				-- 	delay = 150,
-				-- 	scrollbar = false,
-				-- 	default = "builtin",
-				-- 	wrap = "wrap",
-				-- 	horizontal = "right:45%",
-				-- 	vertical = "down:40%",
-				-- 	winopts = {
-				-- 		cursorlineopt = "line",
-				-- 		foldcolumn = 0,
-				-- 	},
-				-- },
 				fzf_colors = {
 					["bg"] = { "bg", "NormalFloat" },
 					["bg+"] = { "bg", "CursorLine" },
@@ -77,32 +145,15 @@ return {
 					["header"] = { "fg", "NonText" },
 					["info"] = { "fg", "NonText" },
 					["pointer"] = { "bg", "Cursor" },
-					--  ["prompt"]    = { "fg", "Number" },
 					["separator"] = { "bg", "NormalFloat" },
 					["spinner"] = { "fg", "NonText" },
 				},
-				-- split = "aboveleft vnew",
-				-- split = "belowright new",
 				preview = {
-					-- default = 'bat_native',
-					-- border = "border",
-					-- layout = "vertical",
 					horizontal = "right:30%",
-					-- vertical = "up:50%",
-					-- using winopts_fn to set truncation
-					-- flip_columns = truncation.truncation_limit_s_terminal
-					-- builtin previewer
-					-- scrollbar = false,
-					-- delay = 50,
-					-- border = "border",
 					layout = "horizontal",
 					scrollbar = "border",
 					vertical = "up:65%",
 				},
-				-- height = 0.85, -- window height
-				-- width = 0.80, -- window width
-				-- row = 0.35, -- window row position (0=top, 1=bottom)
-				-- col = 0.50, -- window col position (0=left, 1=right)
 			},
 			keymap = {
 				builtin = {
@@ -118,7 +169,6 @@ return {
 			actions = {
 				files = {
 					["default"] = actions.file_edit_or_qf,
-					-- ["ctrl-q"] = actions.set_qf_list,
 					["ctrl-l"] = actions.file_sel_to_ll,
 					["ctrl-s"] = actions.file_split,
 					["ctrl-v"] = actions.file_vsplit,
@@ -126,64 +176,12 @@ return {
 				},
 				buffers = {
 					["default"] = actions.buf_edit_or_qf,
-
-					-- ["ctrl-q"] = actions.buf_sel_to_qf,
-					-- ["ctrl-q"] = actions.set_qf_list,
 					["ctrl-l"] = actions.buf_sel_to_ll,
 					["ctrl-s"] = actions.buf_split,
 					["ctrl-v"] = actions.buf_vsplit,
 					["ctrl-t"] = actions.buf_tabedit,
 				},
 			},
-			-- TODO: OLD
-			--
-			-- fzf_opts = {
-			-- 	-- 	["--ansi"] = "",
-			-- 	-- 	["--info"] = "inline",
-			-- 	-- 	["--height"] = "100%",
-			-- 	["--layout"] = "reverse",
-			-- 	-- 	["--border"] = "none",
-			-- 	-- 	["--prompt"] = "❯",
-			-- 	-- 	["--pointer"] = "❯",
-			-- 	-- 	["--marker"] = "❯",
-			-- 	-- 	["--no-scrollbar"] = "",
-			-- },
-
-			-- fzf_colors = {
-			-- 	["fg"] = { "fg", "FzfLuaColorsFg" },
-			-- 	["fg+"] = { "fg", "FzfLuaColorsFgSel", "reverse:-1" },
-			-- 	["bg"] = { "fg", "FzfLuaColorsBg" },
-			-- 	["bg+"] = { "fg", "FzfLuaColorsBgSel" },
-			-- 	["hl"] = { "fg", "FzfLuaColorsHl" },
-			-- 	["hl+"] = { "fg", "FzfLuaColorsHlSel", "underline:reverse:-1" },
-			-- 	["info"] = { "fg", "FzfLuaColorsInfo" },
-			-- 	["prompt"] = { "fg", "FzfLuaColorsPrompt" },
-			-- 	["pointer"] = { "fg", "FzfLuaColorsPointer" },
-			-- 	["marker"] = { "fg", "FzfLuaColorsMarker" },
-			-- 	["spinner"] = { "fg", "FzfLuaColorsSpinner" },
-			-- 	["header"] = { "fg", "FzfLuaColorsHeader" },
-			-- },
-			-- OLD
-			-- fzf_colors = {
-			-- 	["fg"] = { "fg", "CursorLine" },
-			-- 	["bg"] = { "bg", "Normal" },
-			-- 	["hl"] = { "fg", "Comment" },
-			-- 	["fg+"] = { "fg", "Normal" },
-			-- 	["bg+"] = { "bg", "CursorLine" },
-			-- 	["hl+"] = { "fg", "Statement" },
-			-- 	["info"] = { "fg", "PreProc" },
-			-- 	["prompt"] = { "fg", "Conditional" },
-			-- 	["pointer"] = { "fg", "Exception" },
-			-- 	["marker"] = { "fg", "Keyword" },
-			-- 	["spinner"] = { "fg", "Label" },
-			-- 	["header"] = { "fg", "Comment" },
-			-- 	["gutter"] = { "bg", "Normal" },
-			-- },
-			-- files = {
-			-- 	actions = {
-			-- 		["ctrl-q"] = false,
-			-- 	},
-			-- },
 		}
 	end,
 	config = function(_, opts)
@@ -193,26 +191,27 @@ return {
 	end,
 	cond = vim.g.use_FZF,
 	keys = {
-		{ "<leader>ff", "<cmd>FzfLua files<cr>", desc = "[f]zf [f]iles" },
-		{ "<leader>fs", "<cmd>FzfLua live_grep<cr>", desc = "fzf grep" },
+		{ "<leader>ff", fzf_lua.files, desc = "[f]zf [f]iles" },
+		{ "<leader>fs", fzf_lua.live_grep, desc = "fzf grep" },
 		-- { "<leader>fr", "<cmd>FzfLua live_grep_resume<cr>", desc = "fzf grep resume" },
-		{ "<leader>fr", "<cmd>FzfLua lsp_references<cr>", desc = "fzf grep resume" },
-		{ "<leader>g?", "<cmd>FzfLua help_tags<cr>", desc = "fzf help" },
-		{ "<leader>fb", "<cmd>FzfLua buffers<cr>", desc = "fzf commands" },
+		{ "<leader>fr", fzf_lua.lsp_references, desc = "fzf grep resume" },
+		{ "<leader>g?", fzf_lua.help_tags, desc = "fzf help" },
+		{ "<leader>fb", fzf_lua.buffers, desc = "fzf commands" },
 		-- { "<C-p>", "<cmd>FzfLua files<cr>", desc = "Find files" },
 		{
 			"<C-p>",
-			function()
-				require("fzf-lua").files({
-					-- winopts = {
-					-- 	fullscreen = false,
-					-- 	height = 0.90,
-					-- 	width = 1,
-					-- },
-				})
-			end,
+			fzf_lua.files,
+			-- function()
+			-- 	require("fzf-lua").files({
+			-- 		-- winopts = {
+			-- 		-- 	fullscreen = false,
+			-- 		-- 	height = 0.90,
+			-- 		-- 	width = 1,
+			-- 		-- },
+			-- 	})
+			-- end,
 		},
-		{ "<C-f>", "<cmd>FzfLua live_grep_glob<cr>", desc = "Live grep glob" },
+		{ "<C-f>", fzf_lua.live_grep_glob, desc = "Live grep glob" },
 		{
 			"<leader>fc",
 			function()

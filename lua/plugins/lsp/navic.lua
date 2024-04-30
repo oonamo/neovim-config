@@ -15,8 +15,8 @@ return {
 		depth_limit_indicator = "..",
 	},
 	config = function(_, opts)
-		vim.o.winbar = 2
-		vim.o.tabline = 2
+		-- vim.o.winbar = 2
+		-- vim.o.tabline = 2
 		require("nvim-navic").setup(opts)
 	end,
 }
