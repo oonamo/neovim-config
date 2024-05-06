@@ -529,4 +529,15 @@ function utils.get_single_hl(name)
 	return nil
 end
 
+---@param hl string
+---@param attr string
+---@return boolean
+function utils.hl_not_nil(hl, attr)
+	local _, _, hi = utils.get_hl(hl)
+	if hi == nil then
+		return false
+	end
+	return hi[attr] ~= nil
+end
+
 return utils

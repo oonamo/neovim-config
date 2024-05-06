@@ -11,8 +11,10 @@ O.ui = {
 		minimal = false,
 		fancy = false,
 		simple = false,
-		chad = false,
-		tj = true,
+		chad = true,
+		tj = false,
+		ibh = false,
+		org = { active = false, monochrome = false },
 	},
 	tabline = {
 		minimal = false,
@@ -26,7 +28,11 @@ O.ui = {
 	tree = {
 		neotree = false,
 		nvimtree = true,
-		oil = false,
+		oil = true,
 	},
 	incline = true,
+}
+O.lsp = {
+	cmp = false,
+	coq = true,
 }

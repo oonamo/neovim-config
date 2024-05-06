@@ -1,34 +1,60 @@
-local M = {}
-local conditions = require("heirline.conditions")
-local utils = require("heirline.utils")
--- if TJ_STL_BG then
--- 	vim.api.nvim_set_hl(0, "StatusLine", { fg = utils.get_highlight("Normal").bg, bg = TJ_STL_BG })
--- end
--- local minimal_fg = vim.o.background == "light" and "white" or "black"
---
---
-M.icons = {
-	-- ✗   󰅖 󰅘 󰅚 󰅙 󱎘 
-	close = "󰅙 ",
-	dir = "󰉋 ",
-	lsp = " ", --   
-	vim = " ",
-	debug = " ",
-	err = " ",
-	warn = " ",
-	info = " ",
-	hint = " ",
-	hamburger = "≡",
+local separator_types = {
+	slant = {
+		left_side = {
+			before = "",
+			after = "",
+		},
+		right_side = {
+			before = "",
+			after = "",
+		},
+	},
+	circle = {
+		left_side = {
+			before = "",
+			after = " ",
+		},
+		right_side = {
+			before = " ",
+			after = "",
+		},
+	},
+	block = {
+		left_side = {
+			before = "█",
+			after = "█ ",
+		},
+		right_side = {
+			before = " █",
+			after = "█",
+		},
+	},
 }
 
-M.space = {
-	provider = " ",
-}
-M.align = {
-	provider = "%=",
-}
+local separators = separator_types.slant
 
-M.ViMode = {
+---@param highlight string|function|table
+---@param right boolean|nil
+---@param after boolean|nil
+local function seps(highlight, right, after)
+	return {
+		provider = function()
+			if right then
+				if after then
+					return separators.right_side.after
+				end
+				return separators.right_side.before
+			end
+			if after then
+				return separators.left_side.after
+			end
+			return separators.right_side.after
+		end,
+		hl = highlight,
+	}
+end
+
+local ViMode = {
 	init = function(self)
 		self.mode = vim.fn.mode(1) -- :h mode()
 	end,
@@ -45,17 +71,17 @@ M.ViMode = {
 			nt = "Nt",
 			v = "VISUAL",
 			vs = "Vs",
-			V = "V_",
+			V = "V-LINE",
 			Vs = "Vs",
 			["\22"] = "^V",
 			["\22s"] = "^V",
-			s = "S",
-			S = "S_",
+			s = "SELECT",
+			S = "S-LINE",
 			["\19"] = "^S",
 			i = "INSERT",
 			ic = "Ic",
 			ix = "Ix",
-			R = "R",
+			R = "REPLACE",
 			Rc = "Rc",
 			Rx = "Rx",
 			Rv = "Rv",
@@ -93,15 +119,12 @@ M.ViMode = {
 	-- control the padding and make sure our string is always at least 2
 	-- characters long. Plus a nice Icon.
 	provider = function(self)
-		return " %2(" .. self.mode_names[self.mode] .. "%) "
+		return self.mode_names[self.mode]
 	end,
 	-- Same goes for the highlight. Now the foreground will change according to the current mode.
 	hl = function(self)
 		local mode = self.mode:sub(1, 1) -- get only the first mode character
-		if O.ui.statusline.minimal then
-			return { fg = self.mode_colors[mode], bold = true }
-		end
-		return { fg = self.mode_colors[mode], bold = true, bg = "none" }
+		return { bg = self.mode_colors[mode], fg = "bg", bold = true }
 	end,
 	update = {
 		"ModeChanged",
@@ -110,34 +133,66 @@ M.ViMode = {
 			vim.cmd("redrawstatus")
 		end),
 	},
+	seps(function(self)
+		return { fg = self.mode_colors[self.mode:sub(1, 1)], bg = "bright_bg", bold = true }
+	end, false, true),
+	-- ChadSeps({ fg = "gray", bg = "gray" }),
+	seps({ fg = "bright_bg", bg = "blue" }, false, true),
 }
 
-M.Git = {
-	condition = conditions.is_git_repo,
-
-	init = function(self)
-		self.status_dict = vim.b.gitsigns_status_dict
-		self.has_changes = self.status_dict.added ~= 0 or self.status_dict.removed ~= 0 or self.status_dict.changed ~= 0
-	end,
-
-	-- hl = function()
-	-- 	-- if O.ui.tabline.minimal then
-	-- 	-- 	return { fg = "fg" }
-	-- 	-- end
-	-- 	return { fg = "orange" }
-	-- end,
-
-	{ -- git branch name
-		provider = function(self)
-			return " " .. self.status_dict.head
-		end,
-		-- hl = function()
-		-- 	-- if O.ui.statusline.minimal then
-		-- 	-- 	return { fg = minimal_fg }
-		-- 	-- end
-		-- 	return { fg = "purple", bold = true, bg = "cyan" }
-		-- end,
+local Git = {
+	static = {
+		icon = "",
 	},
+	provider = function(self)
+		local result = ""
+		if vim.b.gitsigns_head then
+			result = result .. vim.b.gitsigns_head
+		elseif vim.g.gitsigns_head then
+			result = result .. vim.g.gitsigns_head
+			-- table.insert(result, vim.g.gitsigns_head)
+		end
+		if vim.b.gitsigns_status then
+			result = result .. vim.b.gitsigns_status
+			-- table.insert(result, vim.b.gitsigns_status)
+		end
+		if #result == 0 then
+			return ""
+		end
+		return result .. " " .. self.icon
+	end,
+	hl = { fg = "bright_bg", bg = "gray" },
+	-- seps({ fg = "blue", bg = "bright_bg" }, false, true),
+	seps({ fg = "gray", bg = "bright_bg" }, false, true),
+}
+
+local Path = {
+	static = {},
+	provider = function()
+		local full_path = vim.fn.expand("%:p")
+		local path = full_path
+		local cwd = vim.fn.getcwd()
+		if path == "" then
+			path = cwd
+		end
+		local stats = vim.loop.fs_stat(path)
+		if stats and stats.type == "directory" then
+			return vim.fn.fnamemodify(path, ":~")
+		end
+
+		if full_path:sub(1, #cwd) == cwd then
+			path = vim.fn.expand("%:.")
+		else
+			path = vim.fn.expand("%:~")
+		end
+
+		if #path < (vim.fn.winwidth(0) / 4) then
+			return "%f"
+		end
+		return vim.fn.pathshorten(path)
+	end,
+	hl = { bg = "gray", fg = "bright_bg" },
+	seps({ fg = "gray", bg = "bright_bg" }, false, true),
 }
 
 local Diagnostics = {
@@ -186,14 +241,9 @@ local Diagnostics = {
 		end,
 		hl = { fg = "purple", bold = true },
 	},
-}
-
-M.Ruler = {
-	-- %l = current line number
-	-- %L = number of lines in the buffer
-	-- %c = column number
-	-- %P = percentage through file of displayed window
-	provider = "%7(%l/%3L%):%2c %P",
+	-- hl = { fg = "fg", bg = "purple" },
+	-- seps({ fg = "purple", bg = "bright_bg" }, true, true),
+	-- seps({ fg = "bright_bg", bg = "green" }, true, true),
 }
 
 local LSPActive = {
@@ -227,25 +277,30 @@ local LSPActive = {
 	{
 		provider = "]",
 	},
+	hl = { fg = "bright_bg", bg = "cyan" },
+	-- seps({ fg = "cyan", bg = "bright_bg" }, true, true),
+	-- seps({ fg = "bright_bg", bg = "green" }, true, true),
+}
+
+local Align = { provider = "%=" }
+
+local Ruler = {
+	provider = "%7(%l/%3L%):%2c %P",
+	hl = { fg = "bright_bg", bg = "gray" },
+	seps({ fg = "gray", bg = "bright_bg" }, true, true),
+	seps({ fg = "bright_bg", bg = "cyan" }, true, true),
 }
 
 return {
-	-- { fg = "fg", bg = utils.get_highlight("StatusLine").bg },
-	-- { fg = "red", bg = "cyan" },
-	-- {
-	-- 	hl = function()
-	-- 		if conditions.is_active() then
-	-- 			return { fg = "fg", bg = "cyan" }
-	-- 		end
-	-- 		return { fg = "fg", bg = "bg" }
-	-- 	end,
-	-- },
-	M.ViMode,
-	-- { fg = "fg", bg = "cyan" },
-	-- M.Diagnostics,
-	M.space,
-	M.Git,
-	M.align,
-	LSPActive,
-	M.Ruler,
+	statusline = {
+		ViMode,
+		Git,
+		Path,
+		seps({ fg = "bright_bg", bg = "bg" }, false, true),
+		Align,
+		seps({ fg = "bg", bg = "bright_bg" }, true, true),
+		seps({ fg = "bright_bg", bg = "gray" }, true, true),
+		Ruler,
+		LSPActive,
+	},
 }

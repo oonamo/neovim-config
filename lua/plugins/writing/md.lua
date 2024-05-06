@@ -2,7 +2,6 @@ return {
 	{
 		"MeanderingProgrammer/markdown.nvim",
 		name = "render-markdown", -- Only needed if you have another plugin named markdown.nvim
-		enabled = true,
 		dependencies = { "nvim-treesitter/nvim-treesitter" },
 		ft = { "markdown" },
 		opts = {
@@ -17,18 +16,18 @@ return {
 			         (atx_h5_marker)
 			         (atx_h6_marker)
 			     ] @heading)
-            ]],
-			-- (thematic_break) @dash
-			--
-			-- (fenced_code_block) @code
-			--  (block_quote (block_quote_marker) @quote_marker)
-			-- (block_quote (paragraph (inline (block_continuation) @quote_marker)))
-			--
-			-- (pipe_table) @table
-			-- (pipe_table_header) @table_head
-			-- (pipe_table_delimiter_row) @table_delim
-			-- (pipe_table_row) @table_row
-			--         ]],
+            
+			(thematic_break) @dash
+
+			(fenced_code_block) @code
+			 (block_quote (block_quote_marker) @quote_marker)
+			(block_quote (paragraph (inline (block_continuation) @quote_marker)))
+
+			(pipe_table) @table
+			(pipe_table_header) @table_head
+			(pipe_table_delimiter_row) @table_delim
+			(pipe_table_row) @table_row
+			        ]],
 			headings = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
 			-- bullets = { "●", "○", "◆", "◇" },
 			checkbox = {
@@ -41,6 +40,19 @@ return {
 				-- Character that will replace the [x] in checked checkboxes
 				checked = "",
 			},
+			highlights = {
+				heading = {
+					backgrounds = { "DiffAdd", "DiffChange", "DiffDelete" },
+					foregrounds = {
+						"markdownH1",
+						"markdownH2",
+						"markdownH3",
+						"markdownH4",
+						"markdownH5",
+						"markdownH6",
+					},
+				},
+			},
 			conceal = {
 				-- conceallevel used for buffer when not being rendered, get user setting
 				default = vim.opt.conceallevel:get(),
@@ -48,6 +60,21 @@ return {
 				rendered = vim.opt.conceallevel:get(),
 			},
 		},
+		config = function(_, opts)
+			local _, _, hl = utils.get_hl("Headline1")
+			if hl ~= nil then
+				local hls = {
+					"Headline1",
+					"Headline2",
+					"Headline3",
+					"Headline4",
+					"Headline5",
+					"Headline6",
+				}
+				opts.highlights.heading.backgrounds = hls
+			end
+			require("render-markdown").setup(opts)
+		end,
 	},
 	{
 		"tadmccorkle/markdown.nvim",
@@ -57,15 +84,15 @@ return {
 	{
 		"dhruvasagar/vim-table-mode",
 		ft = { "markdown" },
-		keys = { "<leader>tm" },
+		keys = { "<leader>tm", desc = "toggle table mode" },
 	},
 	{
 		"iamcco/markdown-preview.nvim",
 		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
 		build = "cd app && npm install",
-		init = function()
-			vim.g.mkdp_filetypes = { "markdown" }
-		end,
+		-- init = function()
+		-- 	vim.g.mkdp_filetypes = { "markdown" }
+		-- end,
 		ft = { "markdown" },
 	},
 	-- {

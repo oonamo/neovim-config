@@ -161,7 +161,7 @@ local icons = {
 
 _G.tools = {
 	ui = {
-		cur_border = borders.invis,
+		cur_border = borders.none,
 		borders = borders,
 		icons = icons,
 		lsp_signs = {

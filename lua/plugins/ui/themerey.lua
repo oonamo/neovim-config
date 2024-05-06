@@ -2,6 +2,7 @@ return {
 	{
 		"AstroNvim/astrotheme",
 		lazy = true,
+		priority = 1000,
 		opts = {
 			background = { -- :h background, palettes to use when using the core vim background colors
 				light = "astrolight",
@@ -33,15 +34,12 @@ return {
 		},
 	},
 	{
-		"sainttttt/flesh-and-blood",
-		lazy = true,
-	},
-	{
 		-- "oonamo/neovim",
 		"rose-pine/neovim",
 		name = "rose-pine",
+		priority = 1000,
 		lazy = true,
-		opts = {},
+		-- opts = {},
 		-- require("rose-pine").setup({
 		-- 	-- variant = "",
 		-- 	styles = {
@@ -77,7 +75,7 @@ return {
 		-- 		git_text = "rose",
 		-- 		git_untracked = "subtle",
 		--
-		-- 		h1 = "iris",
+		-- 		h = "iris",
 		-- 		h2 = "foam",
 		-- 		h3 = "rose",
 		-- 		h4 = "gold",
@@ -114,20 +112,9 @@ return {
 		-- })
 	},
 	{
-		"ellisonleao/gruvbox.nvim",
-		lazy = true,
-	},
-	{
-		"rebelot/kanagawa.nvim",
-		lazy = true,
-	},
-	{
-		"neanias/everforest-nvim",
-		lazy = true,
-	},
-	{
 		"EdenEast/nightfox.nvim",
 		lazy = true,
+		priority = 1000,
 		opts = function()
 			local S = require("nightfox.lib.shade")
 			return {
@@ -135,7 +122,7 @@ return {
 					transparent = false,
 					-- dim_inactive = true,
 					styles = { -- Style to be applied to different syntax groups
-						functions = "bold",
+						functions = "bold,italic",
 						keywords = "bold",
 						conditional = "italic",
 					},
@@ -146,14 +133,6 @@ return {
 					},
 				},
 				palettes = {
-					nightfox = {
-						red = { base = "#df6959", bright = "#df6959", dim = "#df6959" },
-						sel0 = "#284263", -- Popup bg, visual selection bg
-						orange_br = "#e49464",
-					},
-					nordfox = {
-						comment = "#60728a",
-					},
 					dayfox = {
 						-- commit = "c88664b18e593319aea1ded731dd252d4f9e0f9a", -- before day-fox refactor, not looking goodd
 						black = S.new("#1d344f", "#24476f", "#1c2f44", true),
@@ -185,57 +164,60 @@ return {
 						sel0 = "#D8E7fB", -- Popup bg, visual selection bg
 						sel1 = "#dcdcdc", -- Popup sel bg, search bg
 					},
-					dawnfox = {
-						bg1 = "#FFFAF3", -- brighter
-						bg2 = "#eae1e3", -- brighter
-						yellow = { base = "#ee9310", bright = "#f19615", dim = "#d38305" },
+					-- dawnfox = {
+					-- 	bg1 = "#FFFAF3", -- brighter
+					-- 	bg2 = "#eae1e3", -- brighter
+					-- 	yellow = { base = "#ee9310", bright = "#f19615", dim = "#d38305" },
+					-- },
+				},
+				all = {
+					git = {
+						added = "#a4cf69",
+						changed = "#63c1e6",
+						removed = "#d74f56",
 					},
 				},
-				specs = {
-					all = {
-						git = {
-							added = "#a4cf69",
-							changed = "#63c1e6",
-							removed = "#d74f56",
-						},
-					},
-					dayfox = {
-						syntax = {
-							func = "blue.bright", -- was blue.dim
-							ident = "magenta", -- cyan by default
-						},
-					},
-					dawnfox = {
-						syntax = {
-							func = "blue.bright", -- was blue.dim
-						},
-					},
-					nightfox = {
-						git = {
-							added = "#a4cf69",
-							changed = "#63c1e6",
-							removed = "#d74f56",
-						},
-						syntax = {
-							func = "blue.bright", -- was blue.dim
-						},
+				dayfox = {
+					syntax = {
+						func = "blue.bright", -- was blue.dim
+						ident = "magenta", -- cyan by default
 					},
 				},
+				-- 	dawnfox = {
+				-- 		syntax = {
+				-- 			func = "blue.bright", -- was blue.dim
+				-- 		},
+				-- 	},
+				-- 	nightfox = {
+				-- 		git = {
+				-- 			added = "#a4cf69",
+				-- 			changed = "#63c1e6",
+				-- 			removed = "#d74f56",
+				-- 		},
+				-- 		syntax = {
+				-- 			func = "blue.bright", -- was blue.dim
+				-- 		},
+				-- 	},
+				-- },
 				groups = {
 					all = {
-						["@keyword.function"] = { link = "@keyword.return" }, -- make them reddish
-						["@keyword.repeat"] = { link = "@keyword.return" }, -- make them reddish
-						["@keyword.conditional"] = { link = "@keyword.return" }, -- make them reddish
-						["@keyword.exception"] = { link = "@keyword.return" }, -- make them reddish
-						-- ["@conditional"] = { link = "@keyword.return" },
-						["@repeat"] = { link = "@keyword.return" },
-						["@keyword.operator"] = { link = "@keyword.return" },
-						["@keyword"] = { link = "@keyword.return" }, -- from blueish, to red
-						["@function.builtin"] = { link = "@keyword" }, -- blueish - list, enumerate, range...
-						["MatchParen"] = { fg = "palette.green", style = "reverse" }, -- blueish - list, enumerate, range...
-						-- DiffAdd = {bg = "#a4cf69" }, -- does not seem to work...
-						-- DiffChange = {bg = "#63c1e6" },
-						-- DiffDelete = {bg = "#d74f56" },
+						-- 	["@keyword.function"] = { link = "@keyword.return" }, -- make them reddish
+						-- 	["@keyword.repeat"] = { link = "@keyword.return" }, -- make them reddish
+						-- 	["@keyword.conditional"] = { link = "@keyword.return" }, -- make them reddish
+						-- 	["@keyword.exception"] = { link = "@keyword.return" }, -- make them reddish
+						-- 	-- ["@conditional"] = { link = "@keyword.return" },
+						-- 	["@repeat"] = { link = "@keyword.return" },
+						-- 	["@keyword.operator"] = { link = "@keyword.return" },
+						-- 	["@keyword"] = { link = "@keyword.return" }, -- from blueish, to red
+						-- 	["@function.builtin"] = { link = "@keyword" }, -- blueish - list, enumerate, range...
+						["MatchParen"] = { fg = "palette.red" }, -- blueish - list, enumerate, range...
+						-- 	-- DiffAdd = {bg = "#a4cf69" }, -- does not seem to work...
+						-- 	-- DiffChange = {bg = "#63c1e6" },
+						-- 	-- DiffDelete = {bg = "#d74f56" },
+						["StatusLineNC"] = { bg = "palette.cyan", fg = "palette.fg0" },
+					},
+					terafox = {
+						StatusLineNC = { bg = "#74b2c9", fg = "#000000" },
 					},
 				},
 			}
@@ -243,20 +225,70 @@ return {
 	},
 	{
 		"mcauley-penney/ice-cave.nvim",
-		lazy = true,
-	},
-	{
-		dir = "~/projects/base46.nvim",
-		dev = true,
-		-- "jayden-chan/base46.nvim",
+		priority = 1000,
 		lazy = true,
 	},
 	{
 		"LunarVim/darkplus.nvim",
+		priority = 1000,
+		lazy = true,
+	},
+	{
+		"NTBBloodbath/doom-one.nvim",
+		priority = 1000,
+		lazy = true,
+	},
+	{
+		"rmehri01/onenord.nvim",
+		priority = 1000,
+		opts = function()
+			local colors = require("onenord.colors").load()
+			return {
+				styles = {
+					diagnostics = "undercurl",
+					comments = "italic",
+					functions = "bold",
+				},
+				inverse = {
+					match_paren = true,
+				},
+				custom_highlights = {
+					NvimTreeNormal = { fg = colors.fg, bg = colors.bg },
+					CurSearch = { fg = colors.cyan, bg = colors.selection, style = "bold" },
+					MatchParenCur = { fg = colors.blue, style = "inverse" },
+					NormalFloat = { bg = colors.bg },
+					FloatBorder = { bg = colors.bg },
+					SimpleF = { fg = colors.red, bg = colors.diff_add_bg, style = "bold" },
+					fugitiveStagedHeading = { fg = colors.green },
+					fugitiveStagedSection = { fg = colors.blue },
+					fugitiveUntrackedSection = { fg = colors.blue },
+					fugitiveUnstagedSection = { fg = colors.blue },
+				},
+			}
+		end,
+	},
+	{
+		"MyyPo/borrowed.nvim",
+		opts = {
+			transparent = false, -- Disable setting background
+			styles = {
+				comments = "italic", -- Value is any valid attr-list value `:help attr-list`
+				conditionals = "italic",
+				constants = "bold",
+				functions = "bold",
+				keywords = "italic",
+				numbers = "NONE",
+				operators = "NONE",
+				strings = "NONE",
+				types = "NONE",
+				variables = "NONE",
+			},
+		},
 		lazy = true,
 	},
 	{
 		"towry/dracula-mini.nvim",
+		opts = {},
 		lazy = true,
 	},
 }

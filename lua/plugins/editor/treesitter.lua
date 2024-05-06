@@ -26,18 +26,18 @@ return {
 				highlight = {
 					enable = true,
 					additional_vim_regex_highlighting = false,
-					disable = { "latex" },
+					-- disable = { "latex" },
 				},
 				indent = { enable = true },
-				autotag = {
-					enable = true,
-					enable_rename = true,
-					enable_close = true,
-					enable_close_on_slash = true,
-				},
-				matchup = {
-					enable = true, -- mandatory, false will disable the whole extension
-				},
+				-- autotag = {
+				-- 	enable = true,
+				-- 	enable_rename = true,
+				-- 	enable_close = true,
+				-- 	enable_close_on_slash = true,
+				-- },
+				-- matchup = {
+				-- 	enable = true, -- mandatory, false will disable the whole extension
+				-- },
 				incremental_selection = {
 					enable = true,
 					keymaps = {

@@ -33,41 +33,11 @@
 local M = {}
 ---@class Themes
 M.themes = {
-	index = "gruvbox",
-	flavour = { "dark", "hard" },
+	index = "roses",
+	flavour = { "prime", "main", "dawn" },
 	colors = {
-		{
-			file_name = "gruvbox",
-			name = "gruvbox*",
-			flavours = {
-				{ "dark", "soft" },
-				{ "dark", "" },
-				{ "dark", "hard" },
-				{ "light", "soft" },
-				{ "light", "" },
-				{ "light", "hard" },
-			},
-		},
-		{
-			file_name = "kanagawa",
-			name = "kanagawa*",
-			flavours = { "wave", "dragon", "lotus" },
-		},
-		{ file_name = "astro", name = "astro*", flavours = { "astrolight", "astrodark", "astromars" } },
 		{ file_name = "roses", name = "roses*", flavours = { "main", "prime", "dawn" } },
-		{ file_name = "flesh_and_blood", name = "flesh_and_blood*", flavours = { "" } },
-		{
-			file_name = "everforest",
-			name = "everforest*",
-			flavours = {
-				{ "dark", "medium" },
-				{ "dark", "hard" },
-				{ "dark", "soft" },
-				{ "light", "medium" },
-				{ "light", "hard" },
-				{ "light", "soft" },
-			},
-		},
+		{ file_name = "astro", name = "astro*", flavours = { "astrolight", "astrodark", "astromars" } },
 		{
 			file_name = "fox",
 			name = "fox*",
@@ -75,8 +45,10 @@ M.themes = {
 			append_file_name = false,
 		},
 		{ file_name = "ice-cave", name = "ice-cave*", flavours = { "" } },
-		{ file_name = "chad", name = "chad*", flavours = { "rosepine-dawn" } },
 		{ file_name = "darkplus", name = "darkplus*", flavours = { "" } },
+		{ file_name = "doom-one", name = "doom-one*", flavours = { "dark", "light" } },
+		{ file_name = "onenord", name = "one-nord*", flavours = { "dark", "light" } },
+		{ file_name = "borrowed", name = "borrowed*", flavours = { "mayu", "shin" } },
 		{ file_name = "dracula", name = "dracula*", flavours = { "dark", "light" } },
 	},
 }
@@ -191,9 +163,8 @@ end
 function M.init()
 	local state = M.load_state()
 	for _, v in pairs(M.themes.colors) do
-		if v.file_name:match(state.colorscheme) then
+		if v.file_name == state.colorscheme then
 			M.active_theme = v
-			break
 		end
 	end
 	if not M.active_theme then
@@ -216,7 +187,15 @@ function M.init()
 		end
 	end
 	if M.color_state == nil then
-		M.color_state = { name = M.active_theme.name, current = 1 }
+		vim.notify("did not find " .. state.colorscheme .. "... defaulting")
+		M.color_state = { name = M.active_theme.file_name, current = 1 }
+		state.colorscheme = M.color_state.name
+		state.flavour = "prime"
+		M.save_state({
+			colorscheme = state.colorscheme,
+			flavour = "prime",
+		})
+		M.wezterm_sync(state.colorscheme, state.flavour)
 	end
 	vim.notify(
 		"Switching to: " .. M.color_state.name .. " with flavour: " .. vim.inspect(state.flavour),

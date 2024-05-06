@@ -23,11 +23,11 @@ function M.setup(fn, flavour)
 		colors.setup_pmenu(flavour)
 	end
 
-	-- vim.api.nvim_set_var("t_Cs", "`e[4:3m")
-	-- vim.api.nvim_set_var("t_Ce", "`e[4:0m")
+	vim.api.nvim_set_var("t_Cs", "`e[4:3m")
+	vim.api.nvim_set_var("t_Ce", "`e[4:0m")
 
-	vim.api.nvim_set_var("t_Cs", "\\e[4:3m")
-	vim.api.nvim_set_var("t_Ce", "\\e[4:0m")
+	-- vim.api.nvim_set_var("t_Cs", "\\e[4:3m")
+	-- vim.api.nvim_set_var("t_Ce", "\\e[4:0m")
 
 	-- vim.api.nvim_set_var("t_Cs", "\\e[4:3m")
 	-- vim.api.nvim_set_var("t_Ce", "\\e[4:0m")
@@ -39,7 +39,6 @@ function M.setup(fn, flavour)
 	vim.api.nvim_set_hl(0, "DiagnosticUnderlineInfo", { undercurl = true, sp = "#00ffff" })
 	vim.api.nvim_set_hl(0, "DiagnosticUnderlineHint", { undercurl = true, sp = "#00ff00" })
 	utils.create_virt_diagnostics_hl()
-	-- bad spel
 end
 
 return M

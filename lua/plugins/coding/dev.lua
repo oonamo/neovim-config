@@ -36,12 +36,6 @@ return {
 		},
 		keys = {
 			{ "<leader>ms", "<cmd>ManageMySessions<cr>", desc = "[M]anage My [S]essions" },
-			{
-				"<leader>mf",
-				function()
-					require("manage_my_sessions.fzf.sessions"):run()
-				end,
-			},
 		},
 	},
 }

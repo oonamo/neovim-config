@@ -18,9 +18,9 @@ return {
 			end
 		end,
 		keys = {
-			{ "<leader>dt", ":DapToggleBreakpoint<CR>" },
-			{ "<leader>dx", ":DapTerminate<CR>" },
-			{ "<leader>do", ":DapStepOver<CR>" },
+			{ "<leader>dt", ":DapToggleBreakpoint<CR>", desc = "toggle breakpoint" },
+			{ "<leader>dx", ":DapTerminate<CR>", desc = "dap terminate" },
+			{ "<leader>do", ":DapStepOver<CR>", desc = "dap step over" },
 		},
 		lazy = true,
 	},

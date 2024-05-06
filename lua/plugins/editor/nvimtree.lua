@@ -1,6 +1,7 @@
 return {
 	{
 		"nvim-tree/nvim-tree.lua",
+		cond = O.ui.tree.nvimtree,
 		opts = {
 			auto_reload_on_write = false,
 			disable_netrw = false,

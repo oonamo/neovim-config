@@ -128,6 +128,7 @@ local Stc = {
 	-- 	end,
 	-- },
 }
+
 return Stc
 -- local conditions = require("heirline.conditions")
 --

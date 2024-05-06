@@ -84,11 +84,11 @@ return {
 			local diffrm_lighter = utils.brighten("DiffDelete", 75, "background")
 
 			set_hl(0, "GitSignsAddInline", { link = "DiffAdd" })
-			set_hl(0, "GitSignsAddLnInline", { fg = "fg", bg = diffadd_lighter })
+			set_hl(0, "GitSignsAddLnInline", { fg = fg, bg = diffadd_lighter })
 			set_hl(0, "GitSignsChangeInline", { link = "DiffText" })
 			set_hl(0, "GitSignsChangeLnInline", { link = "DiffChange" })
 			set_hl(0, "GitSignsDeleteInline", { link = "DiffDelete" })
-			set_hl(0, "GitSignsDeleteLnInline", { fg = "fg", bg = diffrm_lighter })
+			set_hl(0, "GitSignsDeleteLnInline", { fg = fg, bg = diffrm_lighter })
 			-- set_hl(0, "GitSignsAddLn", { bg = bg })
 			opts.signs = sign_tbl
 			require("gitsigns").setup(opts)

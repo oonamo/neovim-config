@@ -80,17 +80,13 @@ function M.set_qol()
 				end
 			end,
 		},
-		-- Treesitter does not load using this.
-		-- {
-		-- 	events = { "VimEnter" },
-		-- 	targets = { "*" },
-		-- 	command = function()
-		-- 		vim.schedule(function()
-		-- 			require("grapple").select({ index = 1 })
-		-- 		end)
-		-- 		-- vim.cmd("<cmd>Grapple select index=1<cr>")
-		-- 	end,
-		-- },
+		{
+			events = { "BufEnter" },
+			targets = { "C:/Users/onam7/Desktop/DB/DB/base.md" },
+			command = function()
+				print("inside")
+			end,
+		},
 	})
 	do
 		SEARCH_REG = ""

@@ -4,9 +4,10 @@ return {
 		-- version = "*", -- recommended, use latest release instead of latest commit
 		lazy = true,
 		cmd = "ObsidianOpen",
-		cond = function()
-			return string.match(vim.api.nvim_buf_get_name(0), "DB") ~= nil
-		end,
+		-- cond = function()
+		-- 	return string.match(vim.api.nvim_buf_get_name(0), "DB") ~= nil
+		-- end,
+		event = "BufEnter C:/Users/onam7/Desktop/DB/DB/onam7",
 		ft = "markdown",
 		dependencies = {
 			-- Required.
@@ -36,7 +37,7 @@ return {
 				},
 				completion = {
 					-- Set to false to disable completion.
-					nvim_cmp = true,
+					nvim_cmp = false,
 					-- Trigger completion at 2 chars.
 					min_chars = 2,
 				},
@@ -53,13 +54,11 @@ return {
 
 				note_id_func = function(title)
 					if title ~= nil then
-						return title:gsub("%s+", "-")
+						return title
 					else
-						local note_title
 						vim.ui.input({ prompt = "Title: " }, function(new_title)
-							note_title = new_title:gsub("%s+", "-")
+							return new_title
 						end)
-						return note_title
 					end
 				end,
 

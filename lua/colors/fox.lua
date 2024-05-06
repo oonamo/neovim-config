@@ -8,7 +8,7 @@ function M.setup(flavour)
 		vim.o.background = "dark"
 	end
 	if flavour == "terafox" then
-		vim.opt.cursorline = false
+		vim.opt.cursorline = true
 	else
 		vim.opt.cursorline = true
 	end

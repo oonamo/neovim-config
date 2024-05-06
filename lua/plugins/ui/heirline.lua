@@ -5,13 +5,15 @@ return {
 	end,
 	lazy = true,
 	event = { "VeryLazy" },
-	config = function(_, opts)
+	config = function()
 		local heirline_utils = require("heirline.utils")
 		local heirline = require("heirline")
 		local function get_colors()
 			local onam_utils = require("onam.utils")
-			local fg, bg, hl = onam_utils.get_hl("StatusLine")
-			local bright_fg, bright_bg, hl = onam_utils.get_hl("Folded")
+			local fg, bg, _ = onam_utils.get_hl("StatusLine")
+			local bright_fg, bright_bg, _ = onam_utils.get_hl("Folded")
+			-- #575279
+			-- #f2efe9
 			if not bright_bg then
 				-- bright_bg = bg
 				-- bright_fg = fg
@@ -40,17 +42,10 @@ return {
 				git_del = heirline_utils.get_highlight("diffDeleted").fg,
 				git_add = heirline_utils.get_highlight("diffAdded").fg,
 				git_change = heirline_utils.get_highlight("diffChanged").fg,
+				text = heirline_utils.get_highlight("Normal").bg,
 				fg = fg,
 				bg = bg,
 			}
-			if vim.g.colors_name == "gruvbox" or vim.g.colors_name == "hybrid" then
-				local fg, bg, _ = onam_utils.get_hl("StatusLine")
-				colors.fg = bg
-				colors.bg = fg
-				fg, bg, _ = onam_utils.get_hl("Folded")
-				colors.bright_fg = bg
-				colors.bright_bg = fg
-			end
 			if not vim.g.use_noice then
 				vim.o.cmdheight = 1
 				vim.g.noshowmode = true
@@ -58,11 +53,13 @@ return {
 			end
 			return colors
 		end
+
 		local statusline = require("plugins.ui.heirline.statusline")
 		local conditions = require("heirline.conditions")
 		local statuscolumn = require("plugins.ui.heirline.statuscolumn")
 		heirline.setup({
 			statusline = statusline.statusline,
+			-- statusline = require("plugins.ui.heirline.ibhagan"),
 			-- statusline = require("plugins.ui.heirline.tjline"),
 			-- tabline = tabline,
 			-- statuscolumn = require("plugins.ui.heirline.statuscolumn"),

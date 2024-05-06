@@ -26,7 +26,9 @@ return {
 	},
 	{
 		"lukas-reineke/indent-blankline.nvim",
-		cond = false,
+		cond = function()
+			return O.ui.indent.lines
+		end,
 		main = "ibl",
 		event = "UIEnter",
 		opts = {

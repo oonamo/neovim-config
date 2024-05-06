@@ -14,7 +14,6 @@ local function ChadSeps(highlight)
 		hl = highlight,
 	}
 end
-
 M.icons = {
 	-- ✗   󰅖 󰅘 󰅚 󰅙 󱎘 
 	close = "󰅙 ",

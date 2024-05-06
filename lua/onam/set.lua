@@ -15,8 +15,13 @@ if vim.g.neovide then
 	opt.guicursor = "c-ci-ve:ver25,r-cr:hor20,o:hor20,a:blinkwait900-blinkon900-blinkoff900"
 	vim.g.neovide_scale_factor = 1.0
 	vim.g.neovide_hide_mouse_when_typing = true
-	vim.o.guifont = "BlexMono Nerd Font:h16"
+	-- vim.o.guifont = "BlexMono Nerd Font:h16"
+	vim.o.guifont = "CartographCF Nerd Font,BlexMono Nerd Font:h12"
+	-- vim.o.guifont = "PxPlus ToshibaSat 9x16,GohuFont 14 Nerd Font:h12"
 	vim.g.neovide_scroll_animation_length = 0
+	vim.g.neovide_transparency_point = 0.8
+	vim.g.neovide_underline_stroke_scale = 1.5
+	vim.g.neovide_transparency = 0.9
 	vim.keymap.set("n", "<leader>nt", function()
 		if vim.g.neovide_transparency ~= 1.0 then
 			vim.g.neovide_transparency = 1.0
@@ -24,7 +29,15 @@ if vim.g.neovide then
 			vim.g.neovide_transparency = 0.9
 		end
 	end)
-	vim.g.neovide_transparency = 0.9
+	local change_scale_factor = function(delta)
+		vim.g.neovide_scale_factor = vim.g.neovide_scale_factor * delta
+	end
+	vim.keymap.set("n", "<C-=>", function()
+		change_scale_factor(1.25)
+	end)
+	vim.keymap.set("n", "<C-->", function()
+		change_scale_factor(1 / 1.25)
+	end)
 end
 o.cursorline = true
 -- o.cursorlineopt = "number"

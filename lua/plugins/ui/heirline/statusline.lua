@@ -136,6 +136,9 @@ local function get_status()
 	if O.ui.statusline.tj then
 		return require("plugins.ui.heirline.tjline")
 	end
+	if O.ui.statusline.ibh then
+		return require("plugins.ui.heirline.ibhagan")
+	end
 end
 
 local StatusLine = {

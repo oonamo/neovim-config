@@ -5,7 +5,7 @@ M.name = "rose-pine"
 M.colors = {
 	fg = "#e0def4",
 	-- bg = "#28272a",
-	bg = "#1c1c1c",
+	-- bg = "#1c1c1c",
 	green = "#698282",
 	yellow = "#ffc2c6",
 	magenta = "#dda0dd",
@@ -41,9 +41,10 @@ function M.setup(flavour)
 	end
 	require("rose-pine").setup({
 		variant = flavour,
-		style = {
+		styles = {
 			bold = true,
 			italic = true,
+			transparency = false,
 		},
 		groups = {
 			border = "muted",

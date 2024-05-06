@@ -205,7 +205,7 @@ return {
 			-- 	require("fzf-lua").files({
 			-- 		-- winopts = {
 			-- 		-- 	fullscreen = false,
-			-- 		-- 	height = 0.90,
+			-- 		-- 	height = 1.90,
 			-- 		-- 	width = 1,
 			-- 		-- },
 			-- 	})
