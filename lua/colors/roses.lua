@@ -17,6 +17,7 @@ M.colors = {
 	white = "#e0def4",
 	black = "#21202e",
 }
+
 function M.setup(flavour)
 	vim.cmd.hi("clear")
 	vim.opt.cursorline = true

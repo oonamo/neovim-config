@@ -44,26 +44,26 @@ vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><
 
 vim.keymap.set("n", "<leader>cp", function()
 	require("onam.theme_switcher").open_plenary_popup()
-end, opts("color switcher", true)) -- { desc = "color switcher" })
+end, opts("select theme", true)) -- { desc = "color switcher" })
 
 vim.keymap.set("n", "<leader>cf", function()
 	require("onam.theme_switcher").toggle_flavour()
-end, opts("color switcher", true)) -- { desc = "color switcher" })
+end, opts("next theme flavour", true)) -- { desc = "color switcher" })
 
-vim.keymap.set("n", "z=", function()
-	local word = vim.fn.expand("<cword>")
-	local suggestions = vim.fn.spellsuggest(word)
-	vim.ui.select(
-		suggestions,
-		{},
-		vim.schedule_wrap(function(selected)
-			if selected then
-				vim.api.nvim_feedkeys("ciw" .. selected, "n", true)
-				vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, true, true), "n", true)
-			end
-		end)
-	)
-end, opts("spell suggestions"))
+-- vim.keymap.set("n", "z=", function()
+-- 	local word = vim.fn.expand("<cword>")
+-- 	local suggestions = vim.fn.spellsuggest(word)
+-- 	vim.ui.select(
+-- 		suggestions,
+-- 		{},
+-- 		vim.schedule_wrap(function(selected)
+-- 			if selected then
+-- 				vim.api.nvim_feedkeys("ciw" .. selected, "n", true)
+-- 				vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, true, true), "n", true)
+-- 			end
+-- 		end)
+-- 	)
+-- end, opts("spell suggestions"))
 
 -- window options
 vim.keymap.set("n", "<leader>vs", "<CMD>vsplit<CR>", opts("vertical split", true))
@@ -74,4 +74,4 @@ vim.keymap.set("n", "<leader>vn", "<CMD>vnew<CR>", opts("horizontal split", true
 vim.keymap.set("n", "<C-;>", function()
 	local command = { "wezterm", "cli", "activate-pane-direction", "Down" }
 	return vim.fn.system(command)
-end)
+end, opts("open wezterm split", true))

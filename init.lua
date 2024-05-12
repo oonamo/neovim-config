@@ -13,13 +13,11 @@ if not vim.loop.fs_stat(lazypath) then
 end
 
 vim.opt.rtp:prepend(lazypath)
-
 require("globals")
 require("onam.remap")
 require("onam.utils")
 require("onam.set")
 require("onam.plug_opts")
-
 require("lazy").setup({
 	spec = {
 		{ import = "plugins.coding" },
@@ -41,7 +39,7 @@ require("lazy").setup({
 require("onam.autocmds").set_qol()
 require("onam.theme_switcher").init()
 
-if not O.ui.tree.oil and not O.ui.tree.neotree then
+if not O.ui.tree.oil and not O.ui.tree.neotree and not O.ui.tree.mini then
 	vim.keymap.set("n", "<leader>e", "<cmd>Ex<CR>", { desc = "explorer" })
 end
 

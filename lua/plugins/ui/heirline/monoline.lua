@@ -32,7 +32,6 @@ local separator_types = {
 }
 
 local separators = separator_types.slant
-
 ---@param highlight string|function|table
 ---@param right boolean|nil
 ---@param after boolean|nil

@@ -14,6 +14,29 @@ local function dropdown(opts)
 	}, opts)
 end
 
+local function drop(opts)
+	return {
+		winopts = {
+			border = "single",
+			fullscreen = false,
+			width = 0.8,
+			height = 0.75,
+			preview = {
+				delay = 150,
+				scrollbar = false,
+				default = "builtin",
+				wrap = "wrap",
+				horizontal = "right:45%",
+				vertical = "down:40%",
+				winopts = {
+					cursorlineopt = "line",
+					foldcolumn = 0,
+				},
+			},
+		},
+	}
+end
+
 local function bottom_split(opts)
 	return vim.tbl_deep_extend("force", {
 		prompt = "   ",
@@ -76,8 +99,6 @@ return {
 	lazy = true,
 	opts = function()
 		local actions = require("fzf-lua.actions")
-		local bg_plus_hl =
-			{ vim.o.background == "dark" and "bg" or "fg", vim.o.background == "dark" and "CursorLine" or "Normal" }
 		-- local bg_plus_hl = { "bg", "CursorLine" }
 		return {
 			"max-perf",
@@ -94,6 +115,7 @@ return {
 				prompt = "   ",
 				-- winopts = { title = "files" },
 				winopts = { title = "files" },
+				-- formatter = "path.filename_first",
 			}),
 			grep = bottom_split({
 				winopts = { title = "grep" },
@@ -191,12 +213,18 @@ return {
 	end,
 	cond = vim.g.use_FZF,
 	keys = {
-		{ "<leader>ff", fzf_lua.files, desc = "[f]zf [f]iles" },
+		{
+			"<leader>ff",
+			function()
+				fzf_lua.files(drop())
+			end,
+			desc = "[f]zf [f]iles",
+		},
 		{ "<leader>fs", fzf_lua.live_grep, desc = "fzf grep" },
 		-- { "<leader>fr", "<cmd>FzfLua live_grep_resume<cr>", desc = "fzf grep resume" },
 		{ "<leader>fr", fzf_lua.lsp_references, desc = "fzf grep resume" },
 		{ "<leader>g?", fzf_lua.help_tags, desc = "fzf help" },
-		{ "<leader>fb", fzf_lua.buffers, desc = "fzf commands" },
+		{ "<leader>fb", fzf_lua.buffers, desc = "fzf buffers" },
 		-- { "<C-p>", "<cmd>FzfLua files<cr>", desc = "Find files" },
 		{
 			"<C-p>",
@@ -217,7 +245,12 @@ return {
 			function()
 				require("fzf-lua").complete_path()
 			end,
-			desc = "fzf commands",
+			desc = "fzf complete_path",
+		},
+		{
+			"z=",
+			fzf_lua.spell_suggest,
+			desc = "spell suggest",
 		},
 	},
 }

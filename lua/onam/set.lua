@@ -1,14 +1,14 @@
 local o, opt = vim.o, vim.opt
 
--- opt.guicursor = {
--- 	"n-sm:block",
--- 	"v:hor50",
--- 	"c-ci-cr-i-ve:ver10",
--- 	"o-r:hor10",
--- 	"a:Cursor/Cursor-blinkwait1-blinkon1-blinkoff1",
--- }
+opt.guicursor = {
+	"n-sm:block",
+	"v:hor50",
+	"c-ci-cr-i-ve:ver10",
+	"o-r:hor10",
+	"a:Cursor/Cursor-blinkwait1-blinkon1-blinkoff1",
+}
 
-opt.guicursor = ""
+-- opt.guicursor = ""
 opt.termguicolors = true
 opt.background = "dark"
 if vim.g.neovide then
@@ -85,7 +85,7 @@ opt.conceallevel = 2
 opt.showmode = false
 opt.completeopt = "menuone,noinsert,noselect"
 o.grepprg = [[rg --glob "!.git" --hidden --smart-case  --vimgrep]]
-o.helpheight = 70
+-- o.helpheight = 70
 o.ignorecase = true
 o.foldcolumn = "1"
 opt.foldlevel = 99

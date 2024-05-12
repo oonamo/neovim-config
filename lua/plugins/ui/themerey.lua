@@ -283,12 +283,34 @@ return {
 				types = "NONE",
 				variables = "NONE",
 			},
+			cursor = { -- WIP: Dynamic cursor settings
+				enable = false,
+				visual = {
+					enable = false,
+				},
+			},
 		},
 		lazy = true,
 	},
 	{
 		"towry/dracula-mini.nvim",
 		opts = {},
+		lazy = true,
+	},
+	{
+		"sainnhe/gruvbox-material",
+		lazy = true,
+	},
+	{
+		"sainttttt/flesh-and-blood",
+		lazy = true,
+	},
+	{
+		"pappasam/papercolor-theme-slim",
+		lazy = true,
+	},
+	{
+		"scottmckendry/cyberdream.nvim",
 		lazy = true,
 	},
 }

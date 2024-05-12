@@ -90,9 +90,9 @@ local function on_attach(client, buffer)
 	-- trigger codelens refresh
 	vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
 
-	if vim.g.disable_semantic_tokens and client.supports_method("textDocument/semanticTokens") then
-		client.server_capabilities.semanticTokensProvider = nil
-	end
+	-- if vim.g.disable_semantic_tokens and client.supports_method("textDocument/semanticTokens") then
+	-- 	client.server_capabilities.semanticTokensProvider = nil
+	-- end
 
 	if client.supports_method("textDocument/publishDiagnostics") then
 		vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
@@ -104,6 +104,8 @@ local function on_attach(client, buffer)
 			},
 			update_in_insert = true,
 		})
+		-- local ns_id = vim.api.nvim_create_namespace("lsp-highlighter-custom")
+		-- require("onam.helpers.lsp.textDocument")
 	end
 end
 
@@ -242,6 +244,7 @@ return {
 	{
 		"L3MON4D3/LuaSnip",
 		event = { "InsertEnter" },
+		ft = { "markdown" },
 		dependencies = {
 			"nvim-cmp",
 			dependencies = {

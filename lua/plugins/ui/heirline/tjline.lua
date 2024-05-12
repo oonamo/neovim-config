@@ -1,6 +1,6 @@
 local M = {}
 local conditions = require("heirline.conditions")
-local utils = require("heirline.utils")
+-- local utils = require("heirline.utils")
 -- if TJ_STL_BG then
 -- 	vim.api.nvim_set_hl(0, "StatusLine", { fg = utils.get_highlight("Normal").bg, bg = TJ_STL_BG })
 -- end
@@ -45,7 +45,7 @@ M.ViMode = {
 			nt = "Nt",
 			v = "VISUAL",
 			vs = "Vs",
-			V = "V_",
+			V = "V-LINE",
 			Vs = "Vs",
 			["\22"] = "^V",
 			["\22s"] = "^V",
@@ -55,7 +55,7 @@ M.ViMode = {
 			i = "INSERT",
 			ic = "Ic",
 			ix = "Ix",
-			R = "R",
+			R = "REPLACE",
 			Rc = "Rc",
 			Rx = "Rx",
 			Rv = "Rv",

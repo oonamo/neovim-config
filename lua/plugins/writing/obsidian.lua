@@ -212,29 +212,13 @@ return {
 		},
 	},
 	{
-		-- "oflisback/obsidian-bridge.nvim",
-		dir = "~/projects/obsidian-bridge.nvim/",
+		"oflisback/obsidian-bridge.nvim",
+		-- dir = "~/projects/obsidian-bridge.nvim/",
 		dependencies = { "nvim-telescope/telescope.nvim" },
-		dev = true,
 		cond = function()
 			return string.match(vim.api.nvim_buf_get_name(0), "DB") ~= nil
 		end,
-		-- config = true,
-		opts = function()
-			local api_key
-			if vim.g.neovide then
-				api_key = vim.fn.system({ "powershell", "-Command", "$Env:OBSIDIAN_REST_API_KEY" })
-			end
-			local opts = {
-				scroll_sync = true,
-			}
-			if api_key then
-				opts.api_key = function()
-					return api_key
-				end
-			end
-			return opts
-		end,
+		opts = { scroll_sync = true },
 		ft = "markdown",
 	},
 }

@@ -11,8 +11,8 @@ O.ui = {
 		minimal = false,
 		fancy = false,
 		simple = false,
-		chad = true,
-		tj = false,
+		chad = false,
+		tj = true,
 		ibh = false,
 		org = { active = false, monochrome = false },
 	},
@@ -27,10 +27,12 @@ O.ui = {
 	signature = "custom",
 	tree = {
 		neotree = false,
-		nvimtree = true,
-		oil = true,
+		nvimtree = false,
+		oil = false,
+		mini = true,
 	},
 	incline = true,
+	clues = true,
 }
 O.lsp = {
 	cmp = false,
