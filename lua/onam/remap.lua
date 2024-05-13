@@ -42,11 +42,11 @@ vim.keymap.set("n", "<leader>bc", ":bdelete<CR>", opts("buffer delete", true))
 -- Search and Replace
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], opts("search and replace"))
 
-vim.keymap.set("n", "<leader>cp", function()
+vim.keymap.set("n", "<leader>Lcp", function()
 	require("onam.theme_switcher").open_plenary_popup()
 end, opts("select theme", true)) -- { desc = "color switcher" })
 
-vim.keymap.set("n", "<leader>cf", function()
+vim.keymap.set("n", "<leader>Lcf", function()
 	require("onam.theme_switcher").toggle_flavour()
 end, opts("next theme flavour", true)) -- { desc = "color switcher" })
 

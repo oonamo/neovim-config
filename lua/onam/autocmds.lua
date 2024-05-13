@@ -88,28 +88,28 @@ function M.set_qol()
 			end,
 		},
 	})
-	-- do
-	-- 	SEARCH_REG = ""
-	-- 	utils.augroup("SearchCommand", {
-	-- 		{
-	-- 			events = { "CmdlineEnter" },
-	-- 			targets = { "*" },
-	-- 			command = function()
-	-- 				SEARCH_REG = vim.fn.getreg("/")
-	-- 				vim.fn.setreg("/", "")
-	-- 				vim.opt.hlsearch = true
-	-- 			end,
-	-- 		},
-	-- 		{
-	-- 			events = { "CmdlineLeave" },
-	-- 			targets = { "*" },
-	-- 			command = function()
-	-- 				vim.fn.setreg("/", SEARCH_REG)
-	-- 				vim.opt.hlsearch = false
-	-- 			end,
-	-- 		},
-	-- 	})
-	-- end
+	do
+		SEARCH_REG = ""
+		utils.augroup("SearchCommand", {
+			{
+				events = { "CmdlineEnter" },
+				targets = { "*" },
+				command = function()
+					SEARCH_REG = vim.fn.getreg("/")
+					vim.fn.setreg("/", "")
+					vim.opt.hlsearch = true
+				end,
+			},
+			{
+				events = { "CmdlineLeave" },
+				targets = { "*" },
+				command = function()
+					vim.fn.setreg("/", SEARCH_REG)
+					vim.opt.hlsearch = false
+				end,
+			},
+		})
+	end
 end
 
 function M.set_netrw()

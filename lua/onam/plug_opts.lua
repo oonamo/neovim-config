@@ -8,21 +8,12 @@ vim.g.no_cmd_height = false
 
 O.ui = {
 	statusline = {
-		minimal = false,
-		fancy = false,
-		simple = false,
 		chad = false,
-		tj = true,
-		ibh = false,
-		org = { active = false, monochrome = false },
-	},
-	tabline = {
-		minimal = false,
-		fancy = false,
+		tj = false,
+		everybody = true,
 	},
 	indent = {
 		mini = true,
-		lines = false,
 	},
 	signature = "custom",
 	tree = {
@@ -31,10 +22,9 @@ O.ui = {
 		oil = false,
 		mini = true,
 	},
-	incline = true,
 	clues = true,
 }
+
 O.lsp = {
-	cmp = false,
 	coq = true,
 }

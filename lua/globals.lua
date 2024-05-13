@@ -173,3 +173,18 @@ _G.tools = {
 		},
 	},
 }
+
+_G.Config = {
+	leader_group_clues = {
+		{ mode = "n", keys = "<Leader>b", desc = "+Buffer" },
+		{ mode = "n", keys = "<Leader>v", desc = "+Variable" },
+		-- { mode = "n", keys = "<Leader>e", desc = "+Explore" },
+		{ mode = "n", keys = "<Leader>f", desc = "+Find" },
+		{ mode = "n", keys = "<Leader>g", desc = "+Git" },
+		-- { mode = "n", keys = "<Leader>l", desc = "+LSP" },
+		{ mode = "n", keys = "<Leader>L", desc = "+Lua" },
+		-- { mode = "n", keys = "<Leader>m", desc = "+Map" },
+		{ mode = "n", keys = "<Leader>o", desc = "+Obsidian" },
+		{ mode = "n", keys = "<Leader>x", desc = "+Trouble" },
+	},
+}

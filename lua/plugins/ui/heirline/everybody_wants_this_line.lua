@@ -1,8 +1,8 @@
 local conditions = require("heirline.conditions")
-local utils = require("heirline.utils")
-local minimal_fg = vim.o.background == "light" and "white" or "black"
+-- local utils = require("heirline.utils")
+-- local minimal_fg = vim.o.background == "light" and "white" or "black"
 
-local seps = " │ "
+-- local seps = " │ "
 
 local function Seps(hl)
 	return {
@@ -10,6 +10,10 @@ local function Seps(hl)
 		hl = { fg = hl.fg, bg = hl.bg and true or "bg" },
 	}
 end
+
+local Align = {
+	provider = "%=",
+}
 
 local Buffer = {
 	init = function(self)
@@ -86,6 +90,9 @@ local BufSize = {
 }
 
 local Ruler = {
+	condition = function()
+		return vim.bo.filetype ~= "markdown"
+	end,
 	-- %l = current line number
 	-- %L = number of lines in the buffer
 	-- %c = column number
@@ -112,6 +119,9 @@ local Ruler = {
 }
 
 local Wordcount = {
+	condition = function()
+		return vim.bo.filetype == "markdown"
+	end,
 	init = function(self)
 		local wc = vim.fn.wordcount()
 		if wc.visual_words and wc.visual_chars then
@@ -137,7 +147,7 @@ local Wordcount = {
 	},
 	{
 		provider = function(self)
-			return " LINES " .. self.icon
+			return " LINES " .. self.icon .. " "
 		end,
 		hl = { fg = "gray", bg = "bg" },
 	},
@@ -152,16 +162,116 @@ local Wordcount = {
 	},
 }
 
-local Align = {
-	provider = "%=",
+local Diagnostics = {
+	-- Since this is nested inside LSPActive the events aren't called
+	-- update = { "LspAttach", "DiagnosticChanged", "BufEnter" },
+	static = {
+		-- error_icon = vim.fn.sign_getdefined("DiagnosticSignError")[1].text,
+		-- warn_icon = vim.fn.sign_getdefined("DiagnosticSignWarn")[1].text,
+		-- info_icon = vim.fn.sign_getdefined("DiagnosticSignInfo")[1].text,
+		-- hint_icon = vim.fn.sign_getdefined("DiagnosticSignHint")[1].text,
+		error_icon = "E",
+		warn_icon = "W",
+		info_icon = "I",
+		hint_icon = "H",
+	},
+	condition = function()
+		return #vim.diagnostic.get(0) > 0
+	end,
+	init = function(self)
+		self.errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
+		self.warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
+		self.hints = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.HINT })
+		self.info = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO })
+	end,
+	{
+		provider = function(self)
+			return self.errors > 0 and string.format(" %s:%s", self.error_icon, self.errors)
+		end,
+		hl = { fg = "red", bold = true },
+	},
+	{
+		provider = function(self)
+			return self.warnings > 0 and string.format(" %s:%s", self.warn_icon, self.warnings)
+		end,
+		hl = { fg = "yellow", bold = true },
+	},
+	{
+		provider = function(self)
+			return self.info > 0 and string.format(" %s:%s", self.info_icon, self.info)
+		end,
+		hl = { fg = "green", bold = true },
+	},
+	{
+		provider = function(self)
+			return self.hints > 0 and string.format(" %s:%s", self.hint_icon, self.hints)
+		end,
+		hl = { fg = "purple", bold = true },
+	},
+}
+
+local Netrw = {
+	condition = function()
+		return vim.bo.filetype == "netrw" or vim.bo.filetype == "help"
+	end,
+	Align,
+	{
+		provider = function()
+			return vim.uv.cwd()
+		end,
+	},
+	Align,
+}
+
+local Help = {
+	condition = function()
+		return vim.bo.filetype == "help"
+	end,
+	Align,
+	{
+		provider = function()
+			local filename = vim.api.nvim_buf_get_name(0)
+			return vim.fn.fnamemodify(filename, ":t")
+		end,
+	},
+	Align,
+}
+
+local defaultStatus = {
+	Buffer,
+	BufSize,
+	Ruler,
+	Align,
+	Diagnostics,
+	Align,
+}
+
+local specialStatus = {
+	condition = function()
+		return conditions.buffer_matches({
+			buftype = { "minifiles", "help", "netrw" },
+		})
+	end,
+	Netrw,
+	Help,
+	Align,
+}
+
+local markdownStatus = {
+	condition = function()
+		return vim.bo.filetype == "markdown"
+	end,
+	Buffer,
+	BufSize,
+	Wordcount,
+	Align,
+	Diagnostics,
+	Align,
 }
 
 return {
-	statusline = {
-		Buffer,
-		BufSize,
-		Ruler,
-		Align,
-		Wordcount,
-	},
+	fallthrough = false,
+	specialStatus,
+	markdownStatus,
+	defaultStatus,
 }

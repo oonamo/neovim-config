@@ -3,6 +3,7 @@ return {
 	dependencies = { "nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter" },
 	ft = "norg",
 	cmd = { "Neorg" },
+	cond = false,
 	opts = {
 		load = {
 			["core.keybinds"] = {

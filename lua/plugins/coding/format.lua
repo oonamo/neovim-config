@@ -9,12 +9,12 @@ return {
 				-- Conform will run multiple formatters sequentially
 				python = { "isort", "black" },
 				-- Use a sub-list to run only the first available formatter
-				javascript = { "prettier" },
-				html = { "prettier" },
-				css = { "prettier" },
-				json = { "prettier" },
-				yaml = { "prettier" },
-				markdown = { "prettier" },
+				-- javascript = { "prettier" },
+				-- html = { "prettier" },
+				-- css = { "prettier" },
+				-- json = { "prettier" },
+				-- yaml = { "prettier" },
+				-- markdown = { "prettier" },
 				cpp = { "clang-format" },
 			},
 			timeout_ms = 500,

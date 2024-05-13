@@ -483,31 +483,6 @@ function utils.reverse_hl(highlight, swap_fg, swap_bg)
 	vim.api.nvim_set_hl(0, highlight, hl)
 end
 
-function utils.fix_git_hls()
-	-- #162918
-	-- #c6cfd1
-	-- utils.reverse_hl("GitSignsAdd", true)
-	-- utils.change_hl_attribute("GitSignsAdd", "foreground", "NONE")
-	-- utils.reverse_hl("GitSignsAddNr")
-	-- utils.reverse_hl("GitSignsAddLn")
-	-- utils.reverse_hl("GitSignsChange")
-	-- utils.reverse_hl("GitSignsChangeNr")
-	-- utils.reverse_hl("GitSignsChangeLn")
-	-- utils.reverse_hl("GitSignsDelete")
-	-- utils.reverse_hl("GitSignsDeleteNr")
-	-- utils.reverse_hl("GitSignsDeleteLn")
-	-- utils.reverse_hl("GitSignsChangedelete")
-	-- utils.reverse_hl("GitSignsChangedeleteNr")
-	-- utils.reverse_hl("GitSignsChangedeleteLn")
-	-- utils.reverse_hl("GitSignsTopdelete")
-	-- utils.reverse_hl("GitSignsTopdeleteNr")
-	-- utils.reverse_hl("GitSignsTopdeleteLn")
-	-- utils.reverse_hl("GitSignsUntracked")
-	-- utils.reverse_hl("GitSignsUntrackedNr")
-	-- utils.reverse_hl("GitSignsUntrackedLn")
-	-- utils.reverse_hl("GitSignsDelete")
-end
-
 utils.diagnostics_available = function()
 	local clients = vim.lsp.buf_get_clients(0)
 	local diagnostics = vim.lsp.protocol.Methods.textDocument_publishDiagnostics

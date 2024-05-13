@@ -1,7 +1,10 @@
 return {
 	"echasnovski/mini.nvim",
 	version = false,
+	event = "VeryLazy",
 	config = function()
+		require("mini.extra").setup()
+		require("mini.bufremove").setup()
 		if O.ui.indent.mini then
 			require("mini.indentscope").setup({
 				-- draw = {
@@ -57,6 +60,7 @@ return {
 				},
 
 				clues = {
+					Config.leader_group_clues,
 					-- Enhance this by adding descriptions for <Leader> mapping groups
 					miniclue.gen_clues.builtin_completion(),
 					miniclue.gen_clues.g(),
@@ -65,27 +69,49 @@ return {
 					miniclue.gen_clues.windows(),
 					miniclue.gen_clues.z(),
 				},
+				window = { config = { border = "double" } },
 			})
 		end
 
 		if O.ui.tree.mini then
-			require("mini.files").setup({})
+			require("mini.files").setup({
+				windows = { preview = true },
+			})
 			vim.keymap.set("n", "<leader>e", MiniFiles.open, { desc = "open mini files" })
+			vim.keymap.set("n", "<leader>fl", function()
+				MiniFiles.open(vim.api.nvim_buf_get_name(0))
+				MiniFiles.reveal_cwd()
+			end, { desc = "open mini files" })
 		end
 
 		require("mini.splitjoin").setup()
-		require("mini.surround").setup({
-			mappings = {
-				add = "gsa", -- Add surrounding in Normal and Visual modes
-				delete = "gsd", -- Delete surrounding
-				find = "gsf", -- Find surrounding (to the right)
-				find_left = "gsF", -- Find surrounding (to the left)
-				highlight = "gsh", -- Highlight surrounding
-				leplace = "gsr", -- Replace surrounding
-				update_n_lines = "gsn", -- Update `n_lines`
-				suffix_last = "l", -- Suffix to search with "prev" method
-				suffix_next = "n", -- Suffix to search with "next" method
+		require("mini.surround").setup()
+		require("mini.comment").setup()
+		require("mini.ai").setup({
+			custom_textobjects = {
+				B = MiniExtra.gen_ai_spec.buffer(),
 			},
 		})
+
+		local hipatterns = require("mini.hipatterns")
+		local hi_words = MiniExtra.gen_highlighter.words
+		hipatterns.setup({
+			highlighters = {
+				fixme = hi_words({ "FIXME", "Fixme", "fixme" }, "MiniHipatternsFixme"),
+				hack = hi_words({ "HACK", "Hack", "hack" }, "MiniHipatternsHack"),
+				todo = hi_words({ "TODO", "Todo", "todo" }, "MiniHipatternsTodo"),
+				note = hi_words({ "NOTE", "Note", "note" }, "MiniHipatternsNote"),
+				hex_color = hipatterns.gen_highlighter.hex_color(),
+			},
+		})
+		-- No need to copy this inside `setup()`. Will be used automatically.
+		require("mini.notify").setup({
+			-- Window options
+			window = {
+				config = { border = "double" },
+			},
+		})
+		vim.notify = require("mini.notify").make_notify()
+		-- require("mini.hues").setup({ background = "#351721", foreground = "#cdc4c6", n_hues = 8, saturation = "high" })
 	end,
 }

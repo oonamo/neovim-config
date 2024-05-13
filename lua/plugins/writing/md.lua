@@ -16,7 +16,7 @@ return {
 			         (atx_h5_marker)
 			         (atx_h6_marker)
 			     ] @heading)
-            
+
 			(thematic_break) @dash
 
 			(fenced_code_block) @code
@@ -76,11 +76,11 @@ return {
 			require("render-markdown").setup(opts)
 		end,
 	},
-	{
-		"tadmccorkle/markdown.nvim",
-		name = "markdown-keys",
-		ft = { "markdown" },
-	},
+	-- {
+	-- 	"tadmccorkle/markdown.nvim",
+	-- 	name = "markdown-keys",
+	-- 	ft = { "markdown" },
+	-- },
 	{
 		"dhruvasagar/vim-table-mode",
 		ft = { "markdown" },

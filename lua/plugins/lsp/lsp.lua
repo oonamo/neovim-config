@@ -1,7 +1,5 @@
-local M = {}
 local function on_attach(client, buffer)
 	local fzf = require("fzf-lua")
-	-- local conf = require("onam.helpers.lsp.signature")
 	if client.name == "rust_analyzer" then
 		vim.keymap.set("n", "<leader>h", function()
 			vim.cmd.RustLsp({ "hover", "actions" })
@@ -19,19 +17,12 @@ local function on_attach(client, buffer)
 			buffer = buffer,
 		})
 	end
-	-- if client.server_capabilities.documentSymbolProvider then
-	-- 	require("nvim-navic").attach(client, buffer)
-	-- end
 	vim.keymap.set("n", "gd", function()
 		vim.lsp.buf.definition()
 	end, {
 		desc = "go to buffer definition",
 		buffer = buffer,
 	})
-	-- vim.keymap.set("n", "<leader>vws", vim.lsp.buf.workspace_symbol, {
-	-- 	desc = "Go to workspace_symbol",
-	-- 	buffer = buffer,
-	-- })
 	vim.keymap.set("n", "<leader>vws", fzf.lsp_workspace_symbols, { desc = "Find workspace_symbol", buffer = buffer })
 	vim.keymap.set("n", "<leader>vd", function()
 		vim.diagnostic.open_float({ border = tools.ui.cur_border })
@@ -47,10 +38,6 @@ local function on_attach(client, buffer)
 		desc = "Go to previous diagnostic",
 		buffer = buffer,
 	})
-	-- vim.keymap.set("n", "<leader>vrr", vim.lsp.buf.references, {
-	-- 	desc = "Go to lsp references",
-	-- 	buffer = buffer,
-	-- })
 	vim.keymap.set("n", "<leader>vrr", fzf.lsp_references, {
 		desc = "Go to lsp references",
 		buffer = buffer,
@@ -63,36 +50,19 @@ local function on_attach(client, buffer)
 		desc = "Signature help",
 		buffer = buffer,
 	})
-	if package.loaded["corn"] == nil then
-		local diag_float_grp = vim.api.nvim_create_augroup("DiagnosticFloat", { clear = true })
-		-- vim.api.nvim_create_autocmd("CursorHold", {
-		-- 	callback = function()
-		-- 		vim.diagnostic.open_float(nil, { focusable = false })
-		-- 	end,
-		-- 	group = diag_float_grp,
-		-- })
-	end
 	if O.ui.signature == "custom" then
-		-- require("lsp_signature").on_attach(conf, buffer)
 		require("onam.helpers.lsp.signature").setup(client, buffer)
-	else
-		require("lsp_signature").on_attach({
-			hint_prefix = "",
-		}, buffer)
 	end
-	--
+
 	-- refresh codelens on TextChanged and InsertLeave as well
-	vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach" }, {
-		buffer = buffer,
-		callback = vim.lsp.codelens.refresh,
-	})
-
-	-- trigger codelens refresh
-	vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
-
-	-- if vim.g.disable_semantic_tokens and client.supports_method("textDocument/semanticTokens") then
-	-- 	client.server_capabilities.semanticTokensProvider = nil
-	-- end
+	if client.supports_method("textDocument/codeLens") then
+		vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach" }, {
+			buffer = buffer,
+			callback = vim.lsp.codelens.refresh,
+		})
+		-- trigger codelens refresh
+		vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
+	end
 
 	if client.supports_method("textDocument/publishDiagnostics") then
 		vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
@@ -104,8 +74,6 @@ local function on_attach(client, buffer)
 			},
 			update_in_insert = true,
 		})
-		-- local ns_id = vim.api.nvim_create_namespace("lsp-highlighter-custom")
-		-- require("onam.helpers.lsp.textDocument")
 	end
 end
 
@@ -152,7 +120,7 @@ return {
 			eslint = defaults,
 			powershell_es = {
 				shell = "pwsh",
-				bundle_path = "c:/w/PowerShellEditorServices",
+				-- bundle_path = "C:/Windows/PowerShellEditorServices",
 			},
 			clangd = {
 				on_attach = on_attach,
@@ -193,14 +161,11 @@ return {
 					dynamicRegistration = true,
 				},
 			}
-			-- require("lspconfig.ui.windows").default_options = tools.ui.cur_border
-			-- vim.api.nvim_set_hl(0, "LspInfoBorder", { link = "FloatBorder" })
 			for server, settings in pairs(opts) do
 				local server_opts = vim.tbl_deep_extend("force", {
 					capabilities = vim.deepcopy(capabilities),
 				}, settings or {})
 				if server_opts.root_dir then
-					print("opts")
 					server_opts.root_dir = lspconfig.util.root_pattern(unpack(server_opts.root_dir))
 				end
 				if server == "arduino_language_server" then
@@ -245,20 +210,6 @@ return {
 		"L3MON4D3/LuaSnip",
 		event = { "InsertEnter" },
 		ft = { "markdown" },
-		dependencies = {
-			"nvim-cmp",
-			dependencies = {
-				"saadparwaiz1/cmp_luasnip",
-			},
-			opts = function(_, opts)
-				opts.snippet = {
-					expand = function(args)
-						require("luasnip").lsp_expand(args.body)
-					end,
-				}
-				table.insert(opts.sources or {}, { name = "luasnip" })
-			end,
-		},
 		cond = O.lsp.cmp,
 		opts = {
 			history = true,
@@ -283,8 +234,7 @@ return {
 		ft = { "rust" },
 		dependencies = {
 			"nvim-lua/plenary.nvim",
-			{ "mfussenegger/nvim-dap", lazy = true },
-			{ "lvimuser/lsp-inlayhints.nvim", config = true, ft = { "rust" } },
+			{ "lvimuser/lsp-inlayhints.nvim", config = true, ft = { "rust" }, lazy = true },
 		},
 		opts = {
 			server = {
@@ -297,6 +247,7 @@ return {
 					files = {
 						watcherExclude = {
 							["**/_build"] = true,
+							["**/build"] = true,
 							["**/.classpath"] = true,
 							["**/.dart_tool"] = true,
 							["**/.factorypath"] = true,
@@ -314,6 +265,7 @@ return {
 						},
 						excludeDirs = {
 							"_build",
+							"build",
 							".dart_tool",
 							".flatpak-builder",
 							".git",
@@ -349,16 +301,13 @@ return {
 					auto_focus = true,
 				},
 			},
-			-- dap = {
-			-- 	adapter = require("rustaceanvim.config").get_codelldb_adapter(M.codelldb_path, M.liblldb_path),
-			-- },
 		},
 		config = function(_, opts)
-			local cfg = require("rustaceanvim.config")
-			local dap = {
-				adapter = cfg.get_codelldb_adapter(M.codelldb_path, M.liblldb_path),
-			}
-			vim.tbl_deep_extend("force", opts, dap)
+			-- local cfg = require("rustaceanvim.config")
+			-- local dap = {
+			-- 	adapter = cfg.get_codelldb_adapter(M.codelldb_path, M.liblldb_path),
+			-- }
+			-- vim.tbl_deep_extend("force", opts, dap)
 			vim.g.rustaceanvim = opts
 		end,
 	},

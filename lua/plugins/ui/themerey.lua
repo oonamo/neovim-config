@@ -8,13 +8,6 @@ return {
 				light = "astrolight",
 				dark = "astrodark",
 			},
-			palettes = {
-				-- astrolight = {
-				-- 	ui = {
-				-- 		base = "#feeeee",
-				-- 	},
-				-- },
-			},
 			highlights = {
 				astrolight = {
 					CursorLineNr = { fg = "#ead0dd" },
@@ -34,82 +27,10 @@ return {
 		},
 	},
 	{
-		-- "oonamo/neovim",
 		"rose-pine/neovim",
 		name = "rose-pine",
 		priority = 1000,
 		lazy = true,
-		-- opts = {},
-		-- require("rose-pine").setup({
-		-- 	-- variant = "",
-		-- 	styles = {
-		-- 		bold = true,
-		-- 		italic = true,
-		-- 		transparency = false,
-		-- 	},
-		-- 	enable = {
-		-- 		terminal = true,
-		-- 		legacy_highlights = true, -- Improve compatibility for previous versions of Neovim
-		-- 		migrations = true, -- Handle deprecated options automatically
-		-- 	},
-		-- 	groups = {
-		-- 		border = "muted",
-		-- 		link = "iris",
-		-- 		panel = "surface",
-		--
-		-- 		error = "love",
-		-- 		hint = "iris",
-		-- 		info = "foam",
-		-- 		note = "pine",
-		-- 		todo = "rose",
-		-- 		warn = "gold",
-		--
-		-- 		git_add = "foam",
-		-- 		git_change = "rose",
-		-- 		git_delete = "love",
-		-- 		git_dirty = "rose",
-		-- 		git_ignore = "muted",
-		-- 		git_merge = "iris",
-		-- 		git_rename = "pine",
-		-- 		git_stage = "iris",
-		-- 		git_text = "rose",
-		-- 		git_untracked = "subtle",
-		--
-		-- 		h = "iris",
-		-- 		h2 = "foam",
-		-- 		h3 = "rose",
-		-- 		h4 = "gold",
-		-- 		h5 = "pine",
-		-- 		h6 = "foam",
-		-- 	},
-		-- 	highlight_groups = {
-		-- 		-- _nc = "#16141f",
-		-- 		-- base = "#191724",
-		-- 		-- surface = "#1f1d2e",
-		-- 		-- overlay = "#26233a",
-		-- 		-- muted = "#6e6a86",
-		-- 		-- subtle = "#908caa",
-		-- 		-- text = "#e0def4",
-		-- 		-- love = "#eb6f92",
-		-- 		-- gold = "#f9bd98",
-		-- 		-- rose = "#ebbcba",
-		-- 		-- pine = "#7f9f9f",
-		-- 		-- foam = "#bedfe0",
-		-- 		-- iris = "#debee2",
-		-- 		-- highlight_low = "#21202e",
-		-- 		-- highlight_med = "#403d52",
-		-- 		-- highlight_high = "#524f67",
-		-- 		-- none = "NONE",
-		-- 		TreesitterContext = { bg = "highlight_low" },
-		-- 		TreesitterContextBottom = { sp = "rose", underline = true },
-		-- 		TreesitterContextNumberBottom = { sp = "rose", underline = true },
-		-- 		TelescopeTitle = { fg = "base", bg = "love" },
-		-- 		TelescopePromptTitle = { fg = "base", bg = "pine" },
-		-- 		TelescopePreviewTitle = { fg = "base", bg = "iris" },
-		-- 		BufferVisible = { bg = "none", fg = "text", bold = true, italic = true },
-		-- 		NoiceCmdlinePopupBorder = { fg = "subtle", bg = "subtle" },
-		-- 	},
-		-- })
 	},
 	{
 		"EdenEast/nightfox.nvim",
@@ -224,48 +145,9 @@ return {
 		end,
 	},
 	{
-		"mcauley-penney/ice-cave.nvim",
-		priority = 1000,
-		lazy = true,
-	},
-	{
 		"LunarVim/darkplus.nvim",
 		priority = 1000,
 		lazy = true,
-	},
-	{
-		"NTBBloodbath/doom-one.nvim",
-		priority = 1000,
-		lazy = true,
-	},
-	{
-		"rmehri01/onenord.nvim",
-		priority = 1000,
-		opts = function()
-			local colors = require("onenord.colors").load()
-			return {
-				styles = {
-					diagnostics = "undercurl",
-					comments = "italic",
-					functions = "bold",
-				},
-				inverse = {
-					match_paren = true,
-				},
-				custom_highlights = {
-					NvimTreeNormal = { fg = colors.fg, bg = colors.bg },
-					CurSearch = { fg = colors.cyan, bg = colors.selection, style = "bold" },
-					MatchParenCur = { fg = colors.blue, style = "inverse" },
-					NormalFloat = { bg = colors.bg },
-					FloatBorder = { bg = colors.bg },
-					SimpleF = { fg = colors.red, bg = colors.diff_add_bg, style = "bold" },
-					fugitiveStagedHeading = { fg = colors.green },
-					fugitiveStagedSection = { fg = colors.blue },
-					fugitiveUntrackedSection = { fg = colors.blue },
-					fugitiveUnstagedSection = { fg = colors.blue },
-				},
-			}
-		end,
 	},
 	{
 		"MyyPo/borrowed.nvim",
@@ -293,16 +175,7 @@ return {
 		lazy = true,
 	},
 	{
-		"towry/dracula-mini.nvim",
-		opts = {},
-		lazy = true,
-	},
-	{
 		"sainnhe/gruvbox-material",
-		lazy = true,
-	},
-	{
-		"sainttttt/flesh-and-blood",
 		lazy = true,
 	},
 	{
@@ -310,7 +183,7 @@ return {
 		lazy = true,
 	},
 	{
-		"scottmckendry/cyberdream.nvim",
+		"rebelot/kanagawa.nvim",
 		lazy = true,
 	},
 }

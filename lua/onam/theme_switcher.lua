@@ -1,4 +1,3 @@
----@class State
 ---@field colorscheme string
 ---@field flavour string
 
@@ -44,12 +43,8 @@ M.themes = {
 			flavours = { "nightfox", "dayfox", "dawnfox", "nordfox", "terafox", "carbonfox" },
 			append_file_name = false,
 		},
-		{ file_name = "ice-cave", name = "ice-cave*", flavours = { "" } },
 		{ file_name = "darkplus", name = "darkplus*", flavours = { "" } },
-		{ file_name = "doom-one", name = "doom-one*", flavours = { "dark", "light" } },
-		{ file_name = "onenord", name = "one-nord*", flavours = { "dark", "light" } },
 		{ file_name = "borrowed", name = "borrowed*", flavours = { "mayu", "shin" } },
-		{ file_name = "dracula", name = "dracula*", flavours = { "dark", "light" } },
 		{
 			file_name = "gruvbox-material",
 			name = "gruvbox-material*",
@@ -62,9 +57,8 @@ M.themes = {
 				{ "light", "hard" },
 			},
 		},
-		{ file_name = "flesh-and-blood", name = "flesh-and-blood", flavours = {} },
 		{ file_name = "papercolor", name = "papercolor*", flavours = { "dark", "light" } },
-		{ file_name = "cyberdream", name = "cyberdream*", flavours = { "dark", "light" } },
+		{ file_name = "kanagawa", name = "kanagawa*", flavours = { "wave", "dragon" } },
 	},
 }
 
@@ -215,10 +209,6 @@ function M.init()
 		})
 		M.wezterm_sync(state.colorscheme, state.flavour)
 	end
-	vim.notify(
-		"Switching to: " .. M.color_state.name .. " with flavour: " .. vim.inspect(state.flavour),
-		vim.log.levels.INFO
-	)
 	require("highlights").setup(state.colorscheme, state.flavour)
 end
 
@@ -232,11 +222,6 @@ function M.toggle_flavour()
 	M.color_state.current = M.color_state.current == #M.active_theme.flavours and 1 or M.color_state.current + 1
 	M.color_state.name = M.active_theme.flavours[M.color_state.current]
 	require("highlights").setup(M.active_theme.file_name, M.color_state.name)
-	if type(M.color_state.name) == "table" then
-		vim.notify("Switching to: " .. M.color_state.name[1], vim.log.levels.INFO)
-	else
-		vim.notify("Switching to: " .. (M.color_state.name or "default"), vim.log.levels.INFO)
-	end
 	if not vim.g.neovide then
 		M.save_state({
 			colorscheme = M.active_theme.file_name,

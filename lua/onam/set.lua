@@ -15,9 +15,13 @@ if vim.g.neovide then
 	opt.guicursor = "c-ci-ve:ver25,r-cr:hor20,o:hor20,a:blinkwait900-blinkon900-blinkoff900"
 	vim.g.neovide_scale_factor = 1.0
 	vim.g.neovide_hide_mouse_when_typing = true
+	-- vim.o.guifont = "AcPlusToshibaSat9x16 Nerd Font:h12"
 	-- vim.o.guifont = "BlexMono Nerd Font:h16"
-	vim.o.guifont = "CartographCF Nerd Font,BlexMono Nerd Font:h12"
+	vim.o.guifont = "CartographCF Nerd Font,Iosevka Comfy Wide Fixed"
 	-- vim.o.guifont = "PxPlus ToshibaSat 9x16,GohuFont 14 Nerd Font:h12"
+	-- vim.o.guifont = "Spleen16x32 Nerd Font:h12"
+	-- vim.o.guifont = "CozetteVector Nerd Font:h14"
+	-- vim.o.guifont = "Iosevka Comfy Wide Fixed:h12"
 	vim.g.neovide_scroll_animation_length = 0
 	vim.g.neovide_transparency_point = 0.8
 	vim.g.neovide_underline_stroke_scale = 1.5
@@ -94,7 +98,7 @@ o.winbar = 0
 o.tabline = 0
 -- o.statuscolumn = "%!v:lua.get_statuscol()"
 -- o.list = true
-
+--
 -- opt.listchars = {
 -- 	nbsp = "▬",
 -- 	tab = "  ",
@@ -123,7 +127,6 @@ if not vim.fn.has("win32") then
 		cache_enabled = 0,
 	}
 end
-
 O = {}
 
 if vim.fn.executable("rg") == 1 then

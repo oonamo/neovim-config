@@ -52,8 +52,7 @@ return {
 			local conditions = require("heirline.conditions")
 			local statuscolumn = require("plugins.ui.heirline.statuscolumn")
 			heirline.setup({
-				-- statusline = statusline.statusline,
-				statusline = require("plugins.ui.heirline.everybody_wants_this_line").statusline,
+				statusline = statusline.statusline,
 				statuscolumn = statuscolumn,
 				opts = {
 					colors = get_colors(),
@@ -65,7 +64,6 @@ return {
 					end,
 				},
 			})
-			-- vim.o.showtabline = 2
 			vim.cmd([[au FileType * if index(['wipe', 'delete'], &bufhidden) >= 0 | set nobuflisted | endif]])
 			vim.api.nvim_create_augroup("Heirline", { clear = true })
 			vim.api.nvim_create_autocmd({ "ColorScheme" }, {
@@ -75,48 +73,5 @@ return {
 				group = "Heirline",
 			})
 		end,
-	},
-	{
-		{
-			"sainttttt/everybody-wants-that-line.nvim",
-			branch = "saint",
-			cond = false,
-			config = function()
-				vim.keymap.set("n", "<leader>nn", require("everybody-wants-that-line.components.filename").toggle_float)
-				require("everybody-wants-that-line").setup({
-					buffer = {
-						enabled = true,
-						prefix = "B:",
-						symbol = "0",
-						max_symbols = 5,
-					},
-					diagnostics = {
-						enabled = true,
-					},
-					quickfix_list = {
-						enabled = true,
-					},
-					git_status = {
-						enabled = true,
-					},
-					filepath = {
-						enabled = true,
-						path = "relative",
-						shorten = false,
-					},
-					filesize = {
-						enabled = true,
-						metric = "decimal",
-					},
-					ruller = {
-						enabled = true,
-					},
-					filename = {
-						enabled = true,
-					},
-					separator = "│",
-				})
-			end,
-		},
 	},
 }

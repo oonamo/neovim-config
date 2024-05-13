@@ -54,11 +54,13 @@ return {
 
 				note_id_func = function(title)
 					if title ~= nil then
-						return title
+						return title:gsub("%s+", "-")
 					else
+						local note_title
 						vim.ui.input({ prompt = "Title: " }, function(new_title)
-							return new_title
+							note_title = new_title:gsub("%s+", "-")
 						end)
+						return note_title
 					end
 				end,
 

@@ -11,11 +11,11 @@ vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.s
 
 local M = {}
 
-M.check_triggeredChars = function(triggerChars)
+function M.check_triggeredChars(triggerChars)
 	local cur_line = vim.api.nvim_get_current_line()
 	local pos = vim.api.nvim_win_get_cursor(0)[2]
 
-	cur_line = cur_line:gsub("%s+", "") -- rm trailing spaces
+	cur_line = cur_line:gsub("%s+$", "") -- rm trailing spaces
 
 	for _, char in ipairs(triggerChars) do
 		if cur_line:sub(pos, pos) == char then
@@ -24,7 +24,7 @@ M.check_triggeredChars = function(triggerChars)
 	end
 end
 
-M.setup = function(client, bufnr)
+function M.setup(client, bufnr)
 	local group = vim.api.nvim_create_augroup("LspSignature", { clear = false })
 	vim.api.nvim_clear_autocmds({ group = group, buffer = bufnr })
 
