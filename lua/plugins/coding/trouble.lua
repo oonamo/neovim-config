@@ -31,7 +31,7 @@ return {
 			-- 	trouble.previous({ skip_groups = true, jump = true })
 			-- end)
 		end,
-		event = { "BufReadPre", "BufNewFile" },
+		event = "LspAttach",
 		keys = {
 			{ "<leader>xx" },
 			{ "<leader>xw" },

@@ -46,7 +46,4 @@ local StatusLine = {
 }
 
 local Winbar = components.Winbar
--- if TJ_STL_BG then
--- 	vim.api.nvim_set_hl(0, "StatusLine", { fg = utils.get_single_hl("Normal").background, bg = TJ_STL_BG })
--- end
 return { statusline = StatusLine, winbar = Winbar }

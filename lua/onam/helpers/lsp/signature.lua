@@ -25,6 +25,9 @@ function M.check_triggeredChars(triggerChars)
 end
 
 function M.setup(client, bufnr)
+	if not client.server_capabilities.signatureHelpProvider then
+		return
+	end
 	local group = vim.api.nvim_create_augroup("LspSignature", { clear = false })
 	vim.api.nvim_clear_autocmds({ group = group, buffer = bufnr })
 

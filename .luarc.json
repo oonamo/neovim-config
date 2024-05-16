@@ -3,5 +3,6 @@
         "vim",
         "MiniFiles",
         "MiniExtra"
-    ]
+    ],
+    "completion.autoRequire": false
 }

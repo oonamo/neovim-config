@@ -59,6 +59,9 @@ M.themes = {
 		},
 		{ file_name = "papercolor", name = "papercolor*", flavours = { "dark", "light" } },
 		{ file_name = "kanagawa", name = "kanagawa*", flavours = { "wave", "dragon" } },
+		{ file_name = "ponokai", name = "ponokai*", flavours = { "default", "sonokai", "kitty" } },
+		{ file_name = "catpuccin", name = "catpuccin*", flavours = { "dark", "light" } },
+		{ file_name = "modus-tinted", name = "modus-tinted*", flavours = { "dark", "light" } },
 	},
 }
 

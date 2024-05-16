@@ -1,17 +1,18 @@
-local function on_attach(client, buffer)
+---@param use_code_lens boolean|nil
+local function on_attach(client, buffer, use_code_lens)
 	local fzf = require("fzf-lua")
 	if client.name == "rust_analyzer" then
-		vim.keymap.set("n", "<leader>h", function()
+		vim.keymap.set("n", "K", function()
 			vim.cmd.RustLsp({ "hover", "actions" })
 		end, { desc = "Rust Hover Actions", buffer = buffer })
 		vim.keymap.set("n", "<leader>vca", function()
 			vim.cmd.RustLsp("codeAction")
 		end, { desc = "Rust code actions", buffer = buffer })
 	else
-		vim.keymap.set("n", "<leader>h", vim.lsp.buf.hover, {
-			desc = "Hover details",
-			buffer = buffer,
-		})
+		-- vim.keymap.set("n", "<leader>h", vim.lsp.buf.hover, {
+		-- 	desc = "Hover details",
+		-- 	buffer = buffer,
+		-- })
 		vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, {
 			desc = "Preview code actions",
 			buffer = buffer,
@@ -55,8 +56,13 @@ local function on_attach(client, buffer)
 	end
 
 	-- refresh codelens on TextChanged and InsertLeave as well
-	if client.supports_method("textDocument/codeLens") then
-		vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach" }, {
+	if client.supports_method("textDocument/codeLens") and use_code_lens then
+		vim.lsp.codelens.refresh()
+		-- vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach" }, {
+		-- 	buffer = buffer,
+		-- 	callback = vim.lsp.codelens.refresh,
+		-- })
+		vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
 			buffer = buffer,
 			callback = vim.lsp.codelens.refresh,
 		})
@@ -70,10 +76,16 @@ local function on_attach(client, buffer)
 			underline = true,
 			virtual_text = {
 				spacing = 5,
-				severity_limit = "Hint",
+				min = "Hint",
 			},
 			update_in_insert = true,
 		})
+	end
+
+	if client.supports_method("textDocument/inlayHint") then
+		vim.keymap.set("n", "<leader>h", function()
+			vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+		end)
 	end
 end
 
@@ -112,16 +124,27 @@ return {
 								[vim.fn.stdpath("config") .. "/lua"] = true,
 							},
 						},
+						-- codeLens = {
+						-- 	enable = false,
+						-- },
+						hint = {
+							enable = true,
+							setType = false,
+							paramType = true,
+							paramName = true,
+							semicolon = "Disable",
+							arrayIndex = "Disable",
+						},
 					},
 				},
 			},
 			tsserver = defaults,
 			html = defaults,
 			eslint = defaults,
-			powershell_es = {
-				shell = "pwsh",
-				-- bundle_path = "C:/Windows/PowerShellEditorServices",
-			},
+			-- powershell_es = {
+			-- 	shell = "pwsh",
+			-- 	-- bundle_path = "C:/Windows/PowerShellEditorServices",
+			-- },
 			clangd = {
 				on_attach = on_attach,
 			},
@@ -136,15 +159,15 @@ return {
 			ruff_lsp = defaults,
 			markdown_oxide = {
 				on_attach = function(client, bufnr)
-					on_attach(client, bufnr)
+					on_attach(client, bufnr, true)
 					-- client.server_capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = true
-					vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach" }, {
-						buffer = bufnr,
-						callback = vim.lsp.codelens.refresh,
-					})
+					-- vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach" }, {
+					-- 	buffer = bufnr,
+					-- 	callback = vim.lsp.codelens.refresh,
+					-- })
 
 					-- trigger codelens refresh
-					vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
+					-- vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
 				end,
 			},
 		},
@@ -234,7 +257,6 @@ return {
 		ft = { "rust" },
 		dependencies = {
 			"nvim-lua/plenary.nvim",
-			{ "lvimuser/lsp-inlayhints.nvim", config = true, ft = { "rust" }, lazy = true },
 		},
 		opts = {
 			server = {
@@ -290,10 +312,6 @@ return {
 				},
 				on_attach = function(client, buffer)
 					on_attach(client, buffer)
-
-					local lsp_inlay_hints = require("lsp-inlayhints")
-					lsp_inlay_hints.on_attach(client, buffer)
-					lsp_inlay_hints.show()
 				end,
 			},
 			tools = {
@@ -303,11 +321,6 @@ return {
 			},
 		},
 		config = function(_, opts)
-			-- local cfg = require("rustaceanvim.config")
-			-- local dap = {
-			-- 	adapter = cfg.get_codelldb_adapter(M.codelldb_path, M.liblldb_path),
-			-- }
-			-- vim.tbl_deep_extend("force", opts, dap)
 			vim.g.rustaceanvim = opts
 		end,
 	},

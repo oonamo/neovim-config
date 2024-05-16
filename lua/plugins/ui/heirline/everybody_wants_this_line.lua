@@ -212,7 +212,7 @@ local Diagnostics = {
 
 local Netrw = {
 	condition = function()
-		return vim.bo.filetype == "netrw" or vim.bo.filetype == "help"
+		return vim.bo.filetype == "netrw"
 	end,
 	Align,
 	{

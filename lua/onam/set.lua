@@ -1,12 +1,12 @@
 local o, opt = vim.o, vim.opt
 
-opt.guicursor = {
-	"n-sm:block",
-	"v:hor50",
-	"c-ci-cr-i-ve:ver10",
-	"o-r:hor10",
-	"a:Cursor/Cursor-blinkwait1-blinkon1-blinkoff1",
-}
+-- opt.guicursor = {
+-- 	"n-sm:block",
+-- 	"v:hor50",
+-- 	"c-ci-cr-i-ve:ver10",
+-- 	"o-r:hor10",
+-- 	"a:Cursor/Cursor-blinkwait1-blinkon1-blinkoff1",
+-- }
 
 -- opt.guicursor = ""
 opt.termguicolors = true
@@ -17,11 +17,12 @@ if vim.g.neovide then
 	vim.g.neovide_hide_mouse_when_typing = true
 	-- vim.o.guifont = "AcPlusToshibaSat9x16 Nerd Font:h12"
 	-- vim.o.guifont = "BlexMono Nerd Font:h16"
-	vim.o.guifont = "CartographCF Nerd Font,Iosevka Comfy Wide Fixed"
+	-- vim.o.guifont = "CartographCF Nerd Font,Iosevka Comfy Wide Fixed"
 	-- vim.o.guifont = "PxPlus ToshibaSat 9x16,GohuFont 14 Nerd Font:h12"
 	-- vim.o.guifont = "Spleen16x32 Nerd Font:h12"
 	-- vim.o.guifont = "CozetteVector Nerd Font:h14"
 	-- vim.o.guifont = "Iosevka Comfy Wide Fixed:h12"
+	-- vim.o.guifont = "MonoLisa Nerd Font"
 	vim.g.neovide_scroll_animation_length = 0
 	vim.g.neovide_transparency_point = 0.8
 	vim.g.neovide_underline_stroke_scale = 1.5
@@ -94,8 +95,8 @@ o.ignorecase = true
 o.foldcolumn = "1"
 opt.foldlevel = 99
 opt.foldmethod = "indent"
-o.winbar = 0
-o.tabline = 0
+-- o.winbar = 0
+-- o.tabline = 0
 -- o.statuscolumn = "%!v:lua.get_statuscol()"
 -- o.list = true
 --
@@ -108,7 +109,7 @@ o.tabline = 0
 o.shortmess = "acstFOSW"
 o.splitkeep = "screen"
 
-opt.formatoptions:remove("o")
+o.formatoptions = "rqnl1j"
 
 vim.g.netrw_banner = 0
 vim.g.netrw_mouse = 2
@@ -135,3 +136,16 @@ if vim.fn.executable("rg") == 1 then
 	o.grepprg = "rg --vimgrep --color=never --with-filename --line-number --no-heading --smart-case --"
 	o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
 end
+
+vim.o.listchars = table.concat({ "extends:…", "nbsp:␣", "precedes:…", "tab:> " }, ",")
+vim.o.fillchars = table.concat({
+	"eob: ",
+	"fold:╌",
+	"horiz:═",
+	"horizdown:╦",
+	"horizup:╩",
+	"vert:║",
+	"verthoriz:╬",
+	"vertleft:╣",
+	"vertright:╠",
+}, ",")

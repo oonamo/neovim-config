@@ -23,16 +23,16 @@ function M.setup(flavour)
 	vim.opt.cursorline = true
 	if flavour == "dawn" then
 		vim.o.background = "light"
-		utils.hl = {
-			opts = {
-				{ "@property", { fg = "#b4637a" } }, -- love
-				{ "@variable", { fg = "#575279" } }, -- text
-				-- { "@keyword", { fg = "#ea9d34" } }, -- gold
-				-- { "@lsp.type.parameter", { fg = "#286983" } }, -- foam
-				{ "@function", { fg = "#907aa9" } }, -- iris
-				{ "@function.builtin", { fg = "#907aa9" } },
-			},
-		}
+		-- utils.hl = {
+		-- 	opts = {
+		-- 		{ "@property", { fg = "#b4637a" } }, -- love
+		-- 		{ "@variable", { fg = "#575279" } }, -- text
+		-- 		-- { "@keyword", { fg = "#ea9d34" } }, -- gold
+		-- 		-- { "@lsp.type.parameter", { fg = "#286983" } }, -- foam
+		-- 		{ "@function", { fg = "#907aa9" } }, -- iris
+		-- 		{ "@function.builtin", { fg = "#907aa9" } },
+		-- 	},
+		-- }
 	elseif flavour == "prime" then
 		require("colors.prime-pine").setup()
 		require("colors.prime-pine").setup_pmenu()
