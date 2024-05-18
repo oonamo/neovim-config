@@ -122,9 +122,6 @@ require("mini.notify").setup({
 	},
 })
 vim.notify = require("mini.notify").make_notify()
-
--- require("mini.hues").setup({ background = "#351721", foreground = "#cdc4c6", n_hues = 8, saturation = "high" })
--- require("mini.hues").setup({ background = "#0d0e1c", foreground = "#feacd0" })
 require("mini.diff").setup({
 	view = {
 		-- Visualization style. Possible values are 'sign' and 'number'.

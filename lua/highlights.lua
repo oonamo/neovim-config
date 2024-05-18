@@ -1,4 +1,5 @@
 local M = {}
+
 function M.setup(fn, flavour)
 	local utils = require("onam.utils")
 	local colors = require("colors." .. fn)

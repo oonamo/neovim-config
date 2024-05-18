@@ -186,19 +186,5 @@ return {
 		"rebelot/kanagawa.nvim",
 		lazy = true,
 	},
-	{
-		"shawilly/ponokai",
-		-- priority = 1000,
-		config = function()
-			vim.g.ponokai_enable_italic = "1"
-			vim.g.ponokai_style = "default"
-			vim.g.ponokai_style = "plum"
-			vim.g.ponokai_style = "default"
-			vim.g.ponokai_style = "default"
-			vim.g.ponokai_style = "default"
-			vim.cmd.colorscheme("ponokai")
-			-- Enable transparent background with vim.g.ponokai_transparent_background = "1"
-		end,
-	},
 	{ "NTBBloodbath/sweetie.nvim", lazy = true },
 }

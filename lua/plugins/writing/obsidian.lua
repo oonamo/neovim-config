@@ -128,8 +128,6 @@ return {
 			})
 			vim.opt.conceallevel = 1
 			vim.g.markdown_folding = 1
-			vim.keymap.set({ "n", "v" }, "j", "gj")
-			vim.keymap.set({ "n", "v" }, "k", "gk")
 		end,
 		keys = {
 			{ "<leader>ow", "<cmd>ObsidianWorkspace<CR>", desc = "[O]bsidian [G]o" },

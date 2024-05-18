@@ -86,6 +86,7 @@ if vim.o.background == "light" then
 		base0F = 25,
 	}
 end
+
 if palette then
 	require("mini.base16").setup({ palette = palette, use_cterm = use_cterm })
 	vim.g.colors_name = "modus-tinted"

@@ -9,10 +9,6 @@ local function on_attach(client, buffer, use_code_lens)
 			vim.cmd.RustLsp("codeAction")
 		end, { desc = "Rust code actions", buffer = buffer })
 	else
-		-- vim.keymap.set("n", "<leader>h", vim.lsp.buf.hover, {
-		-- 	desc = "Hover details",
-		-- 	buffer = buffer,
-		-- })
 		vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, {
 			desc = "Preview code actions",
 			buffer = buffer,
@@ -26,7 +22,7 @@ local function on_attach(client, buffer, use_code_lens)
 	})
 	vim.keymap.set("n", "<leader>vws", fzf.lsp_workspace_symbols, { desc = "Find workspace_symbol", buffer = buffer })
 	vim.keymap.set("n", "<leader>vd", function()
-		vim.diagnostic.open_float({ border = tools.ui.cur_border })
+		vim.diagnostic.open_float()
 	end, {
 		desc = "Open float menu",
 		buffer = buffer,
@@ -159,15 +155,13 @@ return {
 			ruff_lsp = defaults,
 			markdown_oxide = {
 				on_attach = function(client, bufnr)
-					on_attach(client, bufnr, true)
+					on_attach(client, bufnr)
 					-- client.server_capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = true
-					-- vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach" }, {
-					-- 	buffer = bufnr,
-					-- 	callback = vim.lsp.codelens.refresh,
-					-- })
-
-					-- trigger codelens refresh
-					-- vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
+					vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach" }, {
+						buffer = bufnr,
+						callback = vim.lsp.codelens.refresh,
+					})
+					vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
 				end,
 			},
 		},

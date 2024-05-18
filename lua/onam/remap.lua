@@ -9,12 +9,10 @@ local function opts(desc, silent, options)
 	options.silent = silent
 	return options
 end
-
 vim.keymap.set("n", "<C-d>", "<C-d>zz", opts("smooth scroll down", true))
 vim.keymap.set("n", "<C-u>", "<C-u>zz", opts("smooth scroll up", true))
 vim.keymap.set("n", "n", "nzzzv", opts("smooth search down", true))
 vim.keymap.set("n", "N", "Nzzzv", opts("smooth search up", true))
-
 vim.api.nvim_set_keymap("i", "<C-c>", "<Esc>", opts("escape insert mode", true))
 
 --Move Command with J and K

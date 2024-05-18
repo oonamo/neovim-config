@@ -6,6 +6,9 @@ return {
 		ft = { "markdown" },
 		opts = {
 			-- headings = { "❯", "❯", "❯", "❯", "❯", "❯" },
+			-- headings = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
+			headings = { "◈ ", "◆ ", "◇ ", "❖ ", "⟡ ", "⋄ " },
+
 			-- HACK: Disable checkboxes and list icons by removing it's query
 			markdown_query = [[
 			   (atx_heading [
@@ -28,7 +31,6 @@ return {
 			(pipe_table_delimiter_row) @table_delim
 			(pipe_table_row) @table_row
 			        ]],
-			headings = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
 			-- bullets = { "●", "○", "◆", "◇" },
 			checkbox = {
 				-- [" "] = { char = "󰄱", hl_group = "ObsidianTodo" },

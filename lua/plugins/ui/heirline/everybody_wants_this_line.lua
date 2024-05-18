@@ -1,8 +1,5 @@
 local conditions = require("heirline.conditions")
--- local utils = require("heirline.utils")
--- local minimal_fg = vim.o.background == "light" and "white" or "black"
-
--- local seps = " │ "
+local utils = require("heirline.utils")
 
 local function Seps(hl)
 	return {
@@ -186,27 +183,31 @@ local Diagnostics = {
 	end,
 	{
 		provider = function(self)
-			return self.errors > 0 and string.format(" %s:%s", self.error_icon, self.errors)
+			return self.errors > 0 and string.format("%s:%s", self.error_icon, self.errors)
 		end,
-		hl = { fg = "red", bold = true },
+		-- hl = { fg = "red", bold = true },
+		hl = utils.get_highlight("DiagnosticVirtualTextError"),
 	},
 	{
 		provider = function(self)
-			return self.warnings > 0 and string.format(" %s:%s", self.warn_icon, self.warnings)
+			return self.warnings > 0 and string.format("%s:%s", self.warn_icon, self.warnings)
 		end,
-		hl = { fg = "yellow", bold = true },
+		-- hl = { fg = "yellow", bold = true },
+		hl = utils.get_highlight("DiagnosticVirtualTextWarn"),
 	},
 	{
 		provider = function(self)
 			return self.info > 0 and string.format(" %s:%s", self.info_icon, self.info)
 		end,
-		hl = { fg = "green", bold = true },
+		-- hl = { fg = "green", bold = true },
+		hl = utils.get_highlight("DiagnosticVirtualTextInfo"),
 	},
 	{
 		provider = function(self)
 			return self.hints > 0 and string.format(" %s:%s", self.hint_icon, self.hints)
 		end,
-		hl = { fg = "purple", bold = true },
+		-- hl = { fg = "purple", bold = true },
+		hl = utils.get_highlight("DiagnosticVirtualTextHint"),
 	},
 }
 

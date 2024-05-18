@@ -62,6 +62,7 @@ M.themes = {
 		{ file_name = "ponokai", name = "ponokai*", flavours = { "default", "sonokai", "kitty" } },
 		{ file_name = "catpuccin", name = "catpuccin*", flavours = { "dark", "light" } },
 		{ file_name = "modus-tinted", name = "modus-tinted*", flavours = { "dark", "light" } },
+		{ file_name = "zenbones", name = "zenbones*", flavours = { "dark", "light" } },
 	},
 }
 

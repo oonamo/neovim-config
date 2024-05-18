@@ -1,6 +1,7 @@
 vim.loader.enable()
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+
 if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({
 		"git",
@@ -34,6 +35,38 @@ require("lazy").setup({
 		border = tools.ui.cur_border,
 		icons = tools.ui.bullet,
 	},
+
+	performance = {
+		rtp = {
+			disabled_plugins = {
+				"2html_plugin",
+				"getscript",
+				"getscriptPlugin",
+				"gzip",
+				"logipat",
+				-- "netrw",
+				-- "netrwPlugin",
+				-- "netrwSettings",
+				-- "netrwFileHandlers",
+				"matchit",
+				"man",
+				--"matchparen",
+				"tar",
+				"tarPlugin",
+				"rrhelper",
+				"vimball",
+				-- "health",
+				"shada",
+				-- "spellfile",
+				"tohtml",
+				"tutor",
+				"vimballPlugin",
+				"zip",
+				"zipPlugin",
+				"rplugin",
+			},
+		},
+	},
 })
 
 require("onam.autocmds").set_qol()
@@ -44,4 +77,3 @@ if not O.ui.tree.oil and not O.ui.tree.neotree and not O.ui.tree.mini then
 end
 
 utils:create_hl()
-vim.opt.formatoptions:remove("o")

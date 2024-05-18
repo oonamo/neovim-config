@@ -7,7 +7,7 @@ local o, opt = vim.o, vim.opt
 -- 	"o-r:hor10",
 -- 	"a:Cursor/Cursor-blinkwait1-blinkon1-blinkoff1",
 -- }
-
+-- opt.guicursor = "i:ver20,n-v-sm:block,c-ci-ve:ver20,r-cr-o:hor20,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor"
 -- opt.guicursor = ""
 opt.termguicolors = true
 opt.background = "dark"
@@ -23,10 +23,12 @@ if vim.g.neovide then
 	-- vim.o.guifont = "CozetteVector Nerd Font:h14"
 	-- vim.o.guifont = "Iosevka Comfy Wide Fixed:h12"
 	-- vim.o.guifont = "MonoLisa Nerd Font"
+	vim.g.neovide_theme = "auto"
 	vim.g.neovide_scroll_animation_length = 0
+	vim.opt.linespace = 30
 	vim.g.neovide_transparency_point = 0.8
 	vim.g.neovide_underline_stroke_scale = 1.5
-	vim.g.neovide_transparency = 0.9
+	vim.g.neovide_transparency = 0.8
 	vim.keymap.set("n", "<leader>nt", function()
 		if vim.g.neovide_transparency ~= 1.0 then
 			vim.g.neovide_transparency = 1.0
@@ -90,7 +92,7 @@ opt.conceallevel = 2
 opt.showmode = false
 opt.completeopt = "menuone,noinsert,noselect"
 o.grepprg = [[rg --glob "!.git" --hidden --smart-case  --vimgrep]]
--- o.helpheight = 70
+o.helpheight = 10
 o.ignorecase = true
 o.foldcolumn = "1"
 opt.foldlevel = 99

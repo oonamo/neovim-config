@@ -1,6 +1,5 @@
 local function dropdown(opts)
 	opts = opts or {}
-	local title = vim.tbl_get(opts, "winopts", "title")
 	return vim.tbl_deep_extend("force", {
 		prompt = "   ",
 		fzf_opts = { ["--layout"] = "reverse" },
@@ -13,8 +12,8 @@ local function dropdown(opts)
 		},
 	}, opts)
 end
-
-local function drop(opts)
+--
+local function drop()
 	return {
 		winopts = {
 			border = "single",
@@ -79,19 +78,17 @@ local function bottom_split(opts)
 	}, opts)
 end
 
-local function cursor_dropdown(opts)
-	return dropdown(vim.tbl_deep_extend("force", {
-		fzf_opts = { ["--keep-right"] = "" },
-		winopts = {
-			row = 1,
-			relative = "cursor",
-			height = 0.33,
-			width = 0.25,
-		},
-	}, opts))
-end
-
-local fzf_lua = require("fzf-lua")
+-- local function cursor_dropdown(opts)
+-- 	return dropdown(vim.tbl_deep_extend("force", {
+-- 		fzf_opts = { ["--keep-right"] = "" },
+-- 		winopts = {
+-- 			row = 1,
+-- 			relative = "cursor",
+-- 			height = 0.33,
+-- 			width = 0.25,
+-- 		},
+-- 	}, opts))
+-- end
 
 return {
 	"ibhagwan/fzf-lua",
@@ -212,46 +209,48 @@ return {
 		-- vim.cmd.FzfLua("register_ui_select")
 	end,
 	cond = vim.g.use_FZF,
-	keys = {
-		{
-			"<leader>ff",
-			function()
-				fzf_lua.files(drop())
-			end,
-			desc = "[f]zf [f]iles",
-		},
-		{ "<leader>fs", fzf_lua.live_grep, desc = "Fzf grep" },
-		-- { "<leader>fr", "<cmd>FzfLua live_grep_resume<cr>", desc = "fzf grep resume" },
-		{ "<leader>fr", fzf_lua.lsp_references, desc = "Fzf grep resume" },
-		{ "<leader>fh", fzf_lua.help_tags, desc = "Fzf help" },
-		{ "<leader>fi", fzf_lua.highlights, desc = "Fzf Highlights" },
-		{ "<leader>fb", fzf_lua.buffers, desc = "Fzf buffers" },
-		-- { "<C-p>", "<cmd>FzfLua files<cr>", desc = "Find files" },
-		{
-			"<C-p>",
-			fzf_lua.files,
-			-- function()
-			-- 	require("fzf-lua").files({
-			-- 		-- winopts = {
-			-- 		-- 	fullscreen = false,
-			-- 		-- 	height = 1.90,
-			-- 		-- 	width = 1,
-			-- 		-- },
-			-- 	})
-			-- end,
-		},
-		{ "<C-f>", fzf_lua.live_grep_glob, desc = "Live grep glob" },
-		{
-			"<leader>fc",
-			function()
-				require("fzf-lua").complete_path()
-			end,
-			desc = "fzf complete_path",
-		},
-		{
-			"z=",
-			fzf_lua.spell_suggest,
-			desc = "spell suggest",
-		},
-	},
+	keys = function()
+		local fzf_lua = require("fzf-lua")
+		return {
+			{
+				"<leader>ff",
+				function()
+					fzf_lua.files(drop())
+				end,
+				desc = "[f]zf [f]iles",
+			},
+			{ "<leader>fs", fzf_lua.live_grep, desc = "Fzf grep" },
+			-- { "<leader>fr", "<cmd>FzfLua live_grep_resume<cr>", desc = "fzf grep resume" },
+			{ "<leader>fr", fzf_lua.lsp_references, desc = "Fzf grep resume" },
+			{ "<leader>fh", fzf_lua.help_tags, desc = "Fzf help" },
+			{ "<leader>fi", fzf_lua.highlights, desc = "Fzf Highlights" },
+			{ "<leader>fb", fzf_lua.buffers, desc = "Fzf buffers" },
+			{
+				"<C-p>",
+				fzf_lua.files,
+				-- function()
+				-- 	require("fzf-lua").files({
+				-- 		-- winopts = {
+				-- 		-- 	fullscreen = false,
+				-- 		-- 	height = 1.90,
+				-- 		-- 	width = 1,
+				-- 		-- },
+				-- 	})
+				-- end,
+			},
+			{ "<C-f>", fzf_lua.live_grep_glob, desc = "Live grep glob" },
+			{
+				"<leader>fc",
+				function()
+					require("fzf-lua").complete_path()
+				end,
+				desc = "fzf complete_path",
+			},
+			{
+				"z=",
+				fzf_lua.spell_suggest,
+				desc = "spell suggest",
+			},
+		}
+	end,
 }
