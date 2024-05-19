@@ -54,7 +54,6 @@ return {
 			heirline.setup({
 				statusline = statusline.statusline,
 				statuscolumn = statuscolumn,
-				-- winbar = require("plugins.ui.heirline.winbar"),
 				opts = {
 					colors = get_colors(),
 					disable_winbar_cb = function(args)

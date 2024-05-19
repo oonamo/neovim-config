@@ -17,10 +17,10 @@ return {
 					-- signcolumn = "no", -- disable signcolumn
 					number = false, -- disable number column
 					relativenumber = false, -- disable relative numbers
-					-- cursorline = false, -- disable cursorline
+					cursorline = false, -- disable cursorline
 					cursorcolumn = false, -- disable cursor column
 					foldcolumn = "0", -- disable fold column
-					-- list = false, -- disable whitespace characters
+					list = false, -- disable whitespace characters
 				},
 			},
 			plugins = {
@@ -36,8 +36,8 @@ return {
 					colorcolumn = false,
 				},
 				twilight = { enabled = false }, -- enable to start Twilight when zen mode opens
-				gitsigns = { enabled = true }, -- disables git signs
-				tmux = { enabled = false }, -- disables the tmux statusline
+				-- gitsigns = { enabled = true }, -- disables git signs
+				-- tmux = { enabled = false }, -- disables the tmux statusline
 				-- this will change the font size on kitty when in zen mode
 				-- to make this work, you need to set the following kitty options:
 				-- - allow_remote_control socket-only

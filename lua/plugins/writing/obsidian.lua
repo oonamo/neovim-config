@@ -4,25 +4,14 @@ return {
 		-- version = "*", -- recommended, use latest release instead of latest commit
 		lazy = true,
 		cmd = "ObsidianOpen",
-		-- cond = function()
-		-- 	return string.match(vim.api.nvim_buf_get_name(0), "DB") ~= nil
-		-- end,
-		event = "BufEnter C:/Users/onam7/Desktop/DB/DB/onam7",
 		ft = "markdown",
 		dependencies = {
 			-- Required.
 			"nvim-lua/plenary.nvim",
 
 			-- see below for full list of optional dependencies 👇
-			--
-			"hrsh7th/nvim-cmp",
 			"nvim-treesitter",
 			"ibhagwan/fzf-lua",
-			-- {
-			-- 	"oflisback/obsidian-bridge.nvim",
-			-- 	dependencies = { "nvim-telescope/telescope.nvim" },
-			-- 	config = true,
-			-- },
 		},
 		config = function()
 			local daily_path = "100 dailies/"
@@ -207,18 +196,14 @@ return {
 				end,
 				desc = "[O]bsidian [D]ailies",
 			},
-			{ "<leader>t", require("onam.helpers.obsidian_helpers").find_tasks, desc = "Open" },
-			{ "g?", require("onam.helpers.obsidian_helpers").open, desc = "Open" },
 		},
 	},
 	{
 		"oflisback/obsidian-bridge.nvim",
-		-- dir = "~/projects/obsidian-bridge.nvim/",
 		dependencies = { "nvim-telescope/telescope.nvim" },
-		cond = function()
-			return string.match(vim.api.nvim_buf_get_name(0), "DB") ~= nil
-		end,
+		event = "BufEnter C:/Users/onam7/Desktop/DB/DB/onam7",
 		opts = { scroll_sync = true },
+		lazy = true,
 		ft = "markdown",
 	},
 }

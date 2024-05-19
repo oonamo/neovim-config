@@ -78,11 +78,6 @@ return {
 			require("render-markdown").setup(opts)
 		end,
 	},
-	-- {
-	-- 	"tadmccorkle/markdown.nvim",
-	-- 	name = "markdown-keys",
-	-- 	ft = { "markdown" },
-	-- },
 	{
 		"dhruvasagar/vim-table-mode",
 		ft = { "markdown" },
@@ -97,33 +92,4 @@ return {
 		-- end,
 		ft = { "markdown" },
 	},
-	-- {
-	-- 	"jbyuki/nabla.nvim",
-	-- 	ft = { "markdown" },
-	-- 	config = function()
-	-- 		local nabla_float_grp = vim.api.nvim_create_augroup("nabla_float", { clear = true })
-	-- 		vim.api.nvim_create_autocmd("CursorHold", {
-	-- 			callback = function()
-	-- 				require("nabla").popup()
-	-- 			end,
-	-- 			group = nabla_float_grp,
-	-- 		})
-	-- 	end,
-	-- 	keys = {
-	-- 		{
-	-- 			"<leader>nt",
-	-- 			function()
-	-- 				require("nabla").popup()
-	-- 			end,
-	-- 			desc = "nabla",
-	-- 		},
-	-- 		{
-	-- 			"<leader>nv",
-	-- 			function()
-	-- 				require("nabla").toggle_virt({ align_center = true })
-	-- 			end,
-	-- 			desc = "nabla",
-	-- 		},
-	-- 	},
-	-- },
 }

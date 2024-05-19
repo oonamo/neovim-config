@@ -1,6 +1,3 @@
----@field colorscheme string
----@field flavour string
-
 ---@class ColorState
 ---@field name string|string[]
 ---@field current number
@@ -22,29 +19,31 @@
 ---@field color_state ColorState
 ---@field active_flavour_index number
 ---@field wezterm_sync fun(colorscheme: string, flavour: string?)
----@field load_state fun(): State
----@field save_state fun(state: State)
+---@field __load_state fun(): State,string|nil
+---@field __save_state fun(state: State)
 ---@field open_plenary_popup fun()
 ---@field toggle_flavour fun()
 ---@field init fun()
 
+---@class State
+---@field colorscheme string
+---@field flavour string|nil
+
 ---@type ThemeSwitcher
 local M = {}
+
 ---@class Themes
 M.themes = {
 	index = "roses",
 	flavour = { "prime", "main", "dawn" },
 	colors = {
 		{ file_name = "roses", name = "roses*", flavours = { "main", "prime", "dawn" } },
-		{ file_name = "astro", name = "astro*", flavours = { "astrolight", "astrodark", "astromars" } },
 		{
 			file_name = "fox",
 			name = "fox*",
 			flavours = { "nightfox", "dayfox", "dawnfox", "nordfox", "terafox", "carbonfox" },
 			append_file_name = false,
 		},
-		{ file_name = "darkplus", name = "darkplus*", flavours = { "" } },
-		{ file_name = "borrowed", name = "borrowed*", flavours = { "mayu", "shin" } },
 		{
 			file_name = "gruvbox-material",
 			name = "gruvbox-material*",
@@ -57,12 +56,9 @@ M.themes = {
 				{ "light", "hard" },
 			},
 		},
-		{ file_name = "papercolor", name = "papercolor*", flavours = { "dark", "light" } },
-		{ file_name = "kanagawa", name = "kanagawa*", flavours = { "wave", "dragon" } },
-		{ file_name = "ponokai", name = "ponokai*", flavours = { "default", "sonokai", "kitty" } },
-		{ file_name = "catpuccin", name = "catpuccin*", flavours = { "dark", "light" } },
+		{ file_name = "kanagawa", name = "kanagawa*", flavours = { "wave", "dragon", "lotus" } },
+		{ file_name = "catppuccin", name = "catpuccin*", flavours = { "frappe", "macchiato", "mocha", "latte" } },
 		{ file_name = "modus-tinted", name = "modus-tinted*", flavours = { "dark", "light" } },
-		{ file_name = "zenbones", name = "zenbones*", flavours = { "dark", "light" } },
 	},
 }
 
@@ -76,16 +72,8 @@ local function persistance_path()
 	return vim.fn.stdpath("data") .. "/color_switcher"
 end
 
----@param state State
-function M.save_state(state)
-	if not vim.g.neovide then
-		local file_path = persistance_path()
-		vim.fn.writefile({ vim.json.encode(state) }, file_path)
-	end
-end
-
 ---@param colorscheme string
----@param flavour string|string[]
+---@param flavour string?|string[]
 function M.wezterm_sync(colorscheme, flavour)
 	if not os.getenv("IS_WEZTERM") then
 		return
@@ -112,9 +100,28 @@ function M.wezterm_sync(colorscheme, flavour)
 	vim.notify("Saved Wezterm color scheme to: " .. file_path, vim.log.levels.INFO)
 end
 
----@return State
-function M.load_state()
-	return vim.fn.json_decode(vim.fn.readfile(persistance_path()))
+---@return State, string|nil
+function M.__load_state()
+	local file = io.open(persistance_path())
+	if file then
+		local colorscheme, flavour = file:read():match("([^,]*),(.*)")
+		if not colorscheme then
+			return { colorscheme = "roses", flavour = "prime" }, "no colorscheme found"
+		end
+		return { colorscheme = colorscheme, flavour = flavour }
+	end
+	return { colorscheme = "roses", flavour = "prime" }, "could not load file"
+end
+
+---@param state State
+function M.__save_state(state)
+	if not vim.g.neovide then
+		local line = state.colorscheme .. ","
+		if state.flavour then
+			line = line .. state.flavour
+		end
+		vim.fn.writefile({ line }, persistance_path())
+	end
 end
 
 ---@param schemes Themes
@@ -134,7 +141,7 @@ local function create_plenary_popup(schemes)
 					M.active_theme = v
 					if not vim.g.neovide then
 						M.color_state = { name = v.name, current = 1 }
-						M.save_state({
+						M.__save_state({
 							colorscheme = v.file_name,
 							flavour = v.flavours[1],
 						})
@@ -177,7 +184,18 @@ function M.open_plenary_popup()
 end
 
 function M.init()
-	local state = M.load_state()
+	local state, err = M.__load_state()
+	if err then
+		vim.notify(err)
+		M.color_state = { name = "roses", current = 1 }
+		M.__save_state({
+			colorscheme = "roses",
+			flavour = "prime",
+		})
+		require("highlights").setup("roses", "flavour")
+		M.wezterm_sync("roses", "flavour")
+		return
+	end
 	for _, v in pairs(M.themes.colors) do
 		if v.file_name == state.colorscheme then
 			M.active_theme = v
@@ -207,7 +225,7 @@ function M.init()
 		M.color_state = { name = M.active_theme.file_name, current = 1 }
 		state.colorscheme = M.color_state.name
 		state.flavour = "prime"
-		M.save_state({
+		M.__save_state({
 			colorscheme = state.colorscheme,
 			flavour = "prime",
 		})
@@ -227,7 +245,7 @@ function M.toggle_flavour()
 	M.color_state.name = M.active_theme.flavours[M.color_state.current]
 	require("highlights").setup(M.active_theme.file_name, M.color_state.name)
 	if not vim.g.neovide then
-		M.save_state({
+		M.__save_state({
 			colorscheme = M.active_theme.file_name,
 			flavour = M.active_theme.flavours[M.color_state.current],
 		})

@@ -81,7 +81,7 @@ local function on_attach(client, buffer, use_code_lens)
 	if client.supports_method("textDocument/inlayHint") then
 		vim.keymap.set("n", "<leader>h", function()
 			vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
-		end)
+		end, { desc = "Inlay Hint" })
 	end
 end
 

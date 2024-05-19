@@ -1,32 +1,5 @@
 return {
 	{
-		"AstroNvim/astrotheme",
-		lazy = true,
-		priority = 1000,
-		opts = {
-			background = { -- :h background, palettes to use when using the core vim background colors
-				light = "astrolight",
-				dark = "astrodark",
-			},
-			highlights = {
-				astrolight = {
-					CursorLineNr = { fg = "#ead0dd" },
-					CursorLine = { bg = "#E8E9EA" },
-				},
-			},
-			style = {
-				transparent = false, -- Bool value, toggles transparency.
-				inactive = false, -- Bool value, toggles inactive window color.
-				float = true, -- Bool value, toggles floating windows background colors.
-				neotree = false, -- Bool value, toggles neo-trees background color.
-				border = true, -- Bool value, toggles borders.
-				title_invert = true, -- Bool value, swaps text and background colors.
-				italic_comments = true, -- Bool value, toggles italic comments.
-				simple_syntax_colors = true, -- Bool value, simplifies the amounts of colors used for syntax highlighting.
-			},
-		},
-	},
-	{
 		"rose-pine/neovim",
 		name = "rose-pine",
 		priority = 1000,
@@ -145,46 +118,12 @@ return {
 		end,
 	},
 	{
-		"LunarVim/darkplus.nvim",
-		priority = 1000,
-		lazy = true,
-	},
-	{
-		"MyyPo/borrowed.nvim",
-		opts = {
-			transparent = false, -- Disable setting background
-			styles = {
-				comments = "italic", -- Value is any valid attr-list value `:help attr-list`
-				conditionals = "italic",
-				constants = "bold",
-				functions = "bold",
-				keywords = "italic",
-				numbers = "NONE",
-				operators = "NONE",
-				strings = "NONE",
-				types = "NONE",
-				variables = "NONE",
-			},
-			cursor = { -- WIP: Dynamic cursor settings
-				enable = false,
-				visual = {
-					enable = false,
-				},
-			},
-		},
-		lazy = true,
-	},
-	{
 		"sainnhe/gruvbox-material",
-		lazy = true,
-	},
-	{
-		"pappasam/papercolor-theme-slim",
 		lazy = true,
 	},
 	{
 		"rebelot/kanagawa.nvim",
 		lazy = true,
 	},
-	{ "NTBBloodbath/sweetie.nvim", lazy = true },
+	{ "catppuccin/nvim", lazy = true, name = "catppuccin" },
 }

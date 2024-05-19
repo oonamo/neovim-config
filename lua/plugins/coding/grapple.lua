@@ -1,8 +1,5 @@
 return {
 	"cbochs/grapple.nvim",
-	dependencies = {
-		{ "nvim-tree/nvim-web-devicons", lazy = true },
-	},
 	init = function()
 		if not package.loaded["obsidian"] then
 			return
@@ -11,6 +8,7 @@ return {
 	end,
 	opts = {
 		scope = "cwd",
+		icons = false,
 		scopes = {
 			{
 				name = "obsidian",

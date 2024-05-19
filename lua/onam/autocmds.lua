@@ -80,13 +80,6 @@ function M.set_qol()
 		-- 		end
 		-- 	end,
 		-- },
-		{
-			events = { "BufEnter" },
-			targets = { "C:/Users/onam7/Desktop/DB/DB/base.md" },
-			command = function()
-				print("inside")
-			end,
-		},
 	})
 	do
 		SEARCH_REG = ""

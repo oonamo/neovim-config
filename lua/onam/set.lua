@@ -12,7 +12,9 @@ local o, opt = vim.o, vim.opt
 opt.termguicolors = true
 opt.background = "dark"
 if vim.g.neovide then
-	opt.guicursor = "c-ci-ve:ver25,r-cr:hor20,o:hor20,a:blinkwait900-blinkon900-blinkoff900"
+	-- opt.guicursor = "c-ci-ve:ver25,r-cr:hor20,o:hor20,a:blinkwait900-blinkon900-blinkoff900"
+	opt.guicursor =
+		"i:ver20,n-v-sm:block,c-ci-ve:ver20,r-cr-o:hor20,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor"
 	vim.g.neovide_scale_factor = 1.0
 	vim.g.neovide_hide_mouse_when_typing = true
 	-- vim.o.guifont = "AcPlusToshibaSat9x16 Nerd Font:h12"
@@ -28,7 +30,7 @@ if vim.g.neovide then
 	vim.opt.linespace = 30
 	vim.g.neovide_transparency_point = 0.8
 	vim.g.neovide_underline_stroke_scale = 1.5
-	vim.g.neovide_transparency = 0.8
+	vim.g.neovide_transparency = 0.9
 	vim.keymap.set("n", "<leader>nt", function()
 		if vim.g.neovide_transparency ~= 1.0 then
 			vim.g.neovide_transparency = 1.0
@@ -130,6 +132,13 @@ if not vim.fn.has("win32") then
 		cache_enabled = 0,
 	}
 end
+-- o.shell = "powershell"
+-- o.shellcmdflag =
+-- 	"-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;"
+-- o.shellredir = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode"
+-- o.shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode"
+-- o.shellquote = ""
+-- o.shellxquote = ""
 O = {}
 
 if vim.fn.executable("rg") == 1 then
