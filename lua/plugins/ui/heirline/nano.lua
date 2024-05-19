@@ -247,12 +247,18 @@ local GitInfo = {
 	},
 	{
 		provider = function(self)
+			if self.branch == nil then
+				return ""
+			end
 			return "#" .. self.branch
 		end,
 		hl = { fg = "cyan", bg = "bg" },
 	},
 	{
 		provider = function(self)
+			if self.remote == nil then
+				return ""
+			end
 			return string.format(":(%s)", self.remote:gsub("%s+", ""))
 		end,
 	},
