@@ -77,3 +77,10 @@ if not O.ui.tree.oil and not O.ui.tree.neotree and not O.ui.tree.mini then
 end
 
 utils:create_hl()
+
+-- vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+-- 	pattern = { "*.c", "*.h" },
+-- 	callback = function(ev)
+-- 		print(string.format("event fired: %s", vim.inspect(ev)))
+-- 	end,
+-- })

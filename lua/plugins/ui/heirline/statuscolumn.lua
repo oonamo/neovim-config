@@ -53,6 +53,32 @@ local Stc = {
 		self.signs = signs
 	end,
 	{
+		-- provider = "%=%4{v:virtnum ? '' : &nu ? (&rnu && v:relnum ? v:relnum : v:lnum) . ' ' : ''}",
+		provider = function()
+			local cur_num
+			local sep = ","
+
+			-- return a visual placeholder if line is wrapped
+			if vim.v.virtnum ~= 0 then
+				return "│"
+			end
+
+			-- get absolute lnum if is current line, else relnum
+			cur_num = vim.v.relnum == 0 and vim.v.lnum or vim.v.relnum
+
+			-- insert thousands separators in line numbers
+			-- viml regex: https://stackoverflow.com/a/42911668
+			-- lua pattern: stolen from Akinsho
+			if cur_num > 999 then
+				cur_num = tostring(cur_num):reverse():gsub("(%d%d%d)", "%1" .. sep):reverse():gsub("^,", "")
+			else
+				cur_num = tostring(cur_num)
+			end
+			return pad_str(cur_num, 3, "right") .. " "
+			-- return cur_num .. " "
+		end,
+	},
+	{
 		provider = "%s ",
 		-- provider = function(self)
 		-- 	-- return vim.inspect({ self.signs, self.git_sign })
@@ -89,33 +115,6 @@ local Stc = {
 			name = "heirline_signcol_callback",
 			update = true,
 		},
-	},
-	{
-		-- provider = "%=%4{v:virtnum ? '' : &nu ? (&rnu && v:relnum ? v:relnum : v:lnum) . ' ' : ''}",
-		provider = function()
-			local cur_num
-			local sep = ","
-
-			-- return a visual placeholder if line is wrapped
-			if vim.v.virtnum ~= 0 then
-				return "│"
-			end
-
-			-- get absolute lnum if is current line, else relnum
-			cur_num = vim.v.relnum == 0 and vim.v.lnum or vim.v.relnum
-
-			-- insert thousands separators in line numbers
-			-- viml regex: https://stackoverflow.com/a/42911668
-			-- lua pattern: stolen from Akinsho
-			if cur_num > 999 then
-				cur_num = tostring(cur_num):reverse():gsub("(%d%d%d)", "%1" .. sep):reverse():gsub("^,", "")
-			else
-				cur_num = tostring(cur_num)
-			end
-
-			-- return pad_str(cur_num, 3, "right")
-			return cur_num .. " "
-		end,
 	},
 	-- {
 	-- 	provider = " %{% &fdc ? '%C ' : '' %}",

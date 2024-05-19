@@ -80,6 +80,8 @@ end
 ---@field modifiers string[]? e.g. nested, once
 ---@field exec boolean?
 ---@field command string | function
+---@field desc string|nil
+---@field once boolean|nil
 
 ---@param name string group name
 ---@param autocmds Autocommand[]
@@ -91,17 +93,23 @@ function utils.augroup(name, autocmds, noclear)
 
 	for _, c in ipairs(autocmds) do
 		local command = c.command
+		local desc = c.desc or ""
+		local once = c.once or false
 		if type(command) == "string" then
 			api.nvim_create_autocmd(c.events, {
 				group = name,
 				pattern = c.targets,
 				command = command,
+				desc = desc,
+				once = once,
 			})
 		elseif type(command) == "function" then
 			api.nvim_create_autocmd(c.events, {
 				group = name,
 				pattern = c.targets,
 				callback = command,
+				desc = desc,
+				once = once,
 			})
 		end
 	end

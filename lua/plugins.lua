@@ -1,1 +1,3 @@
-return {}
+return {
+	-- plenary lazy = false
+}

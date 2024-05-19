@@ -64,7 +64,9 @@ M.themes = {
 
 local has_plenary, popup = pcall(require, "plenary.popup")
 if not has_plenary then
-	return
+	vim.notify("did not find plenary, attempting to load it")
+	require("lazy").load({ plugins = { "plenary" } })
+	popup = require("plenary.popup")
 end
 local win_id
 
@@ -252,4 +254,5 @@ function M.toggle_flavour()
 		M.wezterm_sync(M.active_theme.file_name, M.color_state.name)
 	end
 end
+
 return M

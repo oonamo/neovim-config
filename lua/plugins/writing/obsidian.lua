@@ -3,12 +3,9 @@ return {
 		"epwalsh/obsidian.nvim",
 		-- version = "*", -- recommended, use latest release instead of latest commit
 		lazy = true,
-		cmd = "ObsidianOpen",
-		ft = "markdown",
 		dependencies = {
 			-- Required.
 			"nvim-lua/plenary.nvim",
-
 			-- see below for full list of optional dependencies 👇
 			"nvim-treesitter",
 			"ibhagwan/fzf-lua",
@@ -201,9 +198,7 @@ return {
 	{
 		"oflisback/obsidian-bridge.nvim",
 		dependencies = { "nvim-telescope/telescope.nvim" },
-		event = "BufEnter C:/Users/onam7/Desktop/DB/DB/onam7",
 		opts = { scroll_sync = true },
 		lazy = true,
-		ft = "markdown",
 	},
 }

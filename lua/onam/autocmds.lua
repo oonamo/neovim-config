@@ -1,5 +1,15 @@
 local M = {}
 function M.set_qol()
+	-- make :W the same as :w
+	vim.api.nvim_create_user_command("W", "w", { nargs = 0 })
+	vim.api.nvim_create_user_command("Wq", "wq", { nargs = 0 })
+	vim.api.nvim_create_user_command("Wqa", "wqa", { nargs = 0 })
+	-- make :E the same as :e
+	vim.api.nvim_create_user_command("E", "e", { nargs = 0 })
+	-- make :Q the same as :qa
+	vim.api.nvim_create_user_command("Q", "q", { nargs = 0 })
+	vim.api.nvim_create_user_command("Qa", "qa", { nargs = 0 })
+
 	utils.augroup("QOL", {
 		{
 			events = { "TextYankPost" },
@@ -15,29 +25,6 @@ function M.set_qol()
 				vim.cmd("wincmd =")
 			end,
 		},
-		-- {
-		-- 	events = { "FileType" },
-		-- 	targets = {
-		-- 		"netrw",
-		-- 		"Jaq",
-		-- 		"qf",
-		-- 		"git",
-		-- 		"help",
-		-- 		"man",
-		-- 		"lspinfo",
-		-- 		"spectre_panel",
-		-- 		"lir",
-		-- 		"DressingSelect",
-		-- 		"tsplayground",
-		-- 	},
-		-- 	command = function()
-		-- 		-- vim.cmd("set nobuflisted")
-		-- 		vim.bo.buflisted = false
-		-- 		vim.schedule(function()
-		-- 			vim.api.nvim_buf_set_keymap(0, "n", "q", "<cmd>close<cr>", { noremap = true, silent = true })
-		-- 		end)
-		-- 	end,
-		-- },
 		{
 			events = { "VimEnter" },
 			targets = { "*" },
@@ -80,6 +67,21 @@ function M.set_qol()
 		-- 		end
 		-- 	end,
 		-- },
+		{
+			events = { "BufEnter", "BufWinEnter" },
+			targets = { "C:/Users/onam7/Desktop/DB/DB/*.md" },
+			command = function(ev)
+				vim.print(ev)
+				vim.notify("would load plugins")
+				if package.loaded["obsidian"] or package.loaded["obsidian-bridge"] then
+					vim.notify("already loaded")
+					return
+				end
+				-- require("lazy").load({ plugins = { "obsidian.nvim", "obsidian-bridge.nvim" } })
+			end,
+			desc = "Load these plugins based on path",
+			once = true,
+		},
 	})
 	do
 		SEARCH_REG = ""
