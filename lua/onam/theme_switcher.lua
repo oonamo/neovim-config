@@ -4,7 +4,6 @@
 
 ---@class Theme
 ---@field name string
----@field file_name string
 ---@field flavours string[][]|string[]
 
 ---@class Themes
@@ -27,7 +26,7 @@
 
 ---@class State
 ---@field colorscheme string
----@field flavour string|nil
+---@field flavour string|string[]|nil
 
 ---@type ThemeSwitcher
 local M = {}
@@ -35,18 +34,16 @@ local M = {}
 ---@class Themes
 M.themes = {
 	index = "roses",
-	flavour = { "prime", "main", "dawn" },
+	flavour = { "main", "prime", "dawn" },
 	colors = {
-		{ file_name = "roses", name = "roses*", flavours = { "main", "prime", "dawn" } },
+		{ name = "roses", flavours = { "main", "prime", "dawn" } },
 		{
-			file_name = "fox",
-			name = "fox*",
+			name = "fox",
 			flavours = { "nightfox", "dayfox", "dawnfox", "nordfox", "terafox", "carbonfox" },
-			append_file_name = false,
+			append_name = false,
 		},
 		{
-			file_name = "gruvbox-material",
-			name = "gruvbox-material*",
+			name = "gruvbox-material",
 			flavours = {
 				{ "dark", "soft" },
 				{ "dark", "medium" },
@@ -56,9 +53,9 @@ M.themes = {
 				{ "light", "hard" },
 			},
 		},
-		{ file_name = "kanagawa", name = "kanagawa*", flavours = { "wave", "dragon", "lotus" } },
-		{ file_name = "catppuccin", name = "catpuccin*", flavours = { "frappe", "macchiato", "mocha", "latte" } },
-		{ file_name = "modus-tinted", name = "modus-tinted*", flavours = { "dark", "light" } },
+		{ name = "kanagawa", flavours = { "wave", "dragon", "lotus" } },
+		{ name = "catppuccin", flavours = { "frappe", "macchiato", "mocha", "latte" } },
+		{ name = "modus-tinted", flavours = { "dark", "light" } },
 	},
 }
 
@@ -106,21 +103,39 @@ end
 function M.__load_state()
 	local file = io.open(persistance_path())
 	if file then
-		local colorscheme, flavour = file:read():match("([^,]*),(.*)")
-		if not colorscheme then
-			return { colorscheme = "roses", flavour = "prime" }, "no colorscheme found"
+		local contents = file:read()
+		local color, capture = string.match(contents, "([^,]*),(.*)")
+		if not color then
+			return { colorscheme = "roses", flavour = "main" }, "no colorscheme found"
 		end
-		return { colorscheme = colorscheme, flavour = flavour }
+		local flavour_tbl = {}
+		for token in string.gmatch(capture, "([^-]+)") do
+			table.insert(flavour_tbl, token)
+		end
+		if #flavour_tbl == 1 then
+			flavour_tbl = flavour_tbl[1]
+		end
+		return { colorscheme = color, flavour = flavour_tbl }
 	end
-	return { colorscheme = "roses", flavour = "prime" }, "could not load file"
+	return { colorscheme = "roses", flavour = "main" }, "could not load file"
 end
 
 ---@param state State
 function M.__save_state(state)
 	if not vim.g.neovide then
 		local line = state.colorscheme .. ","
-		if state.flavour then
+		if not state.flavour then
+			vim.fn.writefile({ line }, persistance_path())
+		end
+		if type(state.flavour) == "string" then
 			line = line .. state.flavour
+		elseif type(state.flavour) == "table" then
+			for _, v in ipairs(state.flavour) do
+				if v ~= "" or v ~= " " then
+					line = line .. v .. "-"
+				end
+			end
+			line = line:sub(1, -2)
 		end
 		vim.fn.writefile({ line }, persistance_path())
 	end
@@ -128,28 +143,26 @@ end
 
 ---@param schemes Themes
 local function create_plenary_popup(schemes)
-	-- local borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" }
 	local borderchars = tools.ui.cur_border
 	local width = 40
-	-- local colorschemes = M.colorschemes.colors
 	local colorschemes = {}
 	for _, v in pairs(schemes) do
-		table.insert(colorschemes, v.file_name)
+		table.insert(colorschemes, v.name)
 	end
 	local function cb(_, choice)
 		if choice ~= nil then
 			for _, v in pairs(schemes) do
-				if v.file_name == choice then
+				if v.name == choice then
 					M.active_theme = v
 					if not vim.g.neovide then
 						M.color_state = { name = v.name, current = 1 }
 						M.__save_state({
-							colorscheme = v.file_name,
+							colorscheme = v.name,
 							flavour = v.flavours[1],
 						})
-						M.wezterm_sync(v.file_name, v.flavours[1])
+						M.wezterm_sync(v.name, v.flavours[1])
 					end
-					require("highlights").setup(v.file_name, v.flavours[1])
+					require("highlights").setup(v.name, v.flavours[1])
 					return
 				end
 			end
@@ -192,14 +205,14 @@ function M.init()
 		M.color_state = { name = "roses", current = 1 }
 		M.__save_state({
 			colorscheme = "roses",
-			flavour = "prime",
+			flavour = "main",
 		})
-		require("highlights").setup("roses", "flavour")
-		M.wezterm_sync("roses", "flavour")
+		require("highlights").setup("roses", "main")
+		M.wezterm_sync("roses", "main")
 		return
 	end
 	for _, v in pairs(M.themes.colors) do
-		if v.file_name == state.colorscheme then
+		if v.name == state.colorscheme then
 			M.active_theme = v
 		end
 	end
@@ -224,12 +237,12 @@ function M.init()
 	end
 	if M.color_state == nil then
 		vim.notify("did not find " .. state.colorscheme .. "... defaulting")
-		M.color_state = { name = M.active_theme.file_name, current = 1 }
+		M.color_state = { name = M.active_theme.name, current = 1 }
 		state.colorscheme = M.color_state.name
-		state.flavour = "prime"
+		state.flavour = M.active_theme.flavours[1]
 		M.__save_state({
 			colorscheme = state.colorscheme,
-			flavour = "prime",
+			flavour = M.active_theme.flavours[1],
 		})
 		M.wezterm_sync(state.colorscheme, state.flavour)
 	end
@@ -240,18 +253,15 @@ function M.toggle_flavour()
 	if #M.active_theme.flavours == 1 then
 		return
 	end
-	if M.color_state.name == M.active_theme.file_name then
-		return
-	end
 	M.color_state.current = M.color_state.current == #M.active_theme.flavours and 1 or M.color_state.current + 1
 	M.color_state.name = M.active_theme.flavours[M.color_state.current]
-	require("highlights").setup(M.active_theme.file_name, M.color_state.name)
+	require("highlights").setup(M.active_theme.name, M.color_state.name)
 	if not vim.g.neovide then
 		M.__save_state({
-			colorscheme = M.active_theme.file_name,
+			colorscheme = M.active_theme.name,
 			flavour = M.active_theme.flavours[M.color_state.current],
 		})
-		M.wezterm_sync(M.active_theme.file_name, M.color_state.name)
+		M.wezterm_sync(M.active_theme.name, M.color_state.name)
 	end
 end
 

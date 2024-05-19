@@ -48,7 +48,8 @@ return {
 				return colors
 			end
 
-			local statusline = require("plugins.ui.heirline.statusline")
+			-- local statusline = require("plugins.ui.heirline.statusline")
+			local statusline = require("plugins.ui.heirline.nano")
 			local conditions = require("heirline.conditions")
 			local statuscolumn = require("plugins.ui.heirline.statuscolumn")
 			heirline.setup({

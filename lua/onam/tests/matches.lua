@@ -1,15 +1,20 @@
-local M = {}
+local tests = {
+	"roses,",
+	"roses,main",
+	"gruvbox-material,dark-soft",
+	"gruvbox-material,light-hard",
+	"kanagawa,wave",
+}
 
-local state = { colorscheme = "doom-one" }
-
-M.themes = { { file_name = "doom-one" } }
-
-for _, v in pairs(M.themes) do
-	if v.file_name:match(state.colorscheme) then
-		print("found match")
-		break
+for _, test in pairs(tests) do
+	local color, next = string.match(test, "([^,]*),(.*)")
+	print("color", color)
+	local flavour_tbl = {}
+	for token in string.gmatch(next, "([^-]+)") do
+		table.insert(flavour_tbl, token)
 	end
-	if state.colorscheme == v.file_name then
-		print("found match")
+	if #flavour_tbl == 1 then
+		flavour_tbl = flavour_tbl[1]
 	end
+	vim.print("flavour", flavour_tbl)
 end

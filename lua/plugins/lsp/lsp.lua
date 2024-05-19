@@ -220,6 +220,21 @@ return {
 						return prefix, "Diagnostic" .. level:gsub("^%l", string.upper)
 					end,
 				},
+				signs = {
+					text = {
+						[vim.diagnostic.severity.ERROR] = tools.ui.lsp_signs[1].sym,
+						[vim.diagnostic.severity.WARN] = tools.ui.lsp_signs[2].sym,
+						[vim.diagnostic.severity.INFO] = tools.ui.lsp_signs[3].sym,
+						[vim.diagnostic.severity.HINT] = tools.ui.lsp_signs[4].sym,
+					},
+					-- text = signs,
+					linehl = {
+						[vim.diagnostic.severity.ERROR] = "ErrorMsg",
+					},
+					numhl = {
+						[vim.diagnostic.severity.WARN] = "WarningMsg",
+					},
+				},
 			})
 		end,
 	},
