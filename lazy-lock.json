@@ -8,6 +8,7 @@
   "diffview.nvim": { "branch": "main", "commit": "9bdd5537575c2ea7925b71ae06585b934beea13d" },
   "dressing.nvim": { "branch": "master", "commit": "572314728cb1ce012e825fd66331f52c94acac12" },
   "fzf-lua": { "branch": "main", "commit": "53698d7ff093592228d14a509933ce403b3b8f9f" },
+  "github-nvim-theme": { "branch": "main", "commit": "d832925e77cef27b16011a8dfd8835f49bdcd055" },
   "grapple.nvim": { "branch": "main", "commit": "7aedc261b05a6c030397c4bc26416efbe746ebf1" },
   "gruvbox-material": { "branch": "master", "commit": "afc82b439a193d68ffc4890eec7668c975bab648" },
   "heirline.nvim": { "branch": "master", "commit": "c52391dc4428d503f65e6bcb1533e6334f22a136" },

@@ -16,8 +16,8 @@ vim.keymap.set("n", "N", "Nzzzv", opts("smooth search up", true, { noremap = tru
 vim.api.nvim_set_keymap("i", "<C-c>", "<Esc>", opts("escape insert mode", true, { noremap = true }))
 
 --Move Command with J and K
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", opts("move line up", true)) -- Move line up { silent = true })
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", opts("move line down", true)) -- Move line down { silent = true })
+-- vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", opts("move line up", true)) -- Move line up { silent = true })
+-- vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", opts("move line down", true)) -- Move line down { silent = true })
 
 -- Quickfix list
 vim.keymap.set("n", "<leader>q", ":cnext<CR>", opts("quickfix next", true))

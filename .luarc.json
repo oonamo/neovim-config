@@ -2,7 +2,9 @@
     "diagnostics.globals": [
         "vim",
         "MiniFiles",
-        "MiniExtra"
+        "MiniExtra",
+        "MiniNotify",
+        "MiniDiff"
     ],
-    "completion.autoRequire": false
+    "completion.autoRequire": true,
 }

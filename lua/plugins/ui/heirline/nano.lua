@@ -233,6 +233,8 @@ local GitDiff = {
 	},
 }
 
+-- TODO Use vim.b.minidiff_summary_string
+-- vim.b.minidiff_summary
 local GitInfo = {
 	condition = function()
 		return require("mini.diff").get_buf_data() ~= nil

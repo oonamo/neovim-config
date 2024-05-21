@@ -13,8 +13,8 @@ if not vim.loop.fs_stat(lazypath) then
 	})
 end
 
-vim.opt.rtp:prepend(lazypath)
 require("globals")
+vim.opt.rtp:prepend(lazypath)
 require("onam.remap")
 require("onam.utils")
 require("onam.set")

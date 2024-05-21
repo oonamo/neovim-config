@@ -52,32 +52,14 @@ function M.set_qol()
 				)
 			end,
 		},
-		-- {
-		-- 	events = { "BufEnter", "CursorMoved", "CursorHoldI" },
-		-- 	command = function()
-		-- 		local win_h = vim.api.nvim_win_get_height(0)
-		-- 		local off = math.min(vim.o.scrolloff, math.floor(win_h / 2))
-		-- 		local dist = vim.fn.line("$") - vim.fn.line(".")
-		-- 		local rem = vim.fn.line("w$") - vim.fn.line("w0") + 1
-		--
-		-- 		if dist < off and win_h - rem + dist < off then
-		-- 			local view = vim.fn.winsaveview()
-		-- 			view.topline = view.topline + off - (win_h - rem + dist)
-		-- 			vim.fn.winrestview(view)
-		-- 		end
-		-- 	end,
-		-- },
 		{
 			events = { "BufEnter", "BufWinEnter" },
 			targets = { "C:/Users/onam7/Desktop/DB/DB/*.md" },
 			command = function(ev)
-				vim.print(ev)
-				vim.notify("would load plugins")
 				if package.loaded["obsidian"] or package.loaded["obsidian-bridge"] then
-					vim.notify("already loaded")
 					return
 				end
-				-- require("lazy").load({ plugins = { "obsidian.nvim", "obsidian-bridge.nvim" } })
+				require("lazy").load({ plugins = { "obsidian.nvim", "obsidian-bridge.nvim" } })
 			end,
 			desc = "Load these plugins based on path",
 			once = true,

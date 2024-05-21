@@ -1,6 +1,7 @@
 ---@param use_code_lens boolean|nil
 local function on_attach(client, buffer, use_code_lens)
 	local fzf = require("fzf-lua")
+	require("onam.helpers.lsp.codeaction")
 	if client.name == "rust_analyzer" then
 		vim.keymap.set("n", "K", function()
 			vim.cmd.RustLsp({ "hover", "actions" })
@@ -15,11 +16,12 @@ local function on_attach(client, buffer, use_code_lens)
 		})
 	end
 	vim.keymap.set("n", "gd", function()
-		vim.lsp.buf.definition()
+		fzf.lsp_definitions({ jump_to_single_result = true })
 	end, {
 		desc = "go to buffer definition",
 		buffer = buffer,
 	})
+	vim.keymap.set("n", "gD", fzf.lsp_definitions, { desc = "go to multiple definition", buffer = buffer })
 	vim.keymap.set("n", "<leader>vws", fzf.lsp_workspace_symbols, { desc = "Find workspace_symbol", buffer = buffer })
 	vim.keymap.set("n", "<leader>vd", function()
 		vim.diagnostic.open_float()
@@ -82,6 +84,12 @@ local function on_attach(client, buffer, use_code_lens)
 		vim.keymap.set("n", "<leader>h", function()
 			vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
 		end, { desc = "Inlay Hint" })
+		vim.api.nvim_create_autocmd({ "LspAttach", "InsertEnter", "InsertLeave" }, {
+			callback = function(args)
+				local enable = args.event ~= "InsertEnter"
+				vim.lsp.inlay_hint.enable(enable, { bufnr = args.buf })
+			end,
+		})
 	end
 end
 
