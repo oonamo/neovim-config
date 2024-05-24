@@ -70,7 +70,7 @@ require("lazy").setup({
 })
 
 require("onam.autocmds").set_qol()
-require("onam.theme_switcher").init()
+-- require("onam.theme_switcher").init()
 
 if not O.ui.tree.oil and not O.ui.tree.neotree and not O.ui.tree.mini then
 	vim.keymap.set("n", "<leader>e", "<cmd>Ex<CR>", { desc = "explorer" })

@@ -173,6 +173,7 @@ local FileType = {
 	provider = function()
 		return vim.bo.ft == "" and "" or vim.bo.ft:gsub("^%l", string.upper)
 	end,
+	update = { "BufEnter" },
 }
 
 local GitDiff = {
@@ -190,9 +191,21 @@ local GitDiff = {
 			self.delete = stats.summary.delete
 		end
 	end,
+	static = {
+		should_render = function(val)
+			if val and val > 0 then
+				return true
+			end
+			return false
+		end,
+	},
 	{
 		provider = function(self)
-			if not self.add and not self.change and not self.delete then
+			if
+				not self.should_render(self.add)
+				and not self.should_render(self.change)
+				and not self.should_render(self.delete)
+			then
 				return ""
 			end
 			return ", "
@@ -200,7 +213,7 @@ local GitDiff = {
 	},
 	{
 		provider = function(self)
-			if self.add then
+			if self.should_render(self.add) then
 				return "+" .. self.add
 			end
 			return ""
@@ -211,7 +224,7 @@ local GitDiff = {
 	},
 	{
 		provider = function(self)
-			if self.change then
+			if self.should_render(self.change) then
 				return "~" .. self.change
 			end
 			return ""
@@ -222,7 +235,7 @@ local GitDiff = {
 	},
 	{
 		provider = function(self)
-			if self.delete then
+			if self.should_render(self.delete) then
 				return "-" .. self.delete
 			end
 			return ""
@@ -244,6 +257,7 @@ local GitInfo = {
 		self.branch = utils.get_git_branch(self.root)
 		self.remote = utils.get_git_remote_name(self.root)
 	end,
+	update = { "BufEnter" },
 	{
 		provider = ", ",
 	},
@@ -312,4 +326,4 @@ local WordCount = {
 }
 
 local Info = { { provider = "(" }, FileType, GitInfo, GitDiff, { provider = ")" } }
-return { statusline = { Mode, FileName, Info, Align, Truncate, Diagnostics, Padding, Pos } }
+return { statusline = { Mode, Padding, FileName, Info, Align, Truncate, Diagnostics, Padding, Pos } }

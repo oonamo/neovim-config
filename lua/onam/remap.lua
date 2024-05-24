@@ -40,29 +40,6 @@ vim.keymap.set("n", "<leader>bc", ":bdelete<CR>", opts("buffer delete", true))
 -- Search and Replace
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], opts("search and replace"))
 
-vim.keymap.set("n", "<leader>Lcp", function()
-	require("onam.theme_switcher").open_plenary_popup()
-end, opts("select theme", true)) -- { desc = "color switcher" })
-
-vim.keymap.set("n", "<leader>Lcf", function()
-	require("onam.theme_switcher").toggle_flavour()
-end, opts("next theme flavour", true)) -- { desc = "color switcher" })
-
--- vim.keymap.set("n", "z=", function()
--- 	local word = vim.fn.expand("<cword>")
--- 	local suggestions = vim.fn.spellsuggest(word)
--- 	vim.ui.select(
--- 		suggestions,
--- 		{},
--- 		vim.schedule_wrap(function(selected)
--- 			if selected then
--- 				vim.api.nvim_feedkeys("ciw" .. selected, "n", true)
--- 				vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, true, true), "n", true)
--- 			end
--- 		end)
--- 	)
--- end, opts("spell suggestions"))
-
 -- window options
 vim.keymap.set("n", "<leader>vs", "<CMD>vsplit<CR>", opts("vertical split", true))
 vim.keymap.set("n", "<leader>vh", "<CMD>split<CR>", opts("horizontal split", true))

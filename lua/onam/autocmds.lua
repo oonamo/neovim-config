@@ -17,6 +17,7 @@ function M.set_qol()
 			command = function()
 				vim.highlight.on_yank({ timeout = 500 })
 			end,
+			desc = "highlight on yank",
 		},
 		{
 			events = { "VimResized" },
@@ -24,6 +25,7 @@ function M.set_qol()
 			command = function()
 				vim.cmd("wincmd =")
 			end,
+			desc = "resize windows un resize",
 		},
 		{
 			events = { "VimEnter" },
@@ -38,6 +40,7 @@ function M.set_qol()
 					)
 				)
 			end,
+			desc = "write variable to know when inside neovim",
 		},
 		{
 			events = { "VimLeave" },
@@ -51,6 +54,7 @@ function M.set_qol()
 					)
 				)
 			end,
+			desc = "rewrite variable to be false when leaving neovim",
 		},
 		{
 			events = { "BufEnter", "BufWinEnter" },
@@ -59,11 +63,41 @@ function M.set_qol()
 				if package.loaded["obsidian"] or package.loaded["obsidian-bridge"] then
 					return
 				end
-				require("lazy").load({ plugins = { "obsidian.nvim", "obsidian-bridge.nvim" } })
+				require("lazy").load({ plugins = { "obsidian.nvim", "obsidian-bridge.nvim", "luasnip" } })
 			end,
 			desc = "Load these plugins based on path",
 			once = true,
 		},
+		{
+			events = { "FileType" },
+			targets = {
+				"help",
+				"man",
+				"qf",
+				"query",
+				"scratch",
+				"spectre_panel",
+			},
+			command = function(args)
+				vim.keymap.set("n", "q", "<cmd>quit<cr>", { buffer = args.buf })
+			end,
+			desc = "Close with 'q'",
+		},
+		{
+			events = { "BufReadPost" },
+			targets = { "*" },
+			command = function(args)
+				local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
+				local line_count = vim.api.nvim_buf_line_count(args.buf)
+				if mark[1] > 0 and mark[1] <= line_count then
+					vim.cmd('normal! g`"zz')
+				end
+			end,
+			desc = "save previous cursor position",
+		},
+		-- {
+		--
+		-- },
 	})
 	do
 		SEARCH_REG = ""

@@ -7,7 +7,11 @@ if O.ui.indent.mini then
 		-- 	animation = require("mini.indentscope").gen_animation.none(),
 		-- },
 		symbol = "│",
-		options = { try_as_border = true },
+		options = {
+			try_as_border = true,
+			border = "both",
+			indent_at_cursor = true,
+		},
 	})
 	if utils.get_hl("NonText") then
 		vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", { link = "NonText" })
@@ -181,7 +185,6 @@ end
 
 require("mini.splitjoin").setup()
 require("mini.surround").setup({
-
 	mappings = {
 		add = "gsa", -- Add surrounding in Normal and Visual modes
 		delete = "gsd", -- Delete surrounding
@@ -240,7 +243,7 @@ require("mini.diff").setup({
 		-- Visualization style. Possible values are 'sign' and 'number'.
 		-- Default: 'number' if line numbers are enabled, 'sign' otherwise.
 		-- style = vim.go.number and "number" or "sign",
-		style = "sign",
+		style = "number",
 		-- Signs used for hunks with 'sign' view
 		signs = { add = "▒", change = "▒", delete = "▒" },
 		-- Priority of used visualization extmarks
@@ -265,3 +268,19 @@ require("mini.move").setup({
 		-- line_up = "K",
 	},
 })
+
+require("mini.git").setup({
+	command = {
+		split = "vertical",
+	},
+})
+
+vim.keymap.set("n", "<leader>gs", "<CMD>Git status<CR>", { desc = "Git Status" })
+vim.keymap.set("n", "<leader>ga", "<CMD>Git add %<CR>", { desc = "Git Add" })
+vim.keymap.set("n", "<leader>gc", function()
+	vim.ui.input({ prompt = "Commit: " }, function(input)
+		if not input then
+			return
+		end
+	end)
+end, { desc = "Git Commit" })

@@ -1,10 +1,5 @@
 return {
-	{
-		"rose-pine/neovim",
-		name = "rose-pine",
-		priority = 1000,
-		lazy = true,
-	},
+	{ "rose-pine/neovim", name = "rose-pine", priority = 1000, lazy = true },
 	{
 		"EdenEast/nightfox.nvim",
 		lazy = true,
@@ -117,14 +112,21 @@ return {
 			}
 		end,
 	},
-	{
-		"sainnhe/gruvbox-material",
-		lazy = true,
-	},
-	{
-		"rebelot/kanagawa.nvim",
-		lazy = true,
-	},
-	{ "catppuccin/nvim", lazy = true, name = "catppuccin" },
+	{ "sainnhe/gruvbox-material", lazy = true },
+	{ "rebelot/kanagawa.nvim", lazy = true },
 	{ "projekt0n/github-nvim-theme", lazy = true },
+	{
+		"miikanissi/modus-themes.nvim",
+		lazy = true,
+		opts = {
+			styles = {
+				functions = { bold = true, italic = true },
+			},
+			on_highlights = function(highlight, color)
+				highlight.MatchParen = { fg = color.green, bg = "NONE" }
+				highlight.LspInlayHint = { fg = color.green, bg = color.gray }
+				highlight.SignColumn = { fg = highlight.LineNr.fg, bg = highlight.LineNr.bg }
+			end,
+		},
+	},
 }

@@ -24,7 +24,10 @@ local icons = {
 	info_i = " ",
 	v_border = "▐",
 	v_pipe = "▎",
-
+	right = "",
+	left = "",
+	up = "",
+	down = "",
 	ArrowCircleDown = "",
 	ArrowCircleLeft = "",
 	ArrowCircleRight = "",

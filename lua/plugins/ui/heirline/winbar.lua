@@ -1,6 +1,6 @@
 local M = {}
 
-M.getFileName = function()
+function M.getFileName()
 	local name = vim.fn.expand("%:t")
 	return name
 end
@@ -11,14 +11,13 @@ function M.spacebar(winid)
 end
 
 local Winbar = {
-	condition = function()
-		if vim.bo.filetype == "markdown" then
-			return true
-		end
-		return false
-	end,
+	-- condition = function()
+	-- 	if vim.bo.filetype == "markdown" then
+	-- 		return true
+	-- 	end
+	-- 	return false
+	-- end,
 	init = function(self)
-		self.filetype = vim.bo.filetype
 		self.filename = vim.fn.expand("%:t")
 	end,
 	provider = function(self)

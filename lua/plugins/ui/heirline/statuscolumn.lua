@@ -79,7 +79,7 @@ local Stc = {
 		end,
 	},
 	{
-		provider = "%s ",
+		provider = "%s",
 		-- provider = function(self)
 		-- 	-- return vim.inspect({ self.signs, self.git_sign })
 		-- 	local children = {}
@@ -91,31 +91,35 @@ local Stc = {
 		-- 	end
 		-- 	self[1] = self:new(children, 1)
 		-- end,
-		on_click = {
-			callback = function(self, ...)
-				local mousepos = vim.fn.getmousepos()
-				vim.api.nvim_win_set_cursor(0, { mousepos.line, mousepos.column })
-				local sign_at_cursor = vim.fn.screenstring(mousepos.screenrow, mousepos.screencol)
-				if sign_at_cursor ~= "" then
-					local args = {
-						mousepos = mousepos,
-					}
-					local signs = vim.fn.sign_getdefined()
-					for _, sign in ipairs(signs) do
-						local glyph = sign.text:gsub(" ", "")
-						if sign_at_cursor == glyph then
-							vim.defer_fn(function()
-								self:resolve(sign.name)(args)
-							end, 10)
-							return
-						end
-					end
-				end
-			end,
-			name = "heirline_signcol_callback",
-			update = true,
-		},
+		-- on_click = {
+		-- 	callback = function(self, ...)
+		-- 		local mousepos = vim.fn.getmousepos()
+		-- 		vim.api.nvim_win_set_cursor(0, { mousepos.line, mousepos.column })
+		-- 		local sign_at_cursor = vim.fn.screenstring(mousepos.screenrow, mousepos.screencol)
+		-- 		if sign_at_cursor ~= "" then
+		-- 			local args = {
+		-- 				mousepos = mousepos,
+		-- 			}
+		-- 			local signs = vim.fn.sign_getdefined()
+		-- 			for _, sign in ipairs(signs) do
+		-- 				local glyph = sign.text:gsub(" ", "")
+		-- 				if sign_at_cursor == glyph then
+		-- 					vim.defer_fn(function()
+		-- 						self:resolve(sign.name)(args)
+		-- 					end, 10)
+		-- 					return
+		-- 				end
+		-- 			end
+		-- 		end
+		-- 	end,
+		-- 	name = "heirline_signcol_callback",
+		-- 	update = true,
+		-- },
 	},
+	-- {
+	-- 	provider = tools.ui.icons.LineLeft,
+	-- 	hl = { fg = "white" },
+	-- },
 	-- {
 	-- 	provider = " %{% &fdc ? '%C ' : '' %}",
 	-- },

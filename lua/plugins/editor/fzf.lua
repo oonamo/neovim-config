@@ -122,10 +122,10 @@ return {
 						preview = { hidden = "hidden" },
 					},
 				},
-				lsp = {
-					previewer = "codeaction_native",
-					previewer_pager = "delta --side-by-side -- width=$FZF_PREVIEW_COLUMNS",
-				},
+				-- lsp = {
+				-- 	previewer = "codeaction_native",
+				-- 	-- previewer_pager = "delta --side-by-side -- width=$FZF_PREVIEW_COLUMNS",
+				-- },
 				actions = {
 					files = {
 						["default"] = actions.file_edit_or_qf,

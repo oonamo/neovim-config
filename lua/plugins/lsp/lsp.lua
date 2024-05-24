@@ -1,5 +1,6 @@
 ---@param use_code_lens boolean|nil
 local function on_attach(client, buffer, use_code_lens)
+	local methods = vim.lsp.protocol.Methods
 	local fzf = require("fzf-lua")
 	require("onam.helpers.lsp.codeaction")
 	if client.name == "rust_analyzer" then
@@ -54,7 +55,7 @@ local function on_attach(client, buffer, use_code_lens)
 	end
 
 	-- refresh codelens on TextChanged and InsertLeave as well
-	if client.supports_method("textDocument/codeLens") and use_code_lens then
+	if client.supports_method(methods.textDocument_codeLens) and use_code_lens then
 		vim.lsp.codelens.refresh()
 		-- vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach" }, {
 		-- 	buffer = buffer,
@@ -68,16 +69,17 @@ local function on_attach(client, buffer, use_code_lens)
 		vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
 	end
 
-	if client.supports_method("textDocument/publishDiagnostics") then
-		vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-			signs = true,
-			underline = true,
-			virtual_text = {
-				spacing = 5,
-				min = "Hint",
-			},
-			update_in_insert = true,
-		})
+	if client.supports_method(methods.textDocument_publishDiagnostics) then
+		vim.lsp.handlers[methods.textDocument_publishDiagnostics] =
+			vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+				signs = true,
+				underline = true,
+				virtual_text = {
+					spacing = 5,
+					min = "Hint",
+				},
+				update_in_insert = true,
+			})
 	end
 
 	if client.supports_method("textDocument/inlayHint") then
@@ -90,6 +92,9 @@ local function on_attach(client, buffer, use_code_lens)
 				vim.lsp.inlay_hint.enable(enable, { bufnr = args.buf })
 			end,
 		})
+	end
+	if client.supports_method(methods.textDocument_documentHighlight) then
+		require("onam.helpers.lsp.documentHighlight")(buffer)
 	end
 end
 
@@ -218,7 +223,7 @@ return {
 				},
 				float = {
 					header = " ",
-					border = tools.ui.cur_border,
+					border = "rounded",
 					source = "if_many",
 					title = { { " 󰌶 Diagnostics ", "FloatTitle" } },
 					prefix = function(diag)
@@ -248,8 +253,9 @@ return {
 	},
 	{
 		"L3MON4D3/LuaSnip",
-		event = { "InsertEnter" },
-		ft = { "markdown" },
+		lazy = true,
+		-- event = { "InsertEnter" },
+		-- ft = { "markdown" },
 		cond = O.lsp.cmp,
 		opts = {
 			history = true,
