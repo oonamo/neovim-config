@@ -3,9 +3,6 @@ require("mini.bufremove").setup()
 
 if O.ui.indent.mini then
 	require("mini.indentscope").setup({
-		-- draw = {
-		-- 	animation = require("mini.indentscope").gen_animation.none(),
-		-- },
 		symbol = "│",
 		options = {
 			try_as_border = true,
@@ -218,11 +215,11 @@ hipatterns.setup({
 })
 -- No need to copy this inside `setup()`. Will be used automatically.
 require("mini.notify").setup({
-	-- Window options
 	window = {
 		config = { border = "double" },
 	},
 })
+
 vim.notify = require("mini.notify").make_notify()
 
 vim.api.nvim_create_user_command("Notifications", function()
@@ -238,34 +235,18 @@ vim.api.nvim_create_user_command("Notifications", function()
 	end, { buffer = 0 })
 end, {})
 
-require("mini.diff").setup({
-	view = {
-		-- Visualization style. Possible values are 'sign' and 'number'.
-		-- Default: 'number' if line numbers are enabled, 'sign' otherwise.
-		-- style = vim.go.number and "number" or "sign",
-		style = "number",
-		-- Signs used for hunks with 'sign' view
-		signs = { add = "▒", change = "▒", delete = "▒" },
-		-- Priority of used visualization extmarks
-		priority = 199,
-	},
-})
+require("mini.diff").setup()
 
 vim.keymap.set("n", "<leader>gdo", MiniDiff.toggle_overlay, { desc = "MiniDiff toggle overlay" })
+vim.keymap.set("n", "<leader>gdf", MiniDiff.toggle_overlay, { desc = "MiniDiff show overlay" })
 
 require("mini.move").setup({
 	mappings = {
-		-- Sove visual selection in Visual mode. Defaults are Alt (Meta) + hjkl.
 		left = "H",
 		right = "L",
 		line_left = "H",
 		down = "J",
 		up = "K",
-
-		-- Sove current line in Normal mode
-		-- line_right = "L",
-		-- line_down = "K",
-		-- line_up = "K",
 	},
 })
 
@@ -276,11 +257,16 @@ require("mini.git").setup({
 })
 
 vim.keymap.set("n", "<leader>gs", "<CMD>Git status<CR>", { desc = "Git Status" })
-vim.keymap.set("n", "<leader>ga", "<CMD>Git add %<CR>", { desc = "Git Add" })
+vim.keymap.set("n", "<leader>gac", "<CMD>Git add %<CR>", { desc = "Git Add Current" })
+vim.keymap.set("n", "<leader>gaa", "<CMD>Git add .<CR>", { desc = "Git Add All" })
+vim.keymap.set("n", "<leader>gp", "<CMD>Git push<CR>", { desc = "Git Push" })
 vim.keymap.set("n", "<leader>gc", function()
 	vim.ui.input({ prompt = "Commit: " }, function(input)
 		if not input then
 			return
 		end
+		local formatted_str = vim.iter(vim.gsplit(input, " ")):join("\\ ")
+		local str = string.format("Git commit -m %s", formatted_str)
+		vim.cmd(str)
 	end)
 end, { desc = "Git Commit" })

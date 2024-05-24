@@ -1,11 +1,5 @@
 return {
 	"cbochs/grapple.nvim",
-	init = function()
-		if not package.loaded["obsidian"] then
-			return
-		end
-		require("grapple").use_scope("cwd")
-	end,
 	opts = {
 		scope = "cwd",
 		icons = false,

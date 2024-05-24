@@ -150,10 +150,10 @@ return {
 			tsserver = defaults,
 			html = defaults,
 			eslint = defaults,
-			-- powershell_es = {
-			-- 	shell = "pwsh",
-			-- 	-- bundle_path = "C:/Windows/PowerShellEditorServices",
-			-- },
+			powershell_es = {
+				-- shell = "pwsh",
+				bundle_path = "C:/Users/onam7/.vscode/extensions/ms-vscode.powershell-2024.0.0/modules/",
+			},
 			clangd = {
 				on_attach = on_attach,
 			},

@@ -26,18 +26,8 @@ return {
 				highlight = {
 					enable = true,
 					additional_vim_regex_highlighting = false,
-					-- disable = { "latex" },
 				},
 				indent = { enable = true },
-				-- autotag = {
-				-- 	enable = true,
-				-- 	enable_rename = true,
-				-- 	enable_close = true,
-				-- 	enable_close_on_slash = true,
-				-- },
-				-- matchup = {
-				-- 	enable = true, -- mandatory, false will disable the whole extension
-				-- },
 				incremental_selection = {
 					enable = true,
 					keymaps = {
@@ -50,25 +40,4 @@ return {
 			})
 		end,
 	},
-	-- {
-	-- 	"windwp/nvim-ts-autotag",
-	-- 	events = { "BufReadPost", "BufNewFile", "BufWritePre" },
-	-- 	ft = {
-	-- 		"html",
-	-- 		"javascript",
-	-- 		"typescript",
-	-- 		"javascriptreact",
-	-- 		"typescriptreact",
-	-- 		"svelte",
-	-- 		"vue",
-	-- 		"tsx",
-	-- 		"jsx",
-	-- 		"rescript",
-	-- 		"xml",
-	-- 		"php",
-	-- 		"markdown",
-	-- 		"glimmer",
-	-- 	},
-	-- 	opts = {},
-	-- },
 }

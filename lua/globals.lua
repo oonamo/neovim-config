@@ -184,8 +184,13 @@ _G.Config = {
 		-- { mode = "n", keys = "<Leader>e", desc = "+Explore" },
 		{ mode = "n", keys = "<Leader>f", desc = "+Find" },
 		{ mode = "n", keys = "<Leader>g", desc = "+Git" },
+
+		{ mode = "n", keys = "<Leader>ga", postkeys = "<leader>g", desc = "+GitAdd" },
+		{ mode = "n", keys = "<leader>gd", postkeys = "<leader>g", desc = "+GitDiff" },
+
 		-- { mode = "n", keys = "<Leader>l", desc = "+LSP" },
 		{ mode = "n", keys = "<Leader>L", desc = "+Lua" },
+		{ mode = "n", keys = "<Leader>Lc", postkeys = "<leader>L", desc = "+Change" },
 		-- { mode = "n", keys = "<Leader>m", desc = "+Map" },
 		{ mode = "n", keys = "<Leader>o", desc = "+Obsidian" },
 		{ mode = "n", keys = "<Leader>x", desc = "+Trouble" },

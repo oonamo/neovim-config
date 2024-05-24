@@ -10,7 +10,7 @@ return {
 			"ms-jpq/coq.thirdparty",
 			branch = "3p",
 			-- config = function()
-			-- 	require("3p")({
+			-- 	require("coq_3p")({
 			-- 		{ src = "nvimlua", short_name = "nLUA" },
 			-- 	})
 			-- end,

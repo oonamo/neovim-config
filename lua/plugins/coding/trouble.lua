@@ -4,7 +4,6 @@ return {
 		config = function()
 			local trouble = require("trouble")
 			trouble.setup({ icons = false })
-			-- Lua
 			vim.keymap.set("n", "<leader>xx", function()
 				trouble.toggle()
 			end, { desc = "toggle trouble" })
@@ -23,13 +22,6 @@ return {
 			vim.keymap.set("n", "gR", function()
 				trouble.toggle("lsp_references")
 			end, { desc = "trobuble lsp references" })
-			-- vim.keymap.set("n", "]d", function()
-			-- 	trouble.next({ skip_groups = true, jump = true })
-			-- end)
-			--
-			-- vim.keymap.set("n", "[d", function()
-			-- 	trouble.previous({ skip_groups = true, jump = true })
-			-- end)
 		end,
 		event = "LspAttach",
 		keys = {
