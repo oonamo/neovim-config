@@ -2,12 +2,37 @@ require("mini.extra").setup()
 require("mini.bufremove").setup()
 
 if O.ui.indent.mini then
+	local disable_list = {
+		"aerial",
+		"dashboard",
+		"help",
+		"lazy",
+		"leetcode.nvim",
+		"mason",
+		"neo-tree",
+		"NvimTree",
+		"neogitstatus",
+		"notify",
+		"startify",
+		"toggleterm",
+		"Trouble",
+		"calltree",
+		"coverage",
+	}
+
 	require("mini.indentscope").setup({
 		symbol = "│",
 		options = {
 			try_as_border = true,
 			border = "both",
 			indent_at_cursor = true,
+		},
+		draw = {
+			animation = require("mini.indentscope").gen_animation.linear({
+				easing = "in",
+				duration = 40,
+				unit = "step",
+			}),
 		},
 	})
 	if utils.get_hl("NonText") then
@@ -19,6 +44,13 @@ if O.ui.indent.mini then
 		end
 		vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", { fg = fg })
 	end
+	vim.api.nvim_create_autocmd({ "FileType" }, {
+		callback = function()
+			if vim.tbl_contains(disable_list, vim.bo.filetype) then
+				vim.b.miniindentscope_disable = true
+			end
+		end,
+	})
 end
 
 if O.ui.clues then
@@ -195,7 +227,7 @@ require("mini.surround").setup({
 		suffix_next = "n", -- Suffix to search with "next" method
 	},
 })
--- require("mini.comment").setup()
+
 require("mini.ai").setup({
 	custom_textobjects = {
 		B = MiniExtra.gen_ai_spec.buffer(),
@@ -270,3 +302,65 @@ vim.keymap.set("n", "<leader>gc", function()
 		vim.cmd(str)
 	end)
 end, { desc = "Git Commit" })
+
+vim.api.nvim_create_autocmd("User", {
+	pattern = "MiniGitCommandSplit",
+	callback = function(data)
+		vim.keymap.set("n", "q", "<cmd>quit<cr>", { desc = "quit", buffer = data.buf })
+	end,
+})
+
+local mouse_scrolled = false
+for _, scroll in ipairs({ "Up", "Down" }) do
+	local key = "<ScrollWheel" .. scroll .. ">"
+	vim.keymap.set({ "", "i" }, key, function()
+		mouse_scrolled = true
+		return key
+	end, { expr = true })
+end
+local map = require("mini.map")
+
+map.setup({
+	integrations = {
+		map.gen_integration.builtin_search(),
+		map.gen_integration.diff(),
+		map.gen_integration.diagnostic({
+			error = "DiagnosticFloatingError",
+			warn = "DiagnosticFloatingWarn",
+			info = "DiagnosticFloatingInfo",
+			hint = "DiagnosticFloatingHint",
+		}),
+	},
+	symbols = {
+		encode = map.gen_encode_symbols.dot("4x2"),
+	},
+})
+local enable = {
+	go = true,
+	lua = true,
+	markdown = true,
+	python = true,
+	rust = true,
+	c = true,
+	cpp = true,
+}
+
+vim.iter({ "n", "N", "*" }):each(function(v)
+	vim.keymap.set("n", v, v .. "zv<Cmd>lua MiniMap.refresh({}, { lines = false, scrollbar = false, })<CR>")
+end)
+
+vim.api.nvim_create_autocmd("BufEnter", {
+	group = vim.api.nvim_create_augroup("mini-minimap", { clear = true }),
+	desc = "Toggle 'mini.map' based on filetype",
+	callback = function(data)
+		if vim.bo[data.buf].buftype ~= "" then
+			return
+		end
+		local ft = vim.bo[data.buf].filetype
+		if enable[ft] then
+			MiniMap.open()
+		else
+			MiniMap.close()
+		end
+	end,
+})

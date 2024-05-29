@@ -27,11 +27,11 @@ function M.setup(fn, flavour)
 	vim.api.nvim_set_var("t_Cs", "`e[4:3m")
 	vim.api.nvim_set_var("t_Ce", "`e[4:0m")
 
-	-- vim.api.nvim_set_var("t_Cs", "\\e[4:3m")
-	-- vim.api.nvim_set_var("t_Ce", "\\e[4:0m")
+	vim.api.nvim_set_var("t_Cs", "\\e[4:3m")
+	vim.api.nvim_set_var("t_Ce", "\\e[4:0m")
 
-	-- vim.api.nvim_set_var("t_Cs", "\\e[4:3m")
-	-- vim.api.nvim_set_var("t_Ce", "\\e[4:0m")
+	vim.api.nvim_set_var("t_Cs", "\\e[4:3m")
+	vim.api.nvim_set_var("t_Ce", "\\e[4:0m")
 
 	vim.api.nvim_set_hl(0, "SpellBad", { undercurl = true, sp = "red", fg = "NONE", bg = "NONE" })
 	vim.api.nvim_set_hl(0, "SpellCap", { undercurl = true, sp = "yellow", fg = "NONE", bg = "NONE" })

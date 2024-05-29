@@ -1,4 +1,4 @@
 return {
 	"mbbill/undotree",
-	keys = { { "<leader>u", "<cmd>UndotreeToggle", desc = "UndoTree UI" } },
+	keys = { { "<leader>u", "<cmd>UndotreeToggle<CMD>", desc = "UndoTree UI" } },
 }

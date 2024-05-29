@@ -19,7 +19,6 @@ return {
 		end,
 		opts = function()
 			local actions = require("fzf-lua.actions")
-
 			return {
 				fzf_colors = {
 					bg = { "bg", "Normal" },
@@ -47,6 +46,7 @@ return {
 					},
 				},
 				winopts = {
+					border = "none",
 					height = 0.4,
 					width = 1,
 					row = 1,
@@ -54,6 +54,9 @@ return {
 					preview = {
 						vertical = "up:45%",
 						hidden = "nohidden",
+						scrollbar = "float",
+						scrolloff = "-2",
+						title_pos = "center",
 					},
 				},
 				global_git_icons = false,

@@ -117,6 +117,7 @@ local GitDiff = {
 	condition = function()
 		return require("mini.diff").get_buf_data() ~= nil
 	end,
+	update = { "User", pattern = "MiniDiffUpdated" },
 	init = function(self)
 		if package.loaded["mini.diff"] == nil then
 			return
@@ -328,10 +329,14 @@ local LSPActive = {
 			vim.cmd.redrawstatus()
 		end),
 	},
+	init = function(self)
+		self.has_conform, _ = pcall(require, "conform")
+	end,
 	condition = function(self)
 		-- self.clients = vim.lsp.get_active_clients({ bufnr = 0 })
 		self.clients = vim.lsp.get_clients({ bufnr = 0 })
-		return next(self.clients) ~= nil
+		self.formatters = require("conform").list_formatters()
+		return next(self.clients) ~= nil or next(self.formatters) ~= nil
 	end,
 	-- hl = { bg = "statusline_bg" },
 	{
@@ -339,11 +344,28 @@ local LSPActive = {
 	},
 	{
 		provider = function(self)
-			local names = {}
-			for _, server in pairs(self.clients) do
-				table.insert(names, server.name)
+			return vim.iter(self.clients)
+				:map(function(server)
+					return server.name
+				end)
+				:join(" ")
+		end,
+	},
+	{
+		provider = function(self)
+			if next(self.formatters) ~= nil then
+				return ", "
 			end
-			return table.concat(names, " ")
+			return ""
+		end,
+	},
+	{
+		provider = function(self)
+			return vim.iter(self.formatters)
+				:map(function(formatter)
+					return formatter.name
+				end)
+				:join(" , ")
 		end,
 	},
 	Diagnostics,

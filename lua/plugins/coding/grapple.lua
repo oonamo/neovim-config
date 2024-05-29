@@ -3,6 +3,10 @@ return {
 	opts = {
 		scope = "cwd",
 		icons = false,
+		win_opts = {
+			-- border = "none",
+			title = "Grapple",
+		},
 		scopes = {
 			{
 				name = "obsidian",
@@ -19,6 +23,8 @@ return {
 		},
 	},
 	event = { "BufReadPost", "BufNewFile" },
+	-- lazy = false,
+	-- priority = 1001,
 	cmd = "Grapple",
 	keys = {
 		{ "<leader>a", "<cmd>Grapple toggle<cr>", desc = "Tag a file" },

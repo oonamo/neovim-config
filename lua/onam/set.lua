@@ -55,6 +55,7 @@ opt.undofile = true
 opt.incsearch = true
 opt.wildmenu = true
 opt.signcolumn = "yes:1"
+-- opt.signcolumn = "number"
 opt.laststatus = 2 -- Or 3 for global statusline
 opt.conceallevel = 2
 opt.showmode = false
@@ -76,6 +77,8 @@ opt.fillchars = {
 	foldsep = " ",
 	msgsep = "─",
 }
+
+o.virtualedit = "block"
 
 o.shortmess = "acstFOSW"
 o.splitkeep = "screen"

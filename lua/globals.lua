@@ -179,7 +179,7 @@ _G.tools = {
 
 _G.Config = {
 	leader_group_clues = {
-		{ mode = "n", keys = "<Leader>b", desc = "+Buffer" },
+		{ mode = "n", keys = "<Leader>b", desc = "+Build" },
 		{ mode = "n", keys = "<Leader>v", desc = "+Variable" },
 		-- { mode = "n", keys = "<Leader>e", desc = "+Explore" },
 		{ mode = "n", keys = "<Leader>f", desc = "+Find" },

@@ -32,11 +32,6 @@ vim.keymap.set({ "n", "v" }, "<leader>yy", '"+yy', opts("copy to clipboard", tru
 vim.keymap.set({ "n", "v" }, "<leader>p", '"+p', opts("paste from clipboard", true))
 vim.keymap.set({ "n", "v" }, "<leader>P", '"+P', opts("paste from clipboard", true))
 
--- buffers
-vim.keymap.set("n", "<leader>bn", ":bnext<CR>", opts("buffer next", true))
-vim.keymap.set("n", "<leader>bp", ":bprev<CR>", opts("buffer prev", true))
-vim.keymap.set("n", "<leader>bc", ":bdelete<CR>", opts("buffer delete", true))
-
 -- Search and Replace
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], opts("search and replace"))
 

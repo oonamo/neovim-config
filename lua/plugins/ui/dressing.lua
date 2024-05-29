@@ -23,6 +23,7 @@ return {
 		},
 		select = {
 			trim_prompt = false,
+			backend = { "fzf_lua" },
 			get_config = function(opts)
 				if opts.kind == "codeaction" then
 					-- Cute and compact code action menu.

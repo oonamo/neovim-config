@@ -57,13 +57,13 @@ function M.set_qol()
 			desc = "rewrite variable to be false when leaving neovim",
 		},
 		{
-			events = { "BufEnter", "BufWinEnter" },
+			events = { "BufEnter", "BufWinEnter", "VimEnter", "WinEnter" },
 			targets = { "C:/Users/onam7/Desktop/DB/DB/*.md" },
 			command = function(ev)
-				if package.loaded["obsidian"] or package.loaded["obsidian-bridge"] then
-					return
-				end
-				require("lazy").load({ plugins = { "obsidian.nvim", "obsidian-bridge.nvim", "luasnip" } })
+				require("lazy").load({ plugins = { "obsidian.nvim" } })
+				-- if package.loaded["obsidian"] or package.loaded["obsidian-bridge"] then
+				-- 	return
+				-- end
 			end,
 			desc = "Load these plugins based on path",
 			once = true,
@@ -95,9 +95,6 @@ function M.set_qol()
 			end,
 			desc = "save previous cursor position",
 		},
-		-- {
-		--
-		-- },
 	})
 	do
 		SEARCH_REG = ""

@@ -200,5 +200,11 @@ return {
 		dependencies = { "nvim-telescope/telescope.nvim" },
 		opts = { scroll_sync = true },
 		lazy = true,
+		config = function(_, opts)
+			require("obsidian-bridge").setup(opts)
+		end,
+		keys = {
+			{ "<leader>og", function() end, desc = "Load obsidian-bridge" },
+		},
 	},
 }

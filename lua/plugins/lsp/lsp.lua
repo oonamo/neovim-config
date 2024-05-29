@@ -130,6 +130,7 @@ return {
 						workspace = {
 							library = {
 								[vim.fn.expand("$VIMRUNTIME/lua")] = true,
+								[vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
 								[vim.fn.stdpath("config") .. "/lua"] = true,
 							},
 						},
@@ -180,12 +181,8 @@ return {
 		},
 		config = function(_, opts)
 			local lspconfig = require("lspconfig")
-			local capabilities = vim.lsp.protocol.make_client_capabilities()
-			if O.lsp.coq then
-				capabilities = require("coq").lsp_ensure_capabilities(capabilities)
-			else
-				capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
-			end
+			-- capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
+			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 			capabilities.workspace = {
 				didChangeWatchedFiles = {
 					dynamicRegistration = true,

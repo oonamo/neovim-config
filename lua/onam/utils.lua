@@ -221,6 +221,17 @@ function utils.brighten(color, percent, property)
 	return rgb
 end
 
+function utils.brighten_hex(color, percent)
+	local r, g, b = to_rgb(color)
+	---@diagnostic disable-next-line: param-type-mismatch
+	r = clamp_color(math.floor(tonumber(r * (100 + percent) / 100)))
+	---@diagnostic disable-next-line: param-type-mismatch
+	g = clamp_color(math.floor(tonumber(g * (100 + percent) / 100)))
+	---@diagnostic disable-next-line: param-type-mismatch
+	b = clamp_color(math.floor(tonumber(b * (100 + percent) / 100)))
+	local rgb = "#" .. string.format("%02x%02x%02x", r, g, b)
+	return rgb
+end
 function utils.hue2rgb(p, q, t)
 	if t < 0 then
 		t = t + 1
@@ -533,6 +544,11 @@ tools.diagnostics_available = function()
 		end
 	end
 
+	return false
+end
+
+-- TODO
+function utils.has_fzf_colors()
 	return false
 end
 
