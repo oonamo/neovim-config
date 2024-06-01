@@ -14,25 +14,26 @@ return {
 		},
 	},
 	{
-		"miikanissi/modus-themes.nvim",
+		"folke/tokyonight.nvim",
 		lazy = true,
 		opts = {
-			styles = {
-				functions = { bold = true, italic = true },
+			sidebars = {
+				"qf",
+				"vista_kind",
+				-- "terminal",
+				"spectre_panel",
+				"startuptime",
+				"Outline",
 			},
-			-- variant = "tinted",
-			on_highlights = function(highlight, color)
-				highlight.Normal = { fg = color.fg_main, bg = color.bg_dim }
-				highlight.LineNr = { fg = color.fg_main, bg = color.bg_main }
-				highlight.LineNrAbove = { fg = color.fg_main, bg = color.bg_main }
-				highlight.LineNrBelow = { fg = color.fg_main, bg = color.bg_main }
-				highlight.MatchParen = { fg = color.green, bg = "NONE" }
-				highlight.LspInlayHint = { fg = color.green, bg = color.gray }
-				highlight.SignColumn = { fg = highlight.LineNr.fg, bg = highlight.LineNr.bg }
-			end,
+			-- on_highlights = function(hl, c)
+			-- 	-- hl.Normal = { fg = c.normal, bg = "#1c1c1c" }
+			-- 	hl.Normal = { fg = c.normal, bg = "#000000" }
+			-- 	hl.NormalNC = {}
+			-- end,
 		},
 	},
 	{
-		"savq/melange-nvim",
+		"mcauley-penney/ice-cave.nvim",
+		lazy = true,
 	},
 }

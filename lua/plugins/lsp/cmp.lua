@@ -1,6 +1,13 @@
 return {
 	"hrsh7th/nvim-cmp",
-	dependencies = { "hrsh7th/cmp-nvim-lsp", "hrsh7th/cmp-buffer", "hrsh7th/cmp-path", "hrsh7th/cmp-cmdline" },
+	dependencies = {
+		"hrsh7th/cmp-nvim-lsp",
+		"hrsh7th/cmp-buffer",
+		"hrsh7th/cmp-path",
+		"hrsh7th/cmp-cmdline",
+		"hrsh7th/cmp-nvim-lsp-signature-help",
+	},
+	event = "InsertEnter",
 	config = function()
 		local cmp = require("cmp")
 		cmp.setup({
@@ -15,9 +22,24 @@ return {
 				["<C-Space>"] = cmp.mapping.complete(),
 				["<C-e>"] = cmp.mapping.abort(),
 				["<C-y>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+				["<Tab>"] = cmp.mapping(function(fallback)
+					if vim.snippet.active({ direction = 1 }) then
+						vim.snippet.jump(1)
+					else
+						fallback()
+					end
+				end, { "i", "s" }),
+				["<S-Tab>"] = cmp.mapping(function(fallback)
+					if vim.snippet.active({ direction = -1 }) then
+						vim.snippet.jump(-1)
+					else
+						fallback()
+					end
+				end, { "i", "s" }),
 			}),
 			sources = cmp.config.sources({
 				{ name = "nvim_lsp" },
+				{ name = "nvim_lsp_signature_help" },
 			}, {
 				{ name = "buffer" },
 			}),

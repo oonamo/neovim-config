@@ -2,7 +2,7 @@
 return {
 	{
 		"oonamo/manage_my_sessions",
-		dependencies = { "nvim-lua/plenary.nvim", "ibhagwan/fzf-lua" },
+		ependencies = { "nvim-lua/plenary.nvim", "ibhagwan/fzf-lua" },
 		dev = true,
 		dir = "~/projects/manage_my_sessions",
 		opts = {
@@ -39,11 +39,7 @@ return {
 				before_all = function(_, _)
 					vim.cmd.hi("clear")
 				end,
-				after_all = function(theme, _)
-					-- modus theme already sets this
-					if theme == "modus" then
-						return
-					end
+				after_all = function(_)
 					local diag_fg, diag_bg, _ = utils.get_hl("DiagnosticVirtualTextError")
 					if not diag_bg and diag_fg then
 						vim.api.nvim_set_hl(
@@ -52,7 +48,7 @@ return {
 							{ fg = diag_fg, bg = utils.brighten_hex(diag_fg, -70) }
 						)
 					end
-					vim.api.nvim_set_hl(0, "ErrorMsg", { link = "DiagnosticVirtualTextError" })
+					-- vim.api.nvim_set_hl(0, "ErrorMsg", { link = "DiagnosticVirtualTextError" })
 				end,
 				persistance = true,
 				default_theme = {
@@ -67,14 +63,35 @@ return {
 						action = c_tils.append_flavour_to_name("-"),
 					},
 					{
-						name = "modus",
-						flavours = { "vivendi", "operandi" },
-						action = c_tils.append_flavour_to_name("_"),
+						name = "tokyonight",
+						flavours = { "moon", "night", "storm", "day" },
+						action = c_tils.append_flavour_to_name("-"),
 					},
 					{
-						name = "melange",
-						flavours = { "melange" },
-						action = c_tils.default(),
+						name = "minihues",
+						flavours = {
+							-- "default_dark",
+							"blue",
+							"slate",
+							"purple",
+							"maroon",
+							"charcoal",
+							"lavendar",
+							"nightowl",
+						},
+						action = c_tils.append_flavour_to_name("-"),
+					},
+					{
+						name = "base16",
+						flavours = {
+							"default_dark",
+							"oxocarbon",
+							"kanagawa",
+						},
+						action = c_tils.append_flavour_to_name("-"),
+					},
+					{
+						name = "ice-cave",
 					},
 				},
 			}

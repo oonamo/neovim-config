@@ -44,15 +44,16 @@ return {
 			},
 			highlights = {
 				heading = {
-					backgrounds = { "DiffAdd", "DiffChange", "DiffDelete" },
-					foregrounds = {
-						"markdownH1",
-						"markdownH2",
-						"markdownH3",
-						"markdownH4",
-						"markdownH5",
-						"markdownH6",
-					},
+					backgrounds = { "CursorLine" },
+					-- backgrounds = { "DiffAdd", "DiffChange", "DiffDelete" },
+					-- foregrounds = {
+					-- 	"markdownH1",
+					-- 	"markdownH2",
+					-- 	"markdownH3",
+					-- 	"markdownH4",
+					-- 	"markdownH5",
+					-- 	"markdownH6",
+					-- },
 				},
 			},
 			conceal = {
@@ -63,18 +64,18 @@ return {
 			},
 		},
 		config = function(_, opts)
-			local _, _, hl = utils.get_hl("Headline1")
-			if hl ~= nil then
-				local hls = {
-					"Headline1",
-					"Headline2",
-					"Headline3",
-					"Headline4",
-					"Headline5",
-					"Headline6",
-				}
-				opts.highlights.heading.backgrounds = hls
-			end
+			-- local _, _, hl = utils.get_hl("Headline1")
+			-- if hl ~= nil then
+			-- 	local hls = {
+			-- 		"Headline1",
+			-- 		"Headline2",
+			-- 		"Headline3",
+			-- 		"Headline4",
+			-- 		"Headline5",
+			-- 		"Headline6",
+			-- 	}
+			-- 	opts.highlights.heading.backgrounds = hls
+			-- end
 			require("render-markdown").setup(opts)
 		end,
 	},

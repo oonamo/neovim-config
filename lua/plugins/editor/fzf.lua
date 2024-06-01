@@ -1,119 +1,247 @@
+-- return {
+-- 	{
+-- 		"ibhagwan/fzf-lua",
+-- 		cmd = "FzfLua",
+-- 		keys = function()
+-- 			local fzf_lua = require("fzf-lua")
+-- 			return {
+-- 				{ "<leader>fs", fzf_lua.live_grep, desc = "Fzf grep" },
+-- 				{ "<leader>fr", fzf_lua.lsp_references, desc = "Fzf lsp_references" },
+-- 				{ "<leader>fh", fzf_lua.help_tags, desc = "Fzf help" },
+-- 				{ "<leader>fi", fzf_lua.highlights, desc = "Fzf Highlights" },
+-- 				{ "<leader>fb", fzf_lua.buffers, desc = "Fzf buffers" },
+-- 				{ "<C-p>", fzf_lua.files },
+-- 				{ "<C-f>", fzf_lua.live_grep_glob, desc = "Live grep glob" },
+-- 				{ "<leader>fc", fzf_lua.complete_path, desc = "fzf complete_path" },
+-- 				{ "z=", fzf_lua.spell_suggest, desc = "spell suggest" },
+-- 			}
+-- 		end,
+-- 		opts = function()
+-- 			local actions = require("fzf-lua.actions")
+-- 			return {
+-- 				fzf_colors = {
+-- 					bg = { "bg", "Normal" },
+-- 					gutter = { "bg", "Normal" },
+-- 					info = { "fg", "Conditional" },
+-- 					scrollbar = { "bg", "Normal" },
+-- 					separator = { "fg", "Comment" },
+-- 				},
+-- 				fzf_opts = {
+-- 					["--info"] = "default",
+-- 					["--layout"] = "reverse-list",
+-- 				},
+-- 				keymap = {
+-- 					builtin = {
+-- 						["<C-d>"] = "preview-page-down",
+-- 						["<C-u>"] = "preview-page-up",
+-- 						["<C-/>"] = "toggle-help",
+-- 						["<C-a>"] = "toggle-fullscreen",
+-- 						["<C-i>"] = "toggle-preview",
+-- 					},
+-- 					fzf = {
+-- 						["ctrl-d"] = "preview-page-down",
+-- 						["ctrl-u"] = "preview-page-up",
+-- 						["ctrl-q"] = "select-all+accept",
+-- 					},
+-- 				},
+-- 				winopts = {
+-- 					border = "none",
+-- 					height = 0.4,
+-- 					width = 1,
+-- 					row = 1,
+-- 					col = 1,
+-- 					preview = {
+-- 						vertical = "up:45%",
+-- 						hidden = "nohidden",
+-- 						scrollbar = "float",
+-- 						scrolloff = "-2",
+-- 						title_pos = "center",
+-- 					},
+-- 				},
+-- 				global_git_icons = false,
+-- 				files = {
+-- 					fzf_opts = { ["--ansi"] = false },
+-- 					winopts = {
+-- 						height = 0.59,
+-- 						width = 0.90,
+-- 						row = 0.48,
+-- 						col = 0.45,
+-- 						preview = {
+-- 							vertical = "up:45%",
+-- 							hidden = "hidden",
+-- 						},
+-- 					},
+-- 				},
+-- 				defaults = {
+-- 					git_icons = false,
+-- 					file_icons = false,
+-- 				},
+-- 				helptags = {
+-- 					actions = {
+-- 						["default"] = actions.help_vert,
+-- 					},
+-- 				},
+-- 				oldfiles = {
+-- 					include_current_session = true,
+-- 					winopts = {
+-- 						preview = { hidden = "hidden" },
+-- 					},
+-- 				},
+-- 				actions = {
+-- 					files = {
+-- 						["default"] = actions.file_edit_or_qf,
+-- 						["ctrl-l"] = actions.file_sel_to_ll,
+-- 						["ctrl-s"] = actions.file_split,
+-- 						["ctrl-v"] = actions.file_vsplit,
+-- 						["ctrl-t"] = actions.file_tabedit,
+-- 					},
+-- 					buffers = {
+-- 						["default"] = actions.buf_edit_or_qf,
+-- 						["ctrl-l"] = actions.buf_sel_to_ll,
+-- 						["ctrl-s"] = actions.buf_split,
+-- 						["ctrl-v"] = actions.buf_vsplit,
+-- 						["ctrl-t"] = actions.buf_tabedit,
+-- 					},
+-- 					grep = {
+-- 						winopts = {
+-- 							preview = {
+-- 								default = "bat",
+-- 								vertical = "up:45%",
+-- 								hidden = "nohidden",
+-- 							},
+-- 						},
+-- 					},
+-- 				},
+-- 			}
+-- 		end,
+-- 	},
+-- }
 return {
-	{
-		"ibhagwan/fzf-lua",
-		cmd = "FzfLua",
-		keys = function()
-			local fzf_lua = require("fzf-lua")
-			return {
-				{ "<leader>ff", fzf_lua.file, desc = "[f]zf [f]iles" },
-				{ "<leader>fs", fzf_lua.live_grep, desc = "Fzf grep" },
-				{ "<leader>fr", fzf_lua.lsp_references, desc = "Fzf grep resume" },
-				{ "<leader>fh", fzf_lua.help_tags, desc = "Fzf help" },
-				{ "<leader>fi", fzf_lua.highlights, desc = "Fzf Highlights" },
-				{ "<leader>fb", fzf_lua.buffers, desc = "Fzf buffers" },
-				{ "<C-p>", fzf_lua.files },
-				{ "<C-f>", fzf_lua.live_grep_glob, desc = "Live grep glob" },
-				{ "<leader>fc", fzf_lua.complete_path, desc = "fzf complete_path" },
-				{ "z=", fzf_lua.spell_suggest, desc = "spell suggest" },
-			}
-		end,
-		opts = function()
-			local actions = require("fzf-lua.actions")
-			return {
-				fzf_colors = {
-					bg = { "bg", "Normal" },
-					gutter = { "bg", "Normal" },
-					info = { "fg", "Conditional" },
-					scrollbar = { "bg", "Normal" },
-					separator = { "fg", "Comment" },
-				},
-				fzf_opts = {
-					["--info"] = "default",
-					["--layout"] = "reverse-list",
-				},
-				keymap = {
-					builtin = {
-						["<C-d>"] = "preview-page-down",
-						["<C-u>"] = "preview-page-up",
-						["<C-/>"] = "toggle-help",
-						["<C-a>"] = "toggle-fullscreen",
-						["<C-i>"] = "toggle-preview",
-					},
-					fzf = {
-						["ctrl-d"] = "preview-page-down",
-						["ctrl-u"] = "preview-page-up",
-						["ctrl-q"] = "select-all+accept",
-					},
-				},
+	"ibhagwan/fzf-lua",
+	config = function()
+		local fzf = require("fzf-lua")
+		fzf.setup({
+			buffers = {
+				cwd_prompt = false,
+				ignore_current_buffer = true,
+				prompt = "Buffers: ",
+			},
+			files = {
+				cwd_prompt = false,
+				prompt = "Files: ",
+				formatter = "path.filename_first",
 				winopts = {
-					border = "none",
-					height = 0.4,
-					width = 1,
-					row = 1,
-					col = 1,
+					height = 0.59,
+					width = 0.90,
+					row = 0.48,
+					col = 0.45,
 					preview = {
 						vertical = "up:45%",
-						hidden = "nohidden",
-						scrollbar = "float",
-						scrolloff = "-2",
-						title_pos = "center",
+						hidden = "hidden",
 					},
 				},
-				global_git_icons = false,
-				files = {
-					fzf_opts = { ["--ansi"] = false },
-					winopts = {
-						height = 0.59,
-						width = 0.90,
-						row = 0.48,
-						col = 0.45,
-						preview = {
-							vertical = "up:45%",
-							hidden = "hidden",
-						},
-					},
+			},
+			grep = {
+				cmd = "rg -o -r '' --column --no-heading --smart-case",
+				prompt = "Text: ",
+			},
+			lsp = {
+				prompt_postfix = ": ",
+			},
+			global_git_icons = false,
+			fzf_colors = {
+				["bg"] = { "bg", "NormalFloat" },
+				["bg+"] = { "bg", "CursorLine" },
+				["fg"] = { "fg", "Pmenu" },
+				["fg+"] = { "fg", "Normal" },
+				-- ["hl"] = { "fg", "CmpItemAbbrMatch" },
+				-- ["hl+"] = { "fg", "CmpItemAbbrMatch" },
+				["gutter"] = { "bg", "NormalFloat" },
+				["header"] = { "fg", "NonText" },
+				["info"] = { "fg", "NonText" },
+				["pointer"] = { "bg", "Cursor" },
+				["separator"] = { "bg", "NormalFloat" },
+				["spinner"] = { "fg", "NonText" },
+			},
+			fzf_opts = {
+				["--keep-right"] = "",
+				-- ["--info"] = "default",
+				-- ["--layout"] = "reverse-list",
+			},
+			winopts = {
+				cursorline = true,
+				border = tools.ui.cur_border,
+				height = 0.35,
+				width = 1,
+				row = 1,
+				hl = {
+					border = "FloatBorder",
+					header_bind = "NonText",
+					header_text = "NonText",
+					help_normal = "NonText",
+					normal = "NormalFloat",
+					preview_border = "FloatBorder",
+					preview_normal = "NormalFloat",
+					search = "CmpItemAbbrMatch",
+					title = "FloatTitle",
 				},
-				defaults = {
-					git_icons = false,
-					file_icons = false,
+				preview = {
+					layout = "horizontal",
+					scrollbar = "border",
+					vertical = "up:65%",
 				},
-				helptags = {
-					actions = {
-						["default"] = actions.help_vert,
-					},
+			},
+			keymap = {
+				builtin = {
+					["<C-d>"] = "preview-page-down",
+					["<C-u>"] = "preview-page-up",
+					["<C-/>"] = "toggle-help",
+					["<C-a>"] = "toggle-fullscreen",
+					["<C-i>"] = "toggle-preview",
 				},
-				oldfiles = {
-					include_current_session = true,
-					winopts = {
-						preview = { hidden = "hidden" },
-					},
+				fzf = {
+					["ctrl-d"] = "preview-page-down",
+					["ctrl-u"] = "preview-page-up",
+					["ctrl-q"] = "select-all+accept",
 				},
-				actions = {
-					files = {
-						["default"] = actions.file_edit_or_qf,
-						["ctrl-l"] = actions.file_sel_to_ll,
-						["ctrl-s"] = actions.file_split,
-						["ctrl-v"] = actions.file_vsplit,
-						["ctrl-t"] = actions.file_tabedit,
-					},
-					buffers = {
-						["default"] = actions.buf_edit_or_qf,
-						["ctrl-l"] = actions.buf_sel_to_ll,
-						["ctrl-s"] = actions.buf_split,
-						["ctrl-v"] = actions.buf_vsplit,
-						["ctrl-t"] = actions.buf_tabedit,
-					},
-					grep = {
-						winopts = {
-							preview = {
-								default = "bat",
-								vertical = "up:45%",
-								hidden = "nohidden",
-							},
-						},
-					},
-				},
-			}
-		end,
-	},
+			},
+		})
+
+		-- map("n", "<leader>q", fzf.quickfix, {})
+		--
+		-- map("n", "<C-t>", fzf.files, { desc = "Find files" })
+		-- map("n", "\\", fzf.buffers, { desc = "Select Buffer" })
+
+		-- map("n", "<C-f>", "<cmd>FzfLua live_grep_glob<cr>", { desc = "Grep" })
+		-- map("n", "<leader>f<", "<cmd>FzfLua resume<cr>", { desc = "Resume last command" })
+
+		--  LSP
+		-- map("n", "<leader>df", fzf.lsp_definitions, { silent = true, desc = "LSP [d]e[f]initions" })
+		-- map("n", "<leader>dd", fzf.lsp_document_diagnostics, { silent = true, desc = "LSP [d]oc [d]iagnostics" })
+		-- map("n", "<leader>R", fzf.lsp_references, { silent = true, desc = "LSP [R]eferences" })
+		-- map("n", "<leader>ci", fzf.lsp_incoming_calls, { silent = true, desc = "LSP [i]ncoming [c]alls" })
+		-- map("n", "<leader>co", fzf.lsp_outgoing_calls, { silent = true, desc = "LSP [o]utgoing [c]alls" })
+
+		vim.api.nvim_create_user_command("Highlights", function()
+			require("fzf-lua").highlights()
+		end, {})
+		vim.api.nvim_create_user_command("Keymaps", function()
+			fzf.keymaps()
+		end, {})
+	end,
+	keys = function()
+		local fzf = require("fzf-lua")
+		return {
+			{ "<leader>fq", fzf.quickfix, desc = "Fzf quickfix" },
+			{ "<leader>fr", fzf.lsp_references, desc = "Fzf lsp_references" },
+			{ "<leader>fh", fzf.help_tags, desc = "Fzf help" },
+			{ "<leader>fi", fzf.highlights, desc = "Fzf Highlights" },
+			{ "<leader>fb", fzf.buffers, desc = "Fzf buffers" },
+			{ "<leader>fd", fzf.lsp_document_diagnostics, desc = "Fzf lsp diagnostics" },
+			{ "<C-p>", fzf.files, desc = "Fzf files" },
+			{ "<C-f>", fzf.live_grep_glob, desc = "Live grep glob" },
+			{ "<leader>fc", fzf.complete_path, desc = "fzf complete_path" },
+			{ "z=", fzf.spell_suggest, desc = "spell suggest" },
+		}
+	end,
 }

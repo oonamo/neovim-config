@@ -25,6 +25,7 @@ require("lazy").setup({
 		{ import = "plugins.ui" },
 		{ import = "plugins.editor" },
 		{ import = "plugins.lsp" },
+		{ import = "plugins.dap" },
 		{ import = "plugins.writing" },
 	},
 	change_detection = {
@@ -70,7 +71,10 @@ require("lazy").setup({
 })
 
 require("onam.autocmds").set_qol()
--- require("onam.theme_switcher").init()
+
+if vim.g.neovide then
+	require("onam.gui")
+end
 
 if not O.ui.tree.oil and not O.ui.tree.neotree and not O.ui.tree.mini then
 	vim.keymap.set("n", "<leader>e", "<cmd>Ex<CR>", { desc = "explorer" })

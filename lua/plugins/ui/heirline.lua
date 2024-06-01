@@ -50,17 +50,10 @@ return {
 				return colors
 			end
 
-			-- local statusline = require("plugins.ui.heirline.statusline")
-			-- local statusline = require("plugins.ui.heirline.nano")
 			local statusline = { statusline = require("plugins.ui.heirline.tjline") }
 			local conditions = require("heirline.conditions")
-			-- local statuscolumn = require("plugins.ui.heirline.statuscolumn")
-			local winbar = require("plugins.ui.heirline.pathbar")
-			-- local winbar = require("plugins.ui.heirline.winbar")
 			heirline.setup({
 				statusline = statusline.statusline,
-				-- statuscolumn = statuscolumn,
-				winbar = winbar,
 				opts = {
 					colors = get_colors(),
 					disable_winbar_cb = function(args)

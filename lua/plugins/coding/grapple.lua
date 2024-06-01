@@ -7,20 +7,6 @@ return {
 			-- border = "none",
 			title = "Grapple",
 		},
-		scopes = {
-			{
-				name = "obsidian",
-				desc = "obsidian files",
-				cache = {
-					event = { "BufEnter", "FocusGained" },
-				},
-				resolver = function()
-					local file = vim.loop.cwd()
-					local id = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":t:r")
-					return id, file, nil
-				end,
-			},
-		},
 	},
 	event = { "BufReadPost", "BufNewFile" },
 	-- lazy = false,
