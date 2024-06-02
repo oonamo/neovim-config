@@ -1,4 +1,5 @@
 local M = {}
+
 function M.set_qol()
 	-- make :W the same as :w
 	vim.api.nvim_create_user_command("W", "w", { nargs = 0 })
@@ -160,33 +161,15 @@ function M.setup_writing_cmds()
 			events = { "BufEnter" },
 			targets = { "*.md", "*.norg", "*.org", "*.tex" },
 			command = function()
-				vim.opt.shiftwidth = 2
+				-- vim.opt.shiftwidth = 2
+				vim.o.nu = false
+				vim.o.signcolumn = "no"
+				vim.o.rnu = false
 			end,
-		},
-		{
-			events = { "BufReadPost" },
-			targets = { "*.norg" },
-			command = function()
-				vim.schedule(function()
-					vim.cmd("1 foldc")
-				end)
-			end,
+			once = true,
 		},
 	})
 end
 
-function M.norg_autocmds()
-	utils.augroup("NorgAutocmds", {
-		{
-			events = { "BufReadPost" },
-			targets = { "*.norg" },
-			command = function()
-				vim.schedule(function()
-					vim.fn.feedkeys("ggzc", "n")
-					vim.notify("Closing Document Meta")
-				end)
-			end,
-		},
-	})
-end
+-- M.setup_status_cmds()
 return M

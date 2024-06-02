@@ -17,8 +17,6 @@ O.ui = {
 	},
 	signature = "custom",
 	tree = {
-		neotree = false,
-		nvimtree = false,
 		oil = false,
 		mini = true,
 	},
@@ -26,5 +24,5 @@ O.ui = {
 }
 
 O.lsp = {
-	coq = true,
+	coq = false,
 }

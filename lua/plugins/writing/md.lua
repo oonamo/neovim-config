@@ -5,6 +5,7 @@ return {
 		dependencies = { "nvim-treesitter/nvim-treesitter" },
 		ft = { "markdown" },
 		opts = {
+			start_enabled = true,
 			-- headings = { "❯", "❯", "❯", "❯", "❯", "❯" },
 			-- headings = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
 			headings = { "◈ ", "◆ ", "◇ ", "❖ ", "⟡ ", "⋄ " },
@@ -56,12 +57,33 @@ return {
 					-- },
 				},
 			},
-			conceal = {
-				-- conceallevel used for buffer when not being rendered, get user setting
-				default = vim.opt.conceallevel:get(),
-				-- conceallevel used for buffer when being rendered
-				rendered = vim.opt.conceallevel:get(),
+			win_options = {
+				conceallevel = {
+					-- Used when not being rendered, get user setting
+					-- default = vim.api.nvim_get_option_value("conceallevel", {}),
+					rendered = vim.api.nvim_get_option_value("conceallevel", {}),
+					-- default = 1,
+					-- Used when being rendered, concealed text is completely hidden
+					-- rendered = 2,
+					default = 2,
+				},
+				-- See :h 'concealcursor'
+				concealcursor = {
+					-- Used when not being rendered, get user setting
+					-- default = vim.api.nvim_get_option_value("concealcursor", {}),
+					default = "nvic",
+					-- Used when being rendered, conceal text in all modes
+					-- rendered = "nvic",
+					rendered = vim.api.nvim_get_option_value("concealcursor", {}),
+					-- rendered = vim.api.nvim_get_option_value("concealcursor", {}),
+				},
 			},
+			-- conceal = {
+			-- 	-- conceallevel used for buffer when not being rendered, get user setting
+			-- 	default = vim.opt.conceallevel:get(),
+			-- 	-- conceallevel used for buffer when being rendered
+			-- 	rendered = vim.opt.conceallevel:get(),
+			-- },
 		},
 		config = function(_, opts)
 			-- local _, _, hl = utils.get_hl("Headline1")
@@ -88,9 +110,5 @@ return {
 		"iamcco/markdown-preview.nvim",
 		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
 		build = "cd app && npm install",
-		-- init = function()
-		-- 	vim.g.mkdp_filetypes = { "markdown" }
-		-- end,
-		ft = { "markdown" },
 	},
 }

@@ -14,6 +14,7 @@ return {
 			local daily_path = "100 dailies/"
 			local daily_folder = os.date("%b %Y")
 			daily_path = daily_path .. "/" .. daily_folder
+			vim.o.conceallevel = 2
 			require("obsidian").setup({
 				workspaces = {
 					{
@@ -112,7 +113,7 @@ return {
 					},
 				},
 			})
-			vim.opt.conceallevel = 1
+			require("onam.autocmds").setup_writing_cmds()
 			vim.g.markdown_folding = 1
 		end,
 		keys = {

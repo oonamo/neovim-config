@@ -1,10 +1,10 @@
 local hues = require("mini.hues")
 local opts = {
-	background = "#12252e",
-	foreground = "#c0c8cc",
-	accent = "azure",
+	background = "#000000",
+	foreground = "#c0c8cb",
+	accent = "blue",
 	saturation = "high",
 }
+
 hues.setup(opts)
 require("onam.helpers.colors.mini_hues").apply_custom_highlights(opts)
-vim.g.colors_name = "minihues-green"

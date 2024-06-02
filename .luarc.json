@@ -4,7 +4,8 @@
         "MiniFiles",
         "MiniExtra",
         "MiniNotify",
-        "MiniDiff"
+        "MiniDiff",
+        "MiniColors"
     ],
     "completion.autoRequire": true,
 }

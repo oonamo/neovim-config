@@ -10,10 +10,8 @@ return {
 				{
 					"~/Desktop/DB/DB",
 					name = "obsidian",
-					after = function()
-						vim.schedule(function()
-							vim.cmd("e base.md")
-						end)
+					select = function(path)
+						vim.cmd("cd " .. path .. " | e base.md")
 					end,
 				},
 				{ "~/AppData/Local/nvim", name = "nvim config" },
@@ -78,6 +76,7 @@ return {
 							"charcoal",
 							"lavendar",
 							"nightowl",
+							"neutral",
 						},
 						action = c_tils.append_flavour_to_name("-"),
 					},
@@ -87,11 +86,56 @@ return {
 							"default_dark",
 							"oxocarbon",
 							"kanagawa",
+							"moon",
 						},
 						action = c_tils.append_flavour_to_name("-"),
 					},
 					{
-						name = "ice-cave",
+						name = "oh-lucy",
+						flavours = { "oh-lucy", "oh-lucy-evening" },
+						action = c_tils.default(),
+					},
+					{
+						name = "catppuccin",
+						flavours = { "mocha", "macchiato", "frappe", "latte" },
+						action = c_tils.append_flavour_to_name("-"),
+					},
+					{
+						name = "enfocado",
+						flavours = { "dark", "light" },
+						action = c_tils.toggle_dark_light(function(name, flavour)
+							vim.g.enfocado_style = flavour
+							vim.cmd.colorscheme(name)
+						end),
+					},
+					{
+						name = "monokai-nightasty",
+						flavours = { "dark", "light" },
+						action = c_tils.toggle_dark_light(),
+					},
+					{
+						name = "newpaper",
+						flavours = { "dark", "light" },
+						action = c_tils.toggle_dark_light(function(name, flavour)
+							-- print(flavour)
+							-- vim.g.newpaper_style = flavour
+
+							print(flavour)
+
+							-- vim.cmd.colorscheme(name)
+							require("newpaper").setup({
+								style = flavour,
+								-- lightness = 0.2,
+								-- saturation = 20,
+							})
+							if flavour == "dark" then
+								require("mini.colors").setup()
+								MiniColors.get_colorscheme()
+									:chan_add("saturation", 20, { filter = "fg" })
+									:chan_add("lightness", -20, { filter = "bg" })
+									:apply()
+							end
+						end),
 					},
 				},
 			}

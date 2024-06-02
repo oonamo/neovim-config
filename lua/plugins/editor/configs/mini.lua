@@ -137,6 +137,12 @@ if O.ui.tree.mini then
 			go_out_plus = "<tab>",
 		},
 		content = {
+			prefix = function(fs_entry)
+				if fs_entry.fs_type == "directory" then
+					return " ", "MiniFilesDirectory"
+				end
+				return " ", "Normal"
+			end,
 			filter = function(entry)
 				return entry.fs_type ~= "file" or entry.name ~= ".DS_Store"
 			end,
@@ -189,6 +195,7 @@ if O.ui.tree.mini then
 		pattern = "MiniFilesWindowOpen",
 		callback = function(args)
 			vim.api.nvim_win_set_config(args.data.win_id, { border = "rounded" })
+			vim.wo[args.data.win_id].winblend = 20
 		end,
 	})
 
@@ -293,7 +300,7 @@ vim.keymap.set("n", "<leader>gac", "<CMD>Git add %<CR>", { desc = "Git Add Curre
 vim.keymap.set("n", "<leader>gaa", "<CMD>Git add .<CR>", { desc = "Git Add All" })
 vim.keymap.set("n", "<leader>gp", "<CMD>Git push<CR>", { desc = "Git Push" })
 vim.keymap.set("n", "<leader>gc", function()
-	vim.ui.input({ prompt = "Commit: " }, function(input)
+	vim.ui.input({ prompt = "Commit: ", kind = "mini" }, function(input)
 		if not input then
 			return
 		end
@@ -309,3 +316,5 @@ vim.api.nvim_create_autocmd("User", {
 		vim.keymap.set("n", "q", "<cmd>quit<cr>", { desc = "quit", buffer = data.buf })
 	end,
 })
+
+require("mini.colors")

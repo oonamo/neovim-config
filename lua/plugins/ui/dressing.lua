@@ -20,13 +20,34 @@ return {
 			-- 	winblend = 0,
 			-- },
 			title_pos = "center",
+			get_config = function(opts)
+				if opts.kind == "mini" then
+					return {
+						relative = "editor",
+						width = 0.8,
+						height = 0.4,
+						mappings = {
+							n = {
+								["q"] = "Close",
+								["<ESC>"] = "Close",
+								["<CR>"] = "Confirm",
+							},
+							i = {
+								["<C-c>"] = "Close",
+								["<CR>"] = "Confirm",
+								["<Up>"] = "HistoryPrev",
+								["<Down>"] = "HistoryNext",
+							},
+						},
+					}
+				end
+			end,
 		},
 		select = {
 			trim_prompt = false,
 			backend = { "fzf_lua" },
 			get_config = function(opts)
 				if opts.kind == "codeaction" then
-					-- Cute and compact code action menu.
 					return {
 						backend = "builtin",
 						builtin = {
@@ -36,7 +57,6 @@ return {
 							max_width = 0.40,
 							mappings = { ["q"] = "Close" },
 							win_options = {
-								-- Same UI as the input field.
 								winhighlight = "FloatBorder:LspFloatWinBorder,DressingSelectIdx:LspInfoTitle,MatchParen:Ignore",
 								winblend = 5,
 							},
@@ -45,13 +65,6 @@ return {
 				end
 
 				local winopts = { height = 0.6, width = 0.5 }
-
-				-- Smaller menu for snippet choices.
-				if opts.kind == "luasnip" then
-					opts.prompt = "Snippet choice: "
-					winopts = { height = 0.35, width = 0.3 }
-				end
-
 				-- Fallback to fzf-lua.
 				return {
 					backend = "fzf_lua",
