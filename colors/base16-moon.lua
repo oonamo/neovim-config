@@ -16,7 +16,8 @@ local base16 = {
 	-- base0E = "#eb6f92",
 	-- base0F = "#c4a7e7",
 	-- base00 = "#232136",
-	base00 = "#1a1b26",
+	-- base00 = "#1a1b26",
+	base00 = "#191724",
 	base01 = "#2a273f",
 	base02 = "#393552",
 	base03 = "#6e6a86",
@@ -33,9 +34,6 @@ local base16 = {
 	base0E = "#aaaaaa",
 	base0F = "#eb6f92",
 }
-local something = "something"
-
-local numbedr = 3
 
 -- base00 - Default Background
 -- base01 - Lighter Background (Used for status bars, line number and folding marks)
@@ -57,3 +55,5 @@ local numbedr = 3
 require("mini.base16").setup({
 	palette = base16,
 })
+
+vim.g.colors_name = "base16-moon"

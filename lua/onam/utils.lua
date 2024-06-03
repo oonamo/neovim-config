@@ -552,4 +552,8 @@ function utils.has_fzf_colors()
 	return false
 end
 
+function utils.norm_lazy_to_normal(spec)
+	vim.keymap.set("n", spec[1], spec[2], spec[3] or {})
+end
+
 return utils

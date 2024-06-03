@@ -1,16 +1,5 @@
--- require("mini.colors").setup()
--- require("mini.colors").interactive()
-
-local function can_error(v)
-	if v % 2 == 0 then
-		error("something bad happen")
-	end
-	return "good job"
-end
-
-local r1, err = pcall(can_error, 1)
-print("r1", r1)
-print("r2", err)
+require("mini.colors").setup()
+require("mini.colors").interactive()
 
 -- local function somethign()
 -- 	print("some")

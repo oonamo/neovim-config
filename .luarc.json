@@ -5,7 +5,8 @@
         "MiniExtra",
         "MiniNotify",
         "MiniDiff",
-        "MiniColors"
+        "MiniColors",
+        "MiniDeps"
     ],
     "completion.autoRequire": true,
 }

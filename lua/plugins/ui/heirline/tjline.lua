@@ -335,8 +335,12 @@ local LSPActive = {
 	condition = function(self)
 		-- self.clients = vim.lsp.get_active_clients({ bufnr = 0 })
 		self.clients = vim.lsp.get_clients({ bufnr = 0 })
-		self.formatters = require("conform").list_formatters()
-		return next(self.clients) ~= nil or next(self.formatters) ~= nil
+		if self.has_conform then
+			self.formatters = require("conform").list_formatters()
+			return next(self.clients) ~= nil or next(self.formatters) ~= nil
+		end
+		self.formatters = {}
+		return next(self.clients) ~= nil
 	end,
 	-- hl = { bg = "statusline_bg" },
 	{

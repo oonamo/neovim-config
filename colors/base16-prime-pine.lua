@@ -1,25 +1,25 @@
 local palette = {
-	base00 = "#101010",
-	base01 = "#252525",
-	base02 = "#464646",
-	base03 = "#525252",
-	base04 = "#ababab",
-	base05 = "#b9b9b9",
-	base06 = "#e3e3e3",
-	base07 = "#f7f7f7",
-	base08 = "#7c7c7c",
-	base09 = "#999999",
-	base0A = "#a0a0a0",
-	base0B = "#8e8e8e",
-	base0C = "#868686",
-	base0D = "#686868",
-	base0E = "#747474",
-	base0F = "#5e5e5e",
+	-- base00 = "#1c1f20",
+	base00 = "#0e0a00",
+	base01 = "#282626",
+	base02 = "#4d4d4f",
+	base03 = "#58555e",
+	base04 = "#908caa",
+	base05 = "#e0dcd8",
+	base06 = "#e69ec4",
+	base07 = "#f8c984",
+	base08 = "#f3afab",
+	base09 = "#78b2cd",
+	base0A = "#aed6e1",
+	base0B = "#d2b3a4",
+	base0C = "#a28985",
+	base0D = "#becbc4",
+	base0E = "#4e5751",
+	base0F = "#c4a7e7",
 }
 
-require("mini.base16").setup({
-	palette = palette,
-})
+require("mini.base16").setup({ palette = palette })
+vim.g.colors_name = "base16-prime-pine"
 -- base00 - Default Background
 -- base01 - Lighter Background (Used for status bars, line number and folding marks)
 -- base02 - Selection Background

@@ -18,3 +18,5 @@ require("mini.base16").setup({
 		base0F = "#a16946",
 	},
 })
+
+vim.g.colors_name = "base16-default_dark"

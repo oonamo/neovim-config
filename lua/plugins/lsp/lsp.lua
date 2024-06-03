@@ -1,7 +1,7 @@
 ---@param use_code_lens boolean|nil
 local function on_attach(client, buffer, use_code_lens)
 	local methods = vim.lsp.protocol.Methods
-	local fzf = require("fzf-lua")
+    local picker = MiniExtra.pickers
 	require("onam.helpers.lsp.codeaction")
 	if client.name == "rust_analyzer" then
 		vim.keymap.set("n", "K", function()
@@ -16,14 +16,16 @@ local function on_attach(client, buffer, use_code_lens)
 			buffer = buffer,
 		})
 	end
-	vim.keymap.set("n", "gd", function()
-		fzf.lsp_definitions({ jump_to_single_result = true })
-	end, {
+	vim.keymap.set("n", "gd", vim.lsp.buf.definition, {
 		desc = "go to buffer definition",
 		buffer = buffer,
 	})
-	vim.keymap.set("n", "gD", fzf.lsp_definitions, { desc = "go to multiple definition", buffer = buffer })
-	vim.keymap.set("n", "<leader>vws", fzf.lsp_workspace_symbols, { desc = "Find workspace_symbol", buffer = buffer })
+	vim.keymap.set("n", "gD", function()
+        picker.lsp({ scope = "definition" })
+    end, { desc = "go to multiple definition", buffer = buffer })
+	vim.keymap.set("n", "<leader>vws", function()
+        picker.lsp({ scope = "workspace_symbol" })
+    end, { desc = "Find workspace_symbol", buffer = buffer })
 	vim.keymap.set("n", "<leader>vd", function()
 		vim.diagnostic.open_float()
 	end, {
@@ -38,7 +40,9 @@ local function on_attach(client, buffer, use_code_lens)
 		desc = "Go to previous diagnostic",
 		buffer = buffer,
 	})
-	vim.keymap.set("n", "<leader>vrr", fzf.lsp_references, {
+	vim.keymap.set("n", "<leader>vrr", function()
+        picker.lsp({ scope = "references" })
+    end, {
 		desc = "Go to lsp references",
 		buffer = buffer,
 	})
@@ -99,27 +103,12 @@ local function on_attach(client, buffer, use_code_lens)
 end
 
 local defaults = { on_attach = on_attach }
-return {
-	{
-		"williamboman/mason.nvim",
-		cmd = { "Mason", "MasonInstall", "MasonUninstall", "MasonLog" },
-		opts = {
-			ui = {
-				icons = {
-					package_installed = "✓",
-					package_pending = "➜",
-					package_uninstalled = "✗",
-				},
-			},
-		},
-	},
-	{
-		"neovim/nvim-lspconfig",
-		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
-		dependencies = {
-			"williamboman/mason.nvim",
-		},
-		opts = {
+		-- "neovim/nvim-lspconfig",
+		-- event = { "BufReadPost", "BufNewFile", "BufWritePre" },
+		-- dependencies = {
+		-- 	"williamboman/mason.nvim",
+		-- },
+		local opts = {
 			lua_ls = {
 				on_attach = on_attach,
 				settings = {
@@ -178,8 +167,7 @@ return {
 					vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
 				end,
 			},
-		},
-		config = function(_, opts)
+		}
 			local lspconfig = require("lspconfig")
 			-- capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
@@ -246,102 +234,3 @@ return {
 					},
 				},
 			})
-		end,
-	},
-	{
-		"L3MON4D3/LuaSnip",
-		lazy = true,
-		-- event = { "InsertEnter" },
-		-- ft = { "markdown" },
-		cond = O.lsp.cmp,
-		opts = {
-			history = true,
-			delete_check_events = "TextChanged",
-			updateevents = "TextChanged,TextChangedI",
-			enable_autosnippets = true,
-		},
-		config = function(_, opts)
-			local ls = require("luasnip")
-			require("luasnip.loaders.from_lua").lazy_load({ paths = "~/AppData/Local/nvim/snippets" })
-			ls.config.set_config(opts)
-			vim.keymap.set({ "i", "s" }, "<C-E>", function()
-				if ls.choice_active() then
-					ls.change_choice(1)
-				end
-			end, { silent = true })
-		end,
-	},
-	{
-		"mrcjkb/rustaceanvim",
-		version = "^4", -- Recommended
-		ft = { "rust" },
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-		},
-		opts = {
-			server = {
-				["rust-analyzer"] = {
-					cargo = {
-						allFeatures = true,
-						loadOutDirsFromCheck = true,
-						runBuildScripts = true,
-					},
-					files = {
-						watcherExclude = {
-							["**/_build"] = true,
-							["**/build"] = true,
-							["**/.classpath"] = true,
-							["**/.dart_tool"] = true,
-							["**/.factorypath"] = true,
-							["**/.flatpak-builder"] = true,
-							["**/.git/objects/**"] = true,
-							["**/.git/subtree-cache/**"] = true,
-							["**/.idea"] = true,
-							["**/.project"] = true,
-							["**/.scannerwork"] = true,
-							["**/.settings"] = true,
-							["**/.venv"] = true,
-							["**/node_modules"] = true,
-							["**/.logs"] = true,
-							["**/.log"] = true,
-						},
-						excludeDirs = {
-							"_build",
-							"build",
-							".dart_tool",
-							".flatpak-builder",
-							".git",
-							".gitlab",
-							".gitlab-ci",
-							".gradle",
-							".idea",
-							".next",
-							".project",
-							".scannerwork",
-							".settings",
-							".venv",
-							"archetype-resources",
-							"bin",
-							"hooks",
-							"node_modules",
-							"po",
-							"screenshots",
-							"target",
-						},
-					},
-				},
-				on_attach = function(client, buffer)
-					on_attach(client, buffer)
-				end,
-			},
-			tools = {
-				hover_actions = {
-					auto_focus = true,
-				},
-			},
-		},
-		config = function(_, opts)
-			vim.g.rustaceanvim = opts
-		end,
-	},
-}

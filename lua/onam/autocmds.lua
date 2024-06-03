@@ -165,6 +165,7 @@ function M.setup_writing_cmds()
 				vim.o.nu = false
 				vim.o.signcolumn = "no"
 				vim.o.rnu = false
+				vim.o.spell = true
 			end,
 			once = true,
 		},
