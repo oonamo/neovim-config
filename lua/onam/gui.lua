@@ -9,6 +9,10 @@ opt.linespace = 15
 g.neovide_transparency_point = 1.0
 g.neovide_underline_stroke_scale = 1.5
 g.neovide_transparency = 1.0
+vim.g.neovide_padding_top = 5
+vim.g.neovide_padding_bottom = 0
+vim.g.neovide_padding_right = 5
+vim.g.neovide_padding_left = 5
 vim.keymap.set("n", "<leader>nt", function()
 	if g.neovide_transparency ~= 1.0 then
 		g.neovide_transparency = 1.0

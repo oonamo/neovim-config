@@ -19,6 +19,7 @@ local base16 = {
 	-- base00 = "#1a1b26",
 	base00 = "#191724",
 	base01 = "#2a273f",
+	-- base01 = "#191724",
 	base02 = "#393552",
 	base03 = "#6e6a86",
 	base04 = "#908caa",
@@ -52,8 +53,8 @@ local base16 = {
 -- base0E - Keywords, Storage, Selector, Markup Italic, Diff Changed
 -- base0F - Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?>
 --
-require("mini.base16").setup({
-	palette = base16,
-})
-
+-- require("mini.base16").setup({
+-- 	palette = base16,
+-- })
+require("onam.helpers.colors.mini_base16").apply_custom_highlights(base16)
 vim.g.colors_name = "base16-moon"

@@ -11,6 +11,10 @@ function M.set_qol()
 	vim.api.nvim_create_user_command("Q", "q", { nargs = 0 })
 	vim.api.nvim_create_user_command("Qa", "qa", { nargs = 0 })
 
+	local win_cmds_map = {
+		["help"] = "H",
+		-- [
+	}
 	utils.augroup("QOL", {
 		{
 			events = { "TextYankPost" },
@@ -58,18 +62,6 @@ function M.set_qol()
 			desc = "rewrite variable to be false when leaving neovim",
 		},
 		{
-			events = { "BufEnter", "BufWinEnter", "VimEnter", "WinEnter" },
-			targets = { "C:/Users/onam7/Desktop/DB/DB/*.md" },
-			command = function(ev)
-				require("lazy").load({ plugins = { "obsidian.nvim" } })
-				-- if package.loaded["obsidian"] or package.loaded["obsidian-bridge"] then
-				-- 	return
-				-- end
-			end,
-			desc = "Load these plugins based on path",
-			once = true,
-		},
-		{
 			events = { "FileType" },
 			targets = {
 				"help",
@@ -80,57 +72,50 @@ function M.set_qol()
 				"spectre_panel",
 			},
 			command = function(args)
+				vim.bo.bufhidden = "unload"
+				local dir = win_cmds_map[args.match] or "K"
+				vim.cmd.wincmd(dir)
+				vim.cmd.wincmd("=")
 				vim.keymap.set("n", "q", "<cmd>quit<cr>", { buffer = args.buf })
 			end,
 			desc = "Close with 'q'",
 		},
-		{
-			events = { "BufReadPost" },
-			targets = { "*" },
-			command = function(args)
-				local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
-				local line_count = vim.api.nvim_buf_line_count(args.buf)
-				if mark[1] > 0 and mark[1] <= line_count then
-					vim.cmd('normal! g`"zz')
-				end
-			end,
-			desc = "save previous cursor position",
-		},
+		-- might be bugging shada file on windows
+		-- {
+		-- 	events = { "BufReadPost" },
+		-- 	targets = { "*" },
+		-- 	command = function(args)
+		-- 		local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
+		-- 		local line_count = vim.api.nvim_buf_line_count(args.buf)
+		-- 		if mark[1] > 0 and mark[1] <= line_count then
+		-- 			vim.cmd('normal! g`"zz')
+		-- 		end
+		-- 	end,
+		-- 	desc = "save previous cursor position",
+		-- },
 	})
-	do
-		SEARCH_REG = ""
-		utils.augroup("SearchCommand", {
-			{
-				events = { "CmdlineEnter" },
-				targets = { "*" },
-				command = function()
-					SEARCH_REG = vim.fn.getreg("/")
-					vim.fn.setreg("/", "")
-					vim.opt.hlsearch = true
-				end,
-			},
-			{
-				events = { "CmdlineLeave" },
-				targets = { "*" },
-				command = function()
-					vim.fn.setreg("/", SEARCH_REG)
-					vim.opt.hlsearch = false
-				end,
-			},
-		})
-	end
-end
-
-function M.set_netrw()
-	-- utils.augroup("Netrw", {
-	-- 	{
-	-- 		events = { "FileType" },
-	-- 		targets = { "netrw" },
-	-- 		command = function()
-	-- 			vim.api.nvim_buf_set_keymap(0, "n", "q", "<cmd>quit<cr>", { noremap = true, silent = true })
-	-- 		end,
-	-- 	},
-	-- })
+	-- do
+	-- 	SEARCH_REG = ""
+	-- 	utils.augroup("SearchCommand", {
+	-- 		{
+	-- 			events = { "CmdlineEnter" },
+	-- 			targets = { "*" },
+	-- 			command = function()
+	-- 				SEARCH_REG = vim.fn.getreg("/")
+	-- 				vim.fn.setreg("/", "")
+	-- 				vim.opt.hlsearch = true
+	-- 			end,
+	-- 		},
+	-- 		{
+	-- 			events = { "CmdlineLeave" },
+	-- 			targets = { "*" },
+	-- 			command = function()
+	-- 				vim.fn.setreg("/", SEARCH_REG)
+	-- 				vim.opt.hlsearch = false
+	-- 			end,
+	-- 		},
+	-- 	})
+	-- end
 end
 
 function M.setup_status_cmds()
@@ -166,11 +151,14 @@ function M.setup_writing_cmds()
 				vim.o.signcolumn = "no"
 				vim.o.rnu = false
 				vim.o.spell = true
+				vim.o.conceallevel = 2
 			end,
 			once = true,
 		},
 	})
 end
+
+M.set_qol()
 
 -- M.setup_status_cmds()
 return M

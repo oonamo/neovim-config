@@ -10,9 +10,9 @@ hi DBWarn  guibg=#322425
 ]])
 
 local function get_hl_group_bg_color(hl_group)
-	local hl_info = vim.api.nvim_get_hl_by_name(hl_group, true)
-	if hl_info and hl_info.background then
-		local bg_color = string.format("#%06x", hl_info.background)
+	local hl_info = vim.api.nvim_get_hl(0, { name = hl_group })
+	if hl_info and hl_info.bg then
+		local bg_color = string.format("#%06x", hl_info.bg)
 		return bg_color
 	else
 		return nil

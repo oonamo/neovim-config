@@ -15,7 +15,6 @@ vim.keymap.set("n", "<leader>gc", function()
 		end
 		local formatted_str = vim.iter(vim.gsplit(input, " ")):join("\\ ")
 		local str = string.format("Git commit -m %s", formatted_str)
-		-- print(str)
 		vim.cmd(str)
 	end)
 end, { desc = "Git Commit" })

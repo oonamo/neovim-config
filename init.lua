@@ -51,12 +51,13 @@ now(load("onam.set"))
 now(load("onam.plug_opts"))
 now(load("onam.autocmds"))
 
--- now(cmd("colorscheme base16-moon"))
-now(cmd("colorscheme base16-default_dark"))
+now(cmd("colorscheme base16-moon"))
+-- now(cmd("colorscheme base16-default_dark"))
 now(load("mini.extra", { setup = {} }))
 now(load("plugins.mini.colors"))
 later(load("mini.splitjoin", { setup = {} }))
 later(load("plugins.mini.ai"))
+later(load("plugins.mini.bracketed"))
 later(load("plugins.mini.files"))
 later(load("plugins.mini.clues"))
 later(load("plugins.mini.git"))
@@ -66,7 +67,7 @@ later(load("plugins.mini.notify"))
 later(load("plugins.mini.surround"))
 later(load("plugins.mini.move"))
 later(load("plugins.mini.pick"))
-later(load("oonamo/manage_my_sessions", { init = "plugins.coding.mms" }))
+later(load("plugins.mini.sessions"))
 
 later(load("cbochs/grapple.nvim", { init = "plugins.coding.grapple" }))
 
@@ -109,6 +110,7 @@ later(load("epwalsh/obsidian.nvim", {
 }))
 
 later(load("MeanderingProgrammer/markdown.nvim", { init = "plugins.writing.md" }))
+later(load("folke/zen-mode.nvim", { init = "plugins.writing.zen" }))
 
 if vim.g.neovide then
 	now(load("onam.gui"))

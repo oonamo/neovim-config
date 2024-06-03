@@ -1,7 +1,6 @@
 local daily_path = "100 dailies/"
 local daily_folder = os.date("%b %Y")
 daily_path = daily_path .. "/" .. daily_folder
--- vim.o.conceallevel = 2
 
 require("obsidian").setup({
 	workspaces = {
@@ -181,6 +180,15 @@ utils.norm_lazy_to_normal({
 	end,
 	desc = "[O]bsidian [D]ailies",
 })
+
+vim.api.nvim_create_user_command("GoToNotes", function()
+	vim.schedule(function()
+		MiniSessions.read("Notes")
+		vim.o.conceallevel = 2
+		-- vim.cmd("cd C:/Users/onam7/Desktop/DB/DB")
+		-- vim.cmd("e base.md")
+	end)
+end, {})
 -- {
 -- 	"oflisback/obsidian-bridge.nvim",
 -- 	dependencies = { "nvim-telescope/telescope.nvim" },

@@ -14,6 +14,19 @@ function M.apply_custom_highlights(palette)
 	-- I prefer italic fonts as I use fonts with beautiful italics.
 	-- Some examples: Operator Mono, Berkeley Mono, PragmataPro, Radon
 	hi("Comment", { fg = palette.base03, bg = nil, italic = true })
+	hi("@markup.math", { fg = palette.base0d, bg = nil })
+	hi("@markup.quote", { fg = palette.base03, bg = palette.base01, bold = true, italic = true })
+
+	-- if O.ui.transparency.enable then
+	-- 	hi("LineNr", { link = "Normal" })
+	-- 	hi("SignColumn", { link = "Normal" })
+	-- 	hi("FoldColumn", { link = "Normal" })
+	-- 	hi("CursorlineFold", { link = "Normal" })
+	-- 	hi("CursorLineSign", { link = "Normal" })
+	-- 	hi("ColorColumn", { line = "Normal" })
+	-- 	-- hi("LineNr", { blend = 100 })
+	-- 	-- hi("SignColumn", { blend = 100 })
+	-- end
 	-- hi("DiagnosticVirtualTextError", { fg = p.red, bg = p.red_bg, italic = true })
 	-- hi("DiagnosticVirtualTextHint", { fg = p.cyan, bg = p.cyan_bg, italic = true })
 	-- hi("DiagnosticVirtualTextInfo", { fg = p.blue, bg = p.blue_bg, italic = true })

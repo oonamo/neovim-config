@@ -6,7 +6,12 @@
         "MiniNotify",
         "MiniDiff",
         "MiniColors",
-        "MiniDeps"
+        "MiniDeps",
+        "MiniSessions",
+        "MiniMisc",
+        "MiniBracketed",
+        "MiniPick",
+        "bit"
     ],
     "completion.autoRequire": true,
 }

@@ -1,5 +1,5 @@
 require("mini.move").setup({
-    mappings = {
+	mappings = {
 		left = "H",
 		right = "L",
 		line_left = "H",
