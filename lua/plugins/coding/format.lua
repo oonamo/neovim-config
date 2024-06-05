@@ -17,7 +17,7 @@ local opts = {
 	end,
 }
 require("conform").setup(opts)
-vim.api.nvim_create_user_command("ToggleFormat", function(args)
+vim.api.nvim_create_user_command("ToggleFormat", function()
 	vim.g.disable_autoformat = not vim.g.disable_autoformat
 	local state = vim.g.disable_autoformat and "disabled" or "enabled"
 	vim.notify("Auto-save " .. state)

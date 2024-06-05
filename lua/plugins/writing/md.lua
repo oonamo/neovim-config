@@ -1,9 +1,3 @@
--- return {
--- {
--- 	"MeanderingProgrammer/markdown.nvim",
--- 	name = "render-markdown", -- Only needed if you have another plugin named markdown.nvim
--- 	dependencies = { "nvim-treesitter/nvim-treesitter" },
--- 	ft = { "markdown" },
 local opts = {
 	start_enabled = true,
 	-- headings = { "❯", "❯", "❯", "❯", "❯", "❯" },
@@ -46,16 +40,16 @@ local opts = {
 	},
 	highlights = {
 		heading = {
-			backgrounds = { "CursorLine" },
-			-- backgrounds = { "DiffAdd", "DiffChange", "DiffDelete" },
-			-- foregrounds = {
-			-- 	"markdownH1",
-			-- 	"markdownH2",
-			-- 	"markdownH3",
-			-- 	"markdownH4",
-			-- 	"markdownH5",
-			-- 	"markdownH6",
-			-- },
+			-- backgrounds = { "CursorLine" },
+			backgrounds = { "DiffAdd", "DiffChange", "DiffDelete" },
+			foregrounds = {
+				"markdownH1",
+				"markdownH2",
+				"markdownH3",
+				"markdownH4",
+				"markdownH5",
+				"markdownH6",
+			},
 		},
 	},
 	win_options = {

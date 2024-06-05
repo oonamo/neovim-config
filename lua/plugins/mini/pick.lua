@@ -1,16 +1,4 @@
 local pick = require("mini.pick")
--- local win_config = function()
--- 	height = math.floor(0.618 * vim.o.lines)
--- 	width = math.floor(0.618 * vim.o.columns)
--- 	return {
--- 		anchor = "NW",
--- 		height = height,
--- 		width = width,
--- 		row = math.floor(0.5 * (vim.o.lines - height)),
--- 		col = math.floor(0.5 * (vim.o.columns - width)),
--- 	}
--- end
-
 local function win_config()
 	return {
 		height = math.floor(0.4 * vim.o.lines),

@@ -85,8 +85,6 @@ later(load("plugins.mini.pick"))
 now(load("plugins.mini.sessions"))
 later(load("plugins.mini.surround"))
 
--- later(load("ibhagwan/fzf-lua", { init = "plugins.editor.fzf" }))
-
 later(load(
 	"nvim-treesitter/nvim-treesitter",
 	{ init = "plugins.editor.treesitter", add = {

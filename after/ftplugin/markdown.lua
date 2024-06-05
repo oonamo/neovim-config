@@ -1,3 +1,4 @@
+vim.opt_local.conceallevel = 2
 if not vim.g.neovide then
 	vim.o.smoothscroll = true
 end
