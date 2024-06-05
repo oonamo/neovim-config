@@ -24,9 +24,16 @@ local function load(spec, opts)
 	return function()
 		opts = opts or {}
 		local slash = string.find(spec, "/[^/]*$") or 0
+		local is_vim_plug = string.find(spec, "%.vim") or 0
 		local name = opts.init or string.sub(spec, slash + 1)
 		if slash ~= 0 then
 			add(vim.tbl_deep_extend("force", { source = spec }, opts.add or {}))
+		end
+		if is_vim_plug ~= 0 or opts.no_setup then
+			if opts.init then
+				require(opts.init)
+			end
+			return
 		end
 		local req_name = string.gsub(name, ".nvim", "")
 		local plug = require(opts.as or req_name)
@@ -50,26 +57,35 @@ now(load("onam.utils"))
 now(load("onam.set"))
 now(load("onam.plug_opts"))
 now(load("onam.autocmds"))
+now(load("mini.extra", { setup = {} }))
+now(load("cbochs/grapple.nvim", { init = "plugins.coding.grapple" }))
+now(load("plugins.mini.starter"))
 
 now(cmd("colorscheme base16-moon"))
+-- now(cmd("colorscheme base16-newpaper"))
+-- now(cmd("colorscheme duskfox"))
 -- now(cmd("colorscheme base16-default_dark"))
-now(load("mini.extra", { setup = {} }))
+
+now(load("EdenEast/nightfox.nvim"))
 now(load("plugins.mini.colors"))
+
+later(load("mini.comment", { setup = {} })) -- No C or CPP comment strings
 later(load("mini.splitjoin", { setup = {} }))
 later(load("plugins.mini.ai"))
 later(load("plugins.mini.bracketed"))
-later(load("plugins.mini.files"))
 later(load("plugins.mini.clues"))
+later(load("plugins.mini.diff"))
+later(load("plugins.mini.files"))
 later(load("plugins.mini.git"))
 later(load("plugins.mini.hi"))
 later(load("plugins.mini.indent"))
-later(load("plugins.mini.notify"))
-later(load("plugins.mini.surround"))
 later(load("plugins.mini.move"))
+later(load("plugins.mini.notify"))
 later(load("plugins.mini.pick"))
-later(load("plugins.mini.sessions"))
+now(load("plugins.mini.sessions"))
+later(load("plugins.mini.surround"))
 
-later(load("cbochs/grapple.nvim", { init = "plugins.coding.grapple" }))
+-- later(load("ibhagwan/fzf-lua", { init = "plugins.editor.fzf" }))
 
 later(load(
 	"nvim-treesitter/nvim-treesitter",
@@ -110,8 +126,12 @@ later(load("epwalsh/obsidian.nvim", {
 }))
 
 later(load("MeanderingProgrammer/markdown.nvim", { init = "plugins.writing.md" }))
+later(load("andrewferrier/wrapping.nvim", { init = "plugins.writing.wrap" }))
 later(load("folke/zen-mode.nvim", { init = "plugins.writing.zen" }))
+later(load("folke/twilight.nvim", { init = "plugins.writing.twilight" }))
 
 if vim.g.neovide then
 	now(load("onam.gui"))
+else
+	later(load("plugins.mini.animate"))
 end

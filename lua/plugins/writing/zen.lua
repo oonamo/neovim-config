@@ -8,6 +8,11 @@ local opts = {
 		-- * a function that returns the width or the height
 		width = 0.95, -- width of the Zen window
 		height = 1, -- height of the Zen window
+
+		-- Goyo.vim defaults
+		-- width = 0.80,
+		-- height = 0.85,
+
 		-- by default, no options are changed for the Zen window
 		-- uncomment any of the options below, or add other vim.wo options you want to apply
 		options = {
@@ -67,4 +72,7 @@ local opts = {
 require("zen-mode").setup(opts)
 vim.keymap.set("n", "<leader>fm", function()
 	vim.cmd("ZenMode")
+	if vim.bo.ft == "markdown" then
+		vim.cmd("Twilight")
+	end
 end, { desc = "Toggle ZenMode" })

@@ -14,9 +14,16 @@ local palette = {
 	base0B = "#d2b3a4",
 	base0C = "#a28985",
 	base0D = "#becbc4",
+	--#5d6861
+	-- #555f59
 	base0E = "#4e5751",
 	base0F = "#c4a7e7",
 }
+
+for k, v in pairs(palette) do
+	local new_hl = utils.brighten_hex(v, 20)
+	palette[k] = new_hl
+end
 
 require("mini.base16").setup({ palette = palette })
 vim.g.colors_name = "base16-prime-pine"

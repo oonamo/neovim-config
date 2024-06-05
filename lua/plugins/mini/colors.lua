@@ -21,9 +21,10 @@ local function set_colors()
 		"LineNrBelow",
 		"SignColumn",
 		"Error",
+		"StatusLine",
 	}
-	if O.ui.transparency then
-		if vim.tbl_contains(O.ui.transparency.include_list, vim.g.colors_name, {}) then
+	if O.ui.transparency and vim.o.bg ~= "light" then
+		if not vim.tbl_contains(O.ui.transparency.exclude_list, vim.g.colors_name, {}) then
 			if vim.g.neovide == nil then
 				colorscheme = require("mini.colors").get_colorscheme():add_transparency()
 			end

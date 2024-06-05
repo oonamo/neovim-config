@@ -1,11 +1,10 @@
 local o, opt = vim.o, vim.opt
 
-o.cursorline = true
-o.cursorlineopt = "number"
+-- o.cursorline = true
+-- o.cursorlineopt = "number"
 o.emoji = true
 
 -- Editor
-
 opt.nu = true
 opt.relativenumber = true
 opt.tabstop = 4
@@ -24,10 +23,10 @@ opt.backup = false
 opt.undofile = true
 opt.incsearch = true
 opt.wildmenu = true
+-- opt.signcolumn = "no"
 opt.signcolumn = "yes:1"
 -- opt.signcolumn = "number"
 opt.laststatus = 2 -- Or 3 for global statusline
--- opt.conceallevel = 2
 opt.showmode = false
 opt.completeopt = "menuone,noinsert,noselect"
 o.grepprg = [[rg --glob "!.git" --hidden --smart-case  --vimgrep]]
@@ -38,23 +37,6 @@ opt.foldlevel = 99
 opt.foldmethod = "indent"
 opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 o.list = false
--- opt.listchars = { space = "⋅", trail = "⋅", tab = "  ↦" }
-opt.listchars = {
-	space = "⋅",
-	tab = "  ",
-}
-
--- opt.fillchars = {
--- 	eob = "~",
--- 	fold = " ",
--- 	foldclose = tools.ui.icons.right,
--- 	foldopen = tools.ui.icons.down,
--- 	foldsep = " ",
--- 	msgsep = "─",
--- }
-
-opt.listchars = { eol = "↴", tab = "▸ ", trail = "»", space = "⋅" }
-
 o.virtualedit = "block"
 
 o.shortmess = "acstFOSW"
@@ -86,5 +68,3 @@ if vim.fn.executable("rg") == 1 then
 	o.grepprg = "rg --vimgrep --color=never --with-filename --line-number --no-heading --smart-case --"
 	o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
 end
-
-vim.o.shellslash = true

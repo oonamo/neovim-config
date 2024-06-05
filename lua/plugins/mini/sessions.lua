@@ -1,7 +1,3 @@
-local H = {}
-
-local M = {}
-
 require("mini.sessions").setup()
 
 function Config._sessions_complete(arg_lead)
@@ -40,5 +36,3 @@ end
 vim.keymap.set("n", "<leader>ss", save, { desc = "save sessions" })
 vim.keymap.set("n", "<leader>sd", delete, { desc = "save sessions" })
 vim.keymap.set("n", "<leader>ms", MiniSessions.select, { desc = "select session" })
-
-return M

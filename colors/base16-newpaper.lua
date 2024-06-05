@@ -23,9 +23,15 @@ if vim.o.bg == "light" then
 else
 	palette = {
 		base00 = "#1c1c1c",
-		base01 = "#000000",
-		base02 = "#5f8787",
-		base03 = "#d7af5f",
+		base01 = "#2b2b2b",
+		-- base02 = "#5f8787",
+		base02 = "#333333",
+		-- #6d9b9b
+		-- #507272
+		-- #4c6c6c
+		-- base02 = "#000000",
+		-- base03 = "#d7af5f",
+		base03 = "#878787",
 		base04 = "#d0d0d0",
 		base05 = "#808080",
 		base06 = "#d7875f",

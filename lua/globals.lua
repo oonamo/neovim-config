@@ -188,7 +188,10 @@ _G.Config = {
 		{ mode = "n", keys = "<Leader>o", desc = "+Obsidian" },
 		{ mode = "n", keys = "<Leader>x", desc = "+Trouble" },
 		{ mode = "n", keys = "<Leader>Lc", postkeys = "<leader>L", desc = "+Change" },
-		{ mode = "n", keys = "<Leader>ga", postkeys = "<leader>g", desc = "+GitAdd" },
-		{ mode = "n", keys = "<leader>gd", postkeys = "<leader>g", desc = "+GitDiff" },
+		{ mode = "n", keys = "<Leader>gd", desc = "+GitDiff" },
+		{ mode = "n", keys = "<Leader>ga", desc = "+GitAdd" },
+		{ mode = "n", keys = "<Leader>p", desc = "+Pick" },
+		{ mode = "n", keys = "<Leader>pe", desc = "+Extras" },
+		{ mode = "n", keys = "<Leader>pel", desc = "+List" },
 	},
 }

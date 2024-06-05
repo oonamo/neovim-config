@@ -35,7 +35,7 @@ vim.keymap.set({ "n", "v" }, "<leader>y", '"+y', opts("copy to clipboard", true)
 vim.keymap.set({ "n", "v" }, "<leader>yy", '"+yy', opts("copy to clipboard", true))
 
 --Paste from Keyboard
-vim.keymap.set({ "n", "v" }, "<leader>p", '"+p', opts("paste from clipboard", true))
+vim.keymap.set({ "n", "v" }, "<leader>ps", '"+p', opts("paste from clipboard", true))
 vim.keymap.set({ "n", "v" }, "<leader>P", '"+P', opts("paste from clipboard", true))
 -- Search and Replace
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], opts("search and replace"))

@@ -13,6 +13,7 @@ function M.set_qol()
 
 	local win_cmds_map = {
 		["help"] = "H",
+		-- ["qf"] = "J",
 		-- [
 	}
 	utils.augroup("QOL", {
@@ -72,11 +73,14 @@ function M.set_qol()
 				"spectre_panel",
 			},
 			command = function(args)
+				vim.keymap.set("n", "q", "<cmd>quit<cr>", { buffer = args.buf })
+				if args.match == "qf" then
+					return
+				end
 				vim.bo.bufhidden = "unload"
 				local dir = win_cmds_map[args.match] or "K"
 				vim.cmd.wincmd(dir)
 				vim.cmd.wincmd("=")
-				vim.keymap.set("n", "q", "<cmd>quit<cr>", { buffer = args.buf })
 			end,
 			desc = "Close with 'q'",
 		},

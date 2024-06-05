@@ -10,6 +10,9 @@ local function get_colors()
 	if not bright_fg then
 		bright_fg, _, _ = onam_utils.get_hl("CursorLine")
 	end
+	if not bg then
+		bg = "NONE"
+	end
 	local colors = {
 		bright_bg = bright_bg,
 		bright_fg = bright_fg,

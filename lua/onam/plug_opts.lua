@@ -3,8 +3,9 @@ _G.O = {}
 O.ui = {
 	transparency = {
 		enable = true,
-		include_list = {
-			"base16-moon",
+		exclude_list = {
+			-- "terafox",
+			-- "minicyan",
 		},
 	},
 	indent = {

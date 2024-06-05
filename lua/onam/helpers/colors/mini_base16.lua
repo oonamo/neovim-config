@@ -9,13 +9,22 @@ function M.apply_custom_highlights(palette)
 	hi("Title", { fg = palette.base0C, bg = nil, bold = true })
 
 	-- Better markdown code block compat w/ mini.hues
-	hi("CodeBlock", { bg = palette.base03 })
+	-- hi("CodeBlock", { bg = palette.base03 })
 
 	-- I prefer italic fonts as I use fonts with beautiful italics.
 	-- Some examples: Operator Mono, Berkeley Mono, PragmataPro, Radon
 	hi("Comment", { fg = palette.base03, bg = nil, italic = true })
 	hi("@markup.math", { fg = palette.base0d, bg = nil })
 	hi("@markup.quote", { fg = palette.base03, bg = palette.base01, bold = true, italic = true })
+	hi("ObsidianTodo", { bold = true, fg = "#f78c6c" })
+	hi("ObsidianDone", { bold = true, fg = "#89ddff" })
+	hi("ObsidianRightArrow", { bold = true, fg = "#f78c6c" })
+	hi("ObsidianTilde", { bold = true, fg = "#ff5370" })
+	hi("ObsidianBullet", { bold = true, fg = "#89ddff" })
+	hi("ObsidianRefText", { underline = true, fg = "#c792ea" })
+	hi("ObsidianExtLinkIcon", { fg = "#c792ea" })
+	hi("ObsidianTag", { italic = true, fg = "#89ddff" })
+	hi("ObsidianHighlightText", { bg = "#75662e" })
 
 	-- if O.ui.transparency.enable then
 	-- 	hi("LineNr", { link = "Normal" })
@@ -58,5 +67,7 @@ function M.apply_custom_highlights(palette)
 	-- horizontally when laststatus=2.
 	-- hi("VertSplit", { fg = p.bg_mid, bg = nil })
 	-- hi("WinSeparator", { fg = p.bg_mid, bg = nil })
+	utils.create_virt_diagnostics_hl()
 end
+
 return M

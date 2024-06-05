@@ -14,10 +14,10 @@ M.icons = {
 	lsp = " ", --   
 	vim = " ",
 	debug = " ",
-	err = " ",
-	warn = " ",
-	info = " ",
-	hint = " ",
+	err = "  ",
+	warn = "  ",
+	info = "  ",
+	hint = "  ",
 	hamburger = "≡",
 }
 
