@@ -67,14 +67,17 @@ require("mini.statusline").setup({
 			local lsp = MiniStatusline.section_lsp({ trunc_width = 75 })
 			local location = MiniStatusline.section_location({ trunc_width = 75 })
 			local search = MiniStatusline.section_searchcount({ trunc_width = 75 })
+			local git = MiniStatusline.section_git({ trunc_width = 40 })
+			local diff = MiniStatusline.section_diff({ trunc_width = 75 })
 			local file = fileInfo()
-			local git = GitInfo()
+			-- local git = GitInfo()
 
 			-- Use Statusline hl for transparency support with base16 helper
 			return MiniStatusline.combine_groups({
 				{ hl = mode_hl, strings = { mode:upper() } },
 				{ hl = "Statusline", strings = { file } },
-				git,
+				{ hl = "MiniStatuslineDevinfo", strings = { git, diff } },
+				-- git,
 				"%#Statusline#",
 				"%=",
 				[[%{%&bt==#''?'%t':(&bt==#'terminal'?'[Terminal] '.bufname()->substitute('^term://.\{-}//\d\+:\s*','',''):'%F')%} ]],

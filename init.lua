@@ -86,17 +86,23 @@ now(load("plugins.mini.colors"))
 now(load("plugins.mini.starter"))
 now(load("plugins.mini.statusline"))
 now(load("catppuccin/nvim", { as = "catppuccin", init = "plugins.editor.catppuccin" }))
-now(load("cvigilv/patana.nvim", { init = "plugins.editor.patana" }))
-
--- LIGHT
-vim.o.background = "light"
--- now(cmd("colorscheme base16-rose-pine-dawn"))
--- DARK
--- now(load("plugins.editor.catppuccin"))
+-- TODO: Change when my PR is added
+now(load("oonamo/patana.nvim", { no_setup = true }))
 -- now(function()
 -- 	vim.o.background = "dark"
--- 	vim.cmd.colorscheme("catppuccin-macchiato")
+-- 	require("plugins.editor.patana")
 -- end)
+-- now(load("cvigilv/patana.nvim", { init = "plugins.editor.patana" }))
+
+-- LIGHT
+-- vim.o.background = "light"
+-- now(cmd("colorscheme base16-rose-pine-dawn"))
+-- DARK
+now(load("plugins.editor.catppuccin"))
+now(function()
+	vim.o.background = "dark"
+	vim.cmd.colorscheme("catppuccin-macchiato")
+end)
 -- now(cmd("colorscheme base16-moon"))
 -- now(cmd("colorscheme base16-newpaper"))
 -- now(cmd("colorscheme base16-default_dark"))
