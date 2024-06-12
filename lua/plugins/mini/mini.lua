@@ -324,4 +324,12 @@ return {
 			{ "<leader>gc" },
 		},
 	},
+	{
+		"mini.statusline",
+		dev = true,
+		event = "VeryLazy",
+		config = function()
+			require("plugins.mini.confs.statusline")
+		end,
+	},
 }

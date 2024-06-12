@@ -43,6 +43,14 @@ local function GitDiff()
 	return table.concat(t, "")
 end
 
+local function git_remote()
+	return cache.remote
+end
+
+local function git_branch()
+	return cache.branch
+end
+
 local function GitInfo()
 	local str = ""
 	if cache.branch ~= nil then
@@ -70,14 +78,15 @@ require("mini.statusline").setup({
 			local git = MiniStatusline.section_git({ trunc_width = 40 })
 			local diff = MiniStatusline.section_diff({ trunc_width = 75 })
 			local file = fileInfo()
+			local branch = git_branch()
+			local remote = git_remote()
 			-- local git = GitInfo()
 
 			-- Use Statusline hl for transparency support with base16 helper
 			return MiniStatusline.combine_groups({
 				{ hl = mode_hl, strings = { mode:upper() } },
 				{ hl = "Statusline", strings = { file } },
-				{ hl = "MiniStatuslineDevinfo", strings = { git, diff } },
-				-- git,
+				{ hl = "MiniStatuslineDevinfo", strings = { branch, diff } },
 				"%#Statusline#",
 				"%=",
 				[[%{%&bt==#''?'%t':(&bt==#'terminal'?'[Terminal] '.bufname()->substitute('^term://.\{-}//\d\+:\s*','',''):'%F')%} ]],
