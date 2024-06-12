@@ -61,22 +61,22 @@ return {
 				-- Extras
 				{
 					"<leader>pehg",
-					require("mini.pick").hl_groups,
+					e_pick.hl_groups,
 					{ desc = "hl groups" },
 				},
 				{
 					"<leader>peH",
-					require("mini.pick").history,
+					e_pick.history,
 					{ desc = "history" },
 				},
 				{
 					"<leader>peK",
-					require("mini.pick").keymaps,
+					e_pick.keymaps,
 					{ desc = "keymaps" },
 				},
 				{
 					"<leader>pem",
-					require("mini.pick").marks,
+					e_pick.marks,
 					{ desc = "marks" },
 				},
 

@@ -51,6 +51,48 @@ local function git_branch()
 	return cache.branch
 end
 
+-- local function harpoon_status()
+-- 	if vim.bo.buftype ~= "" then
+-- 		return
+-- 	end -- not a normal buffer, no harpoon status
+--
+-- 	local ok, harpoon = pcall(require, "harpoon")
+-- 	if not ok then
+-- 		return
+-- 	end -- no harpoon, no harpoon status
+--
+-- 	local list = harpoon:list()
+-- 	local contents = "[󰛢 "
+--
+-- 	if #list.items == 0 then
+-- 		return contents .. "󰟢 ]"
+-- 	end -- no items in the list, no harpoon status
+--
+-- 	local current_file = vim.fn.expand("%:p:.")
+-- 	local harpoon_keys = { "h", "j", "k", "l" }
+-- 	if #list.items < #harpoon_keys + 1 then
+-- 		for idx, item in ipairs(list.items) do
+-- 			if item.value == current_file then
+-- 				contents = contents .. "%#DiffAdded#" .. harpoon_keys[idx] .. "%#StatusLine#"
+-- 			else
+-- 				contents = contents .. harpoon_keys[idx]
+-- 			end
+-- 		end
+-- 	else
+-- 		for idx = 1, 4, 1 do
+-- 			local item = list.items[idx]
+-- 			if item.value == current_file then
+-- 				contents = contents .. "%#StatusLineImportant#" .. harpoon_keys[idx] .. "%#StatusLineNormal#"
+-- 			else
+-- 				contents = contents .. harpoon_keys[idx]
+-- 			end
+-- 		end
+-- 		contents = contents .. "+"
+-- 	end
+--
+-- 	return "%#StatusLine#" .. contents .. "]"
+-- end
+
 local function GitInfo()
 	local str = ""
 	if cache.branch ~= nil then
@@ -85,8 +127,8 @@ require("mini.statusline").setup({
 			-- Use Statusline hl for transparency support with base16 helper
 			return MiniStatusline.combine_groups({
 				{ hl = mode_hl, strings = { mode:upper() } },
-				{ hl = "Statusline", strings = { file } },
 				{ hl = "MiniStatuslineDevinfo", strings = { branch, diff } },
+				-- harpoon_status(),
 				"%#Statusline#",
 				"%=",
 				[[%{%&bt==#''?'%t':(&bt==#'terminal'?'[Terminal] '.bufname()->substitute('^term://.\{-}//\d\+:\s*','',''):'%F')%} ]],

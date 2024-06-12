@@ -69,5 +69,3 @@ require("lazy").setup({
 if vim.g.neovide then
 	require("onam.gui")
 end
-
--- vim.cmd.colorscheme("catppuccin")
