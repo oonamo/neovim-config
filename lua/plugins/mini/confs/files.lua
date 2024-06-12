@@ -104,14 +104,3 @@ vim.api.nvim_create_autocmd("User", {
 	end,
 })
 
-vim.keymap.set("n", "<leader>e", MiniFiles.open, { desc = "open cwd files" })
-
-vim.keymap.set("n", "-", function()
-	local bufname = vim.api.nvim_buf_get_name(0)
-	local path = vim.fn.fnamemodify(bufname, ":p")
-
-	-- Noop if the buffer isn't valid.
-	if path and vim.uv.fs_stat(path) then
-		require("mini.files").open(bufname, false)
-	end
-end, { desc = "open bufdir files" })

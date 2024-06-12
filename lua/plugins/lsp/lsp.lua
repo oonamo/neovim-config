@@ -108,134 +108,137 @@ local function on_attach(client, buffer, use_code_lens)
 end
 
 local defaults = { on_attach = on_attach }
--- "neovim/nvim-lspconfig",
--- event = { "BufReadPost", "BufNewFile", "BufWritePre" },
--- dependencies = {
--- 	"williamboman/mason.nvim",
--- },
-local opts = {
-	lua_ls = {
-		on_attach = on_attach,
-		settings = {
-			Lua = {
-				diagnostics = {
-					globals = { "vim", "bit" },
-				},
-				workspace = {
-					library = {
-						[vim.fn.expand("$VIMRUNTIME/lua")] = true,
-						[vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
-						[vim.fn.stdpath("config") .. "/lua"] = true,
+return {
+	{
+		"neovim/nvim-lspconfig",
+		dependencies = {
+			"williamboman/mason.nvim",
+		},
+		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
+		opts = {
+			lua_ls = {
+				on_attach = on_attach,
+				settings = {
+					Lua = {
+						diagnostics = {
+							globals = { "vim", "bit" },
+						},
+						workspace = {
+							library = {
+								[vim.fn.expand("$VIMRUNTIME/lua")] = true,
+								[vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
+								[vim.fn.stdpath("config") .. "/lua"] = true,
+							},
+						},
+						hint = {
+							enable = true,
+							setType = false,
+							paramType = true,
+							paramName = true,
+							semicolon = "Disable",
+							arrayIndex = "Disable",
+						},
 					},
 				},
-				-- codeLens = {
-				-- 	enable = false,
-				-- },
-				hint = {
-					enable = true,
-					setType = false,
-					paramType = true,
-					paramName = true,
-					semicolon = "Disable",
-					arrayIndex = "Disable",
+			},
+			tsserver = defaults,
+			html = defaults,
+			eslint = defaults,
+			powershell_es = {
+				-- shell = "pwsh",
+				bundle_path = "C:/Users/onam7/.vscode/extensions/ms-vscode.powershell-2024.0.0/modules/",
+			},
+			clangd = {
+				on_attach = on_attach,
+			},
+			omnisharp = {
+				on_attach = on_attach,
+				cmd = {
+					"dotnet",
+					"C:\\Users\\onam7\\AppData\\Local\\nvim-data\\mason\\packages\\omnisharp\\libexec\\OmniSharp.dll",
 				},
+				root_dir = { "*.sln", "*.csproj", "omnisharp.json", "function.json", "*.log" },
+			},
+			ruff_lsp = defaults,
+			markdown_oxide = {
+				on_attach = function(client, bufnr)
+					on_attach(client, bufnr)
+					-- client.server_capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = true
+					vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach" }, {
+						buffer = bufnr,
+						callback = vim.lsp.codelens.refresh,
+					})
+					vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
+				end,
 			},
 		},
-	},
-	tsserver = defaults,
-	html = defaults,
-	eslint = defaults,
-	powershell_es = {
-		-- shell = "pwsh",
-		bundle_path = "C:/Users/onam7/.vscode/extensions/ms-vscode.powershell-2024.0.0/modules/",
-	},
-	clangd = {
-		on_attach = on_attach,
-	},
-	omnisharp = {
-		on_attach = on_attach,
-		cmd = {
-			"dotnet",
-			"C:\\Users\\onam7\\AppData\\Local\\nvim-data\\mason\\packages\\omnisharp\\libexec\\OmniSharp.dll",
-		},
-		root_dir = { "*.sln", "*.csproj", "omnisharp.json", "function.json", "*.log" },
-	},
-	ruff_lsp = defaults,
-	markdown_oxide = {
-		on_attach = function(client, bufnr)
-			on_attach(client, bufnr)
-			-- client.server_capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = true
-			vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach" }, {
-				buffer = bufnr,
-				callback = vim.lsp.codelens.refresh,
+		config = function(_, opts)
+			local lspconfig = require("lspconfig")
+			-- capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
+			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+			capabilities.workspace = {
+				didChangeWatchedFiles = {
+					dynamicRegistration = true,
+				},
+			}
+			for server, settings in pairs(opts) do
+				local server_opts = vim.tbl_deep_extend("force", {
+					capabilities = vim.deepcopy(capabilities),
+				}, settings or {})
+				if server_opts.root_dir then
+					server_opts.root_dir = lspconfig.util.root_pattern(unpack(server_opts.root_dir))
+				end
+				if server == "arduino_language_server" then
+					lspconfig.arduino_language_server.setup({
+						cmd = {
+							"arduino-language-server",
+							"-cli-config",
+							"C:\\Users\\onam7\\AppData\\Local\\Arduino15\\arduino-cli.yaml",
+						},
+						unpack(server_opts),
+					})
+				else
+					lspconfig[server].setup(server_opts)
+				end
+			end
+			for _, icon in ipairs(tools.ui.lsp_signs) do
+				local hl = "DiagnosticSign" .. icon.name
+				vim.fn.sign_define(hl, { text = icon.sym, texthl = hl, numhl = hl })
+			end
+			vim.diagnostic.config({
+				underline = true,
+				severity_sort = true,
+				virtual_text = {
+					prefix = tools.ui.icons.x,
+				},
+				float = {
+					header = " ",
+					border = "rounded",
+					source = "if_many",
+					title = { { " 󰌶 Diagnostics ", "FloatTitle" } },
+					prefix = function(diag)
+						local severity = vim.diagnostic.severity[diag.severity]
+						local level = severity:sub(1, 1) .. severity:sub(2):lower()
+						local prefix = string.format(" %s  ", tools.ui.lsp_signs[diag.severity].sym)
+						return prefix, "Diagnostic" .. level:gsub("^%l", string.upper)
+					end,
+				},
+				signs = {
+					text = {
+						[vim.diagnostic.severity.ERROR] = tools.ui.lsp_signs[1].sym,
+						[vim.diagnostic.severity.WARN] = tools.ui.lsp_signs[2].sym,
+						[vim.diagnostic.severity.INFO] = tools.ui.lsp_signs[3].sym,
+						[vim.diagnostic.severity.HINT] = tools.ui.lsp_signs[4].sym,
+					},
+					-- text = signs,
+					linehl = {
+						[vim.diagnostic.severity.ERROR] = "ErrorMsg",
+					},
+					numhl = {
+						[vim.diagnostic.severity.WARN] = "WarningMsg",
+					},
+				},
 			})
-			vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
 		end,
 	},
 }
-local lspconfig = require("lspconfig")
--- capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
-capabilities.workspace = {
-	didChangeWatchedFiles = {
-		dynamicRegistration = true,
-	},
-}
-for server, settings in pairs(opts) do
-	local server_opts = vim.tbl_deep_extend("force", {
-		capabilities = vim.deepcopy(capabilities),
-	}, settings or {})
-	if server_opts.root_dir then
-		server_opts.root_dir = lspconfig.util.root_pattern(unpack(server_opts.root_dir))
-	end
-	if server == "arduino_language_server" then
-		lspconfig.arduino_language_server.setup({
-			cmd = {
-				"arduino-language-server",
-				"-cli-config",
-				"C:\\Users\\onam7\\AppData\\Local\\Arduino15\\arduino-cli.yaml",
-			},
-			unpack(server_opts),
-		})
-	else
-		lspconfig[server].setup(server_opts)
-	end
-end
-for _, icon in ipairs(tools.ui.lsp_signs) do
-	local hl = "DiagnosticSign" .. icon.name
-	vim.fn.sign_define(hl, { text = icon.sym, texthl = hl, numhl = hl })
-end
-vim.diagnostic.config({
-	underline = true,
-	severity_sort = true,
-	virtual_text = {
-		prefix = tools.ui.icons.x,
-	},
-	float = {
-		header = " ",
-		border = "rounded",
-		source = "if_many",
-		title = { { " 󰌶 Diagnostics ", "FloatTitle" } },
-		prefix = function(diag)
-			local severity = vim.diagnostic.severity[diag.severity]
-			local level = severity:sub(1, 1) .. severity:sub(2):lower()
-			local prefix = string.format(" %s  ", tools.ui.lsp_signs[diag.severity].sym)
-			return prefix, "Diagnostic" .. level:gsub("^%l", string.upper)
-		end,
-	},
-	signs = {
-		text = {
-			[vim.diagnostic.severity.ERROR] = tools.ui.lsp_signs[1].sym,
-			[vim.diagnostic.severity.WARN] = tools.ui.lsp_signs[2].sym,
-			[vim.diagnostic.severity.INFO] = tools.ui.lsp_signs[3].sym,
-			[vim.diagnostic.severity.HINT] = tools.ui.lsp_signs[4].sym,
-		},
-		-- text = signs,
-		linehl = {
-			[vim.diagnostic.severity.ERROR] = "ErrorMsg",
-		},
-		numhl = {
-			[vim.diagnostic.severity.WARN] = "WarningMsg",
-		},
-	},
-})

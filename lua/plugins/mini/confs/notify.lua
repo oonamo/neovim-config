@@ -4,8 +4,6 @@ require("mini.notify").setup({
 	},
 })
 
-vim.notify = require("mini.notify").make_notify()
-
 vim.api.nvim_create_user_command("Notifications", function()
 	local win_id = vim.api.nvim_open_win(0, true, {
 		split = "below",

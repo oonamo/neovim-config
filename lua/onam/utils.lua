@@ -564,4 +564,14 @@ function utils.norm_lazy_to_normal(spec)
 	})
 end
 
+---@param rhs string|function
+---@param opts vim.keymap.set.Opts
+function utils.vim_to_lazy_map(_, lhs, rhs, opts)
+	return {
+		lhs,
+		rhs,
+		desc = opts.desc,
+	}
+end
+
 return utils

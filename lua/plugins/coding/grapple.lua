@@ -1,23 +1,70 @@
-local opts = {
-	scope = "cwd",
-	icons = false,
-	win_opts = {
-		-- border = "none",
-		title = "Grapple",
-	},
+return {
+	"ThePrimeagen/harpoon",
+	branch = "harpoon2",
+	dependencies = { "nvim-lua/plenary.nvim" },
+	config = function()
+		local harpoon = require("harpoon")
+		harpoon:setup()
+
+		vim.keymap.set("n", "<leader>a", function()
+			harpoon:list():add()
+		end)
+		vim.keymap.set("n", "<C-e>", function()
+			harpoon.ui:toggle_quick_menu(harpoon:list())
+		end)
+
+		vim.keymap.set("n", "<C-h>", function()
+			harpoon:list():select(1)
+		end)
+		vim.keymap.set("n", "<C-j>", function()
+			harpoon:list():select(2)
+		end)
+		vim.keymap.set("n", "<C-k>", function()
+			harpoon:list():select(3)
+		end)
+		vim.keymap.set("n", "<C-l>", function()
+			harpoon:list():select(4)
+		end)
+
+		-- Toggle previous & next buffers stored within Harpoon list
+		vim.keymap.set("n", "<C-S-P>", function()
+			harpoon:list():prev()
+		end)
+		vim.keymap.set("n", "<C-S-N>", function()
+			harpoon:list():next()
+		end)
+	end,
+    keys = function()
+        local harpoon = require("harpoon")
+        return {
+
+		utils.vim_to_lazy_map("n", "<leader>a", function()
+			harpoon:list():add()
+		end, {}),
+		utils.vim_to_lazy_map("n", "<C-e>", function()
+			harpoon.ui:toggle_quick_menu(harpoon:list())
+		end, {}),
+
+		utils.vim_to_lazy_map("n", "<C-h>", function()
+			harpoon:list():select(1)
+		end, {}),
+		utils.vim_to_lazy_map("n", "<C-j>", function()
+			harpoon:list():select(2)
+		end, {}),
+		utils.vim_to_lazy_map("n", "<C-k>", function()
+			harpoon:list():select(3)
+		end, {}),
+		utils.vim_to_lazy_map("n", "<C-l>", function()
+			harpoon:list():select(4)
+		end, {}),
+
+		-- Toggle previous & next buffers stored within Harpoon list
+		utils.vim_to_lazy_map("n", "<C-S-P>", function()
+			harpoon:list():prev()
+		end, {}),
+		utils.vim_to_lazy_map("n", "<C-S-N>", function()
+			harpoon:list():next()
+		end, {}),
+        }
+    end,
 }
-
-require("grapple").setup(opts)
-
-local set = vim.keymap.set
-
-set("n", "<leader>a", "<cmd>Grapple toggle<cr>", { desc = "Tag a file" })
-set("n", "<c-e>", "<cmd>Grapple toggle_tags<cr>", { desc = "Toggle tags menu" })
-
-set("n", "<C-h>", "<cmd>Grapple select index=1<cr>", { desc = "Select first tag" })
-set("n", "<C-j>", "<cmd>Grapple select index=2<cr>", { desc = "Select second tag" })
-set("n", "<C-k>", "<cmd>Grapple select index=3<cr>", { desc = "Select third tag" })
-set("n", "<C-l>", "<cmd>Grapple select index=4<cr>", { desc = "Select fourth tag" })
-
-set("n", "<c-s-p>", "<cmd>Grapple cycle backward<cr>", { desc = "Go to previous tag" })
-set("n", "<c-s-n>", "<cmd>Grapple cycle forward<cr>", { desc = "Go to next tag" })

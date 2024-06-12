@@ -96,6 +96,6 @@ vim.api.nvim_create_autocmd("BufEnter", {
 	end,
 })
 
-vim.keymap.set("n", "<leader>mo", MiniMap.toggle, { desc = "open mini map" })
+-- vim.keymap.set("n", "<leader>mo", MiniMap.toggle, { desc = "open mini map" })
 vim.keymap.set("n", "<leader>mv", toggle_view, { desc = "open mini map" })
 -- MiniMap.open()
