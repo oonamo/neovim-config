@@ -156,6 +156,8 @@ function M.setup_writing_cmds()
 				vim.o.rnu = false
 				vim.o.spell = true
 				vim.o.conceallevel = 2
+				vim.o.breakindent = true
+				vim.o.breakindentopt = "list:-1"
 			end,
 			once = true,
 		},

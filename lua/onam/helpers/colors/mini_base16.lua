@@ -1,5 +1,7 @@
 local M = {}
-function M.apply_custom_highlights(palette)
+
+function M.apply_custom_highlights(palette, is_light)
+	vim.o.background = is_light and "light" or "dark"
 	require("mini.base16").setup({ palette = palette })
 	local hi = function(name, data)
 		vim.api.nvim_set_hl(0, name, data)
@@ -7,6 +9,8 @@ function M.apply_custom_highlights(palette)
 
 	-- I prefer bold headlines and titles
 	hi("Title", { fg = palette.base0C, bg = nil, bold = true })
+
+	hi("MiniAnimateNormalFloat", { bg = palette.base01, blend = 40 })
 
 	-- Better markdown code block compat w/ mini.hues
 	-- hi("CodeBlock", { bg = palette.base03 })
@@ -25,6 +29,14 @@ function M.apply_custom_highlights(palette)
 	hi("ObsidianExtLinkIcon", { fg = "#c792ea" })
 	hi("ObsidianTag", { italic = true, fg = "#89ddff" })
 	hi("ObsidianHighlightText", { bg = "#75662e" })
+	hi("MiniTablineCurrent", { link = "Normal" })
+	hi("MiniTablineVisible", { link = "MiniTablineVisible" })
+	hi("MiniTablineHidden", { bg = palette.base02, fg = palette.base03 })
+	hi("MiniTablineModifiedCurrent", { link = "MiniTablineCurrent" })
+	hi("MiniTablineModifiedVisible", { link = "MiniTablineModifiedCurrent" })
+	hi("MiniTablineModifiedHidden", { bg = palette.base03 })
+	hi("MiniTablineFill", { link = "MiniTablineHidden" })
+	hi("MiniTablineTabpagesection", { link = "MiniTablineHidden" })
 
 	-- if O.ui.transparency.enable then
 	-- 	hi("LineNr", { link = "Normal" })

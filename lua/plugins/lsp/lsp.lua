@@ -1,3 +1,6 @@
+-- HACK Disable semantic tokens for highlights that already incorporate the highlight
+-- vim.highlight.priorities.semantic_tokens = 95
+
 ---@param use_code_lens boolean|nil
 local function on_attach(client, buffer, use_code_lens)
 	local methods = vim.lsp.protocol.Methods
@@ -90,12 +93,12 @@ local function on_attach(client, buffer, use_code_lens)
 		vim.keymap.set("n", "<leader>h", function()
 			vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
 		end, { desc = "Inlay Hint" })
-		vim.api.nvim_create_autocmd({ "LspAttach", "InsertEnter", "InsertLeave" }, {
-			callback = function(args)
-				local enable = args.event ~= "InsertEnter"
-				vim.lsp.inlay_hint.enable(enable, { bufnr = args.buf })
-			end,
-		})
+		-- vim.api.nvim_create_autocmd({ "LspAttach", "InsertEnter", "InsertLeave" }, {
+		-- 	callback = function(args)
+		-- 		local enable = args.event ~= "InsertEnter"
+		-- 		vim.lsp.inlay_hint.enable(enable, { bufnr = args.buf })
+		-- 	end,
+		-- })
 	end
 	if client.supports_method(methods.textDocument_documentHighlight) then
 		require("onam.helpers.lsp.documentHighlight")(buffer)

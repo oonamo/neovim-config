@@ -9,11 +9,15 @@ end
 local function send_all_to_qf()
 	local mappings = MiniPick.get_picker_opts().mappings
 	local keys = mappings.mark_all .. mappings.choose_marked
-	vim.api.nvim_input(vim.api.nvim_replace_termcodes(keys, true, true, true))
+	vim.api.nvim_input(vim.api.nvim_replace_termcodes(mappings.mark_all, true, true, true))
+	vim.schedule(function()
+		vim.api.nvim_input(vim.api.nvim_replace_termcodes(mappings.choose_marked, true, true, true))
+	end)
+	-- vim.api.nvim_input(vim.api.nvim_replace_termcodes(keys, true, true, true))
 end
 
 pick.setup({
-	window = { config = win_config },
+	-- window = { config = win_config },
 	mappings = {
 		choose_marked = "<C-l>",
 		send_all_to_qf = {

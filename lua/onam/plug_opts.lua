@@ -6,6 +6,7 @@ O.ui = {
 		exclude_list = {
 			-- "terafox",
 			-- "minicyan",
+			"patana",
 		},
 	},
 	indent = {

@@ -57,4 +57,5 @@ local base16 = {
 -- 	palette = base16,
 -- })
 require("onam.helpers.colors.mini_base16").apply_custom_highlights(base16)
+
 vim.g.colors_name = "base16-moon"

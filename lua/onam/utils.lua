@@ -284,6 +284,7 @@ end
 ---@field forground? string
 ---@field background? string
 ---@field special? table
+---@field blend number
 
 ---@return string|nil, string|nil, Highlight|nil
 function utils.get_hl(name)

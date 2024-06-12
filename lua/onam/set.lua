@@ -1,46 +1,76 @@
 local o, opt = vim.o, vim.opt
 
+-- Relative line numbers
+opt.nu = true
+opt.rnu = true
+
+-- Show mode in statusline
+opt.showmode = false
+
+-- set tab stop at 4
+opt.tabstop = 4
+opt.softtabstop = 4
+opt.expandtab = true
+
+-- autoindent
+opt.smartindent = true
+opt.shiftwidth = 4
+
+-- smarter breaking
+o.breakindent = true
+
+-- better searching
+o.incsearch = true
+o.hlsearch = true
+o.ignorecase = true
+o.smartcase = true
+
+-- disable wrap
+opt.wrap = false
+
+-- better splitting
+o.splitkeep = "screen"
+o.splitbelow = true
+o.splitright = true
+
+-- set completion options
+opt.completeopt = { "menu", "menuone", "noselect" }
+
+-- set signcolumn
+opt.signcolumn = "yes"
+
+opt.guicursor = {
+	"n-v-c:block", -- Normal, visual, command-line: block cursor
+	"i-ci-ve:ver25", -- Insert, command-line insert, visual-exclude: vertical bar cursor with 25% width
+	"r-cr:hor20", -- Replace, command-line replace: horizontal bar cursor with 20% height
+	"o:hor50", -- Operator-pending: horizontal bar cursor with 50% height
+	"a:blinkwait700-blinkoff400-blinkon250", -- All modes: blinking settings
+	"sm:block-blinkwait175-blinkoff150-blinkon175", -- Showmatch: block cursor with specific blinking settings
+}
+
 -- o.cursorline = true
 -- o.cursorlineopt = "number"
 o.emoji = true
 
 -- Editor
-opt.nu = true
-opt.relativenumber = true
-opt.tabstop = 4
-opt.softtabstop = 4
-opt.shiftwidth = 4
-opt.expandtab = true
-opt.smartindent = true
-opt.wrap = false
 opt.scrolloff = 8
-opt.isfname:append("@-@")
 o.updatetime = 300
 o.timeoutlen = 500
 o.ttimeoutlen = 10
 opt.swapfile = false
 opt.backup = false
 opt.undofile = true
-opt.incsearch = true
 opt.wildmenu = true
--- opt.signcolumn = "no"
-opt.signcolumn = "yes:1"
+
 -- opt.signcolumn = "number"
 opt.laststatus = 2 -- Or 3 for global statusline
-opt.showmode = false
-opt.completeopt = "menuone,noinsert,noselect"
-o.grepprg = [[rg --glob "!.git" --hidden --smart-case  --vimgrep]]
-o.helpheight = 10
-o.ignorecase = true
-o.foldcolumn = "0"
 opt.foldlevel = 99
 opt.foldmethod = "indent"
-opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 o.list = false
 o.virtualedit = "block"
 
 o.shortmess = "acstFOSW"
-o.splitkeep = "screen"
 
 o.formatoptions = "rqnl1j"
 

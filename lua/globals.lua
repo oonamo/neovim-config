@@ -194,4 +194,13 @@ _G.Config = {
 		{ mode = "n", keys = "<Leader>pe", desc = "+Extras" },
 		{ mode = "n", keys = "<Leader>pel", desc = "+List" },
 	},
+	submodes = {
+		{ mode = "n", keys = "]b", postkeys = "]" },
+		{ mode = "n", keys = "]w", postkeys = "]" },
+
+		{ mode = "n", keys = "[b", postkeys = "[" },
+		{ mode = "n", keys = "[w", postkeys = "[" },
+
+		{ mode = "n", keys = "<leader>bd", postkeys = "<leader>b" },
+	},
 }

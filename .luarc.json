@@ -11,7 +11,12 @@
         "MiniMisc",
         "MiniBracketed",
         "MiniPick",
-        "bit"
+        "bit",
+        "MiniStatusline",
+        "MiniJump2d",
+        "MiniMap",
+        "MiniBufremove",
+        "MiniTabline"
     ],
     "completion.autoRequire": true,
 }
