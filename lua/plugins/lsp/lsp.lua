@@ -77,16 +77,16 @@ local function on_attach(client, buffer, use_code_lens)
 	end
 
 	if client.supports_method(methods.textDocument_publishDiagnostics) then
-		vim.lsp.handlers[methods.textDocument_publishDiagnostics] =
-			vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-				signs = true,
-				underline = true,
-				virtual_text = {
-					spacing = 5,
-					min = "Hint",
-				},
-				update_in_insert = true,
-			})
+		-- vim.lsp.handlers[methods.textDocument_publishDiagnostics] =
+		-- 	vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+		-- 		signs = true,
+		-- 		underline = true,
+		-- 		virtual_text = {
+		-- 			spacing = 5,
+		-- 			min = "Hint",
+		-- 		},
+		-- 		update_in_insert = true,
+		-- 	})
 	end
 
 	if client.supports_method("textDocument/inlayHint") then
@@ -120,6 +120,7 @@ return {
 				on_attach = on_attach,
 				settings = {
 					Lua = {
+						runtime = { version = "LuaJIT" },
 						diagnostics = {
 							globals = { "vim", "bit" },
 						},
@@ -201,34 +202,46 @@ return {
 					lspconfig[server].setup(server_opts)
 				end
 			end
-			for _, icon in ipairs(tools.ui.lsp_signs) do
-				local hl = "DiagnosticSign" .. icon.name
-				vim.fn.sign_define(hl, { text = icon.sym, texthl = hl, numhl = hl })
-			end
+			local diagnostics_symbols = {
+				[vim.diagnostic.severity.ERROR] = "x",
+				[vim.diagnostic.severity.WARN] = "!",
+				[vim.diagnostic.severity.HINT] = "?",
+				[vim.diagnostic.severity.INFO] = "i",
+			}
+			local sign_define = vim.fn.sign_define
+			sign_define("DiagnosticSignError", { text = "󰅙 ", texthl = "DiagnosticSignError" })
+			sign_define("DiagnosticSignWarn", { text = " ", texthl = "DiagnosticSignWarn" })
+			sign_define("DiagnosticSignHint", { text = " ", texthl = "DiagnosticSignHint" })
+			sign_define("DiagnosticSignInfo", { text = " ", texthl = "DiagnosticSignInfo" })
+
 			vim.diagnostic.config({
 				underline = true,
 				severity_sort = true,
 				virtual_text = {
-					prefix = tools.ui.icons.x,
-				},
-				float = {
-					header = " ",
-					border = "rounded",
-					source = "if_many",
-					title = { { " 󰌶 Diagnostics ", "FloatTitle" } },
 					prefix = function(diag)
-						local severity = vim.diagnostic.severity[diag.severity]
-						local level = severity:sub(1, 1) .. severity:sub(2):lower()
-						local prefix = string.format(" %s  ", tools.ui.lsp_signs[diag.severity].sym)
-						return prefix, "Diagnostic" .. level:gsub("^%l", string.upper)
+						vim.print(diag)
+						return diagnostics_symbols[diag.severity]
 					end,
+					-- suffix = " ",
 				},
+				-- float = {
+				-- 	header = " ",
+				-- 	border = "rounded",
+				-- 	source = "if_many",
+				-- 	title = { { " 󰌶 Diagnostics ", "FloatTitle" } },
+				-- 	prefix = function(diag)
+				-- 		local severity = vim.diagnostic.severity[diag.severity]
+				-- 		local level = severity:sub(1, 1) .. severity:sub(2):lower()
+				-- 		local prefix = string.format(" %s  ", tools.ui.lsp_signs[diag.severity].sym)
+				-- 		return prefix, "Diagnostic" .. level:gsub("^%l", string.upper)
+				-- 	end,
+				-- },
 				signs = {
 					text = {
-						[vim.diagnostic.severity.ERROR] = tools.ui.lsp_signs[1].sym,
-						[vim.diagnostic.severity.WARN] = tools.ui.lsp_signs[2].sym,
-						[vim.diagnostic.severity.INFO] = tools.ui.lsp_signs[3].sym,
-						[vim.diagnostic.severity.HINT] = tools.ui.lsp_signs[4].sym,
+						[vim.diagnostic.severity.ERROR] = "󰅙 ",
+						[vim.diagnostic.severity.WARN] = " ",
+						[vim.diagnostic.severity.HINT] = " ",
+						[vim.diagnostic.severity.INFO] = " ",
 					},
 					-- text = signs,
 					linehl = {

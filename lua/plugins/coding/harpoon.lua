@@ -12,7 +12,7 @@ return {
 			utils.vim_to_lazy_map("n", "<leader>a", function()
 				harpoon:list():add()
 			end, {}),
-			utils.vim_to_lazy_map("n", "<C-e>", function()
+			utils.vim_to_lazy_map("n", "<leader>ph", function()
 				if not MiniPick then
 					require("mini.pick").setup()
 				end
@@ -34,7 +34,9 @@ return {
 					harpoon:list():select(tonumber(idx))
 				end)
 			end, {}),
-
+			utils.vim_to_lazy_map("n", "<C-e>", function()
+				harpoon.ui:toggle_quick_menu(harpoon:list())
+			end, {}),
 			utils.vim_to_lazy_map("n", "<C-h>", function()
 				harpoon:list():select(1)
 			end, {}),

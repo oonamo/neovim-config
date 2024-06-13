@@ -64,10 +64,14 @@ opt.wildmenu = true
 
 -- opt.signcolumn = "number"
 opt.laststatus = 2 -- Or 3 for global statusline
+opt.fillchars = "fold:~"
 opt.foldlevel = 99
-opt.foldmethod = "indent"
-vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-o.list = false
+opt.foldmethod = "marker"
+-- opt.foldmethod = "indent"
+-- vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+o.list = true
+opt.listchars = "trail:∘,nbsp:‼,tab:  ,multispace: "
+o.fillchars = [[eob: ,vert:▕,vertleft:🭿,vertright:▕,verthoriz:🭿,horiz:▁,horizdown:▁,horizup:▔]]
 o.virtualedit = "block"
 
 o.shortmess = "acstFOSW"
@@ -78,7 +82,7 @@ vim.g.netrw_banner = 0
 vim.g.netrw_mouse = 2
 
 if not vim.fn.has("win32") then
-	opt.clipboard = {
+	opt.clipboard = { --{{
 		name = "WslClipboard",
 		copy = {
 			["+"] = "clip.exe",
@@ -89,7 +93,7 @@ if not vim.fn.has("win32") then
 			["*"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
 		},
 		cache_enabled = 0,
-	}
+	} --}}
 end
 
 if vim.fn.executable("rg") == 1 then

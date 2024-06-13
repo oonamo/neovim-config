@@ -1,7 +1,7 @@
 return {
 	"catppuccin/nvim",
-	lazy = false,
-	priority = 1000,
+	-- lazy = false,
+	-- priority = 1000,
 	config = function()
 		require("catppuccin").setup({
 			default_integrations = false,
