@@ -49,7 +49,6 @@ return {
 			utils.vim_to_lazy_map("n", "<C-l>", function()
 				harpoon:list():select(4)
 			end, {}),
-
 			-- Toggle previous & next buffers stored within Harpoon list
 			utils.vim_to_lazy_map("n", "<C-S-P>", function()
 				harpoon:list():prev()
