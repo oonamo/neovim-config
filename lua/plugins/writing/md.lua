@@ -1,7 +1,9 @@
+-- TODO: Prevent loading outside of floating windows
 return {
 	"MeanderingProgrammer/markdown.nvim",
 	name = "render-markdown", -- Only needed if you have another plugin named markdown.nvim
-	ft = "markdown",
+	-- ft = "markdown",
+	cond = false,
 	dependencies = { "nvim-treesitter/nvim-treesitter" },
 	opts = {
 		start_enabled = true,

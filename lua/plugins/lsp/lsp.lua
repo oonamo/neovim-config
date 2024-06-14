@@ -219,7 +219,6 @@ return {
 				severity_sort = true,
 				virtual_text = {
 					prefix = function(diag)
-						vim.print(diag)
 						return diagnostics_symbols[diag.severity]
 					end,
 					-- suffix = " ",

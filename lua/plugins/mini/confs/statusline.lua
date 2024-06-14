@@ -4,11 +4,15 @@ local function init()
 	cache.root = utils.get_path_root(vim.api.nvim_buf_get_name(0))
 	cache.branch = utils.get_git_branch(cache.root)
 	cache.remote = utils.get_git_remote_name(cache.root)
+	if cache.remote then
+		cache.remote = cache.remote:gsub("%s+", "")
+	end
 	for _, v in ipairs({ "MiniDiffSignAdd", "MiniDiffSignChange", "MiniDiffSignDelete" }) do
 		local fg, bg, _ = utils.get_hl(v)
 		vim.api.nvim_set_hl(0, "__stl_" .. v, { fg = fg, bg = bg or "NONE" })
 	end
 end
+
 vim.schedule(function()
 	init()
 end)
@@ -127,7 +131,7 @@ require("mini.statusline").setup({
 			-- Use Statusline hl for transparency support with base16 helper
 			return MiniStatusline.combine_groups({
 				{ hl = mode_hl, strings = { mode:upper() } },
-				{ hl = "MiniStatuslineDevinfo", strings = { branch, diff } },
+				{ hl = "MiniStatuslineDevinfo", strings = { git, remote, branch, diff } },
 				-- harpoon_status(),
 				"%#Statusline#",
 				"%=",

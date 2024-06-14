@@ -153,9 +153,11 @@ return {
 	{
 		"mini.sessions",
 		dev = true,
+		lazy = false,
 		config = function()
-			require("plugins.mini.confs.sessions")
-			require("mini.sessions").setup()
+			require("mini.sessions").setup({
+				auto_read = true,
+			})
 		end,
 		keys = function()
 			function Config._sessions_complete(arg_lead)
@@ -281,7 +283,7 @@ return {
 			require("plugins.mini.confs.jump2d")
 		end,
 		keys = {
-			"<CR>",
+			{ "<CR>" },
 			{ mode = "i", "<C-o>" },
 		},
 	},
