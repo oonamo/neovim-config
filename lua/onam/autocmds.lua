@@ -148,19 +148,11 @@ end
 function M.setup_writing_cmds()
 	utils.augroup("Writing", {
 		{
-			events = { "BufEnter" },
+			events = { "BufWritePre" },
 			targets = { "*.md", "*.norg", "*.org", "*.tex" },
 			command = function()
-				-- vim.opt.shiftwidth = 2
-				vim.o.nu = false
-				vim.o.signcolumn = "no"
-				vim.o.rnu = false
-				vim.o.spell = true
-				vim.o.conceallevel = 2
-				vim.o.breakindent = true
-				vim.o.breakindentopt = "list:-1"
+				require("mini.trailspace").trim()
 			end,
-			once = true,
 		},
 	})
 end

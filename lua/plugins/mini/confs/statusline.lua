@@ -98,10 +98,11 @@ local function fileInfo()
 end
 
 require("mini.statusline").setup({
+	use_icons = true,
 	content = {
 		active = function()
 			-- returns mode_hl aswell
-			local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
+			local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 0 })
 			local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = 75 })
 			local lsp = MiniStatusline.section_lsp({ trunc_width = 75 })
 			local location = MiniStatusline.section_location({ trunc_width = 75 })

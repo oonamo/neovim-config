@@ -10,7 +10,10 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 		lazypath,
 	})
 end
+
 vim.opt.rtp:prepend(lazypath)
+
+vim.cmd.colorscheme("ambition")
 
 require("globals")
 require("onam.remap")
@@ -18,7 +21,6 @@ require("onam.utils")
 require("onam.set")
 require("onam.plug_opts")
 require("onam.autocmds")
-
 require("lazy").setup({
 	spec = {
 		{ import = "plugins.coding" },
@@ -29,6 +31,9 @@ require("lazy").setup({
 	},
 	defaults = {
 		lazy = true,
+	},
+	install = {
+		colorscheme = { "ambition" },
 	},
 	change_detection = {
 		notify = false,
@@ -47,7 +52,7 @@ require("lazy").setup({
 				"netrwFileHandlers",
 				"matchit",
 				"man",
-				--"matchparen",
+				"matchparen",
 				"tar",
 				"tarPlugin",
 				"rrhelper",

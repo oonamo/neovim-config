@@ -46,11 +46,12 @@ miniclue.setup({
 		miniclue.gen_clues.marks(),
 		miniclue.gen_clues.registers(),
 		miniclue.gen_clues.windows({
-			sumode_move = true,
-			submode_navigate = true,
+			submode_move = true,
+			submode_navigate = false,
 			submode_resize = true,
 		}),
 		miniclue.gen_clues.z(),
 	},
-	window = { config = { border = "double" } },
+	-- window = { config = { border = "double" } },
+	window = { config = { border = tools.ui.borders.edge } },
 })

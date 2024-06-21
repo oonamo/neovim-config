@@ -38,16 +38,6 @@ function M.apply_custom_highlights(palette, is_light)
 	hi("MiniTablineFill", { link = "MiniTablineHidden" })
 	hi("MiniTablineTabpagesection", { link = "MiniTablineHidden" })
 
-	-- if O.ui.transparency.enable then
-	-- 	hi("LineNr", { link = "Normal" })
-	-- 	hi("SignColumn", { link = "Normal" })
-	-- 	hi("FoldColumn", { link = "Normal" })
-	-- 	hi("CursorlineFold", { link = "Normal" })
-	-- 	hi("CursorLineSign", { link = "Normal" })
-	-- 	hi("ColorColumn", { line = "Normal" })
-	-- 	-- hi("LineNr", { blend = 100 })
-	-- 	-- hi("SignColumn", { blend = 100 })
-	-- end
 	-- hi("DiagnosticVirtualTextError", { fg = p.red, bg = p.red_bg, italic = true })
 	-- hi("DiagnosticVirtualTextHint", { fg = p.cyan, bg = p.cyan_bg, italic = true })
 	-- hi("DiagnosticVirtualTextInfo", { fg = p.blue, bg = p.blue_bg, italic = true })
@@ -79,7 +69,7 @@ function M.apply_custom_highlights(palette, is_light)
 	-- horizontally when laststatus=2.
 	-- hi("VertSplit", { fg = p.bg_mid, bg = nil })
 	-- hi("WinSeparator", { fg = p.bg_mid, bg = nil })
-	utils.create_virt_diagnostics_hl()
+	-- utils.create_virt_diagnostics_hl()
 end
 
 return M

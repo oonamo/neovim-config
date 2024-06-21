@@ -26,17 +26,25 @@ end
 
 require("mini.files").setup({
 	mappings = {
-		show_help = "?",
 		go_in_plus = "<cr>",
 		go_out_plus = "<tab>",
+		close = "q",
+		go_in = "L",
+		go_out = "H",
+		reset = "<BS>",
+		reveal_cwd = "@",
+		show_help = "g?",
+		synchronize = "=",
+		trim_left = "<",
+		trim_right = ">",
 	},
 	content = {
-		prefix = function(fs_entry)
-			if fs_entry.fs_type == "directory" then
-				return " ", "MiniFilesDirectory"
-			end
-			return " ", "Normal"
-		end,
+		-- prefix = function(fs_entry)
+		-- 	if fs_entry.fs_type == "directory" then
+		-- 		return " ", "MiniFilesDirectory"
+		-- 	end
+		-- 	return " ", "Normal"
+		-- end,
 		filter = function(entry)
 			return entry.fs_type ~= "file" or entry.name ~= ".DS_Store"
 		end,
@@ -82,16 +90,10 @@ require("mini.files").setup({
 	},
 	windows = { width_nofocus = 25 },
 	-- Move stuff to the minifiles trash instead of it being gone forever.
-	options = { permanent_delete = false },
-})
-
-vim.api.nvim_create_autocmd("User", {
-	desc = "Add rounded corners to minifiles window",
-	pattern = "MiniFilesWindowOpen",
-	callback = function(args)
-		vim.api.nvim_win_set_config(args.data.win_id, { border = "rounded" })
-		vim.wo[args.data.win_id].winblend = 20
-	end,
+	options = {
+		permanent_delete = false,
+		use_as_default_explorer = true,
+	},
 })
 
 vim.api.nvim_create_autocmd("User", {
@@ -103,4 +105,3 @@ vim.api.nvim_create_autocmd("User", {
 		map_split(buf_id, "<C-v>", "belowright vertical")
 	end,
 })
-

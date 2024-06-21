@@ -2,8 +2,6 @@
 return {
 	"MeanderingProgrammer/markdown.nvim",
 	name = "render-markdown", -- Only needed if you have another plugin named markdown.nvim
-	-- ft = "markdown",
-	cond = false,
 	dependencies = { "nvim-treesitter/nvim-treesitter" },
 	opts = {
 		start_enabled = true,
@@ -47,8 +45,8 @@ return {
 		},
 		highlights = {
 			heading = {
-				-- backgrounds = { "CursorLine" },
-				backgrounds = { "DiffAdd", "DiffChange", "DiffDelete" },
+				backgrounds = { "CursorLine" },
+				-- backgrounds = { "DiffAdd", "DiffChange", "DiffDelete" },
 				foregrounds = {
 					"markdownH1",
 					"markdownH2",

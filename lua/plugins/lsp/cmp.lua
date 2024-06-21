@@ -3,10 +3,11 @@ return {
 	event = { "InsertEnter" },
 	dependencies = {
 		"hrsh7th/cmp-nvim-lsp",
-		-- load on markdown files only
-		{ "hrsh7th/cmp-buffer", cond = vim.bo.ft == "markdown" },
+		"hrsh7th/cmp-buffer",
 		"hrsh7th/cmp-cmdline",
-		"hrsh7th/cmp-nvim-lsp-signature-help",
+		-- { "hrsh7th/cmp-buffer", cond = vim.bo.ft == "markdown" },
+		-- "hrsh7th/cmp-nvim-lsp-signature-help",
+		-- load on markdown files only
 	},
 	config = function()
 		local cmp = require("cmp")
@@ -18,8 +19,8 @@ return {
 			},
 			-- fancy window
 			window = {
-				completion = cmp.config.window.bordered(),
 				documentation = cmp.config.window.bordered(),
+				completion = cmp.config.window.bordered(),
 			},
 			mapping = cmp.mapping.preset.insert({
 				["<C-b>"] = cmp.mapping.scroll_docs(-4),
@@ -44,7 +45,6 @@ return {
 			}),
 			sources = cmp.config.sources({
 				{ name = "nvim_lsp" },
-				{ name = "nvim_lsp_signature_help" },
 			}, {
 				{ name = "buffer" },
 			}),

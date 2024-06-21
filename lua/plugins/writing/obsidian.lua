@@ -1,9 +1,67 @@
 return {
 	"epwalsh/obsidian.nvim",
+	event = {
+		"BufReadPre C:/Users/onam7/Desktop/DB/DB/**.md",
+		"BufNewFile C:/Users/onam7/Desktop/DB/DB/**.md",
+	},
 	dependencies = {
 		"nvim-lua/plenary.nvim",
+		{
+			"MeanderingProgrammer/markdown.nvim",
+			name = "render-markdown",
+			dependencies = { "nvim-treesitter/nvim-treesitter" },
+			opts = {
+				start_enabled = true,
+				-- headings = { "❯", "❯", "❯", "❯", "❯", "❯" },
+				-- headings = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
+				-- headings = { "◈ ", "◆ ", "◇ ", "❖ ", "⟡ ", "⋄ " },
+				headings = { "", "", "", "", "", "" },
+
+				-- HACK: Disable checkboxes and list icons by removing it's query
+				--       And disable header tinkering
+				-- (atx_heading [
+				-- (atx_h1_marker)
+				-- (atx_h2_marker)
+				-- (atx_h3_marker)
+				-- (atx_h4_marker)
+				-- (atx_h5_marker)
+				-- (atx_h6_marker)
+				-- ] @heading)
+				markdown_query = [[
+        (thematic_break) @dash
+        (fenced_code_block) @code
+        (block_quote (block_quote_marker) @quote_marker)
+        (block_quote (paragraph (inline (block_continuation) @quote_marker)))
+        (pipe_table) @table
+        (pipe_table_header) @table_head
+        (pipe_table_delimiter_row) @table_delim
+        (pipe_table_row) @table_row
+    ]],
+				checkbox = {
+					-- Character that will replace the [ ] in unchecked checkboxes
+					unchecked = "󰄱",
+					-- Character that will replace the [x] in checked checkboxes
+					checked = "",
+				},
+				win_options = {
+					conceallevel = {
+						rendered = 2,
+						default = 2,
+					},
+					concealcursor = {
+						rendered = "",
+						default = "",
+					},
+				},
+			},
+			config = function(_, opts)
+				local _, bg, _ = utils.get_hl("Normal")
+				vim.api.nvim_set_hl(0, "Normal", { bg = bg })
+				require("render-markdown").setup(opts)
+			end,
+		},
 	},
-	ft = "markdown",
+	cmd = "GoToNotes",
 	config = function()
 		local daily_path = "100 dailies/"
 		local daily_folder = os.date("%b %Y")
@@ -58,8 +116,15 @@ return {
 				end
 			end,
 			picker = {
-				name = "mini.pick",
-				mappings = {},
+				name = "telescope.nvim",
+				-- Optional, configure key mappings for the picker. These are the defaults.
+				-- Not all pickers support all mappings.
+				mappings = {
+					-- Create a new note from your query.
+					new = "<C-x>",
+					-- Insert a link to the selected note.
+					insert_link = "<C-l>",
+				},
 			},
 
 			callbacks = {
@@ -70,8 +135,11 @@ return {
 					end)
 				end,
 				post_setup = function()
-					-- vim.cmd("set spell")
-					-- require("grapple").use_scope("obsidian")
+					if not package.loaded["wrapping"] then
+						require("wrapping").soft_wrap_mode()
+					else
+						vim.cmd.SoftWrapMode()
+					end
 				end,
 			},
 
@@ -107,6 +175,7 @@ return {
 				},
 			},
 		})
+		-- Using ft instead
 		require("onam.autocmds").setup_writing_cmds()
 		-- vim.g.markdown_folding = 1
 
@@ -192,21 +261,12 @@ return {
 			vim.schedule(function()
 				MiniSessions.read("Notes")
 				vim.o.conceallevel = 2
-				-- vim.cmd("cd C:/Users/onam7/Desktop/DB/DB")
-				-- vim.cmd("e base.md")
+				if not package.loaded["wrapping"] then
+					require("wrapping").soft_wrap_mode()
+				else
+					vim.cmd.SoftWrapMode()
+				end
 			end)
 		end, {})
 	end,
-	-- {
-	-- 	"oflisback/obsidian-bridge.nvim",
-	-- 	dependencies = { "nvim-telescope/telescope.nvim" },
-	-- 	opts = { scroll_sync = true },
-	-- 	lazy = true,
-	-- 	config = function(_, opts)
-	-- 		require("obsidian-bridge").setup(opts)
-	-- 	end,
-	-- 	keys = {
-	-- 		{ "<leader>og", function() end, desc = "Load obsidian-bridge" },
-	-- 	},
-	-- },
 }

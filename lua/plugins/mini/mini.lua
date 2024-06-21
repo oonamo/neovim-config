@@ -10,7 +10,7 @@ return {
 		config = function()
 			require("mini.extra").setup()
 		end,
-		lazy = false,
+		-- lazy = false,
 	},
 	{
 		"mini.pick",
@@ -18,103 +18,107 @@ return {
 		init = function()
 			vim.ui.select = require("mini.pick").ui_select
 		end,
-		config = function()
-			require("plugins.mini.confs.pick")
-		end,
-		keys = function()
-			if not MiniExtra then
-				require("mini.extra").setup()
-			end
-			local e_pick = MiniExtra.pickers
-			return {
-				{
-					"<C-P>",
-					require("mini.pick").builtin.files,
-					{ desc = "files" },
-				},
-				{
-					"<C-F>",
-					require("mini.pick").builtin.grep_live,
-					{ desc = "grep live" },
-				},
-				{
-					"<leader>fgs",
-					require("mini.pick").builtin.grep,
-					{ desc = "grep" },
-				},
-				{
-					"<leader>ff",
-					require("mini.pick").builtin.cli,
-					{ desc = "cli" },
-				},
-				{
-					"<leader>fh",
-					require("mini.pick").builtin.help,
-					{ desc = "help" },
-				},
-				{
-					"<leader>fr",
-					require("mini.pick").builtin.resume,
-					{ desc = "resume" },
-				},
-
-				-- Extras
-				{
-					"<leader>pehg",
-					e_pick.hl_groups,
-					{ desc = "hl groups" },
-				},
-				{
-					"<leader>peH",
-					e_pick.history,
-					{ desc = "history" },
-				},
-				{
-					"<leader>peK",
-					e_pick.keymaps,
-					{ desc = "keymaps" },
-				},
-				{
-					"<leader>pem",
-					e_pick.marks,
-					{ desc = "marks" },
-				},
-
-				{
-					"<leader>pelq",
-					function()
-						e_pick.list({ scope = "quickfix" })
-					end,
-					{ desc = "pick qf" },
-				},
-				{
-					"<leader>pell",
-					function()
-						e_pick.list({ scope = "location" })
-					end,
-					{ desc = "pick ll" },
-				},
-				{
-					"<leader>pelj",
-					function()
-						e_pick.list({ scope = "jump" })
-					end,
-					{ desc = "pick jumplist" },
-				},
-				{
-					"<leader>pelc",
-					function()
-						e_pick.list({ scope = "change" })
-					end,
-					{ desc = "pick changelist" },
-				},
-				{
-					"z=",
-					e_pick.spellsuggest,
-					{ desc = "spell suggest" },
-				},
-			}
-		end,
+		-- Telescope native is as fast as mini pick
+		-- config = function()
+		-- 	require("plugins.mini.confs.pick")
+		-- end,
+		-- keys = function()
+		-- 	if not MiniExtra then
+		-- 		require("mini.extra").setup()
+		-- 	end
+		-- 	local e_pick = MiniExtra.pickers
+		-- 	return {
+		-- 		{
+		-- 			"<C-P>",
+		-- 			require("mini.pick").builtin.files,
+		-- 			{ desc = "files" },
+		-- 		},
+		-- 		{
+		-- 			"<C-F>",
+		-- 			-- function()
+		-- 			-- 	require("mini.pick").builtin.grep_live()
+		-- 			-- end,
+		-- 			"<CMD>Pick center_grep<CR>",
+		-- 			{ desc = "grep live" },
+		-- 		},
+		-- 		{
+		-- 			"<leader>fgs",
+		-- 			require("mini.pick").builtin.grep,
+		-- 			{ desc = "grep" },
+		-- 		},
+		-- 		{
+		-- 			"<leader>ff",
+		-- 			require("mini.pick").builtin.cli,
+		-- 			{ desc = "cli" },
+		-- 		},
+		-- 		{
+		-- 			"<leader>fh",
+		-- 			require("mini.pick").builtin.help,
+		-- 			{ desc = "help" },
+		-- 		},
+		-- 		{
+		-- 			"<leader>fr",
+		-- 			require("mini.pick").builtin.resume,
+		-- 			{ desc = "resume" },
+		-- 		},
+		--
+		-- 		-- Extras
+		-- 		{
+		-- 			"<leader>pehg",
+		-- 			e_pick.hl_groups,
+		-- 			{ desc = "hl groups" },
+		-- 		},
+		-- 		{
+		-- 			"<leader>peH",
+		-- 			e_pick.history,
+		-- 			{ desc = "history" },
+		-- 		},
+		-- 		{
+		-- 			"<leader>peK",
+		-- 			e_pick.keymaps,
+		-- 			{ desc = "keymaps" },
+		-- 		},
+		-- 		{
+		-- 			"<leader>pem",
+		-- 			e_pick.marks,
+		-- 			{ desc = "marks" },
+		-- 		},
+		--
+		-- 		{
+		-- 			"<leader>pelq",
+		-- 			function()
+		-- 				e_pick.list({ scope = "quickfix" })
+		-- 			end,
+		-- 			{ desc = "pick qf" },
+		-- 		},
+		-- 		{
+		-- 			"<leader>pell",
+		-- 			function()
+		-- 				e_pick.list({ scope = "location" })
+		-- 			end,
+		-- 			{ desc = "pick ll" },
+		-- 		},
+		-- 		{
+		-- 			"<leader>pelj",
+		-- 			function()
+		-- 				e_pick.list({ scope = "jump" })
+		-- 			end,
+		-- 			{ desc = "pick jumplist" },
+		-- 		},
+		-- 		{
+		-- 			"<leader>pelc",
+		-- 			function()
+		-- 				e_pick.list({ scope = "change" })
+		-- 			end,
+		-- 			{ desc = "pick changelist" },
+		-- 		},
+		-- 		{
+		-- 			"z=",
+		-- 			e_pick.spellsuggest,
+		-- 			{ desc = "spell suggest" },
+		-- 		},
+		-- 	}
+		-- end,
 	},
 	{
 		"mini.files",
@@ -140,7 +144,7 @@ return {
 	},
 	{
 		"mini.notify",
-		events = "VeryLazy",
+		event = "VeryLazy",
 		dev = true,
 		init = function()
 			vim.notify = require("mini.notify").make_notify()
@@ -156,7 +160,7 @@ return {
 		lazy = false,
 		config = function()
 			require("mini.sessions").setup({
-				auto_read = true,
+				auto_write = true,
 			})
 		end,
 		keys = function()
@@ -231,6 +235,16 @@ return {
 		end,
 	},
 	{
+		"mini.cursorword",
+		dev = true,
+		event = "VeryLazy",
+		config = function()
+			require("mini.cursorword").setup({
+				delay = 400,
+			})
+		end,
+	},
+	{
 		"mini.move",
 		dev = true,
 		config = function()
@@ -283,7 +297,7 @@ return {
 			require("plugins.mini.confs.jump2d")
 		end,
 		keys = {
-			{ "<CR>" },
+			"<leader>r",
 			{ mode = "i", "<C-o>" },
 		},
 	},
@@ -332,6 +346,22 @@ return {
 		event = "VeryLazy",
 		config = function()
 			require("plugins.mini.confs.statusline")
+		end,
+	},
+	{
+		"mini.indentline",
+		dev = true,
+		event = "VeryLazy",
+		config = function()
+			require("plugins.mini.confs.indent")
+		end,
+	},
+	{
+		"mini.clue",
+		dev = true,
+		event = "VeryLazy",
+		config = function()
+			require("plugins.mini.confs.clues")
 		end,
 	},
 }

@@ -18,25 +18,25 @@ local use_cterm, palette
 --base0F - Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?>
 
 palette = {
-	base00 = "#fafafa",
-	base01 = "#f0f0f1",
-	base02 = "#e5e5e6",
-	base03 = "#a0a1a7",
-	base04 = "#696c77",
-	base05 = "#383a42",
-	base06 = "#202227",
-	base07 = "#090a0b",
-	base08 = "#ca1243",
-	base09 = "#d75f00",
-	base0A = "#c18401",
-	base0B = "#50a14f",
-	base0C = "#0184bc",
-	base0D = "#4078f2",
-	base0E = "#a626a4",
-	base0F = "#986801",
+	base00 = "#f6f6f6",
+	base01 = "#dedede",
+	base02 = "#bde5f2",
+	base03 = "#898989",
+	base04 = "#767676",
+	base05 = "#181818",
+	base06 = "#e8e8e8",
+	base07 = "#f8f8f8",
+	base08 = "#9c5a02",
+	base09 = "#c43e18",
+	base0A = "#c48218",
+	base0B = "#38781c",
+	base0C = "#2d6bb1",
+	base0D = "#48bac2",
+	base0E = "#a94598",
+	base0F = "#8b6c37",
 }
 
 if palette then
 	require("mini.base16").setup({ palette = palette, use_cterm = use_cterm })
-	vim.g.colors_name = "base16-one-light"
+	vim.g.colors_name = "base16-ia-light"
 end

@@ -39,14 +39,15 @@ opt.completeopt = { "menu", "menuone", "noselect" }
 -- set signcolumn
 opt.signcolumn = "yes"
 
-opt.guicursor = {
-	"n-v-c:block", -- Normal, visual, command-line: block cursor
-	"i-ci-ve:ver25", -- Insert, command-line insert, visual-exclude: vertical bar cursor with 25% width
-	"r-cr:hor20", -- Replace, command-line replace: horizontal bar cursor with 20% height
-	"o:hor50", -- Operator-pending: horizontal bar cursor with 50% height
-	"a:blinkwait700-blinkoff400-blinkon250", -- All modes: blinking settings
-	"sm:block-blinkwait175-blinkoff150-blinkon175", -- Showmatch: block cursor with specific blinking settings
-}
+opt.guicursor = ""
+-- opt.guicursor = {
+-- 	"n-v-c:block", -- Normal, visual, command-line: block cursor
+-- 	"i-ci-ve:ver25", -- Insert, command-line insert, visual-exclude: vertical bar cursor with 25% width
+-- 	"r-cr:hor20", -- Replace, command-line replace: horizontal bar cursor with 20% height
+-- 	"o:hor50", -- Operator-pending: horizontal bar cursor with 50% height
+-- 	-- "a:blinkwait700-blinkoff400-blinkon250", -- All modes: blinking settings
+-- 	-- "sm:block-blinkwait175-blinkoff150-blinkon175", -- Showmatch: block cursor with specific blinking settings
+-- }
 
 -- o.cursorline = true
 -- o.cursorlineopt = "number"
@@ -71,7 +72,7 @@ opt.foldmethod = "marker"
 -- vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 o.list = true
 opt.listchars = "trail:∘,nbsp:‼,tab:  ,multispace: "
-o.fillchars = [[eob: ,vert:▕,vertleft:🭿,vertright:▕,verthoriz:🭿,horiz:▁,horizdown:▁,horizup:▔]]
+o.fillchars = [[eob:~,vert:▕,vertleft:🭿,vertright:▕,verthoriz:🭿,horiz:▁,horizdown:▁,horizup:▔]]
 o.virtualedit = "block"
 
 o.shortmess = "acstFOSW"
@@ -102,3 +103,5 @@ if vim.fn.executable("rg") == 1 then
 	o.grepprg = "rg --vimgrep --color=never --with-filename --line-number --no-heading --smart-case --"
 	o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
 end
+
+o.cursorline = true

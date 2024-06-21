@@ -6,9 +6,20 @@ local function win_config()
 	}
 end
 
+local function float_center()
+	local height = math.floor(0.618 * vim.o.lines)
+	local width = math.floor(0.618 * vim.o.columns)
+	return {
+		anchor = "NE",
+		height = height,
+		width = math.floor(vim.o.columns * 1),
+		row = math.floor(0.5 * (vim.o.lines - height)),
+		col = math.floor(0.5 * (vim.o.columns - width)),
+	}
+end
+
 local function send_all_to_qf()
 	local mappings = MiniPick.get_picker_opts().mappings
-	local keys = mappings.mark_all .. mappings.choose_marked
 	vim.api.nvim_input(vim.api.nvim_replace_termcodes(mappings.mark_all, true, true, true))
 	vim.schedule(function()
 		vim.api.nvim_input(vim.api.nvim_replace_termcodes(mappings.choose_marked, true, true, true))
@@ -30,35 +41,11 @@ pick.setup({
 	},
 })
 
+function MiniPick.registry.center_grep()
+	vim.b.minipick_config = { window = { config = float_center() } }
+	local res = MiniPick.builtin.grep_live()
+	vim.b.minipick_config = {}
+	return res
+end
+
 vim.ui.select = MiniPick.ui_select
--- local function m(lhs, rhs, opts)
--- 	vim.keymap.set("n", lhs, rhs, opts)
--- end
--- local e_pick = MiniExtra.pickers
--- m("<C-P>", pick.builtin.files, { desc = "files" })
--- m("<C-F>", pick.builtin.grep_live, { desc = "grep live" })
--- m("<leader>fgs", pick.builtin.grep, { desc = "grep" })
--- m("<leader>ff", pick.builtin.cli, { desc = "cli" })
--- m("<leader>fh", pick.builtin.help, { desc = "help" })
--- m("<leader>fr", pick.builtin.resume, { desc = "resume" })
---
--- -- Extras
--- m("<leader>pehg", e_pick.hl_groups, { desc = "hl groups" })
--- m("<leader>peH", e_pick.history, { desc = "history" })
--- m("<leader>peK", e_pick.keymaps, { desc = "keymaps" })
--- m("<leader>pem", e_pick.marks, { desc = "marks" })
---
--- m("<leader>pelq", function()
--- 	e_pick.list({ scope = "quickfix" })
--- end, { desc = "pick qf" })
--- m("<leader>pell", function()
--- 	e_pick.list({ scope = "location" })
--- end, { desc = "pick ll" })
--- m("<leader>pelj", function()
--- 	e_pick.list({ scope = "jump" })
--- end, { desc = "pick jumplist" })
--- m("<leader>pelc", function()
--- 	e_pick.list({ scope = "change" })
--- end, { desc = "pick changelist" })
---
--- m("z=", e_pick.spellsuggest, { desc = "spell suggest" })

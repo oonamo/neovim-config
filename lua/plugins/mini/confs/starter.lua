@@ -1,17 +1,7 @@
 local starter = require("mini.starter")
 
--- local grapple = require("grapple")
--- gets in the way
--- local function grapple_paths()
--- 	return vim.iter(grapple.tags())
--- 		:map(function(v)
--- 			return { name = v.path, section = "Grapple", action = "e " .. v.path }
--- 		end)
--- 		:totable()
--- end
-
 local function header()
-	math.randomseed(124, 101251254)
+	math.randomseed(124)
 	local maxwells_eqns = {
 		[[∫E⋅dl = -d/dt∫B⋅ds, Lenz's law / Faraday's Law.]],
 		[[∫E⋅dA = ρ/ϵ, Gauss's Law ]],
@@ -21,7 +11,10 @@ local function header()
 	local sep = "=================================="
 
 	local rand = math.random(3)
-	return vim.iter({ sep, maxwells_eqns[rand] }):join("\n")
+
+	-- HACK: Use ipairs to skip iterator check
+	-- return vim.iter({ sep, maxwells_eqns[rand] }):join("\n")
+	return sep .. "\n" .. maxwells_eqns[rand]
 end
 
 starter.setup({

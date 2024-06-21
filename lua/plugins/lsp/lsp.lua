@@ -6,19 +6,19 @@ local function on_attach(client, buffer, use_code_lens)
 	local methods = vim.lsp.protocol.Methods
 	local picker = MiniExtra.pickers
 	require("onam.helpers.lsp.codeaction")
-	if client.name == "rust_analyzer" then
-		vim.keymap.set("n", "K", function()
-			vim.cmd.RustLsp({ "hover", "actions" })
-		end, { desc = "Rust Hover Actions", buffer = buffer })
-		vim.keymap.set("n", "<leader>vca", function()
-			vim.cmd.RustLsp("codeAction")
-		end, { desc = "Rust code actions", buffer = buffer })
-	else
-		vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, {
-			desc = "Preview code actions",
-			buffer = buffer,
-		})
-	end
+	-- if client.name == "rust_analyzer" then
+	-- 	vim.keymap.set("n", "K", function()
+	-- 		vim.cmd.RustLsp({ "hover", "actions" })
+	-- 	end, { desc = "Rust Hover Actions", buffer = buffer })
+	-- 	vim.keymap.set("n", "<leader>vca", function()
+	-- 		vim.cmd.RustLsp("codeAction")
+	-- 	end, { desc = "Rust code actions", buffer = buffer })
+	-- else
+	vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, {
+		desc = "Preview code actions",
+		buffer = buffer,
+	})
+	-- end
 	vim.keymap.set("n", "gd", vim.lsp.buf.definition, {
 		desc = "go to buffer definition",
 		buffer = buffer,
@@ -100,9 +100,9 @@ local function on_attach(client, buffer, use_code_lens)
 		-- 	end,
 		-- })
 	end
-	if client.supports_method(methods.textDocument_documentHighlight) then
-		require("onam.helpers.lsp.documentHighlight")(buffer)
-	end
+	-- if client.supports_method(methods.textDocument_documentHighlight) then
+	-- 	require("onam.helpers.lsp.documentHighlight")(buffer)
+	-- end
 
 	vim.keymap.set("n", "<leader>ld", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })
 end
@@ -118,6 +118,28 @@ return {
 		opts = {
 			lua_ls = {
 				on_attach = on_attach,
+				on_init = function(client)
+					if not client.workspace_folders or not client.workspace_folders[1] then
+						return
+					end
+					local path = client.workspace_folders[1].name
+					-- if has luarc but not neovim
+					if
+						(vim.loop.fs_stat(path .. "/.luarc.json") or vim.loop.fs_stat(path .. "/.luarc.jsonc"))
+						and not vim.loop.fs_stat(path .. "/init.lua")
+					then
+						client.config.settings.Lua = {
+							workspace = {
+								library = {
+									["C:\\Users\\onam7\\projects\\manage_my_home\\lua"] = true,
+								},
+							},
+							runtime = { version = "Lua 5.4" },
+						}
+						-- client.config.settings.Lua = {}
+						return
+					end
+				end,
 				settings = {
 					Lua = {
 						runtime = { version = "LuaJIT" },
@@ -152,6 +174,7 @@ return {
 			clangd = {
 				on_attach = on_attach,
 			},
+			rust_analyzer = defaults,
 			omnisharp = {
 				on_attach = on_attach,
 				cmd = {
@@ -223,18 +246,18 @@ return {
 					end,
 					-- suffix = " ",
 				},
-				-- float = {
-				-- 	header = " ",
-				-- 	border = "rounded",
-				-- 	source = "if_many",
-				-- 	title = { { " 󰌶 Diagnostics ", "FloatTitle" } },
-				-- 	prefix = function(diag)
-				-- 		local severity = vim.diagnostic.severity[diag.severity]
-				-- 		local level = severity:sub(1, 1) .. severity:sub(2):lower()
-				-- 		local prefix = string.format(" %s  ", tools.ui.lsp_signs[diag.severity].sym)
-				-- 		return prefix, "Diagnostic" .. level:gsub("^%l", string.upper)
-				-- 	end,
-				-- },
+				float = {
+					header = " ",
+					border = "rounded",
+					source = "if_many",
+					title = { { " 󰌶 Diagnostics ", "FloatTitle" } },
+					prefix = function(diag)
+						local severity = vim.diagnostic.severity[diag.severity]
+						local level = severity:sub(1, 1) .. severity:sub(2):lower()
+						local prefix = string.format(" %s  ", tools.ui.lsp_signs[diag.severity].sym)
+						return prefix, "Diagnostic" .. level:gsub("^%l", string.upper)
+					end,
+				},
 				signs = {
 					text = {
 						[vim.diagnostic.severity.ERROR] = "󰅙 ",

@@ -1,10 +1,21 @@
+-- TODO: SO SLOWWWWWWWWWWWW
 return {
 	"catppuccin/nvim",
-	lazy = false,
-	priority = 1000,
+	name = "catppuccin",
+	-- lazy = false,
+	-- priority = 1000,
+	-- init = function()
+	-- 	vim.o.background = "dark"
+	-- end,
 	config = function()
 		require("catppuccin").setup({
 			default_integrations = false,
+			flavour = "auto",
+			background = {
+				light = "latte",
+				-- dark = "macchiato",
+				dark = "mocha",
+			},
 			integrations = {
 				cmp = true,
 				fidget = false,
@@ -15,7 +26,7 @@ return {
 					scope_color = "sapphire",
 					colored_indent_levels = false,
 				},
-				mason = true,
+				mason = false,
 				native_lsp = {
 					enabled = true,
 					virtual_text = {
@@ -37,9 +48,9 @@ return {
 					},
 				},
 				noice = false,
-				notify = true,
+				notify = false,
 				symbols_outline = false,
-				telescope = false,
+				telescope = true,
 				treesitter = true,
 				treesitter_context = false,
 				mini = {
@@ -49,12 +60,10 @@ return {
 			},
 			custom_highlights = function(colors)
 				return {
-					MiniTablineCurrent = { link = "Normal" },
+					String = { fg = colors.pink },
 				}
 			end,
 		})
-
-		vim.o.background = "dark"
-		vim.cmd.colorscheme("catppuccin-macchiato")
+		vim.cmd.colorscheme("catppuccin")
 	end,
 }
