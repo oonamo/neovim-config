@@ -20,3 +20,13 @@ require("mini.colors").interactive()
 -- Make background colors colder and foreground warmer
 -- chan_add('temperature', -40, { filter = 'bg' })
 -- chan_add('temperature', 40,  { filter = 'fg' })
+
+-- chan_add("lightness", 85, { filter = "bg" })
+-- chan_add("lightness", -20, { filter = "fg" })
+-- chan_add('saturation', 30,  { filter = 'fg' })
+-- chan_add('saturation', -100,  { filter = 'bg' })
+-- chan_set('saturation', { 10, 90 }, {
+--     filter = 'fg',
+--     gamut_clip = "lightness"
+-- })
+-- chan_add('saturation', -100,  { filter = 'bg' })

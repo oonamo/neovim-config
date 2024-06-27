@@ -65,13 +65,19 @@ opt.wildmenu = true
 
 -- opt.signcolumn = "number"
 opt.laststatus = 2 -- Or 3 for global statusline
-opt.fillchars = "fold:~"
+-- opt.fillchars = "fold:~"
+-- opt.fillchars = {
+-- 	fold = "~",
+-- 	stl = "─",
+-- 	stlnc = "─",
+-- }
 opt.foldlevel = 99
 opt.foldmethod = "marker"
 -- opt.foldmethod = "indent"
 -- vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 o.list = true
 opt.listchars = "trail:∘,nbsp:‼,tab:  ,multispace: "
+-- o.fillchars = [[eob:~,vert:▕,vertleft:🭿,vertright:▕,verthoriz:🭿,horiz:▁,horizdown:▁,horizup:▔,stl:─]]
 o.fillchars = [[eob:~,vert:▕,vertleft:🭿,vertright:▕,verthoriz:🭿,horiz:▁,horizdown:▁,horizup:▔]]
 o.virtualedit = "block"
 
@@ -105,3 +111,5 @@ if vim.fn.executable("rg") == 1 then
 end
 
 o.cursorline = true
+-- o.statusline =
+-- 	[[%=%{%&bt==#''?'%t':(&bt==#'terminal'?'[Terminal] '.bufname()->substitute('^term://.\{-}//\d\+:\s*','',''):'%F')%}%m%= %l:%c]]

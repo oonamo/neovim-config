@@ -71,6 +71,13 @@ return {
 			utils.vim_to_lazy_map("n", "<C-S-N>", function()
 				harpoon:list():next()
 			end, {}),
+			harpoon:extend({
+				UI_CREATE = function(cx)
+					vim.keymap.set("n", "l", function()
+						harpoon.ui:select_menu_item()
+					end, { buffer = cx.bufnr })
+				end,
+			}),
 		}
 	end,
 }

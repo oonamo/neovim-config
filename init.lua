@@ -11,9 +11,8 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	})
 end
 
+vim.o.background = "dark"
 vim.opt.rtp:prepend(lazypath)
-
-vim.cmd.colorscheme("ambition")
 
 require("globals")
 require("onam.remap")
@@ -70,6 +69,18 @@ require("lazy").setup({
 		},
 	},
 })
+
+-- LIGHT:
+-- vim.cmd.colorscheme("newpaper-light")
+-- vim.cmd.colorscheme("light-ambition")
+-- vim.cmd.colorscheme("lighter")
+-- vim.cmd.colorscheme("lovefox")
+
+-- DARK:
+-- vim.cmd.colorscheme("ambition")
+-- vim.cmd.colorscheme("brown_ambition")
+-- vim.cmd.colorscheme("retrobox")
+-- vim.cmd.colorscheme("catppuccin-mocha")
 
 if vim.g.neovide then
 	require("onam.gui")

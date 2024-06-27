@@ -421,6 +421,21 @@ local HLS = {
 	-- `MiniIndentscopeSymbol` - symbol showing on every line of scope.
 	-- `MiniIndentscopePrefix` - space before symbol. By default made so as to
 	{ "MiniIndentscopeSymbol", { fg = C.white } },
+	{ "TelescopePreviewBorder", { bg = C.astral0, fg = C.astral0 } },
+	{ "TelescopePreviewNormal", { bg = C.astral0 } },
+	{ "TelescopePreviewTitle", { fg = C.astral0, bg = C.astral10 } },
+	{ "TelescopePromptBorder", { bg = C.space4, fg = C.space4 } },
+	{ "TelescopePromptCounter", { fg = C.green, bold = true } },
+	{ "TelescopePromptNormal", { bg = C.space4 } },
+	{ "TelescopePromptPrefix", { bg = C.space4 } },
+	{ "TelescopePromptTitle", { fg = C.space4, bg = C.space4 } },
+	{ "TelescopeResultsBorder", { bg = C.space2, fg = C.space2 } },
+	{ "TelescopeResultsNormal", { bg = C.space2 } },
+	{ "TelescopeResultsTitle", { fg = C.space2, bg = C.space2 } },
+	{ "TelescopeSelection", { bg = C.space4 } },
+	{ "MiniDiffSignDelete", { link = "GitSignsDelete" } },
+	{ "MiniDiffSignsChange", { link = "GitSignsChange" } },
+	{ "MiniDiffSignsAdd", { link = "GitSignsAdd" } },
 }
 
 local function h(group, style)
@@ -468,7 +483,7 @@ do
 	end
 
 	vim.o.background = "dark"
-	vim.g.colors_name = "lua-embark"
+	vim.g.colors_name = "ambition"
 
 	-- 256-color terminal colors
 	vim.g.terminal_ansi_colors = {

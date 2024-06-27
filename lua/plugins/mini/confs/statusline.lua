@@ -1,129 +1,102 @@
-local cache = {}
+local function create_status_hl()
+	local stl_fg, stl_bg, _ = utils.get_hl("Statusline")
+	local _, norm_bg, _ = utils.get_hl("Normal")
 
-local function init()
-	cache.root = utils.get_path_root(vim.api.nvim_buf_get_name(0))
-	cache.branch = utils.get_git_branch(cache.root)
-	cache.remote = utils.get_git_remote_name(cache.root)
-	if cache.remote then
-		cache.remote = cache.remote:gsub("%s+", "")
-	end
-	for _, v in ipairs({ "MiniDiffSignAdd", "MiniDiffSignChange", "MiniDiffSignDelete" }) do
-		local fg, bg, _ = utils.get_hl(v)
-		vim.api.nvim_set_hl(0, "__stl_" .. v, { fg = fg, bg = bg or "NONE" })
+	if norm_bg == stl_fg then
+		vim.api.nvim_set_hl(0, "stl_fill", { fg = stl_bg, bg = "NONE" })
+	else
+		vim.api.nvim_set_hl(0, "stl_fill", { fg = stl_fg, bg = "NONE" })
 	end
 end
 
-vim.schedule(function()
-	init()
-end)
+vim.api.nvim_create_autocmd("Colorscheme", {
+	callback = create_status_hl,
+})
 
-local function put(hl, str, surround)
-	surround = surround or ""
-	return "%#" .. hl .. "#" .. str
-end
+create_status_hl()
 
-local function GitDiff()
-	local summary = vim.b.minidiff_summary
-	local any_has_change = false
-	local t = {}
-	if summary == nil or summary.add == nil then
-		return ""
+local H = {}
+
+H.section_pathname = function(args)
+	args = vim.tbl_extend("force", {
+		modified_hl = nil,
+		filename_hl = nil,
+		trunc_width = 80,
+	}, args or {})
+
+	if vim.bo.buftype == "terminal" then
+		return "%t"
 	end
-	if summary.add > 0 then
-		table.insert(t, put("__stl_MiniDiffSignAdd", "+" .. summary.add))
-		any_has_change = true
+
+	local path = vim.fn.expand("%:p")
+	local cwd = vim.uv.cwd() or ""
+	cwd = vim.uv.fs_realpath(cwd) or ""
+
+	if path:find(cwd, 1, true) == 1 then
+		path = path:sub(#cwd + 2)
 	end
-	if summary.change > 0 then
-		table.insert(t, put("__stl_MiniDiffSignChange", "~" .. summary.change))
-		any_has_change = true
+
+	local sep = package.config:sub(1, 1)
+	local parts = vim.split(path, sep)
+	if require("mini.statusline").is_truncated(args.trunc_width) and #parts > 3 then
+		parts = { parts[1], "…", parts[#parts - 1], parts[#parts] }
 	end
-	if summary.delete > 0 then
-		table.insert(t, put("__stl_MiniDiffSignDelete", "-" .. summary.delete))
-		any_has_change = true
+
+	local dir = ""
+	if #parts > 1 then
+		dir = table.concat({ unpack(parts, 1, #parts - 1) }, sep) .. sep
 	end
-	if any_has_change then
-		return "," .. table.concat(t, "")
+
+	local file = parts[#parts]
+	local file_hl = ""
+	if vim.bo.modified and args.modified_hl then
+		file_hl = "%#" .. args.modified_hl .. "#"
+	elseif args.filename_hl then
+		file_hl = "%#" .. args.filename_hl .. "#"
 	end
-	return table.concat(t, "")
-end
-
-local function git_remote()
-	return cache.remote
-end
-
-local function git_branch()
-	return cache.branch
-end
-
-local function harpoon_status()
-	if vim.bo.buftype ~= "" then
-		return ""
-	end -- not a normal buffer, no harpoon status
-
-	local ok, harpoon = pcall(require, "harpoon")
-	if not ok then
-		return ""
-	end -- no harpoon, no harpoon status
-
-	local list = harpoon:list()
-
-	local current_mark = "-"
-	if #list.items == 0 then
-		return ""
-	end -- no items in the list, no harpoon status
-
-	local current_file = vim.fn.expand("%:p:.")
-	for idx, item in ipairs(list.items) do
-		if item.value == current_file then
-			current_mark = tostring(idx)
-			break
-		end
-	end
-	return string.format("%s/%s", current_mark, #list.items)
-end
-
-local function GitInfo()
-	local str = ""
-	if cache.branch ~= nil then
-		str = str .. "(" .. put("Statusline", cache.branch)
-	end
-	if cache.remote ~= nil then
-		str = str .. ":" .. put("Statusline", cache.remote:gsub("%s+", ""))
-	end
-	return str .. GitDiff() .. ")"
-end
-
-local function fileInfo()
-	return vim.bo.ft == "" and "" or vim.bo.ft:gsub("^%l", string.upper)
+	return dir .. file_hl .. file
 end
 
 require("mini.statusline").setup({
 	use_icons = true,
 	content = {
 		active = function()
-			-- returns mode_hl aswell
-			local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 0 })
-			local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = 75 })
+			local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
+			local git = MiniStatusline.section_git({ trunc_width = 40 })
+			local diff = MiniStatusline.section_diff({ trunc_width = 75, icon = "" })
+			local diagnostics = MiniStatusline.section_diagnostics({
+				icon = "",
+				trunc_width = 75,
+				signs = {
+					ERROR = "x",
+					WARN = "!",
+					HINT = "?",
+					INFO = "i",
+				},
+			})
 			local lsp = MiniStatusline.section_lsp({ trunc_width = 75 })
+			-- local filename = MiniStatusline.section_filename({ trunc_width = 140 })
+			-- local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = 120 })
 			local location = MiniStatusline.section_location({ trunc_width = 75 })
 			local search = MiniStatusline.section_searchcount({ trunc_width = 75 })
-			local git = MiniStatusline.section_git({ trunc_width = 40 })
-			local diff = MiniStatusline.section_diff({ trunc_width = 75 })
-			local file = fileInfo()
-			local branch = git_branch()
-			local remote = git_remote()
-			-- local git = GitInfo()
 
-			-- Use Statusline hl for transparency support with base16 helper
+			local pathname = H.section_pathname({
+				trunc_width = 100,
+				-- filename_hl = "Normal",
+				-- modified_hl = "Special",
+				filename_hl = "Normal",
+				modified_hl = "Special",
+			})
+
 			return MiniStatusline.combine_groups({
-				{ hl = mode_hl, strings = { mode:upper() } },
-				{ hl = "MiniStatuslineDevinfo", strings = { git, remote, branch, diff } },
-				harpoon_status(),
-				"%#Statusline#",
-				"%=",
-				[[%{%&bt==#''?'%t':(&bt==#'terminal'?'[Terminal] '.bufname()->substitute('^term://.\{-}//\d\+:\s*','',''):'%F')%} ]],
-				"%=",
-				{ hl = "Statusline", strings = { diagnostics, lsp } },
+				{ hl = mode_hl, strings = { mode } },
+				{ hl = "MiniStatuslineDevinfo", strings = { git .. diff } },
+				"%#Comment#",
+				"%<", -- Mark general truncate point
+				"%=", -- End left alignment
+				{ hl = "Comment", strings = { pathname } },
+				"%=", -- End left alignment
+				{ hl = "MiniStatuslineFileinfo", strings = { diagnostics, lsp } },
 				{ hl = mode_hl, strings = { search .. location } },
 			})
 		end,
@@ -132,5 +105,3 @@ require("mini.statusline").setup({
 		end,
 	},
 })
-
--- require("mini.statusline").setup()

@@ -5,6 +5,7 @@
 local function on_attach(client, buffer, use_code_lens)
 	local methods = vim.lsp.protocol.Methods
 	local picker = MiniExtra.pickers
+	-- local telescope = require("telescope.builtin")
 	require("onam.helpers.lsp.codeaction")
 	-- if client.name == "rust_analyzer" then
 	-- 	vim.keymap.set("n", "K", function()
@@ -24,10 +25,10 @@ local function on_attach(client, buffer, use_code_lens)
 		buffer = buffer,
 	})
 	vim.keymap.set("n", "gD", function()
-		picker.lsp({ scope = "definition" })
+		require("telescope.builtin").lsp_definitions({ jump_type = "split" })
 	end, { desc = "go to multiple definition", buffer = buffer })
 	vim.keymap.set("n", "<leader>vws", function()
-		picker.lsp({ scope = "workspace_symbol" })
+		require("telescope.builtin").lsp_workspace_symbols()
 	end, { desc = "Find workspace_symbol", buffer = buffer })
 	vim.keymap.set("n", "<leader>vd", function()
 		vim.diagnostic.open_float()
@@ -44,7 +45,7 @@ local function on_attach(client, buffer, use_code_lens)
 		buffer = buffer,
 	})
 	vim.keymap.set("n", "<leader>vrr", function()
-		picker.lsp({ scope = "references" })
+		require("telescope.builtin").lsp_references()
 	end, {
 		desc = "Go to lsp references",
 		buffer = buffer,
@@ -57,6 +58,9 @@ local function on_attach(client, buffer, use_code_lens)
 		desc = "Signature help",
 		buffer = buffer,
 	})
+	vim.keymap.set("n", "<leader>vxx", function()
+		require("telescope.builtin").diagnostics()
+	end, { desc = "Find diagnostics", buffer = buffer })
 	if O.ui.signature == "custom" then
 		require("onam.helpers.lsp.signature").setup(client, buffer)
 	end

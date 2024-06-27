@@ -96,6 +96,8 @@ require("mini.files").setup({
 	},
 })
 
+-- TODO: Telescope to files
+
 vim.api.nvim_create_autocmd("User", {
 	desc = "Add minifiles split keymaps",
 	pattern = "MiniFilesBufferCreate",

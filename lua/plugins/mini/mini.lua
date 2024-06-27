@@ -265,13 +265,13 @@ return {
 			require("plugins.mini.confs.surround")
 		end,
 		keys = {
-			{ mode = "n", "gsa" }, -- Add surrounding in Normal and Visual modes
-			{ mode = "n", "gsd" }, -- Delete surrounding
-			{ mode = "n", "gsf" }, -- Find surrounding (to the right)
-			{ mode = "n", "gsF" }, -- Find surrounding (to the left)
-			{ mode = "n", "gsh" }, -- Highlight surrounding
-			{ mode = "n", "gsr" }, -- Replace surrounding
-			{ mode = "n", "gsn" }, -- Update `n_lines`
+			{ mode = "n", "sa" }, -- Add surrounding in Normal and Visual modes
+			{ mode = "n", "sd" }, -- Delete surrounding
+			{ mode = "n", "sf" }, -- Find surrounding (to the right)
+			{ mode = "n", "sF" }, -- Find surrounding (to the left)
+			{ mode = "n", "sh" }, -- Highlight surrounding
+			{ mode = "n", "sr" }, -- Replace surrounding
+			{ mode = "n", "sn" }, -- Update `n_lines`
 		},
 	},
 	{
@@ -329,6 +329,7 @@ return {
 	{
 		"mini.git",
 		dev = true,
+		lazy = false,
 		config = function()
 			require("plugins.mini.confs.git")
 		end,
@@ -337,6 +338,14 @@ return {
 			utils.vim_to_lazy_map("n", "<leader>gac", "<CMD>Git add %<CR>", { desc = "Git Add Current" }),
 			utils.vim_to_lazy_map("n", "<leader>gaa", "<CMD>Git add .<CR>", { desc = "Git Add All" }),
 			utils.vim_to_lazy_map("n", "<leader>gp", "<CMD>Git push<CR>", { desc = "Git Push" }),
+			{
+				mode = { "n", "x" },
+				"<leader>gx",
+				function()
+					require("mini.git").show_at_cursor()
+				end,
+				desc = "Show info at cursor",
+			},
 			{ "<leader>gc" },
 		},
 	},
@@ -362,6 +371,14 @@ return {
 		event = "VeryLazy",
 		config = function()
 			require("plugins.mini.confs.clues")
+		end,
+	},
+	{
+		"mini.jump",
+		dev = true,
+		event = "VeryLazy",
+		config = function()
+			require("plugins.mini.confs.jump")
 		end,
 	},
 }

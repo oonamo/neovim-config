@@ -1,9 +1,10 @@
 local buf_list = {}
+
 require("mini.tabline").setup({
-	show_icons = false,
-	format = function(buf_id, label)
-		return "|  " .. MiniTabline.default_format(buf_id, label) .. "   "
-	end,
+	show_icons = true,
+	-- format = function(buf_id, label)
+	-- 	return "|  " .. MiniTabline.default_format(buf_id, label) .. "   "
+	-- end,
 })
 
 vim.keymap.set("n", "gbp", function()
