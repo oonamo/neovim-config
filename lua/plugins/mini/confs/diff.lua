@@ -1,4 +1,10 @@
-require("mini.diff").setup()
+require("mini.diff").setup({
+	view = {
+		style = "sign",
+		-- signs = { add = "┃", change = "┃", delete = "┃" },
+		signs = { add = "▍ ", change = "▍ ", delete = "▍ " },
+	},
+})
 
 local function gen_hls()
 	local hls = {
@@ -8,8 +14,13 @@ local function gen_hls()
 	}
 
 	for _, hl in ipairs(hls) do
-		local fg, _, _ = utils.get_hl(hl)
+		local fg, bg, _ = utils.get_hl(hl)
 		vim.api.nvim_set_hl(0, hl .. "_stl", { fg = fg })
+		-- if fg then
+		-- 	vim.api.nvim_set_hl(0, hl, { fg = fg, bg = fg })
+		-- elseif bg then
+		-- 	vim.api.nvim_set_hl(0, hl, { fg = bg, bg = bg })
+		-- end
 	end
 end
 
@@ -45,5 +56,6 @@ local format_summary = function(data)
 	end
 	vim.b[data.buf].minidiff_summary_string = table.concat(t, " ")
 end
+
 local au_opts = { pattern = { "MiniDiffUpdated", "BufEnter" }, callback = format_summary }
 vim.api.nvim_create_autocmd("User", au_opts)

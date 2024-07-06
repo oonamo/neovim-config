@@ -6,60 +6,70 @@ return {
 	},
 	dependencies = {
 		"nvim-lua/plenary.nvim",
-		{
-			"MeanderingProgrammer/markdown.nvim",
-			name = "render-markdown",
-			dependencies = { "nvim-treesitter/nvim-treesitter" },
-			opts = {
-				start_enabled = true,
-				-- headings = { "❯", "❯", "❯", "❯", "❯", "❯" },
-				-- headings = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
-				-- headings = { "◈ ", "◆ ", "◇ ", "❖ ", "⟡ ", "⋄ " },
-				headings = { "", "", "", "", "", "" },
-
-				-- HACK: Disable checkboxes and list icons by removing it's query
-				--       And disable header tinkering
-				-- (atx_heading [
-				-- (atx_h1_marker)
-				-- (atx_h2_marker)
-				-- (atx_h3_marker)
-				-- (atx_h4_marker)
-				-- (atx_h5_marker)
-				-- (atx_h6_marker)
-				-- ] @heading)
-				markdown_query = [[
-        (thematic_break) @dash
-        (fenced_code_block) @code
-        (block_quote (block_quote_marker) @quote_marker)
-        (block_quote (paragraph (inline (block_continuation) @quote_marker)))
-        (pipe_table) @table
-        (pipe_table_header) @table_head
-        (pipe_table_delimiter_row) @table_delim
-        (pipe_table_row) @table_row
-    ]],
-				checkbox = {
-					-- Character that will replace the [ ] in unchecked checkboxes
-					unchecked = "󰄱",
-					-- Character that will replace the [x] in checked checkboxes
-					checked = "",
-				},
-				win_options = {
-					conceallevel = {
-						rendered = 2,
-						default = 2,
-					},
-					concealcursor = {
-						rendered = "",
-						default = "",
-					},
-				},
-			},
-			config = function(_, opts)
-				local _, bg, _ = utils.get_hl("Normal")
-				vim.api.nvim_set_hl(0, "Normal", { bg = bg })
-				require("render-markdown").setup(opts)
-			end,
-		},
+		-- {
+		-- 	"MeanderingProgrammer/markdown.nvim",
+		-- 	name = "render-markdown",
+		-- 	dependencies = { "nvim-treesitter/nvim-treesitter" },
+		-- 	opts = {
+		-- 		start_enabled = true,
+		-- 		-- headings = { "❯", "❯", "❯", "❯", "❯", "❯" },
+		-- 		-- headings = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
+		-- 		-- headings = { "◈ ", "◆ ", "◇ ", "❖ ", "⟡ ", "⋄ " },
+		-- 		headings = { "", "", "", "", "", "" },
+		--
+		-- 		-- HACK: Disable checkboxes and list icons by removing it's query
+		-- 		--       And disable header tinkering
+		-- 		-- (atx_heading [
+		-- 		-- (atx_h1_marker)
+		-- 		-- (atx_h2_marker)
+		-- 		-- (atx_h3_marker)
+		-- 		-- (atx_h4_marker)
+		-- 		-- (atx_h5_marker)
+		-- 		-- (atx_h6_marker)
+		-- 		-- ] @heading)
+		-- 		markdown_query = [[
+		--       (thematic_break) @dash
+		--       (fenced_code_block) @code
+		--       (block_quote (block_quote_marker) @quote_marker)
+		--       (block_quote (paragraph (inline (block_continuation) @quote_marker)))
+		--       (pipe_table) @table
+		--       (pipe_table_header) @table_head
+		--       (pipe_table_delimiter_row) @table_delim
+		--       (pipe_table_row) @table_row
+		--   ]],
+		-- 		checkbox = {
+		-- 			-- Character that will replace the [ ] in unchecked checkboxes
+		-- 			unchecked = "󰄱",
+		-- 			-- Character that will replace the [x] in checked checkboxes
+		-- 			checked = "",
+		-- 		},
+		-- 		win_options = {
+		-- 			conceallevel = {
+		-- 				rendered = 2,
+		-- 				default = 2,
+		-- 			},
+		-- 			concealcursor = {
+		-- 				rendered = "",
+		-- 				default = "",
+		-- 			},
+		-- 		},
+		-- 	},
+		-- 	config = function(_, opts)
+		-- 		local _, bg, _ = utils.get_hl("Normal")
+		-- 		vim.api.nvim_set_hl(0, "Normal", { bg = bg })
+		-- 		require("render-markdown").setup(opts)
+		-- 	end,
+		-- },
+		-- {
+		-- 	"OXY2DEV/markview.nvim",
+		-- 	dependencies = {
+		-- 		"nvim-tree/nvim-web-devicons", -- Used by the code bloxks
+		-- 	},
+		--
+		-- 	config = function()
+		-- 		require("markview").setup()
+		-- 	end,
+		-- },
 	},
 	cmd = "GoToNotes",
 	config = function()
@@ -91,6 +101,8 @@ return {
 				alias_format = "%B %d, %Y",
 			},
 
+			-- disable_front
+			-- disable_frontmatter = true,
 			note_id_func = function(title)
 				if title ~= nil then
 					return title:gsub("%s+", "-")
@@ -103,6 +115,26 @@ return {
 				end
 			end,
 
+			note_frontmatter_func = function(note)
+				if note.title then
+					note:add_alias(note.title)
+				end
+
+                -- stylua: ignore
+				local out = { id = note.id, aliases = note.aliases, tags = note.tags, hubs = note.hubs or { "[[]]" } }
+
+				if note.metadata ~= nil and not vim.tbl_isempty(note.metadata) then
+					for k, v in pairs(note.metadata) do
+						out[k] = v
+					end
+				end
+				for _, v in ipairs(note.tags) do
+				end
+
+				return out
+			end,
+
+			notes_subdir = "900 Unordered",
 			new_notes_location = "notes_subdir",
 
 			-- For windows only
@@ -117,8 +149,6 @@ return {
 			end,
 			picker = {
 				name = "telescope.nvim",
-				-- Optional, configure key mappings for the picker. These are the defaults.
-				-- Not all pickers support all mappings.
 				mappings = {
 					-- Create a new note from your query.
 					new = "<C-x>",
@@ -179,6 +209,7 @@ return {
 		require("onam.autocmds").setup_writing_cmds()
 		-- vim.g.markdown_folding = 1
 
+		vim.keymap.set("n", "<leader>nn", "<cmd>ObsidianTemplate notes<cr>", { desc = "Obisidan note template" })
 		utils.norm_lazy_to_normal({ "<leader>ow", "<cmd>ObsidianWorkspace<CR>", desc = "[O]bsidian [G]o" })
 		utils.norm_lazy_to_normal({ "<leader>oq", "<cmd>ObsidianQuickSwitch<CR>", desc = "[O]bsidian [F]ind" })
 		utils.norm_lazy_to_normal({

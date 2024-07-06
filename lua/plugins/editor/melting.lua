@@ -1,8 +1,8 @@
 return {
-	"nyoom-engineering/oxocarbon.nvim",
+	"backdround/melting",
 	-- lazy = false,
 	-- priority = 1000,
 	config = function()
-		vim.cmd.colorscheme("oxocarbon")
+		vim.cmd.colorscheme("melting")
 	end,
 }

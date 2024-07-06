@@ -1,7 +1,8 @@
 return {
 	"nvim-telescope/telescope.nvim",
 	lazy = true,
-	tag = "0.1.6",
+	branch = "0.1.x",
+	-- tag = "0.1.6",
 	-- or                              , branch = '0.1.x',
 	dependencies = {
 		"nvim-lua/plenary.nvim",
@@ -77,6 +78,16 @@ return {
 					})
 				end,
 				desc = "Open dir in mini files",
+			},
+			{
+				"<leader>fi",
+				builtin.highlights,
+				desc = "highlights",
+			},
+			{
+				"<leader>fm",
+				builtin.marks,
+				desc = "marks",
 			},
 		}
 	end,

@@ -281,7 +281,7 @@ function utils.hsl_to_rgb(h, s, l)
 end
 
 ---@class Highlight
----@field forground? string
+---@field foreground? string
 ---@field background? string
 ---@field special? table
 ---@field blend number

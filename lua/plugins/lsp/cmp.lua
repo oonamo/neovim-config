@@ -4,7 +4,7 @@ return {
 	dependencies = {
 		"hrsh7th/cmp-nvim-lsp",
 		"hrsh7th/cmp-buffer",
-		"hrsh7th/cmp-cmdline",
+		-- "hrsh7th/cmp-cmdline",
 		-- { "hrsh7th/cmp-buffer", cond = vim.bo.ft == "markdown" },
 		-- "hrsh7th/cmp-nvim-lsp-signature-help",
 		-- load on markdown files only
@@ -42,6 +42,7 @@ return {
 						fallback()
 					end
 				end, { "i", "s" }),
+				["<C-k>"] = cmp.mapping.open_docs(),
 			}),
 			sources = cmp.config.sources({
 				{ name = "nvim_lsp" },
@@ -49,20 +50,26 @@ return {
 				{ name = "buffer" },
 			}),
 		})
-		cmp.setup.cmdline({ "/", "?" }, {
-			mapping = cmp.mapping.preset.cmdline(),
-			sources = {
-				{ name = "buffer" },
-			},
-		})
-		cmp.setup.cmdline(":", {
-			mapping = cmp.mapping.preset.cmdline(),
-			sources = cmp.config.sources({
-				{ name = "path" },
-			}, {
-				{ name = "cmdline" },
-			}),
-			matching = { disallow_symbol_nonprefix_matching = false },
-		})
+		-- cmp.setup.cmdline({ "/", "?" }, {
+		-- 	mapping = cmp.mapping.preset.cmdline(),
+		-- 	sources = {
+		-- 		{ name = "buffer" },
+		-- 	},
+		-- })
+		-- cmp.setup.cmdline(":", {
+		-- 	mapping = cmp.mapping.preset.cmdline(),
+		-- 	sources = cmp.config.sources({
+		-- 		{ name = "path" },
+		-- 	}, {
+		-- 		-- only use for wilder
+		-- 		-- {
+		-- 		-- 	name = "cmdline",
+		-- 		-- 	option = {
+		-- 		-- 		ignore_cmds = { "edit" },
+		-- 		-- 	},
+		-- 		-- },
+		-- 	}),
+		-- 	matching = { disallow_symbol_nonprefix_matching = false },
+		-- })
 	end,
 }

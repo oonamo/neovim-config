@@ -1,21 +1,11 @@
-local function create_status_hl()
-	local stl_fg, stl_bg, _ = utils.get_hl("Statusline")
-	local _, norm_bg, _ = utils.get_hl("Normal")
-
-	if norm_bg == stl_fg then
-		vim.api.nvim_set_hl(0, "stl_fill", { fg = stl_bg, bg = "NONE" })
-	else
-		vim.api.nvim_set_hl(0, "stl_fill", { fg = stl_fg, bg = "NONE" })
-	end
-end
-
-vim.api.nvim_create_autocmd("Colorscheme", {
-	callback = create_status_hl,
-})
-
-create_status_hl()
-
-local H = {}
+---@class Status
+---@field section_pathname function(args)
+---@field cache table
+---@field harpoon table
+local H = {
+	cache = {},
+	harpoon = {},
+}
 
 H.section_pathname = function(args)
 	args = vim.tbl_extend("force", {
@@ -29,8 +19,12 @@ H.section_pathname = function(args)
 	end
 
 	local path = vim.fn.expand("%:p")
+	if H.cache.prev_path == path then
+		return H.cache.prev_str_path
+	end
 	local cwd = vim.uv.cwd() or ""
 	cwd = vim.uv.fs_realpath(cwd) or ""
+	H.cache.prev_path = path
 
 	if path:find(cwd, 1, true) == 1 then
 		path = path:sub(#cwd + 2)
@@ -54,7 +48,37 @@ H.section_pathname = function(args)
 	elseif args.filename_hl then
 		file_hl = "%#" .. args.filename_hl .. "#"
 	end
-	return dir .. file_hl .. file
+	H.cache.prev_str_path = dir .. file_hl .. file
+	return H.cache.prev_str_path
+end
+
+local ok, harpoon = pcall(require, "harpoon")
+
+function H.harpoon.harpoon_status()
+	if not ok then
+		return
+	end
+
+	local cur_buf = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":~:.")
+	if H.harpoon.prev_buf == cur_buf then
+		return H.harpoon.prev_str
+	end
+
+	local list = harpoon:list().items
+	local count = #list
+
+	local inactive = "-"
+	local active = ""
+	for i, v in ipairs(list) do
+		if v.value == cur_buf then
+			active = tostring(i)
+			break
+		end
+	end
+
+	H.harpoon.prev_buf = cur_buf
+	H.harpoon.prev_str = (active ~= "" and active or inactive) .. "/" .. tostring(count)
+	return H.harpoon.prev_str
 end
 
 require("mini.statusline").setup({
@@ -67,13 +91,14 @@ require("mini.statusline").setup({
 			local diagnostics = MiniStatusline.section_diagnostics({
 				icon = "",
 				trunc_width = 75,
-				signs = {
-					ERROR = "x",
-					WARN = "!",
-					HINT = "?",
-					INFO = "i",
-				},
+				-- signs = {
+				-- 	ERROR = "x",
+				-- 	WARN = "!",
+				-- 	HINT = "?",
+				-- 	INFO = "i",
+				-- },
 			})
+
 			local lsp = MiniStatusline.section_lsp({ trunc_width = 75 })
 			-- local filename = MiniStatusline.section_filename({ trunc_width = 140 })
 			-- local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = 120 })
@@ -89,7 +114,8 @@ require("mini.statusline").setup({
 			})
 
 			return MiniStatusline.combine_groups({
-				{ hl = mode_hl, strings = { mode } },
+				-- { hl = mode_hl, strings = { mode } },
+				{ hl = "Statusline", strings = { mode } },
 				{ hl = "MiniStatuslineDevinfo", strings = { git .. diff } },
 				"%#Comment#",
 				"%<", -- Mark general truncate point
@@ -97,7 +123,7 @@ require("mini.statusline").setup({
 				{ hl = "Comment", strings = { pathname } },
 				"%=", -- End left alignment
 				{ hl = "MiniStatuslineFileinfo", strings = { diagnostics, lsp } },
-				{ hl = mode_hl, strings = { search .. location } },
+				{ hl = "MiniStatuslineFileinfo", strings = { location, H.harpoon.harpoon_status() } },
 			})
 		end,
 		inactive = function()

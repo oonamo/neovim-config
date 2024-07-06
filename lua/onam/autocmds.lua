@@ -121,6 +121,26 @@ function M.set_qol()
 	-- 		},
 	-- 	})
 	-- end
+	if O.ui.transparency.enable then
+		vim.api.nvim_create_autocmd("Colorscheme", {
+			callback = vim.schedule_wrap(function(event)
+				if vim.tbl_contains(O.ui.transparency.exclude_list, event.match) then
+					return
+				end
+				require("mini.colors")
+					.get_colorscheme()
+					:add_transparency({
+						general = true,
+						float = false,
+						statuscolumn = true,
+						statusline = true,
+						tabline = true,
+						winbar = true,
+					})
+					:apply()
+			end),
+		})
+	end
 end
 
 function M.setup_status_cmds()
@@ -146,15 +166,34 @@ function M.setup_status_cmds()
 end
 
 function M.setup_writing_cmds()
-	utils.augroup("Writing", {
-		{
-			events = { "BufWritePre" },
-			targets = { "*.md", "*.norg", "*.org", "*.tex" },
-			command = function()
-				require("mini.trailspace").trim()
-			end,
-		},
-	})
+	-- utils.augroup("Writing", {
+	-- 	{
+	-- 		events = { "BufWritePre" },
+	-- 		targets = { "*.md", "*.norg", "*.org", "*.tex" },
+	-- 		command = function()
+	-- 			require("mini.trailspace").trim()
+	-- 		end,
+	-- 	},
+	-- 	{
+	-- 		events = { "Colorscheme" },
+	-- 		command = function()
+	-- 			local hls = {
+	-- 				ObsidianTodo = { bold = true, fg = "#f78c6c" },
+	-- 				ObsidianDone = { bold = true, fg = "#89ddff" },
+	-- 				ObsidianRightArrow = { bold = true, fg = "#f78c6c" },
+	-- 				ObsidianTilde = { bold = true, fg = "#ff5370" },
+	-- 				ObsidianBullet = { bold = true, fg = "#89ddff" },
+	-- 				ObsidianRefText = { underline = true, fg = "#c792ea" },
+	-- 				ObsidianExtLinkIcon = { fg = "#c792ea" },
+	-- 				ObsidianTag = { italic = true, fg = "#89ddff" },
+	-- 				ObsidianHighlightText = { bg = "#75662e" },
+	-- 			}
+	-- 			for k, v in pairs(hls) do
+	-- 				vim.api.nvim_set_hl(0, k, v)
+	-- 			end
+	-- 		end,
+	-- 	},
+	-- })
 end
 
 M.set_qol()

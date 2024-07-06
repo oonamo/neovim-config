@@ -71,10 +71,13 @@ return {
 	},
 	keys = {
 		{
-			"<leader>fm",
+			"<leader>wm",
 			function()
 				vim.cmd("ZenMode")
 				if vim.bo.ft == "markdown" then
+					if not package.loaded["twilight"] then
+						require("twilight").setup()
+					end
 					vim.cmd("Twilight")
 				end
 			end,

@@ -1,8 +1,18 @@
--- HACK: Use mini.nvim as a package, then lazy load every individual plugin
 return {
 	{
 		"echasnovski/mini.nvim",
 		lazy = false,
+	},
+	{
+		"mini.bracketed",
+		dev = true,
+		config = function()
+			require("mini.bracketed").setup()
+		end,
+		keys = {
+			{ "[" },
+			{ "]" },
+		},
 	},
 	{
 		"mini.extra",
@@ -157,7 +167,7 @@ return {
 	{
 		"mini.sessions",
 		dev = true,
-		lazy = false,
+		-- lazy = false,
 		config = function()
 			require("mini.sessions").setup({
 				auto_write = true,
@@ -253,7 +263,6 @@ return {
 		keys = {
 			{ mode = "v", "H" },
 			{ mode = "v", "L" },
-			{ mode = "v", "H" },
 			{ mode = "v", "J" },
 			{ mode = "v", "K" },
 		},
@@ -297,8 +306,10 @@ return {
 			require("plugins.mini.confs.jump2d")
 		end,
 		keys = {
+			"s",
 			"<leader>r",
 			{ mode = "i", "<C-o>" },
+			{ mode = "i", "<C-r>" },
 		},
 	},
 	{
@@ -376,9 +387,53 @@ return {
 	{
 		"mini.jump",
 		dev = true,
-		event = "VeryLazy",
+		-- event = "VeryLazy",
 		config = function()
 			require("plugins.mini.confs.jump")
+		end,
+		keys = {
+			{ "F" },
+			{ "f" },
+			{ "T" },
+			{ "t" },
+		},
+	},
+	{
+		"mini.icons",
+		dev = true,
+		event = "VeryLazy",
+		-- init = function()
+		-- 	package.preload["nvim-web-devicons"] = function()
+		-- 		local Icons = require("mini.icons")
+		-- 		local ret = {}
+		-- 		package.loaded["nvim-web-devicons"] = ret
+		-- 		Icons.mock_nvim_web_devicons()
+		--
+		-- 		local function get(cat)
+		-- 			local all = {}
+		-- 			for _, name in ipairs(Icons.list(cat)) do
+		-- 				local icon, color = ret.get_icon_color(cat == "file" and name, cat == "extension" and name)
+		-- 				all[name] = { icon = icon, color = color }
+		-- 			end
+		-- 			return all
+		-- 		end
+		--
+		-- 		ret.get_icons_by_extension = function()
+		-- 			return get("extension")
+		-- 		end
+		--
+		-- 		ret.get_icons_by_filename = function()
+		-- 			return get("file")
+		-- 		end
+		--
+		-- 		ret.get_icons = function()
+		-- 			return vim.tbl_extend("force", get("file"), get("extension"))
+		-- 		end
+		-- 		return ret
+		-- 	end
+		-- end,
+		config = function()
+			require("plugins.mini.confs.icons")
 		end,
 	},
 }

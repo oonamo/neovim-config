@@ -1,11 +1,12 @@
 -- HACK Disable semantic tokens for highlights that already incorporate the highlight
 -- vim.highlight.priorities.semantic_tokens = 95
 
----@param use_code_lens boolean|nil
+---@param client vim.lsp.Client
+---@param buffer number
+---@param use_code_lens boolean?
 local function on_attach(client, buffer, use_code_lens)
 	local methods = vim.lsp.protocol.Methods
-	local picker = MiniExtra.pickers
-	-- local telescope = require("telescope.builtin")
+	local telescope = require("telescope.builtin")
 	require("onam.helpers.lsp.codeaction")
 	-- if client.name == "rust_analyzer" then
 	-- 	vim.keymap.set("n", "K", function()
@@ -25,10 +26,10 @@ local function on_attach(client, buffer, use_code_lens)
 		buffer = buffer,
 	})
 	vim.keymap.set("n", "gD", function()
-		require("telescope.builtin").lsp_definitions({ jump_type = "split" })
+		telescope.lsp_definitions({ jump_type = "split" })
 	end, { desc = "go to multiple definition", buffer = buffer })
 	vim.keymap.set("n", "<leader>vws", function()
-		require("telescope.builtin").lsp_workspace_symbols()
+		telescope.lsp_workspace_symbols()
 	end, { desc = "Find workspace_symbol", buffer = buffer })
 	vim.keymap.set("n", "<leader>vd", function()
 		vim.diagnostic.open_float()
@@ -45,7 +46,7 @@ local function on_attach(client, buffer, use_code_lens)
 		buffer = buffer,
 	})
 	vim.keymap.set("n", "<leader>vrr", function()
-		require("telescope.builtin").lsp_references()
+		telescope.lsp_references()
 	end, {
 		desc = "Go to lsp references",
 		buffer = buffer,
@@ -59,7 +60,7 @@ local function on_attach(client, buffer, use_code_lens)
 		buffer = buffer,
 	})
 	vim.keymap.set("n", "<leader>vxx", function()
-		require("telescope.builtin").diagnostics()
+		telescope.diagnostics()
 	end, { desc = "Find diagnostics", buffer = buffer })
 	if O.ui.signature == "custom" then
 		require("onam.helpers.lsp.signature").setup(client, buffer)
@@ -140,7 +141,6 @@ return {
 							},
 							runtime = { version = "Lua 5.4" },
 						}
-						-- client.config.settings.Lua = {}
 						return
 					end
 				end,
@@ -188,15 +188,38 @@ return {
 				root_dir = { "*.sln", "*.csproj", "omnisharp.json", "function.json", "*.log" },
 			},
 			ruff_lsp = defaults,
+			--- A minimalist spell/grammer checker
+			-- harper_ls = {
+			-- 	settings = {
+			-- 		["harper-ls"] = {
+			-- 			linters = {
+			-- 				spell_check = true,
+			-- 				spelled_numbers = false,
+			-- 				an_a = true,
+			-- 				sentence_capitalization = true,
+			-- 				unclosed_quotes = true,
+			-- 				wrong_quotes = false,
+			-- 				long_sentences = true,
+			-- 				repeated_words = true,
+			-- 				spaces = true,
+			-- 				matcher = true,
+			-- 				correct_number_suffix = true,
+			-- 				number_suffix_capitalization = true,
+			-- 				multiple_sequential_pronouns = true,
+			-- 			},
+			-- 		},
+			-- 	},
+			-- },
 			markdown_oxide = {
+				-- root_dir = { ".moxide.toml", "moxide.toml" },
 				on_attach = function(client, bufnr)
 					on_attach(client, bufnr)
 					-- client.server_capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = true
-					vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach" }, {
-						buffer = bufnr,
-						callback = vim.lsp.codelens.refresh,
-					})
-					vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
+					-- vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach" }, {
+					-- 	buffer = bufnr,
+					-- 	callback = vim.lsp.codelens.refresh,
+					-- })
+					-- vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
 				end,
 			},
 		},
@@ -216,18 +239,7 @@ return {
 				if server_opts.root_dir then
 					server_opts.root_dir = lspconfig.util.root_pattern(unpack(server_opts.root_dir))
 				end
-				if server == "arduino_language_server" then
-					lspconfig.arduino_language_server.setup({
-						cmd = {
-							"arduino-language-server",
-							"-cli-config",
-							"C:\\Users\\onam7\\AppData\\Local\\Arduino15\\arduino-cli.yaml",
-						},
-						unpack(server_opts),
-					})
-				else
-					lspconfig[server].setup(server_opts)
-				end
+				lspconfig[server].setup(server_opts)
 			end
 			local diagnostics_symbols = {
 				[vim.diagnostic.severity.ERROR] = "x",
