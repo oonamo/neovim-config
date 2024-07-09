@@ -21,6 +21,15 @@ map("n", "%", "%zz", opts("smooth match", true, { noremap = true }))
 map("n", "*", "*zz", opts("smooth search up", true, { noremap = true }))
 map("n", "N", "#zz", opts("smooth search up", true, { noremap = true }))
 
+-- map("n", "]m", function()
+-- 	vim.cmd("silent! /^##\\+\\s.*#")
+-- 	vim.cmd("nohlsearch")
+-- end, {
+-- 	desc = "go to next header",
+-- })
+map("n", "]m", [[/^##\+\s.*$<cr>:nohlsearch<cr>]], { silent = true, desc = "next md header" })
+map("n", "[m", [[?^##\+\s.*$<cr>:nohlsearch<cr>]], { silent = true, desc = "next md header" })
+
 vim.api.nvim_set_keymap("i", "<C-c>", "<Esc>", opts("escape insert mode", true, { noremap = true }))
 
 --Move Command with J and K
@@ -35,7 +44,6 @@ map("n", "<leader>Q", ":cprev<CR>", opts("quickfix prev", true))
 --Copy to Keyboard
 map({ "n", "v" }, "<leader>y", '"+y', opts("copy to clipboard", true))
 map({ "n", "v" }, "<leader>yy", '"+yy', opts("copy to clipboard", true))
-
 --Paste from Keyboard
 map({ "n", "v" }, "<leader>ps", '"+p', opts("paste from clipboard", true))
 map({ "n", "v" }, "<leader>P", '"+P', opts("paste from clipboard", true))

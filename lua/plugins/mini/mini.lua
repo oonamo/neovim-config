@@ -340,7 +340,7 @@ return {
 	{
 		"mini.git",
 		dev = true,
-		lazy = false,
+		-- lazy = false,
 		config = function()
 			require("plugins.mini.confs.git")
 		end,
@@ -363,7 +363,7 @@ return {
 	{
 		"mini.statusline",
 		dev = true,
-		event = "VeryLazy",
+		-- event = "VeryLazy",
 		config = function()
 			require("plugins.mini.confs.statusline")
 		end,

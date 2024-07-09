@@ -1,5 +1,10 @@
 _G.O = {}
 
+O.lsp = {
+	cmp = true,
+	mini = false,
+}
+
 O.ui = {
 	transparency = {
 		enable = false,

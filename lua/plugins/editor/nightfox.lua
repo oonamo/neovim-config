@@ -4,6 +4,6 @@ return {
 	-- lazy = false,
 	opts = {},
 	config = function()
-		vim.cmd.colorscheme("dawnfox")
+		vim.cmd.colorscheme("duskfox")
 	end,
 }

@@ -166,37 +166,41 @@ function M.setup_status_cmds()
 end
 
 function M.setup_writing_cmds()
-	-- utils.augroup("Writing", {
-	-- 	{
-	-- 		events = { "BufWritePre" },
-	-- 		targets = { "*.md", "*.norg", "*.org", "*.tex" },
-	-- 		command = function()
-	-- 			require("mini.trailspace").trim()
-	-- 		end,
-	-- 	},
-	-- 	{
-	-- 		events = { "Colorscheme" },
-	-- 		command = function()
-	-- 			local hls = {
-	-- 				ObsidianTodo = { bold = true, fg = "#f78c6c" },
-	-- 				ObsidianDone = { bold = true, fg = "#89ddff" },
-	-- 				ObsidianRightArrow = { bold = true, fg = "#f78c6c" },
-	-- 				ObsidianTilde = { bold = true, fg = "#ff5370" },
-	-- 				ObsidianBullet = { bold = true, fg = "#89ddff" },
-	-- 				ObsidianRefText = { underline = true, fg = "#c792ea" },
-	-- 				ObsidianExtLinkIcon = { fg = "#c792ea" },
-	-- 				ObsidianTag = { italic = true, fg = "#89ddff" },
-	-- 				ObsidianHighlightText = { bg = "#75662e" },
-	-- 			}
-	-- 			for k, v in pairs(hls) do
-	-- 				vim.api.nvim_set_hl(0, k, v)
-	-- 			end
-	-- 		end,
-	-- 	},
-	-- })
+	utils.augroup("Writing", {
+		{
+			events = { "BufWritePre" },
+			targets = { "*.md", "*.norg", "*.org", "*.tex" },
+			command = function()
+				require("mini.trailspace").trim()
+			end,
+		},
+		{
+			events = { "Colorscheme" },
+			command = function()
+				local hls = {
+					ObsidianTodo = { bold = true, fg = "#f78c6c" },
+					ObsidianDone = { bold = true, fg = "#89ddff" },
+					ObsidianRightArrow = { bold = true, fg = "#f78c6c" },
+					ObsidianTilde = { bold = true, fg = "#ff5370" },
+					ObsidianBullet = { bold = true, fg = "#89ddff" },
+					ObsidianRefText = { underline = true, fg = "#c792ea" },
+					ObsidianExtLinkIcon = { fg = "#c792ea" },
+					ObsidianTag = { italic = true, fg = "#89ddff" },
+					ObsidianHighlightText = { bg = "#75662e" },
+				}
+				for k, v in pairs(hls) do
+					vim.api.nvim_set_hl(0, k, v)
+				end
+			end,
+		},
+	})
 end
 
+-- vim.api.nvim_create_autocmd("User", {
+-- 	pattern = "VeryLazy",
+-- 	callback = M.set_qol,
+-- 	once = true,
+-- })
 M.set_qol()
 
--- M.setup_status_cmds()
 return M

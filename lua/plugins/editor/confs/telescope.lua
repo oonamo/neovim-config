@@ -4,6 +4,7 @@ local layout = require("telescope.actions.layout")
 local defaults = require("telescope.themes").get_ivy({
 	layout_config = { height = 0.30 },
 })
+
 defaults.prompt_prefix = "  " -- ❯  
 defaults.selection_caret = "▍ "
 defaults.multi_icon = " "
@@ -19,6 +20,10 @@ defaults.vimgrep_arguments = {
 	"--smart-case",
 }
 
+defaults.preview = {
+	hide_on_startup = true,
+}
+
 defaults.mappings = {
 	n = {
 		["<ESC>"] = actions.close,
@@ -32,12 +37,6 @@ defaults.mappings = {
 
 require("telescope").setup({
 	defaults = defaults,
-	pickers = {
-		spell_suggest = {
-			theme = "cursor",
-			layout_config = { height = 0.45 },
-		},
-	},
 	extensions = {
 		fzf = {
 			fuzzy = true, -- false will only do exact matching

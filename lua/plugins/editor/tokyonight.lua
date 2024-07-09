@@ -1,15 +1,10 @@
 return {
 	"folke/tokyonight.nvim",
-	lazy = false,
+	-- lazy = false,
 	priority = 1000,
 	opts = {
 		style = "night",
 		day_brightness = 0.3,
-		-- transparent = true, -- Enable this to disable setting the background color
-		-- on_colors = function(colors)
-		-- 	colors.bg = "#181616"
-		-- 	colors.bg_dark = "#1c1c1c"
-		-- end,
 		on_highlights = function(hl, c)
 			local prompt = "#2d3149"
 			hl.TelescopeNormal = {

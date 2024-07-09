@@ -119,31 +119,32 @@ return {
 		dependencies = {
 			"williamboman/mason.nvim",
 		},
-		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
+		-- event = { "BufReadPost", "BufNewFile", "BufWritePre" },
+		event = "LazyFile",
 		opts = {
 			lua_ls = {
 				on_attach = on_attach,
-				on_init = function(client)
-					if not client.workspace_folders or not client.workspace_folders[1] then
-						return
-					end
-					local path = client.workspace_folders[1].name
-					-- if has luarc but not neovim
-					if
-						(vim.loop.fs_stat(path .. "/.luarc.json") or vim.loop.fs_stat(path .. "/.luarc.jsonc"))
-						and not vim.loop.fs_stat(path .. "/init.lua")
-					then
-						client.config.settings.Lua = {
-							workspace = {
-								library = {
-									["C:\\Users\\onam7\\projects\\manage_my_home\\lua"] = true,
-								},
-							},
-							runtime = { version = "Lua 5.4" },
-						}
-						return
-					end
-				end,
+				-- on_init = function(client)
+				-- 	if not client.workspace_folders or not client.workspace_folders[1] then
+				-- 		return
+				-- 	end
+				-- 	local path = client.workspace_folders[1].name
+				-- 	-- if has luarc but not neovim
+				-- 	if
+				-- 		(vim.loop.fs_stat(path .. "/.luarc.json") or vim.loop.fs_stat(path .. "/.luarc.jsonc"))
+				-- 		and not vim.loop.fs_stat(path .. "/init.lua")
+				-- 	then
+				-- 		client.config.settings.Lua = {
+				-- 			workspace = {
+				-- 				library = {
+				-- 					["C:\\Users\\onam7\\projects\\manage_my_home\\lua"] = true,
+				-- 				},
+				-- 			},
+				-- 			runtime = { version = "Lua 5.4" },
+				-- 		}
+				-- 		return
+				-- 	end
+				-- end,
 				settings = {
 					Lua = {
 						runtime = { version = "LuaJIT" },
@@ -188,45 +189,20 @@ return {
 				root_dir = { "*.sln", "*.csproj", "omnisharp.json", "function.json", "*.log" },
 			},
 			ruff_lsp = defaults,
-			--- A minimalist spell/grammer checker
-			-- harper_ls = {
-			-- 	settings = {
-			-- 		["harper-ls"] = {
-			-- 			linters = {
-			-- 				spell_check = true,
-			-- 				spelled_numbers = false,
-			-- 				an_a = true,
-			-- 				sentence_capitalization = true,
-			-- 				unclosed_quotes = true,
-			-- 				wrong_quotes = false,
-			-- 				long_sentences = true,
-			-- 				repeated_words = true,
-			-- 				spaces = true,
-			-- 				matcher = true,
-			-- 				correct_number_suffix = true,
-			-- 				number_suffix_capitalization = true,
-			-- 				multiple_sequential_pronouns = true,
-			-- 			},
-			-- 		},
-			-- 	},
-			-- },
 			markdown_oxide = {
-				-- root_dir = { ".moxide.toml", "moxide.toml" },
-				on_attach = function(client, bufnr)
-					on_attach(client, bufnr)
-					-- client.server_capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = true
-					-- vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach" }, {
-					-- 	buffer = bufnr,
-					-- 	callback = vim.lsp.codelens.refresh,
-					-- })
-					-- vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
-				end,
+				on_attach = on_attach,
 			},
 		},
 		config = function(_, opts)
 			local lspconfig = require("lspconfig")
-			-- capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
-			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+			local capabilities = (function()
+				if O.lsp.cmp then
+					return require("cmp_nvim_lsp").default_capabilities()
+				end
+				return {
+					workspace = {},
+				}
+			end)()
 			capabilities.workspace = {
 				didChangeWatchedFiles = {
 					dynamicRegistration = true,

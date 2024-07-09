@@ -289,15 +289,13 @@ return {
 		})
 
 		vim.api.nvim_create_user_command("GoToNotes", function()
-			vim.schedule(function()
-				MiniSessions.read("Notes")
-				vim.o.conceallevel = 2
-				if not package.loaded["wrapping"] then
-					require("wrapping").soft_wrap_mode()
-				else
-					vim.cmd.SoftWrapMode()
-				end
-			end)
+			require("mini.sessions").read("Notes")
+			vim.o.conceallevel = 2
+			if not package.loaded["wrapping"] then
+				require("wrapping").soft_wrap_mode()
+			else
+				vim.cmd.SoftWrapMode()
+			end
 		end, {})
 	end,
 }
