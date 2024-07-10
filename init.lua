@@ -1,8 +1,3 @@
-vim.loader.enable()
-
--- TODO: Script to delete lsp.log every so often
--- TODO: Watch https://github.com/neovim/neovim/issues/8587
-
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	vim.notify("Downloading lazy...")
@@ -15,9 +10,21 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 		lazypath,
 	})
 end
+vim.opt.rtp:prepend(lazypath)
+
+-- LazyVim utils
+-- local lazyvimpath = vim.fn.stdpath("data") .. "/lazy/LazyVim"
+-- if not vim.uv.fs_stat(lazyvimpath) then
+-- 	local lazyrepo = "https://github.com/LazyVim/LazyVim.git"
+-- 	vim.fn.system({ "git", "clone", "--filter=blob:none", lazyrepo, lazyvimpath })
+-- end
+
+---@diagnostic disable-next-line: undefined-field
+-- vim.opt.rtp:prepend(lazyvimpath)
+-- _G.LazyVim = require("lazyvim.util")
+-- LazyVim.plugin.lazy_file()
 
 vim.o.background = "dark"
-vim.opt.rtp:prepend(lazypath)
 require("utils.lazy")
 require("globals")
 require("onam.remap")
@@ -29,18 +36,17 @@ require("onam.autocmds")
 ---@diagnostic disable-next-line: different-requires
 require("lazy").setup({
 	spec = {
-		{ import = "plugins.coding" },
+		-- { "LazyVim/LazyVim" },
 		{ import = "plugins.editor" },
 		{ import = "plugins.lsp" },
-		{ import = "plugins.writing" },
+		{ import = "plugins.coding" },
 		{ import = "plugins.mini" },
-		{ import = "plugins.dev" },
 	},
 	defaults = {
 		lazy = true,
 	},
 	install = {
-		colorscheme = { "tokyonight-night" },
+		colorscheme = { "tokyonight-moon" },
 	},
 	change_detection = {
 		notify = false,
@@ -79,28 +85,7 @@ require("lazy").setup({
 })
 require("onam.statuscolumn")
 
--- LIGHT:
--- vim.cmd.colorscheme("newpaper-light")
--- vim.cmd.colorscheme("light-ambition")
--- vim.cmd.colorscheme("lighter")
--- vim.cmd.colorscheme("lovefox")
-
--- DARK:
--- vim.cmd.colorscheme("ambition")
--- vim.cmd.colorscheme("brown_ambition")
--- vim.cmd.colorscheme("retrobox")
 vim.cmd.colorscheme("catppuccin-mocha")
--- vim.cmd.colorscheme("minimal")
--- vim.cmd.colorscheme("kopicat")
--- vim.cmd.colorscheme("ice-cave")
--- vim.cmd.colorscheme("sunbather")
--- vim.cmd.colorscheme("seoul256-sharp")
--- vim.cmd.colorscheme("seoul256-dull")
--- vim.cmd.colorscheme("pink-moon-dark")
--- vim.cmd.colorscheme("sierra")
--- vim.cmd.colorscheme("blie")
--- vim.cmd.colorscheme("lavi")
--- vim.cmd.colorscheme("grei")
 
 if vim.g.neovide then
 	require("onam.gui")

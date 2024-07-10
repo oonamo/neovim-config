@@ -244,16 +244,16 @@ return {
 			require("plugins.mini.confs.diff")
 		end,
 	},
-	{
-		"mini.cursorword",
-		dev = true,
-		event = "VeryLazy",
-		config = function()
-			require("mini.cursorword").setup({
-				delay = 400,
-			})
-		end,
-	},
+	-- {
+	-- 	"mini.cursorword",
+	-- 	dev = true,
+	-- 	event = "VeryLazy",
+	-- 	config = function()
+	-- 		require("mini.cursorword").setup({
+	-- 			delay = 400,
+	-- 		})
+	-- 	end,
+	-- },
 	{
 		"mini.move",
 		dev = true,
@@ -312,23 +312,23 @@ return {
 			{ mode = "i", "<C-r>" },
 		},
 	},
-	{
-		"mini.map",
-		dev = true,
-		config = function()
-			require("plugins.mini.confs.map")
-		end,
-		keys = {
-			{
-				"<leader>mo",
-				function()
-					MiniMap.toggle()
-				end,
-				desc = "open mini map",
-			},
-			{ "<leader>mv" },
-		},
-	},
+	-- {
+	-- 	"mini.map",
+	-- 	dev = true,
+	-- 	config = function()
+	-- 		require("plugins.mini.confs.map")
+	-- 	end,
+	-- 	keys = {
+	-- 		{
+	-- 			"<leader>mo",
+	-- 			function()
+	-- 				MiniMap.toggle()
+	-- 			end,
+	-- 			desc = "open mini map",
+	-- 		},
+	-- 		{ "<leader>mv" },
+	-- 	},
+	-- },
 	{
 		"mini.hi",
 		dev = true,
@@ -360,30 +360,30 @@ return {
 			{ "<leader>gc" },
 		},
 	},
-	{
-		"mini.statusline",
-		dev = true,
-		-- event = "VeryLazy",
-		config = function()
-			require("plugins.mini.confs.statusline")
-		end,
-	},
-	{
-		"mini.indentline",
-		dev = true,
-		event = "VeryLazy",
-		config = function()
-			require("plugins.mini.confs.indent")
-		end,
-	},
-	{
-		"mini.clue",
-		dev = true,
-		event = "VeryLazy",
-		config = function()
-			require("plugins.mini.confs.clues")
-		end,
-	},
+	-- {
+	-- 	"mini.statusline",
+	-- 	dev = true,
+	-- 	-- event = "VeryLazy",
+	-- 	config = function()
+	-- 		require("plugins.mini.confs.statusline")
+	-- 	end,
+	-- },
+	-- {
+	-- 	"mini.indentline",
+	-- 	dev = true,
+	-- 	event = "VeryLazy",
+	-- 	config = function()
+	-- 		require("plugins.mini.confs.indent")
+	-- 	end,
+	-- },
+	-- {
+	-- 	"mini.clue",
+	-- 	dev = true,
+	-- 	event = "VeryLazy",
+	-- 	config = function()
+	-- 		require("plugins.mini.confs.clues")
+	-- 	end,
+	-- },
 	{
 		"mini.jump",
 		dev = true,
