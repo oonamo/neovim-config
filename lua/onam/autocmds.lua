@@ -196,11 +196,11 @@ function M.setup_writing_cmds()
 	})
 end
 
--- vim.api.nvim_create_autocmd("User", {
--- 	pattern = "VeryLazy",
--- 	callback = M.set_qol,
--- 	once = true,
--- })
-M.set_qol()
+vim.api.nvim_create_autocmd("User", {
+	pattern = "VeryLazy",
+	callback = M.set_qol,
+	once = true,
+})
+-- M.set_qol()
 
 return M

@@ -12,20 +12,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- LazyVim utils
--- local lazyvimpath = vim.fn.stdpath("data") .. "/lazy/LazyVim"
--- if not vim.uv.fs_stat(lazyvimpath) then
--- 	local lazyrepo = "https://github.com/LazyVim/LazyVim.git"
--- 	vim.fn.system({ "git", "clone", "--filter=blob:none", lazyrepo, lazyvimpath })
--- end
-
----@diagnostic disable-next-line: undefined-field
--- vim.opt.rtp:prepend(lazyvimpath)
--- _G.LazyVim = require("lazyvim.util")
--- LazyVim.plugin.lazy_file()
-
 vim.o.background = "dark"
-require("utils.lazy")
 require("globals")
 require("onam.remap")
 require("onam.utils")
@@ -33,14 +20,14 @@ require("onam.set")
 require("onam.plug_opts")
 require("onam.autocmds")
 
+require("utils.lazy_file")
+
 ---@diagnostic disable-next-line: different-requires
 require("lazy").setup({
 	spec = {
-		-- { "LazyVim/LazyVim" },
-		{ import = "plugins.editor" },
+		{ import = "plugins" },
 		{ import = "plugins.lsp" },
-		{ import = "plugins.coding" },
-		{ import = "plugins.mini" },
+		-- { import = "plugins.mini" },
 	},
 	defaults = {
 		lazy = true,

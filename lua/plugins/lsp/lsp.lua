@@ -105,46 +105,30 @@ local function on_attach(client, buffer, use_code_lens)
 		-- 	end,
 		-- })
 	end
-	-- if client.supports_method(methods.textDocument_documentHighlight) then
-	-- 	require("onam.helpers.lsp.documentHighlight")(buffer)
-	-- end
-
 	vim.keymap.set("n", "<leader>ld", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })
 end
 
 local defaults = { on_attach = on_attach }
 return {
 	{
+		"williamboman/mason.nvim",
+		cmd = "Mason",
+		build = ":MasonUpdate",
+        opts = {
+            ensure_installed = {
+                "stylua",
+            },
+        },
+	},
+	{
 		"neovim/nvim-lspconfig",
 		dependencies = {
-			"williamboman/mason.nvim",
+			"mason.nvim",
 		},
-		-- event = { "BufReadPost", "BufNewFile", "BufWritePre" },
 		event = "LazyFile",
 		opts = {
 			lua_ls = {
 				on_attach = on_attach,
-				-- on_init = function(client)
-				-- 	if not client.workspace_folders or not client.workspace_folders[1] then
-				-- 		return
-				-- 	end
-				-- 	local path = client.workspace_folders[1].name
-				-- 	-- if has luarc but not neovim
-				-- 	if
-				-- 		(vim.loop.fs_stat(path .. "/.luarc.json") or vim.loop.fs_stat(path .. "/.luarc.jsonc"))
-				-- 		and not vim.loop.fs_stat(path .. "/init.lua")
-				-- 	then
-				-- 		client.config.settings.Lua = {
-				-- 			workspace = {
-				-- 				library = {
-				-- 					["C:\\Users\\onam7\\projects\\manage_my_home\\lua"] = true,
-				-- 				},
-				-- 			},
-				-- 			runtime = { version = "Lua 5.4" },
-				-- 		}
-				-- 		return
-				-- 	end
-				-- end,
 				settings = {
 					Lua = {
 						runtime = { version = "LuaJIT" },
@@ -236,7 +220,6 @@ return {
 					prefix = function(diag)
 						return diagnostics_symbols[diag.severity]
 					end,
-					-- suffix = " ",
 				},
 				float = {
 					header = " ",

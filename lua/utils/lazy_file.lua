@@ -1,7 +1,7 @@
 local M = {}
 
 M.lazy_file_events = { "BufReadPost", "BufNewFile", "BufWritePre" }
--- function M.lazy_file()
+
 vim.api.nvim_create_autocmd("BufReadPost", {
 	once = true,
 	callback = function(event)

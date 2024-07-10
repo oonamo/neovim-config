@@ -1,7 +1,7 @@
 return {
 	{
 		"echasnovski/mini.nvim",
-		lazy = false,
+		lazy = true,
 	},
 	{
 		"mini.bracketed",
@@ -30,7 +30,7 @@ return {
 		end,
 		-- Telescope native is as fast as mini pick
 		-- config = function()
-		-- 	require("plugins.mini.confs.pick")
+		-- 	require("plugins.confs.mini.pick")
 		-- end,
 		-- keys = function()
 		-- 	if not MiniExtra then
@@ -134,7 +134,7 @@ return {
 		"mini.files",
 		dev = true,
 		config = function()
-			require("plugins.mini.confs.files")
+			require("plugins.confs.mini.files")
 		end,
 		keys = {
 			utils.vim_to_lazy_map("n", "<leader>e", function()
@@ -161,13 +161,12 @@ return {
 		end,
 		cmd = "Notifications",
 		config = function()
-			require("plugins.mini.confs.notify")
+			require("plugins.confs.mini.notify")
 		end,
 	},
 	{
 		"mini.sessions",
 		dev = true,
-		-- lazy = false,
 		config = function()
 			require("mini.sessions").setup({
 				auto_write = true,
@@ -241,24 +240,14 @@ return {
 		dev = true,
 		event = "VeryLazy",
 		config = function()
-			require("plugins.mini.confs.diff")
+			require("plugins.confs.mini.diff")
 		end,
 	},
-	-- {
-	-- 	"mini.cursorword",
-	-- 	dev = true,
-	-- 	event = "VeryLazy",
-	-- 	config = function()
-	-- 		require("mini.cursorword").setup({
-	-- 			delay = 400,
-	-- 		})
-	-- 	end,
-	-- },
 	{
 		"mini.move",
 		dev = true,
 		config = function()
-			require("plugins.mini.confs.move")
+			require("plugins.confs.mini.move")
 		end,
 		keys = {
 			{ mode = "v", "H" },
@@ -271,7 +260,7 @@ return {
 		"mini.surround",
 		dev = true,
 		config = function()
-			require("plugins.mini.confs.surround")
+			require("plugins.confs.mini.surround")
 		end,
 		keys = {
 			{ mode = "n", "sa" }, -- Add surrounding in Normal and Visual modes
@@ -300,49 +289,18 @@ return {
 		},
 	},
 	{
-		"mini.jump2d",
-		dev = true,
-		config = function()
-			require("plugins.mini.confs.jump2d")
-		end,
-		keys = {
-			"s",
-			"<leader>r",
-			{ mode = "i", "<C-o>" },
-			{ mode = "i", "<C-r>" },
-		},
-	},
-	-- {
-	-- 	"mini.map",
-	-- 	dev = true,
-	-- 	config = function()
-	-- 		require("plugins.mini.confs.map")
-	-- 	end,
-	-- 	keys = {
-	-- 		{
-	-- 			"<leader>mo",
-	-- 			function()
-	-- 				MiniMap.toggle()
-	-- 			end,
-	-- 			desc = "open mini map",
-	-- 		},
-	-- 		{ "<leader>mv" },
-	-- 	},
-	-- },
-	{
-		"mini.hi",
+		"mini.hipatterns",
 		dev = true,
 		event = "VeryLazy",
 		config = function()
-			require("plugins.mini.confs.hi")
+			require("plugins.confs.mini.hi")
 		end,
 	},
 	{
 		"mini.git",
 		dev = true,
-		-- lazy = false,
 		config = function()
-			require("plugins.mini.confs.git")
+			require("plugins.confs.mini.git")
 		end,
 		keys = {
 			utils.vim_to_lazy_map("n", "<leader>gs", "<CMD>Git status<CR>", { desc = "Git Status" }),
@@ -360,36 +318,19 @@ return {
 			{ "<leader>gc" },
 		},
 	},
-	-- {
-	-- 	"mini.statusline",
-	-- 	dev = true,
-	-- 	-- event = "VeryLazy",
-	-- 	config = function()
-	-- 		require("plugins.mini.confs.statusline")
-	-- 	end,
-	-- },
-	-- {
-	-- 	"mini.indentline",
-	-- 	dev = true,
-	-- 	event = "VeryLazy",
-	-- 	config = function()
-	-- 		require("plugins.mini.confs.indent")
-	-- 	end,
-	-- },
-	-- {
-	-- 	"mini.clue",
-	-- 	dev = true,
-	-- 	event = "VeryLazy",
-	-- 	config = function()
-	-- 		require("plugins.mini.confs.clues")
-	-- 	end,
-	-- },
+	{
+		"mini.indentline",
+		dev = true,
+		event = "VeryLazy",
+		config = function()
+			require("plugins.confs.mini.indent")
+		end,
+	},
 	{
 		"mini.jump",
 		dev = true,
-		-- event = "VeryLazy",
 		config = function()
-			require("plugins.mini.confs.jump")
+			require("plugins.confs.mini.jump")
 		end,
 		keys = {
 			{ "F" },
@@ -401,39 +342,11 @@ return {
 	{
 		"mini.icons",
 		dev = true,
-		event = "VeryLazy",
-		-- init = function()
-		-- 	package.preload["nvim-web-devicons"] = function()
-		-- 		local Icons = require("mini.icons")
-		-- 		local ret = {}
-		-- 		package.loaded["nvim-web-devicons"] = ret
-		-- 		Icons.mock_nvim_web_devicons()
-		--
-		-- 		local function get(cat)
-		-- 			local all = {}
-		-- 			for _, name in ipairs(Icons.list(cat)) do
-		-- 				local icon, color = ret.get_icon_color(cat == "file" and name, cat == "extension" and name)
-		-- 				all[name] = { icon = icon, color = color }
-		-- 			end
-		-- 			return all
-		-- 		end
-		--
-		-- 		ret.get_icons_by_extension = function()
-		-- 			return get("extension")
-		-- 		end
-		--
-		-- 		ret.get_icons_by_filename = function()
-		-- 			return get("file")
-		-- 		end
-		--
-		-- 		ret.get_icons = function()
-		-- 			return vim.tbl_extend("force", get("file"), get("extension"))
-		-- 		end
-		-- 		return ret
-		-- 	end
-		-- end,
-		config = function()
-			require("plugins.mini.confs.icons")
+		init = function()
+			package.preload["nvim-web-devicons"] = function()
+				require("mini.icons").mock_nvim_web_devicons()
+				return package.loaded["nvim-web-devicons"]
+			end
 		end,
 	},
 }

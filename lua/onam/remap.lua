@@ -66,7 +66,8 @@ end, opts("open wezterm split", true))
 -- Terminal
 map("n", "<leader>gl", function()
 	if not package.loaded["mini.git"] then
-		require("lazy").load("mini.git")
+		-- require("lazy").load("mini.git")
+		require("plugins.mini.confs.git")
 	end
 	local cwd = require("mini.git").get_buf_data(0)
 	if cwd == nil then
