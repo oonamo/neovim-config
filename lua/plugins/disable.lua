@@ -19,6 +19,7 @@ local disable_plugs = {
   "nvim-treesitter/nvim-treesitter-textobjects",
   "windwp/nvim-ts-autotag",
   "folke/persistence.nvim",
+  "folke/which-key.nvim",
 }
 
 return {
