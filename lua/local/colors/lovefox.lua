@@ -2,6 +2,7 @@ require("mini.colors")
 	.get_colorscheme("dayfox", {
 		new_name = "lovefox",
 	})
+	:chan_add("saturation", 100, { filter = "bg" })
 	:chan_add("saturation", 30, { filter = "fg" })
 	:chan_set("saturation", { 10, 90 }, {
 		filter = "fg",

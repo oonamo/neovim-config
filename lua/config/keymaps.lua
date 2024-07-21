@@ -1,7 +1,3 @@
-vim.g.mapleader = " "
-vim.g.maplocalleader = ";"
-
--- local opts = { silent = true }
 local function opts(desc, silent, options)
 	silent = silent or false
 	options = options or {}
@@ -21,24 +17,7 @@ map("n", "%", "%zz", opts("smooth match", true, { noremap = true }))
 map("n", "*", "*zz", opts("smooth search up", true, { noremap = true }))
 map("n", "N", "#zz", opts("smooth search up", true, { noremap = true }))
 
--- map("n", "]m", function()
--- 	vim.cmd("silent! /^##\\+\\s.*#")
--- 	vim.cmd("nohlsearch")
--- end, {
--- 	desc = "go to next header",
--- })
-map("n", "]m", [[/^##\+\s.*$<cr>:nohlsearch<cr>]], { silent = true, desc = "next md header" })
-map("n", "[m", [[?^##\+\s.*$<cr>:nohlsearch<cr>]], { silent = true, desc = "next md header" })
-
 vim.api.nvim_set_keymap("i", "<C-c>", "<Esc>", opts("escape insert mode", true, { noremap = true }))
-
---Move Command with J and K
--- map("v", "K", ":m '<-2<CR>gv=gv", opts("move line up", true)) -- Move line up { silent = true })
--- map("v", "J", ":m '>+1<CR>gv=gv", opts("move line down", true)) -- Move line down { silent = true })
-
--- Quickfix list
-map("n", "<leader>q", ":cnext<CR>", opts("quickfix next", true))
-map("n", "<leader>Q", ":cprev<CR>", opts("quickfix prev", true))
 
 --Set Copy and Paste
 --Copy to Keyboard
@@ -66,8 +45,7 @@ end, opts("open wezterm split", true))
 -- Terminal
 map("n", "<leader>gl", function()
 	if not package.loaded["mini.git"] then
-		-- require("lazy").load("mini.git")
-		require("plugins.mini.confs.git")
+		require("mini.git").setup()
 	end
 	local cwd = require("mini.git").get_buf_data(0)
 	if cwd == nil then
@@ -88,8 +66,23 @@ map("n", "<leader>fT", function()
 end, { desc = "Terminal (Root Dir)" })
 
 map("t", "<esc><esc>", "<c-\\><c-n>", { desc = "Enter Normal Mode" })
+map("n", "<localleader>t", function()
+	vim.cmd.new()
+	vim.cmd.wincmd("j")
+	vim.api.nvim_win_set_height(0, 12)
+	vim.wo.winfixheight = true
+	vim.cmd.term()
+end)
+
 map("t", "<C-h>", "<cmd>wincmd h<cr>", { desc = "Go to Left Window" })
 map("t", "<C-j>", "<cmd>wincmd j<cr>", { desc = "Go to Lower Window" })
 map("t", "<C-k>", "<cmd>wincmd k<cr>", { desc = "Go to Upper Window" })
 map("t", "<C-l>", "<cmd>wincmd l<cr>", { desc = "Go to Right Window" })
 map("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" })
+
+-- COMMAND LINE BINDINGS
+map("c", "<C-a>", "<Home>")
+map("c", "<C-e>", "<End>")
+map("c", "<C-n>", "<Down>")
+map("c", "<C-p>", "<Up>")
+map("c", "<C-x>", "<C-f>?")

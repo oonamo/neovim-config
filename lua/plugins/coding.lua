@@ -69,6 +69,22 @@ return {
 		end,
 	},
 	{
+		"mini.completion",
+		dev = true,
+		event = { "InsertEnter" },
+		cond = O.lsp.mini == true,
+		config = function()
+			-- local imap_expr = function(lhs, rhs)
+			-- 	vim.keymap.set("i", lhs, rhs, { expr = true })
+			-- end
+			-- imap_expr("<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]])
+			-- imap_expr("<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]])
+			require("mini.completion").setup({
+				fallback_action = function() end,
+			})
+		end,
+	},
+	{
 		"stevearc/conform.nvim",
 		event = "BufWritePre",
 		opts = {
@@ -95,7 +111,7 @@ return {
 		dependencies = { "nvim-lua/plenary.nvim" },
 		opts = {
 			menu = {
-				width = vim.api.nvim_win_get_width(0) - 4,
+				width = vim.api.nvim_win_get_width(0),
 			},
 			settings = {
 				save_on_toggle = true,

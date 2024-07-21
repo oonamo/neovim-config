@@ -3,17 +3,17 @@ return {
 		"echasnovski/mini.nvim",
 		lazy = true,
 	},
-	{
-		"mini.bracketed",
-		dev = true,
-		config = function()
-			require("mini.bracketed").setup()
-		end,
-		keys = {
-			{ "[" },
-			{ "]" },
-		},
-	},
+	-- {
+	-- 	"mini.bracketed",
+	-- 	dev = true,
+	-- 	config = function()
+	-- 		require("mini.bracketed").setup()
+	-- 	end,
+	-- 	keys = {
+	-- 		{ "[" },
+	-- 		{ "]" },
+	-- 	},
+	-- },
 	{
 		"mini.extra",
 		dev = true,
@@ -25,110 +25,33 @@ return {
 	{
 		"mini.pick",
 		dev = true,
-		init = function()
-			vim.ui.select = require("mini.pick").ui_select
-		end,
+		-- init = function()
+		-- 	vim.ui.select = require("mini.pick").ui_select
+		-- end,
 		-- Telescope native is as fast as mini pick
-		-- config = function()
-		-- 	require("plugins.confs.mini.pick")
-		-- end,
-		-- keys = function()
-		-- 	if not MiniExtra then
-		-- 		require("mini.extra").setup()
-		-- 	end
-		-- 	local e_pick = MiniExtra.pickers
-		-- 	return {
-		-- 		{
-		-- 			"<C-P>",
-		-- 			require("mini.pick").builtin.files,
-		-- 			{ desc = "files" },
-		-- 		},
-		-- 		{
-		-- 			"<C-F>",
-		-- 			-- function()
-		-- 			-- 	require("mini.pick").builtin.grep_live()
-		-- 			-- end,
-		-- 			"<CMD>Pick center_grep<CR>",
-		-- 			{ desc = "grep live" },
-		-- 		},
-		-- 		{
-		-- 			"<leader>fgs",
-		-- 			require("mini.pick").builtin.grep,
-		-- 			{ desc = "grep" },
-		-- 		},
-		-- 		{
-		-- 			"<leader>ff",
-		-- 			require("mini.pick").builtin.cli,
-		-- 			{ desc = "cli" },
-		-- 		},
-		-- 		{
-		-- 			"<leader>fh",
-		-- 			require("mini.pick").builtin.help,
-		-- 			{ desc = "help" },
-		-- 		},
-		-- 		{
-		-- 			"<leader>fr",
-		-- 			require("mini.pick").builtin.resume,
-		-- 			{ desc = "resume" },
-		-- 		},
-		--
-		-- 		-- Extras
-		-- 		{
-		-- 			"<leader>pehg",
-		-- 			e_pick.hl_groups,
-		-- 			{ desc = "hl groups" },
-		-- 		},
-		-- 		{
-		-- 			"<leader>peH",
-		-- 			e_pick.history,
-		-- 			{ desc = "history" },
-		-- 		},
-		-- 		{
-		-- 			"<leader>peK",
-		-- 			e_pick.keymaps,
-		-- 			{ desc = "keymaps" },
-		-- 		},
-		-- 		{
-		-- 			"<leader>pem",
-		-- 			e_pick.marks,
-		-- 			{ desc = "marks" },
-		-- 		},
-		--
-		-- 		{
-		-- 			"<leader>pelq",
-		-- 			function()
-		-- 				e_pick.list({ scope = "quickfix" })
-		-- 			end,
-		-- 			{ desc = "pick qf" },
-		-- 		},
-		-- 		{
-		-- 			"<leader>pell",
-		-- 			function()
-		-- 				e_pick.list({ scope = "location" })
-		-- 			end,
-		-- 			{ desc = "pick ll" },
-		-- 		},
-		-- 		{
-		-- 			"<leader>pelj",
-		-- 			function()
-		-- 				e_pick.list({ scope = "jump" })
-		-- 			end,
-		-- 			{ desc = "pick jumplist" },
-		-- 		},
-		-- 		{
-		-- 			"<leader>pelc",
-		-- 			function()
-		-- 				e_pick.list({ scope = "change" })
-		-- 			end,
-		-- 			{ desc = "pick changelist" },
-		-- 		},
-		-- 		{
-		-- 			"z=",
-		-- 			e_pick.spellsuggest,
-		-- 			{ desc = "spell suggest" },
-		-- 		},
-		-- 	}
-		-- end,
+		config = function()
+			require("plugins.confs.mini.pick")
+		end,
+		keys = function()
+			if not MiniExtra then
+				require("mini.extra").setup()
+			end
+			return {
+				{
+					"<leader>ff",
+					"<cmd>Pick explorer<CR>",
+					-- function()
+					-- 	local cmd = vim.fn.input({
+					-- 		prompt = "Command: ",
+					-- 	})
+					-- 	require("mini.pick").builtin.cli({
+					-- 		command = cmd,
+					-- 	})
+					-- end,
+					-- { desc = "cli" },
+				},
+			}
+		end,
 	},
 	{
 		"mini.files",
@@ -136,21 +59,21 @@ return {
 		config = function()
 			require("plugins.confs.mini.files")
 		end,
-		keys = {
-			utils.vim_to_lazy_map("n", "<leader>e", function()
-				require("mini.files").open()
-			end, { desc = "open cwd files" }),
-
-			utils.vim_to_lazy_map("n", "-", function()
-				local bufname = vim.api.nvim_buf_get_name(0)
-				local path = vim.fn.fnamemodify(bufname, ":p")
-
-				-- Noop if the buffer isn't valid.
-				if path and vim.uv.fs_stat(path) then
-					require("mini.files").open(bufname, false)
-				end
-			end, { desc = "open bufdir files" }),
-		},
+		-- keys = {
+		-- 	utils.vim_to_lazy_map("n", "<leader>e", function()
+		-- 		require("mini.files").open()
+		-- 	end, { desc = "open cwd files" }),
+		--
+		-- 	utils.vim_to_lazy_map("n", "-", function()
+		-- 		local bufname = vim.api.nvim_buf_get_name(0)
+		-- 		local path = vim.fn.fnamemodify(bufname, ":p")
+		--
+		-- 		-- Noop if the buffer isn't valid.
+		-- 		if path and vim.uv.fs_stat(path) then
+		-- 			require("mini.files").open(bufname, false)
+		-- 		end
+		-- 	end, { desc = "open bufdir files" }),
+		-- },
 	},
 	{
 		"mini.notify",
@@ -173,14 +96,15 @@ return {
 			})
 		end,
 		keys = function()
-			function Config._sessions_complete(arg_lead)
+			_G.MiniSessions = _G.MiniSessions or {}
+			function MiniSessions._sessions_complete(arg_lead)
 				return vim.tbl_filter(function(v)
 					return v:find(arg_lead, 1, true) ~= nil
 				end, vim.tbl_keys(MiniSessions.detached))
 			end
 
 			local function get_session_from_user(prompt)
-				local completion = "customlist,v:lua.Config._session_complete"
+				local completion = "customlist,v:lua.MiniSessions._session_complete"
 				local ok, res = pcall(vim.fn.input, {
 					prompt = prompt,
 					cancelreturn = false,

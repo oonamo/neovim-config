@@ -1,6 +1,8 @@
 -- Made with 'mini.colors' module of https://github.com/echasnovski/mini.nvim
 
-if vim.g.colors_name ~= nil then vim.cmd('highlight clear') end
+if vim.g.colors_name ~= nil then
+	vim.cmd("highlight clear")
+end
 vim.g.colors_name = "lavi"
 
 -- Highlight groups
@@ -310,6 +312,17 @@ hi(0, "markdownUrlTitleDelimiter", { ctermfg = 252, fg = "#888998" })
 hi(0, "xmlEndTag", { link = "xmlTag" })
 hi(0, "xmlTag", { link = "htmlTag" })
 hi(0, "xmlTagName", { link = "htmlTagName" })
+
+-- mini.icons
+hi(0, "MiniIconsAzure", { fg = "#bfc5ff" })
+hi(0, "MiniIconsBlue", { fg = "#989dfb" })
+hi(0, "MiniIconsCyan", { fg = "#c0f3f2" })
+hi(0, "MiniIconsGreen", { fg = "#1c522b" })
+hi(0, "MiniIconsGrey", { fg = "#888998" })
+hi(0, "MiniIconsOrange", { fg = "#ffb6bc" })
+hi(0, "MiniIconsPurple", { fg = "#7977f4" })
+hi(0, "MiniIconsRed", { fg = "#ffa2ac" })
+hi(0, "MiniIconsYellow", { fg = "#ffd3d6" })
 
 -- Terminal colors
 local g = vim.g

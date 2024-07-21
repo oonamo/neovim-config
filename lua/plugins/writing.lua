@@ -1,33 +1,5 @@
 return {
 	{
-		"ChuufMaster/markdown-toc",
-		cmd = { "GenerateTOC", "DeleteTOC" },
-		opts = {
-
-			-- The heading level to match (i.e the number of "#"s to match to) max 6
-			heading_level_to_match = -1,
-
-			-- Set to True display a dropdown to allow you to select the heading level
-			ask_for_heading_level = false,
-
-			-- TOC default string
-			-- WARN
-			toc_format = "%s- [%s](<%s#%s>)",
-		},
-		keys = {
-			{
-				"<leader>tg",
-				"<CMD>GenerateTOC<CR>",
-				desc = "Generate Table of Contents",
-			},
-			{
-				"<leader>td",
-				"<CMD>DeleteTOC<CR>",
-				desc = "Delete Table of Contents",
-			},
-		},
-	},
-	{
 		"epwalsh/obsidian.nvim",
 		event = {
 			"BufReadPre C:/Users/onam7/Desktop/DB/DB/**.md",
@@ -35,70 +7,218 @@ return {
 		},
 		dependencies = {
 			"nvim-lua/plenary.nvim",
-			-- {
-			-- 	"MeanderingProgrammer/markdown.nvim",
-			-- 	name = "render-markdown",
-			-- 	dependencies = { "nvim-treesitter/nvim-treesitter" },
-			-- 	opts = {
-			-- 		start_enabled = true,
-			-- 		-- headings = { "❯", "❯", "❯", "❯", "❯", "❯" },
-			-- 		-- headings = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
-			-- 		-- headings = { "◈ ", "◆ ", "◇ ", "❖ ", "⟡ ", "⋄ " },
-			-- 		headings = { "", "", "", "", "", "" },
-			--
-			-- 		-- HACK: Disable checkboxes and list icons by removing it's query
-			-- 		--       And disable header tinkering
-			-- 		-- (atx_heading [
-			-- 		-- (atx_h1_marker)
-			-- 		-- (atx_h2_marker)
-			-- 		-- (atx_h3_marker)
-			-- 		-- (atx_h4_marker)
-			-- 		-- (atx_h5_marker)
-			-- 		-- (atx_h6_marker)
-			-- 		-- ] @heading)
-			-- 		markdown_query = [[
-			--       (thematic_break) @dash
-			--       (fenced_code_block) @code
-			--       (block_quote (block_quote_marker) @quote_marker)
-			--       (block_quote (paragraph (inline (block_continuation) @quote_marker)))
-			--       (pipe_table) @table
-			--       (pipe_table_header) @table_head
-			--       (pipe_table_delimiter_row) @table_delim
-			--       (pipe_table_row) @table_row
-			--   ]],
-			-- 		checkbox = {
-			-- 			-- Character that will replace the [ ] in unchecked checkboxes
-			-- 			unchecked = "󰄱",
-			-- 			-- Character that will replace the [x] in checked checkboxes
-			-- 			checked = "",
-			-- 		},
-			-- 		win_options = {
-			-- 			conceallevel = {
-			-- 				rendered = 2,
-			-- 				default = 2,
-			-- 			},
-			-- 			concealcursor = {
-			-- 				rendered = "",
-			-- 				default = "",
-			-- 			},
-			-- 		},
-			-- 	},
-			-- 	config = function(_, opts)
-			-- 		local _, bg, _ = utils.get_hl("Normal")
-			-- 		vim.api.nvim_set_hl(0, "Normal", { bg = bg })
-			-- 		require("render-markdown").setup(opts)
-			-- 	end,
-			-- },
-			-- {
-			-- 	"OXY2DEV/markview.nvim",
-			-- 	dependencies = {
-			-- 		"nvim-tree/nvim-web-devicons", -- Used by the code bloxks
-			-- 	},
-			--
-			-- 	config = function()
-			-- 		require("markview").setup()
-			-- 	end,
-			-- },
+			{
+				"OXY2DEV/markview.nvim",
+				branch = "dev",
+				opts = function()
+					local weird_list = {
+						["everforest"] = "everforest/after/syntax/markdown/everforest.vim",
+						["edge"] = "edge/after/syntax/markdown/edge.vim",
+						["gruvbox-material"] = "gruvbox-material/after/syntax/markdown/gruvbox_material.vim",
+					}
+					local function set_md_hi(i, bg, tries)
+						local hi = "markdownH" .. tostring(i)
+						local fg, _, _ = utils.get_hl(hi)
+						if not fg then
+							fg, _ = utils.get_hl("@markup.heading." .. tostring(i) .. ".markdown")
+						end
+
+						if not fg then
+							vim.schedule(function()
+								set_md_hi(i, bg, tries + 1)
+							end)
+							return
+						end
+
+						vim.api.nvim_set_hl(0, "Markview_h" .. tostring(i), { bg = fg, fg = bg })
+						vim.api.nvim_set_hl(0, "Markview_h" .. tostring(i) .. "_inv", { fg = fg, bold = true })
+					end
+					vim.api.nvim_create_autocmd("Colorscheme", {
+						callback = vim.schedule_wrap(function(data)
+							if weird_list[data.match] then
+								vim.cmd("so " .. vim.fn.stdpath("data") .. "/lazy/" .. weird_list[data.match])
+							end
+							local _, n_bg = utils.get_hl("Normal")
+							n_bg = n_bg or "#000000"
+							for i = 1, 6 do
+								set_md_hi(i, n_bg, 0)
+							end
+						end),
+					})
+					local markview = require("markview")
+					local callouts = markview.configuration.block_quotes.callouts
+
+					table.insert(callouts, {
+						{
+							match_string = "FORMULA",
+							aliases = nil,
+							-- aliases = { "" },
+
+							callout_preview = "󰿉  Formula",
+							callout_preview_hl = nil,
+
+							custom_title = true,
+							custom_icon = "󰿉 ",
+
+							border = { "▉", "▊", "▋", "▌" },
+							border_hl = "@comment.warning",
+						},
+					})
+
+					return {
+						options = {
+							on_enable = {},
+							on_disable = {
+								conceallevel = 0,
+								concealcursor = "",
+							},
+						},
+						code_blocks = {
+							enable = true,
+
+							style = "language",
+							position = "overlay",
+
+							hl = "markdownCodeBlock",
+
+							min_width = 60,
+							pad_amount = 3,
+
+							language_names = {
+								{ "py", "python" },
+								{ "cpp", "C++" },
+							},
+							sign = true,
+
+							language_direction = "right",
+							sign_hl = nil,
+						},
+						block_quotes = {
+							enable = true,
+							default = {
+								border = "",
+								border_hl = "Comment",
+							},
+							callouts = callouts,
+						},
+						headings = {
+							shift_width = 0,
+							-- heading_1 = {
+							-- 	style = "label",
+							-- 	hl = "h1",
+							-- 	padding_left = " ",
+							-- 	padding_right = " ",
+							-- },
+							-- heading_2 = {
+							-- 	style = "label",
+							-- 	hl = "h2",
+							-- 	padding_left = " ",
+							-- 	padding_right = " ",
+							-- },
+							-- heading_3 = {
+							-- 	style = "label",
+							-- 	hl = "h3",
+							-- 	sign = "",
+							-- 	padding_left = " ",
+							-- 	padding_right = " ",
+							-- },
+							-- heading_4 = {
+							-- 	style = "label",
+							-- 	hl = "h4",
+							-- 	sign = "",
+							-- 	padding_left = " ",
+							-- 	padding_right = " ",
+							-- },
+							-- heading_5 = {
+							-- 	style = "label",
+							-- 	hl = "h5",
+							-- 	sign = "",
+							-- 	padding_left = " ",
+							-- 	padding_right = " ",
+							-- },
+							-- heading_6 = {
+							-- 	style = "label",
+							-- 	hl = "h6",
+							-- 	sign = "",
+							-- 	padding_left = " ",
+							-- 	padding_right = " ",
+							-- },
+							heading_1 = {
+								style = "label",
+
+								padding_left = " ",
+								padding_right = " ",
+
+								corner_right = "",
+								corner_right_hl = "h1_inv",
+
+								sign = "",
+								hl = "h1",
+							},
+							heading_2 = {
+								style = "label",
+
+								padding_left = " ",
+								padding_right = " ",
+
+								corner_right = "",
+								corner_right_hl = "h2_inv",
+
+								sign = "",
+								hl = "h2",
+							},
+							heading_3 = {
+								style = "label",
+
+								padding_left = " ",
+								padding_right = " ",
+
+								corner_right = "",
+								corner_right_hl = "h3_inv",
+
+								hl = "h3",
+								sign = "",
+							},
+							heading_4 = {
+								style = "label",
+
+								padding_left = " ",
+								padding_right = " ",
+
+								corner_right = "",
+								corner_right_hl = "h4_inv",
+
+								sign = "",
+								hl = "h4",
+							},
+							heading_5 = {
+								style = "label",
+
+								padding_left = " ",
+								padding_right = " ",
+
+								corner_right = "",
+								corner_right_hl = "h5_inv",
+
+								sign = "",
+								hl = "h5",
+							},
+							heading_6 = {
+								style = "label",
+
+								padding_left = " ",
+								padding_right = " ",
+
+								corner_right = "",
+								corner_right_hl = "h6_inv",
+
+								sign = "",
+								hl = "h6",
+							},
+						},
+					}
+				end,
+			},
 		},
 		cmd = "GoToNotes",
 		config = function()
@@ -157,8 +277,6 @@ return {
 							out[k] = v
 						end
 					end
-					for _, v in ipairs(note.tags) do
-					end
 
 					return out
 				end,
@@ -203,7 +321,7 @@ return {
 				},
 
 				ui = {
-					enable = true, -- set to false to disable all additional syntax features
+					enable = false, -- set to false to disable all additional syntax features
 					update_debounce = 200, -- update delay after a text change (in milliseconds)
 					-- Define how various check-boxes are displayed
 					checkboxes = {
@@ -235,7 +353,7 @@ return {
 				},
 			})
 			-- Using ft instead
-			require("onam.autocmds").setup_writing_cmds()
+			require("config.autocommands").setup_writing_cmds()
 			-- vim.g.markdown_folding = 1
 
 			vim.keymap.set("n", "<leader>nn", "<cmd>ObsidianTemplate notes<cr>", { desc = "Obisidan note template" })

@@ -57,8 +57,13 @@ return {
 						case_mode = "smart_case", -- or "ignore_case" or "respect_case"
 						-- the default case_mode is "smart_case"
 					},
+					file_browser = {},
 				},
 			}
+		end,
+		config = function(_, opts)
+			require("telescope").setup(opts)
+			require("telescope").load_extension("fzf")
 		end,
 		keys = function()
 			local builtin = require("telescope.builtin")
@@ -141,6 +146,10 @@ return {
 	{
 		"nvim-pack/nvim-spectre",
 		config = true,
+		cmd = "Spectre",
+		opts = {
+			open_cmd = "noswapfile vnew",
+		},
 		keys = function()
 			local spectre = require("spectre")
 			return {
@@ -228,30 +237,137 @@ return {
 		end,
 	},
 	{
+		"stevearc/oil.nvim",
+		opts = function()
+			local type_hlgroups = setmetatable({
+				["-"] = "OilTypeFile",
+				["dir"] = "OilTypeDir",
+				["p"] = "OilTypeFifo",
+				["l"] = "OilTypeLink",
+				["s"] = "OilTypeSocket",
+			}, {
+				__index = function()
+					return "OilTypeFile"
+				end,
+			})
+			local function oil_sethl()
+				local sethl = utils.set_hl_from
+				sethl(0, "OilDir", { fg = "Directory" })
+				sethl(0, "OilDirIcon", { fg = "Directory" })
+				sethl(0, "OilLink", { fg = "Constant" })
+				sethl(0, "OilLinkTarget", { fg = "Comment" })
+				sethl(0, "OilCopy", { fg = "DiagnosticSignHint", bold = true })
+				sethl(0, "OilMove", { fg = "DiagnosticSignWarn", bold = true })
+				sethl(0, "OilChange", { fg = "DiagnosticSignWarn", bold = true })
+				sethl(0, "OilCreate", { fg = "DiagnosticSignInfo", bold = true })
+				sethl(0, "OilDelete", { fg = "DiagnosticSignError", bold = true })
+				sethl(0, "OilPermissionNone", { fg = "NonText" })
+				sethl(0, "OilPermissionRead", { fg = "DiagnosticSignWarn" })
+				sethl(0, "OilPermissionWrite", { fg = "DiagnosticSignError" })
+				sethl(0, "OilPermissionExecute", { fg = "DiagnosticSignOk" })
+				sethl(0, "OilTypeDir", { fg = "Directory" })
+				sethl(0, "OilTypeFifo", { fg = "Special" })
+				sethl(0, "OilTypeFile", { fg = "NonText" })
+				sethl(0, "OilTypeLink", { fg = "Constant" })
+				sethl(0, "OilTypeSocket", { fg = "OilSocket" })
+			end
+			oil_sethl()
+
+			vim.api.nvim_create_autocmd("ColorScheme", {
+				desc = "Set some default hlgroups for oil.",
+				group = vim.api.nvim_create_augroup("OilSetDefaultHlgroups", {}),
+				callback = oil_sethl,
+			})
+			return {
+				columns = {
+					{
+						"type",
+						highlight = function(type_str)
+							return type_hlgroups[type_str]
+						end,
+					},
+					{ "size", highlight = "Special" },
+					{ "mtime", highlight = "Number" },
+				},
+				skip_confirm_for_simple_edits = true,
+				keymaps = {
+					["<C-p>"] = false,
+					["-"] = "actions.parent",
+					["H"] = "actions.parent",
+					["="] = "actions.select",
+					["+"] = "actions.select",
+					["<CR>"] = "actions.select",
+					["L"] = "actions.select",
+					["<C-h>"] = "actions.toggle_hidden",
+					["gh"] = "actions.toggle_hidden",
+					["gs"] = "actions.change_sort",
+					["gx"] = "actions.open_external",
+					["gY"] = "actions.copy_entry_filename",
+					["<C-c>"] = "actions.close",
+					q = "actions.close",
+				},
+			}
+		end,
+		keys = {
+			{ "<leader>e", "<CMD>Oil<CR>" },
+			{ "-", "<CMD>Oil --float<CR>" },
+		},
+	},
+	{
+		"nvim-treesitter/nvim-treesitter-context",
+		ft = "markdown",
+		opts = { mode = "cursor", max_lines = 3 },
+	},
+	-- {
+	-- 	"Bekaboo/dropbar.nvim",
+	-- 	event = "LspAttach",
+	-- 	init = function()
+	-- 		vim.ui.select = require("dropbar.utils.menu").select
+	-- 	end,
+	-- 	-- ft = "markdown",
+	-- },
+	{
 		dir = "~/projects/command_pal",
 		dev = true,
-		opts = {
-			actions = {
-				{
-					group = "Writing",
-					name = "Go To My Notes",
-					command = "GoToNotes",
-					desc = "Open my notes using mini.sessions",
+		opts = function()
+			local utils = require("command_pal.utils")
+			return {
+				actions = {
+					{
+						group = "Colorscheme",
+						name = "Toggle-Lightness",
+						desc = "Toggle the background of neovim. Some plugins may not have an autocommand to detect this change",
+						command = function()
+							vim.o.bg = vim.o.bg == "light" and "dark" or "light"
+						end,
+					},
+					{
+						group = "Format",
+						name = "Toggle-Auto-Format",
+						desc = "Toggle formatting on save with conform. Useful for new repos without a formatting file",
+						command = function()
+							vim.g.disable_autoformat = not vim.g.disable_autoformat
+						end,
+					},
+					{
+						group = "Lua",
+						name = "Set-Global",
+						desc = "Quickly set a global in the nvim cmdline",
+						command = utils.set_cmdline(":lua vim.g."),
+					},
+					{
+						group = "Lua",
+						name = "Set-Option",
+						desc = "Quickly set an option in the nvim cmdline",
+						command = utils.set_cmdline(":lua vim.opt."),
+					},
 				},
-				{
-					group = "Harpoon",
-					name = "Add File to Harpoon",
-					command = function()
-						require("harpoon"):list():add()
-					end,
-					desc = "append file to harpoon",
+				builtin = {},
+				telescope = {
+					opts = {},
 				},
-			},
-			builtin = {},
-			telescope = {
-				opts = {},
-			},
-		},
+			}
+		end,
 		keys = {
 			{
 				"<C-x>",
@@ -263,7 +379,7 @@ return {
 				"<leader>fp",
 				function()
 					require("command_pal").open({
-						filter_group = { "Vim", "Quickfix" },
+						filter_group = { "Vim", "Quickfix", "User" },
 					})
 				end,
 			},
@@ -272,6 +388,20 @@ return {
 				function()
 					require("command_pal").open({
 						picker = "mini_pick",
+						mini_pick = {
+							ivy_style = false,
+						},
+					})
+				end,
+			},
+			{
+				"<leader>pi",
+				function()
+					require("command_pal").open({
+						picker = "mini_pick",
+						mini_pick = {
+							ivy_style = true,
+						},
 					})
 				end,
 			},
@@ -282,6 +412,33 @@ return {
 						picker = "fzf-lua",
 					})
 				end,
+			},
+		},
+	},
+	{
+		"oonamo/everyones-jk.nvim",
+		dir = "~/projects/everyone-is-jk",
+		dev = true,
+		keys = {
+			{ "[" },
+			{ "]" },
+		},
+		opts = {
+			use_recommended = true,
+			j = "J",
+			k = "K",
+			keys = {
+				{
+					"Markdown",
+					j = {
+						"]m",
+						[[/^##\+\s.*$]],
+					},
+					k = {
+						"[m",
+						[[?^##\+\s.*$]],
+					},
+				},
 			},
 		},
 	},

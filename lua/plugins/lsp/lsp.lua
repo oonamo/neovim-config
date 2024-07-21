@@ -105,7 +105,10 @@ local function on_attach(client, buffer, use_code_lens)
 		-- 	end,
 		-- })
 	end
-	vim.keymap.set("n", "<leader>ld", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })
+	vim.keymap.set("n", "<leader>qf", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })
+	vim.keymap.set("n", "<leader>ld", vim.diagnostic.setloclist, { desc = "Quickfix [L]ist [D]iagnostics" })
+	vim.keymap.set("n", "<C-]>", "<C-w><C-]>")
+	-- vim.keymap.set("n", "<C-[>", "<C-w>v<C-]>")
 end
 
 local defaults = { on_attach = on_attach }
@@ -114,11 +117,11 @@ return {
 		"williamboman/mason.nvim",
 		cmd = "Mason",
 		build = ":MasonUpdate",
-        opts = {
-            ensure_installed = {
-                "stylua",
-            },
-        },
+		opts = {
+			ensure_installed = {
+				"stylua",
+			},
+		},
 	},
 	{
 		"neovim/nvim-lspconfig",

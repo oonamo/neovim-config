@@ -13,7 +13,7 @@ vim.g.neovide_padding_bottom = 0
 vim.g.neovide_padding_right = 15
 vim.g.neovide_padding_left = 70
 
-o.guifont = "MonoLisa Nerd Font:h16"
+o.guifont = "IosevkaTermSlab NF:h16"
 vim.keymap.set("n", "<leader>nt", function()
 	if g.neovide_transparency ~= 1.0 then
 		g.neovide_transparency = 1.0

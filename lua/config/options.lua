@@ -1,5 +1,11 @@
 local o, opt = vim.o, vim.opt
 
+-- Allows for easy telling if pane is a nvim proccess
+o.title = true
+o.titlestring = "nvim"
+
+vim.g.bigfile_size = 1024 * 1024 * 1.5 -- 1.5 MB
+
 -- Relative line numbers
 opt.nu = true
 opt.rnu = true
@@ -20,6 +26,7 @@ opt.shiftwidth = 4
 o.breakindent = true
 
 -- better searching
+o.inccommand = "split"
 o.incsearch = true
 o.hlsearch = true
 o.ignorecase = true

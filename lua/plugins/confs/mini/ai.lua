@@ -41,9 +41,3 @@ miniai.setup({
 	},
 	search_method = "cover_or_next",
 })
-
-local function something()
-	print("something")
-end
-
-something()

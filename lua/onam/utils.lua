@@ -188,13 +188,12 @@ end
 ---@param property string|nil
 ---@return string
 function utils.brighten(color, percent, property)
-	local ok, hl = pcall(vim.api.nvim_get_hl_by_name, color, true)
+	local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = color })
 	if not ok then
-		-- vim.notify("Invalid color: " .. color)
 		return "#000000"
 	end
 	local result = {}
-	for k, v in pairs(vim.api.nvim_get_hl_by_name(color, true)) do
+	for k, v in pairs(hl) do
 		if type(v) == "boolean" then
 			result[k] = v
 		else
@@ -280,79 +279,14 @@ function utils.hsl_to_rgb(h, s, l)
 	return rgb -- rgb
 end
 
----@class Highlight
----@field foreground? string
----@field background? string
----@field special? table
----@field blend number
-
----@return string|nil, string|nil, Highlight|nil
+---@return string|nil, string|nil, vim.api.keyset.hl_info|nil
 function utils.get_hl(name)
-	local ok, hl = pcall(vim.api.nvim_get_hl_by_name, name, true)
+	local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = name })
 	if not ok then
 		return nil, nil, nil
 	end
-	return utils.format_color(hl.foreground), utils.format_color(hl.background), hl
+	return utils.format_color(hl.fg), utils.format_color(hl.bg), hl
 end
-
--- function utils.create_fzf_lua_hls()
--- 	local function get_attibutes(hl_name, attr)
--- 		local _, _, hl = utils.get_hl(hl_name)
--- 		if not hl then
--- 			return "NONE"
--- 		end
--- 		return hl[attr]
--- 	end
--- 	utils.hl = {
--- 		opts = {
--- 			-- { "FzfLuaNormal", { link = "TelescopeNormal" } }, -- FzfLuaNormal 	hls.normal 	Main win fg/bg
--- 			-- { "FzfLuaBorder", { link = "TelescopeBorder" } }, -- FzfLuaBorder 	hls.border 	Main win border
--- 			-- { "FzfLuaTitle", { link = "TelescopeTitle" } }, -- FzfLuaTitle 	hls.title 	Main win title
--- 			-- { "FzfLuaPreviewNormal", { link = "TelescopePreviewNormal" } }, -- FzfLuaPreviewNormal 	hls.preview_normal 	Builtin preview fg/bg
--- 			-- { "FzfLuaPreviewBorder", { link = "TelescopePreviewBorder" } }, -- FzfLuaPreviewBorder 	hls.preview_border 	Builtin preview border
--- 			-- { "FzfLuaPreviewTitle", { link = "TelescopePreviewTitle" } }, -- FzfLuaPreviewTitle 	hls.preview_title 	Builtin preview title
--- 			-- { "FzfLuaCursor", { link = "Cursor" } }, -- FzfLuaCursor 	hls.cursor 	Builtin preview Cursor
--- 			-- { "FzfLuaCursorLine", { link = "CursorLine" } }, -- FzfLuaCursorLine 	hls.cursorline 	Builtin preview Cursorline
--- 			-- { "FzfLuaCursorLineNr", { link = "CursorLineNr" } }, -- FzfLuaCursorLineNr 	hls.cursorlinenr 	Builtin preview CursorLineNr
--- 			-- { "FzfLuaSearch", { link = "IncSearch" } }, -- FzfLuaSearch 	hls.search 	Builtin preview search matches
--- 			-- { "FzfLuaScrollBorderEmpty", { link = "FzfLuaBorder" } }, -- FzfLuaScrollBorderEmpty 	hls.scrollborder_e 	Builtin preview border scroll empty
--- 			-- { "FzfLuaScrollBorderFull", { link = "FzfLuaBorder" } }, -- FzfLuaScrollBorderFull 	hls.scrollborder_f 	Builtin preview border scroll full
--- 			-- { "FzfLuaScrollFloatEmpty", { link = "PmenuSbar" } }, -- FzfLuaScrollFloatEmpty 	hls.scrollfloat_e 	Builtin preview float scroll empty
--- 			-- { "FzfLuaScrollFloatFull", { link = "PmenuThumb" } }, -- FzfLuaScrollFloatFull 	hls.scrollfloat_f 	Builtin preview float scroll full
--- 			-- { "FzfLuaHelpNormal", { link = "FzfLuaNormal" } }, -- FzfLuaHelpNormal 	hls.help_normal 	Help win fg/bg
--- 			-- { "FzfLuaHelpBorder", { link = "FzfLuaBorder" } }, -- FzfLuaHelpBorder 	hls.help_border 	Help win border
--- 			-- { "FzfLuaHeaderBind", { link = "TelescopeResultsNormal" } }, -- FzfLuaHeaderBind 	hls.header_bind 	Header keybind
--- 			-- { "FzfLuaHeaderText", { link = "TelescopeResultsTitle" } }, -- FzfLuaHeaderText 	hls.header_text 	Header text
--- 			{ "FzfLuaBufFlagAlt", {} },
--- 			{ "FzfLuaBufFlagCur", {} },
--- 			{ "FzfLuaBufName", {} },
--- 			{ "FzfLuaBufNr", {} },
--- 			{ "FzfLuaBufLineNr", { link = "LineNr" } },
--- 			{ "FzfLuaCursor", { link = "None" } },
--- 			{ "FzfLuaHeaderBind", { link = "Special" } },
--- 			{ "FzfLuaHeaderText", { link = "Special" } },
--- 			{ "FzfLuaTabMarker", { link = "Keyword" } },
--- 			{ "FzfLuaTabTitle", { link = "Title" } },
--- 			{ "FzfLuaNormal", { link = "TelescopeNormal" } },
--- 			{ "FzfLuaTitle", { link = "TelescopeTitle" } },
--- 			{ "FzfLuaScrollFloatEmpty", { link = "PmenuSbar" } },
--- 			-- fzf-lua is configured to only pass down the .fg attribute.
--- 			{ "FzfLuaColorsFg", { fg = get_attibutes("Normal", "foreground") } },
--- 			{ "FzfLuaColorsFgSel", { link = "FzfLuaColorsFg" } },
--- 			{ "FzfLuaColorsBg", { fg = get_attibutes("StatusLine", "background") } },
--- 			{ "FzfLuaColorsBgSel", { link = "FzfLuaColorsBg" } },
--- 			{ "FzfLuaColorsHl", { link = "Directory" } },
--- 			{ "FzfLuaColorsHlSel", { link = "FzfLuaColorsHl" } },
--- 			{ "FzfLuaColorsInfo", { fg = get_attibutes("DiagnosticInfo", "foreground") } },
--- 			{ "FzfLuaColorsPrompt", { fg = get_attibutes("TelescopePromptBorder", "foreground") } },
--- 			{ "FzfLuaColorsPointer", { fg = get_attibutes("TelescopeResultsBorder", "foreground") } },
--- 			{ "FzfLuaColorsMarker", { fg = get_attibutes("TelescopeResultsBorder", "foreground") } },
--- 			{ "FzfLuaColorsSpinner", { link = "FzfLuaColorsInfo" } },
--- 			{ "FzfLuaColorsHeader", { link = "FzfLuaColorsHl" } },
--- 		},
--- 	}
--- 	utils:create_hl()
--- end
 
 ---@param rgb string
 ---@return boolean
@@ -379,12 +313,13 @@ function utils.create_virt_diagnostics_hl()
 					print("could not create hl for", diagnostic)
 				end
 			end
-			hl.bg = bg
+			hl.bg = utils.format_color(bg)
 			vim.api.nvim_set_hl(0, diagnostic, hl)
 		end
 	end
 end
 
+---@return string
 function utils.format_color(color)
 	if color == nil then
 		return
@@ -491,33 +426,20 @@ function utils.reverse_hl(highlight, swap_fg, swap_bg)
 		return
 	end
 	if swap_fg and not swap_bg then
-		hl.foreground = bg or "NONE"
-		hl.background = "NONE"
+		hl.fg = bg or "NONE"
+		hl.bg = "NONE"
 	elseif swap_bg and not swap_fg then
-		hl.background = fg or "NONE"
-		hl.foreground = "NONE"
+		hl.bg = fg or "NONE"
+		hl.fg = "NONE"
 	else
-		hl.background = bg or "NONE"
-		hl.foreground = fg or "NONE"
+		hl.bg = bg or "NONE"
+		hl.fg = fg or "NONE"
 	end
 	vim.api.nvim_set_hl(0, highlight, hl)
 end
 
-utils.diagnostics_available = function()
-	local clients = vim.lsp.buf_get_clients(0)
-	local diagnostics = vim.lsp.protocol.Methods.textDocument_publishDiagnostics
-
-	for _, cfg in pairs(clients) do
-		if cfg.supports_method(diagnostics) then
-			return true
-		end
-	end
-
-	return false
-end
-
 function utils.get_single_hl(name)
-	local ok, hl = pcall(vim.api.nvim_get_hl_by_name, name, true)
+	local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = name }, true)
 	if ok then
 		return hl
 	end
@@ -535,7 +457,7 @@ function utils.hl_not_nil(hl, attr)
 	return hi[attr] ~= nil
 end
 
-tools.diagnostics_available = function()
+utils.diagnostics_available = function()
 	local clients = vim.lsp.get_clients({ bufnr = 0 })
 	local diagnostics = vim.lsp.protocol.Methods.textDocument_publishDiagnostics
 
@@ -572,6 +494,35 @@ function utils.vim_to_lazy_map(_, lhs, rhs, opts)
 		rhs,
 		desc = opts.desc,
 	}
+end
+
+local attrs = {
+	"fg",
+	"bg",
+	"special",
+}
+
+---Sets a hl from an attribute
+---@param ns number
+---@param new_hl_name string
+---@param opts table
+function utils.set_hl_from(ns, new_hl_name, opts)
+	local new_hl = {}
+	for k, v in pairs(opts) do
+		if type(v) == "string" then
+			local hl = vim.api.nvim_get_hl(0, {
+				name = v,
+			})
+			if hl[k] and type(hl[k]) == "string" then
+				new_hl[k] = utils.format_color(hl[k])
+			end
+		else
+			new_hl[k] = v
+		end
+	end
+	if new_hl then
+		vim.api.nvim_set_hl(0, new_hl_name, new_hl)
+	end
 end
 
 return utils

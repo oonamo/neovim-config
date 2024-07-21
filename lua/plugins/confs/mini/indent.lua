@@ -24,22 +24,25 @@ require("mini.indentscope").setup({
 		indent_at_cursor = true,
 	},
 	draw = {
-		animation = require("mini.indentscope").gen_animation.linear({
-			easing = "in",
-			duration = 40,
-			unit = "step",
-		}),
+		-- animation = require("mini.indentscope").gen_animation.linear({
+		-- 	easing = "in",
+		-- 	duration = 40,
+		-- 	unit = "step",
+		-- }),
+		animation = function()
+			return 0
+		end,
 	},
 })
-if utils.get_hl("NonText") then
-	vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", { link = "NonText" })
-else
-	local fg, _, _ = utils.get_hl("Normal")
-	if fg == nil then
-		fg = "#ffffff"
-	end
-	vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", { fg = fg })
-end
+-- if utils.get_hl("NonText") then
+-- 	vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", { link = "NonText" })
+-- else
+-- 	local fg, _, _ = utils.get_hl("Normal")
+-- 	if fg == nil then
+-- 		fg = "#ffffff"
+-- 	end
+-- 	vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", { fg = fg })
+-- end
 vim.api.nvim_create_autocmd({ "FileType" }, {
 	callback = function()
 		if vim.tbl_contains(disable_list, vim.bo.filetype) then
