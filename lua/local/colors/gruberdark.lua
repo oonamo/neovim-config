@@ -187,10 +187,6 @@ require("catppuccin").setup({
 	},
 })
 
-local function something()
-	print("something")
-end
-
 vim.cmd.colorscheme("catppuccin-mocha")
 require("mini.colors")
 	.get_colorscheme("catppuccin-mocha", {

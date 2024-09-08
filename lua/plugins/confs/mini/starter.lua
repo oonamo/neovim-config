@@ -21,15 +21,27 @@ starter.setup({
 	evaluate_single = true,
 	header = header(),
 	items = {
-		starter.sections.sessions(5, true),
-		-- grapple_paths(),
+		starter.sections.builtin_actions(),
+		(function()
+			local items = starter.sections.telescope()()
+			table.remove(items, 1)
+			return items
+		end)(),
 	},
 	content_hooks = {
 		starter.gen_hook.adding_bullet(),
-		starter.gen_hook.indexing("all", { "Sessions" }),
+		starter.gen_hook.indexing("all", { "Builtin actions" }),
 		starter.gen_hook.aligning("center", "center"),
-		-- starter.gen_hook.padding(5, 2),
-		-- starter.gen_hook.aligning("left", "top"),
 	},
-	footer = "==================================",
+})
+
+vim.api.nvim_create_autocmd("User", {
+	pattern = "MiniStarterOpened",
+	callback = function()
+		vim.schedule(function()
+			vim.opt_local.rnu = false
+			vim.opt_local.number = false
+		end)
+		vim.b.miniindentscope_disable = true
+	end,
 })

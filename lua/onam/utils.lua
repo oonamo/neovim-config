@@ -75,7 +75,7 @@ function utils.execute(id, args)
 end
 
 ---@class Autocommand
----@field events string[] list of autocommand events
+---@field events string|string[] list of autocommand events
 ---@field targets string[]? list of autocommand patterns
 ---@field modifiers string[]? e.g. nested, once
 ---@field exec boolean?
@@ -281,7 +281,7 @@ end
 
 ---@return string|nil, string|nil, vim.api.keyset.hl_info|nil
 function utils.get_hl(name)
-	local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = name })
+	local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = name, link = false })
 	if not ok then
 		return nil, nil, nil
 	end

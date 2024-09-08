@@ -4,6 +4,17 @@ return {
 		lazy = true,
 	},
 	-- {
+	-- 	"mini.starter",
+	-- 	event = "VimEnter",
+	-- 	dev = true,
+	-- 	config = function()
+	-- 		if not MiniSessions or not MiniSessions.detected then
+	-- 			_G.MiniSessions = nil
+	-- 		end
+	-- 		require("plugins.confs.mini.starter")
+	-- 	end,
+	-- },
+	-- {
 	-- 	"mini.bracketed",
 	-- 	dev = true,
 	-- 	config = function()
@@ -53,28 +64,28 @@ return {
 			}
 		end,
 	},
-	{
-		"mini.files",
-		dev = true,
-		config = function()
-			require("plugins.confs.mini.files")
-		end,
-		-- keys = {
-		-- 	utils.vim_to_lazy_map("n", "<leader>e", function()
-		-- 		require("mini.files").open()
-		-- 	end, { desc = "open cwd files" }),
-		--
-		-- 	utils.vim_to_lazy_map("n", "-", function()
-		-- 		local bufname = vim.api.nvim_buf_get_name(0)
-		-- 		local path = vim.fn.fnamemodify(bufname, ":p")
-		--
-		-- 		-- Noop if the buffer isn't valid.
-		-- 		if path and vim.uv.fs_stat(path) then
-		-- 			require("mini.files").open(bufname, false)
-		-- 		end
-		-- 	end, { desc = "open bufdir files" }),
-		-- },
-	},
+	-- {
+	-- 	"mini.files",
+	-- 	dev = true,
+	-- 	config = function()
+	-- 		require("plugins.confs.mini.files")
+	-- 	end,
+	-- 	-- keys = {
+	-- 	-- 	utils.vim_to_lazy_map("n", "<leader>e", function()
+	-- 	-- 		require("mini.files").open()
+	-- 	-- 	end, { desc = "open cwd files" }),
+	-- 	--
+	-- 	-- 	utils.vim_to_lazy_map("n", "-", function()
+	-- 	-- 		local bufname = vim.api.nvim_buf_get_name(0)
+	-- 	-- 		local path = vim.fn.fnamemodify(bufname, ":p")
+	-- 	--
+	-- 	-- 		-- Noop if the buffer isn't valid.
+	-- 	-- 		if path and vim.uv.fs_stat(path) then
+	-- 	-- 			require("mini.files").open(bufname, false)
+	-- 	-- 		end
+	-- 	-- 	end, { desc = "open bufdir files" }),
+	-- 	-- },
+	-- },
 	{
 		"mini.notify",
 		event = "VeryLazy",
@@ -162,7 +173,7 @@ return {
 	{
 		"mini.diff",
 		dev = true,
-		event = "VeryLazy",
+		event = "LazyFile",
 		config = function()
 			require("plugins.confs.mini.diff")
 		end,
@@ -223,6 +234,7 @@ return {
 	{
 		"mini.git",
 		dev = true,
+		event = "LazyFile",
 		config = function()
 			require("plugins.confs.mini.git")
 		end,
@@ -273,4 +285,12 @@ return {
 			end
 		end,
 	},
+	-- {
+	-- 	"mini.tabline",
+	-- 	dev = true,
+	-- 	event = "LazyFile",
+	-- 	config = function()
+	-- 		require("plugins.confs.mini.tabline")
+	-- 	end,
+	-- },
 }

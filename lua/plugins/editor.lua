@@ -1,4 +1,5 @@
 return {
+	{ "nvim-lua/plenary.nvim" },
 	{
 		"nvim-telescope/telescope.nvim",
 		lazy = true,
@@ -6,11 +7,11 @@ return {
 		-- tag = "0.1.6",
 		-- or                              , branch = '0.1.x',
 		dependencies = {
-			"nvim-lua/plenary.nvim",
 			{
 				"nvim-telescope/telescope-fzf-native.nvim",
 				build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
 			},
+			{ "nvim-telescope/telescope-ui-select.nvim" },
 		},
 		opts = function()
 			local actions = require("telescope.actions")
@@ -20,6 +21,7 @@ return {
 				prompt_prefix = "  ", -- ❯  
 				selection_caret = "▍ ",
 				multi_icon = " ",
+				disable_devicons = true,
 				-- color_devicons = false,
 				vimgrep_arguments = {
 					"rg",
@@ -57,13 +59,13 @@ return {
 						case_mode = "smart_case", -- or "ignore_case" or "respect_case"
 						-- the default case_mode is "smart_case"
 					},
-					file_browser = {},
 				},
 			}
 		end,
 		config = function(_, opts)
 			require("telescope").setup(opts)
 			require("telescope").load_extension("fzf")
+			require("telescope").load_extension("ui-select")
 		end,
 		keys = function()
 			local builtin = require("telescope.builtin")
@@ -98,11 +100,11 @@ return {
 					builtin.current_buffer_fuzzy_find,
 					desc = "find from current buffer",
 				},
-				{
-					"z=",
-					builtin.spell_suggest,
-					desc = "find from current buffer",
-				},
+				-- {
+				-- 	"z=",
+				-- 	builtin.spell_suggest,
+				-- 	desc = "find from current buffer",
+				-- },
 				{
 					"<leader>fe",
 					function()
@@ -144,42 +146,30 @@ return {
 		end,
 	},
 	{
-		"nvim-pack/nvim-spectre",
+		"MagicDuck/grug-far.nvim",
 		config = true,
-		cmd = "Spectre",
-		opts = {
-			open_cmd = "noswapfile vnew",
+		keys = {
+			{
+				"<leader>S",
+				function()
+					require("grug-far").grug_far({})
+				end,
+			},
+			{
+				"<leader>sw",
+				function()
+					require("grug-far").grug_far({
+						prefills = { search = vim.fn.expand("<cword>") },
+					})
+				end,
+			},
+			{
+				"<leader>sf",
+				function()
+					require("grug-far").grug_far({ prefills = { flags = vim.fn.expand("%") } })
+				end,
+			},
 		},
-		keys = function()
-			local spectre = require("spectre")
-			return {
-				{
-					"<leader>S",
-					spectre.toggle,
-					desc = "Toggle Spectre",
-				},
-				{
-					"<leader>sw",
-					function()
-						spectre.open_visual({ select_word = true })
-					end,
-					desc = "Search current word",
-				},
-				{
-					mode = "v",
-					"<leader>sw",
-					spectre.open_visual,
-					desc = "Search current word",
-				},
-				{
-					"<leader>sp",
-					function()
-						spectre.open_file_search({ select_word = true })
-					end,
-					desc = "Search current word",
-				},
-			}
-		end,
 	},
 	{
 		"nvim-treesitter/nvim-treesitter",
@@ -227,7 +217,7 @@ return {
 				incremental_selection = {
 					enable = true,
 					keymaps = {
-						init_selection = "<CR>",
+						init_selection = "<C-i>",
 						node_incremental = "<CR>",
 						scope_incremental = false,
 						node_decremental = "<BS>",
@@ -279,6 +269,7 @@ return {
 				callback = oil_sethl,
 			})
 			return {
+				default_file_explorer = true,
 				columns = {
 					{
 						"type",
@@ -314,19 +305,6 @@ return {
 		},
 	},
 	{
-		"nvim-treesitter/nvim-treesitter-context",
-		ft = "markdown",
-		opts = { mode = "cursor", max_lines = 3 },
-	},
-	-- {
-	-- 	"Bekaboo/dropbar.nvim",
-	-- 	event = "LspAttach",
-	-- 	init = function()
-	-- 		vim.ui.select = require("dropbar.utils.menu").select
-	-- 	end,
-	-- 	-- ft = "markdown",
-	-- },
-	{
 		dir = "~/projects/command_pal",
 		dev = true,
 		opts = function()
@@ -360,6 +338,33 @@ return {
 						name = "Set-Option",
 						desc = "Quickly set an option in the nvim cmdline",
 						command = utils.set_cmdline(":lua vim.opt."),
+					},
+					{
+						group = "Lua",
+						name = "Toggle-Ruler",
+						desc = "Set Ruler into statusline",
+						command = function()
+							vim.g.enable_ruler = not vim.g.enable_ruler
+						end,
+					},
+					{
+						group = "Compile",
+						name = "Compile file",
+						desc = "Use Overseer to compile",
+						command = function()
+							local compilers = {
+								["c"] = "gcc -Wall -pedantic %f.c -o tmp -std=c99 && ./tmp",
+								["cpp"] = "g++ -Wall -pedantic %f.cpp -o tmp && ./tmp",
+								["lua"] = function(file)
+									if file then
+										vim.cmd("so " .. file)
+									end
+								end,
+							}
+							-- require("overseer").new_task({
+							-- 	cmd = compilers[vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":e")],
+							-- })
+						end,
 					},
 				},
 				builtin = {},
@@ -441,5 +446,61 @@ return {
 				},
 			},
 		},
+	},
+	{
+		"stevearc/aerial.nvim",
+		cmd = "AerialToggle",
+		opts = {
+			on_attach = function(bufnr)
+				vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
+				vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
+			end,
+		},
+	},
+	{
+		"stevearc/quicker.nvim",
+		event = "FileType qf",
+		opts = {},
+	},
+	{
+		"nacro90/numb.nvim",
+		event = "CmdlineEnter",
+		opts = {
+			show_numbers = true, -- Enable 'number' for the window while peeking
+			show_cursorline = true, -- Enable 'cursorline' for the window while peeking
+			hide_relativenumbers = true, -- Enable turning off 'relativenumber' for the window while peeking
+			number_only = false, -- Peek only when the command is only a number instead of when it starts with a number
+			centered_peeking = true, -- Peeked line will be centered relative to window
+		},
+		-- lazy = false,
+	},
+	{
+		"folke/which-key.nvim",
+		event = "VeryLazy",
+		opts = {
+			-- your configuration comes here
+			-- or leave it empty to use the default settings
+			-- refer to the configuration section below
+		},
+		keys = {
+			{
+				"<leader>?",
+				function()
+					require("which-key").show({ global = false })
+				end,
+				desc = "Buffer Local Keymaps (which-key)",
+			},
+		},
+	},
+	{ "shortcuts/no-neck-pain.nvim", opts = {} },
+	{
+		"rebelot/heirline.nvim",
+		-- You can optionally lazy-load heirline on UiEnter
+		-- to make sure all required plugins and colorschemes are loaded before setup
+		-- event = "UiEnter",
+		event = "VeryLazy",
+		opts = function()
+			return require("plugins.confs.heirline")
+		end,
 	},
 }

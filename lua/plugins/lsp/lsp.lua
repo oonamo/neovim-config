@@ -156,7 +156,7 @@ return {
 					},
 				},
 			},
-			tsserver = defaults,
+			ts_ls = defaults,
 			html = defaults,
 			eslint = defaults,
 			powershell_es = {

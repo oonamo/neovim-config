@@ -1,4 +1,5 @@
 local o, opt = vim.o, vim.opt
+vim.o.shada = "'100,<50,s10,:1000,/100,@100,h"
 
 -- Allows for easy telling if pane is a nvim proccess
 o.title = true
@@ -46,15 +47,15 @@ opt.completeopt = { "menu", "menuone", "noselect" }
 -- set signcolumn
 opt.signcolumn = "yes"
 
-opt.guicursor = ""
--- opt.guicursor = {
--- 	"n-v-c:block", -- Normal, visual, command-line: block cursor
--- 	"i-ci-ve:ver25", -- Insert, command-line insert, visual-exclude: vertical bar cursor with 25% width
--- 	"r-cr:hor20", -- Replace, command-line replace: horizontal bar cursor with 20% height
--- 	"o:hor50", -- Operator-pending: horizontal bar cursor with 50% height
--- 	"a:blinkwait700-blinkoff400-blinkon250", -- All modes: blinking settings
--- 	"sm:block-blinkwait175-blinkoff150-blinkon175", -- Showmatch: block cursor with specific blinking settings
--- }
+-- o.guicursor = ""
+opt.guicursor = {
+	"n-v-c:block", -- Normal, visual, command-line: block cursor
+	"i-ci-ve:ver25", -- Insert, command-line insert, visual-exclude: vertical bar cursor with 25% width
+	"r-cr:hor20", -- Replace, command-line replace: horizontal bar cursor with 20% height
+	"o:hor50", -- Operator-pending: horizontal bar cursor with 50% height
+	"a:blinkwait700-blinkoff400-blinkon250", -- All modes: blinking settings
+	"sm:block-blinkwait175-blinkoff150-blinkon175", -- Showmatch: block cursor with specific blinking settings
+}
 
 -- o.cursorline = true
 -- o.cursorlineopt = "number"
@@ -71,7 +72,7 @@ opt.undofile = true
 opt.wildmenu = true
 
 -- opt.signcolumn = "number"
-opt.laststatus = 2 -- Or 3 for global statusline
+opt.laststatus = 3 -- Or 3 for global statusline
 -- opt.fillchars = "fold:~"
 -- opt.fillchars = {
 -- 	fold = "~",
@@ -120,6 +121,11 @@ if vim.fn.executable("rg") == 1 then
 end
 
 o.cursorline = true
+
+vim.g.loaded_node_provider = 0
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
 
 require("onam.float_term").setup("pwsh")
 -- o.statusline =

@@ -1,4 +1,5 @@
 local M = {}
+local sep = vim.fn.has("win32") and "\\" or "/"
 local augroup = function(name)
 	vim.api.nvim_create_augroup(name, { clear = true })
 end
@@ -78,6 +79,7 @@ function M.setup_writing_cmds()
 			targets = { "*.md", "*.norg", "*.org", "*.tex" },
 			command = function()
 				require("mini.trailspace").trim()
+				vim.cmd("silent mkview")
 			end,
 		},
 		{
@@ -96,6 +98,31 @@ function M.setup_writing_cmds()
 				}
 				for k, v in pairs(hls) do
 					vim.api.nvim_set_hl(0, k, v)
+				end
+			end,
+		},
+		{
+			events = { "BufNew" },
+			targets = { "*.md", "*.norg", "*.org", "*.tex" },
+			command = function(event)
+				vim.schedule(function()
+					vim.cmd("silent! loadview")
+				end)
+			end,
+		},
+		{
+			events = { "VimEnter" },
+			targets = { "*.md", "*.norg", "*.org", "*.tex" },
+			command = function(event)
+				if vim.fn.argc(-1) ~= 0 then
+					vim.api.nvim_create_autocmd("User", {
+						pattern = "VeryLazy",
+						callback = function()
+							vim.cmd("silent! loadview")
+						end,
+					})
+				else
+					vim.cmd("silent! loadview")
 				end
 			end,
 		},
@@ -158,15 +185,14 @@ vim.on_key(function(char)
 	end
 end, vim.api.nvim_create_namespace("autoNohlAndSearchCount"))
 
-vim.api.nvim_create_autocmd("TermClose", {
-	callback = function()
-		vim.cmd("q")
-		-- require("mini.bufremove").delete(data.bufnr)
+vim.api.nvim_create_autocmd("TermOpen", {
+	callback = function(event)
+		if event.buf then
+			vim.opt_local.number = false
+			vim.opt_local.relativenumber = false
+			vim.opt_local.scl = "no"
+		end
 	end,
 })
--- vim.api.nvim_create_autocmd("User", {
--- 	pattern = "VeryLazy",
--- 	callback = M.set_qol,
--- 	once = true,
--- })
+
 return M

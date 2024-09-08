@@ -1,7 +1,11 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = ";"
+vim.o.background = "dark"
+vim.loader.enable()
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
+---@diagnostic disable-next-line: undefined-field
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	vim.notify("Downloading lazy...")
 	vim.fn.system({
@@ -15,7 +19,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-local function load(name)
+local function load(name, not_config)
 	local function _load(mod)
 		if require("lazy.core.cache").find(mod)[1] then
 			local ok, _ = pcall(require, mod)
@@ -24,15 +28,24 @@ local function load(name)
 			end
 		end
 	end
-	_load("config." .. name)
+	if not_config then
+		_load(name)
+	else
+		_load("config." .. name)
+	end
 end
 
 local load_augroups = vim.fn.argc(-1) == 0
 if load_augroups then
-	load("autocommands")
+	load("autocommands", true)
 end
 
+require("colors")
+require("config.colors")
+
 _G.O = {
+	harpoon = false,
+	arrow = true,
 	lsp = {
 		cmp = true,
 		mini = false,
@@ -53,13 +66,33 @@ _G.O = {
 		show_open_folds = false,
 		use_githl = false,
 		debug = false,
-		colorscheme = { "nightfox", "dusk" },
-		-- colorscheme = vim.schedule_wrap(function()
-		-- 	vim.cmd.colorscheme("duskfox")
-		-- end),
-		select = "mini.pick",
+		-- colorscheme = { "oh-lucy", "light" },
+		colorscheme = "oh-lucy",
+		-- colorscheme = function()
+		-- 	vim.cmd.colorscheme("catp-mocha")
+		-- end,
+		select = "telescope",
 	},
 }
+
+if O.ui.colorscheme ~= nil then
+	if type(O.ui.colorscheme) == "table" then
+		Colors.set_active(O.ui.colorscheme[1], O.ui.colorscheme[2])
+	elseif type(O.ui.colorscheme) == "string" then
+		if O.ui.colorscheme == "default" then
+			vim.cmd.colorscheme("default")
+		end
+		Colors.set_active(O.ui.colorscheme)
+	else
+		vim.schedule(function()
+			O.ui.colorscheme()
+		end)
+	end
+else
+	vim.schedule(function()
+		vim.cmd.colorscheme("tokyonight")
+	end)
+end
 
 require("onam.utils")
 require("utils.lazy_file")
@@ -75,30 +108,13 @@ vim.api.nvim_create_autocmd("User", {
 		load("keymaps")
 		load("options")
 		require("onam.statuscolumn")
-		if O.ui.colorscheme ~= nil then
-			if type(O.ui.colorscheme) == "table" then
-				-- vim.cmd.colorscheme(O.ui.colorscheme)
-				vim.schedule(function()
-					Colors.get_color(O.ui.colorscheme[1]):apply(O.ui.colorscheme[2])
-				end)
-			elseif type(O.ui.colorscheme) == "string" then
-				vim.schedule(function()
-					-- vim.cmd.colorscheme(O.ui.colorscheme)
-					Colors.get_color(O.ui.colorscheme):apply()
-				end)
-			else
-				O.ui.colorscheme()
-			end
-		else
-			vim.schedule(function()
-				vim.cmd.colorscheme("tokyonight")
-			end)
-		end
+		-- require("onam.statusline")
 
 		if O.ui.select == "dropbar" then
 			vim.ui.select = require("dropbar.utils.menu").select
 		else
-			vim.ui.select = require("mini.pick").ui_select
+			-- vim.ui.select = require("mini.pick").ui_select
+			require("telescope").load_extension("ui-select")
 		end
 
 		if vim.g.neovide then
@@ -135,13 +151,13 @@ require("lazy").setup({
 				"netrwFileHandlers",
 				"matchit",
 				"man",
-				"matchparen",
+				-- "matchparen",
 				"tar",
 				"tarPlugin",
 				"rrhelper",
 				"vimball",
 				-- "health",
-				"shada",
+				-- "shada",
 				-- "spellfile",
 				"tohtml",
 				"tutor",

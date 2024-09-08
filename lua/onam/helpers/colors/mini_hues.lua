@@ -20,12 +20,12 @@ function M.apply_custom_highlights(opts)
 
   -- I prefer italic fonts as I use fonts with beautiful italics.
   -- Some examples: Operator Mono, Berkeley Mono, PragmataPro, Radon
-  hi("Comment",                    { fg = p.fg_mid2, bg = nil,         italic = true })
-  hi("DiagnosticVirtualTextError", { fg = p.red,     bg = p.red_bg,    italic = true })
-  hi("DiagnosticVirtualTextHint",  { fg = p.cyan,    bg = p.cyan_bg,   italic = true })
-  hi("DiagnosticVirtualTextInfo",  { fg = p.blue,    bg = p.blue_bg,   italic = true })
-  hi("DiagnosticVirtualTextOk",    { fg = p.green,   bg = p.green_bg,  italic = true })
-  hi("DiagnosticVirtualTextWarn",  { fg = p.yellow,  bg = p.yellow_bg, italic = true })
+  hi("Comment",                    { fg = p.fg_mid2, bg = nil,          })
+  hi("DiagnosticVirtualTextError", { fg = p.red,     bg = p.red_bg,     })
+  hi("DiagnosticVirtualTextHint",  { fg = p.cyan,    bg = p.cyan_bg,    })
+  hi("DiagnosticVirtualTextInfo",  { fg = p.blue,    bg = p.blue_bg,    })
+  hi("DiagnosticVirtualTextOk",    { fg = p.green,   bg = p.green_bg,   })
+  hi("DiagnosticVirtualTextWarn",  { fg = p.yellow,  bg = p.yellow_bg,  })
 
   -- Highlight patterns for highlighting the whole line and hiding colon.
   -- See https://github.com/echasnovski/mini.nvim/discussions/783

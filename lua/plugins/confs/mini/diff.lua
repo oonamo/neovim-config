@@ -7,6 +7,7 @@ require("mini.diff").setup({
 })
 
 local function gen_hls()
+	local _, stl_bg, _ = utils.get_hl("StatusLine")
 	local hls = {
 		"MiniDiffSignAdd",
 		"MiniDiffSignChange",
@@ -15,7 +16,13 @@ local function gen_hls()
 
 	for _, hl in ipairs(hls) do
 		local fg, bg, _ = utils.get_hl(hl)
-		vim.api.nvim_set_hl(0, hl .. "_stl", { fg = fg })
+		if fg then
+			vim.api.nvim_set_hl(0, hl .. "_stl", { fg = fg, bg = stl_bg })
+		elseif bg then
+			vim.api.nvim_set_hl(0, hl .. "_stl", { fg = bg, bg = stl_bg })
+		else
+			vim.api.nvim_set_hl(0, hl .. "_stl", { link = "StatusLine" })
+		end
 		-- if fg then
 		-- 	vim.api.nvim_set_hl(0, hl, { fg = fg, bg = fg })
 		-- elseif bg then

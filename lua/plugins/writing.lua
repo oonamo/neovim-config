@@ -7,217 +7,35 @@ return {
 		},
 		dependencies = {
 			"nvim-lua/plenary.nvim",
+			"folke/zen-mode.nvim",
 			{
-				"OXY2DEV/markview.nvim",
-				branch = "dev",
-				opts = function()
-					local weird_list = {
-						["everforest"] = "everforest/after/syntax/markdown/everforest.vim",
-						["edge"] = "edge/after/syntax/markdown/edge.vim",
-						["gruvbox-material"] = "gruvbox-material/after/syntax/markdown/gruvbox_material.vim",
-					}
-					local function set_md_hi(i, bg, tries)
-						local hi = "markdownH" .. tostring(i)
-						local fg, _, _ = utils.get_hl(hi)
-						if not fg then
-							fg, _ = utils.get_hl("@markup.heading." .. tostring(i) .. ".markdown")
-						end
-
-						if not fg then
-							vim.schedule(function()
-								set_md_hi(i, bg, tries + 1)
-							end)
-							return
-						end
-
-						vim.api.nvim_set_hl(0, "Markview_h" .. tostring(i), { bg = fg, fg = bg })
-						vim.api.nvim_set_hl(0, "Markview_h" .. tostring(i) .. "_inv", { fg = fg, bold = true })
-					end
-					vim.api.nvim_create_autocmd("Colorscheme", {
-						callback = vim.schedule_wrap(function(data)
-							if weird_list[data.match] then
-								vim.cmd("so " .. vim.fn.stdpath("data") .. "/lazy/" .. weird_list[data.match])
-							end
-							local _, n_bg = utils.get_hl("Normal")
-							n_bg = n_bg or "#000000"
-							for i = 1, 6 do
-								set_md_hi(i, n_bg, 0)
-							end
-						end),
-					})
-					local markview = require("markview")
-					local callouts = markview.configuration.block_quotes.callouts
-
-					table.insert(callouts, {
-						{
-							match_string = "FORMULA",
-							aliases = nil,
-							-- aliases = { "" },
-
-							callout_preview = "󰿉  Formula",
-							callout_preview_hl = nil,
-
-							custom_title = true,
-							custom_icon = "󰿉 ",
-
-							border = { "▉", "▊", "▋", "▌" },
-							border_hl = "@comment.warning",
-						},
-					})
-
-					return {
-						options = {
-							on_enable = {},
-							on_disable = {
-								conceallevel = 0,
-								concealcursor = "",
-							},
-						},
-						code_blocks = {
-							enable = true,
-
-							style = "language",
-							position = "overlay",
-
-							hl = "markdownCodeBlock",
-
-							min_width = 60,
-							pad_amount = 3,
-
-							language_names = {
-								{ "py", "python" },
-								{ "cpp", "C++" },
-							},
-							sign = true,
-
-							language_direction = "right",
-							sign_hl = nil,
-						},
-						block_quotes = {
-							enable = true,
-							default = {
-								border = "",
-								border_hl = "Comment",
-							},
-							callouts = callouts,
-						},
-						headings = {
-							shift_width = 0,
-							-- heading_1 = {
-							-- 	style = "label",
-							-- 	hl = "h1",
-							-- 	padding_left = " ",
-							-- 	padding_right = " ",
-							-- },
-							-- heading_2 = {
-							-- 	style = "label",
-							-- 	hl = "h2",
-							-- 	padding_left = " ",
-							-- 	padding_right = " ",
-							-- },
-							-- heading_3 = {
-							-- 	style = "label",
-							-- 	hl = "h3",
-							-- 	sign = "",
-							-- 	padding_left = " ",
-							-- 	padding_right = " ",
-							-- },
-							-- heading_4 = {
-							-- 	style = "label",
-							-- 	hl = "h4",
-							-- 	sign = "",
-							-- 	padding_left = " ",
-							-- 	padding_right = " ",
-							-- },
-							-- heading_5 = {
-							-- 	style = "label",
-							-- 	hl = "h5",
-							-- 	sign = "",
-							-- 	padding_left = " ",
-							-- 	padding_right = " ",
-							-- },
-							-- heading_6 = {
-							-- 	style = "label",
-							-- 	hl = "h6",
-							-- 	sign = "",
-							-- 	padding_left = " ",
-							-- 	padding_right = " ",
-							-- },
-							heading_1 = {
-								style = "label",
-
-								padding_left = " ",
-								padding_right = " ",
-
-								corner_right = "",
-								corner_right_hl = "h1_inv",
-
-								sign = "",
-								hl = "h1",
-							},
-							heading_2 = {
-								style = "label",
-
-								padding_left = " ",
-								padding_right = " ",
-
-								corner_right = "",
-								corner_right_hl = "h2_inv",
-
-								sign = "",
-								hl = "h2",
-							},
-							heading_3 = {
-								style = "label",
-
-								padding_left = " ",
-								padding_right = " ",
-
-								corner_right = "",
-								corner_right_hl = "h3_inv",
-
-								hl = "h3",
-								sign = "",
-							},
-							heading_4 = {
-								style = "label",
-
-								padding_left = " ",
-								padding_right = " ",
-
-								corner_right = "",
-								corner_right_hl = "h4_inv",
-
-								sign = "",
-								hl = "h4",
-							},
-							heading_5 = {
-								style = "label",
-
-								padding_left = " ",
-								padding_right = " ",
-
-								corner_right = "",
-								corner_right_hl = "h5_inv",
-
-								sign = "",
-								hl = "h5",
-							},
-							heading_6 = {
-								style = "label",
-
-								padding_left = " ",
-								padding_right = " ",
-
-								corner_right = "",
-								corner_right_hl = "h6_inv",
-
-								sign = "",
-								hl = "h6",
-							},
-						},
-					}
-				end,
+				"MeanderingProgrammer/render-markdown.nvim",
+				opts = {
+					render_modes = { "n", "v", "i", "c" },
+					quote = { repeat_linebreak = true },
+					callout = {
+						schedule = { raw = "[!SCHEDULE]", rendered = " Schedule", highlight = "Special" },
+						formula = { raw = "[!FORMULA]", rendered = "󰡱 Formula", highlight = "Boolean" },
+					},
+					win_options = {
+						showbreak = { default = "", rendered = "  " },
+						breakindent = { default = false, rendered = true },
+						breakindentopt = { default = "", rendered = "" },
+					},
+					code = {
+						width = "block",
+						min_width = 45,
+						left_pad = 2,
+						language_pad = 2,
+						border = "thick",
+					},
+					heading = {
+						position = "inline",
+						width = "block",
+						min_width = 40,
+					},
+					pipe_table = { preset = "heavy" },
+				},
 			},
 		},
 		cmd = "GoToNotes",
@@ -460,6 +278,88 @@ return {
 				"rst",
 				"tex",
 				"text",
+			},
+		},
+	},
+	{
+		"folke/zen-mode.nvim",
+		cmd = "ZenMode",
+		opts = {
+			window = {
+				backdrop = 1,
+				width = 0.85,
+				height = 0.95,
+				options = {
+					signcolumn = "no", -- disable signcolumn
+					number = false, -- disable number column
+					relativenumber = false, -- disable relative numbers
+					cursorline = false, -- disable cursorline
+					cursorcolumn = false, -- disable cursor column
+					foldcolumn = "0", -- disable fold column
+					list = false, -- disable whitespace characters
+				},
+			},
+			plugins = {
+				options = {
+					enabled = true,
+					ruler = false, -- disables the ruler text in the cmd line area
+					showcmd = false, -- disables the command in the last line of the screen
+					-- you may turn on/off statusline in zen mode by setting 'laststatus'
+					-- statusline will be shown only if 'laststatus' == 3
+					laststatus = 3, -- turn off the statusline in zen mode
+				},
+			},
+			neovide = {
+				enabled = false,
+				-- Will multiply the current scale factor by this number
+				scale = 1.2,
+				-- disable the Neovide animations while in Zen mode
+				disable_animations = {
+					neovide_animation_length = 0,
+					neovide_cursor_animate_command_line = false,
+					neovide_scroll_animation_length = 0,
+					neovide_position_animation_length = 0,
+					neovide_cursor_animation_length = 0,
+					neovide_cursor_vfx_mode = "",
+				},
+			},
+			on_open = function()
+				vim.g.zen_enabled = true
+				_, _, vim.g.old_stl_hl = utils.get_hl("StatusLine")
+				vim.api.nvim_set_hl(0, "StatusLine", { link = "Normal" })
+				require("heirline").load_colors(function()
+					return {}
+				end)
+			end,
+			on_close = function()
+				vim.g.zen_enabled = false
+				vim.api.nvim_set_hl(0, "StatusLine", vim.g.old_stl_hl)
+				require("heirline").load_colors(function()
+					return {}
+				end)
+			end,
+		},
+		keys = {
+			{
+				"<leader>fo",
+				"<cmd>ZenMode<cr>",
+				desc = "Open Zen mode",
+			},
+		},
+	},
+	{
+		"Myzel394/easytables.nvim",
+		config = true,
+		keys = {
+			{
+				"<leader>tn",
+				"<cmd>EasyTablesCreateNew<cr>",
+				desc = "New Markdown Table",
+			},
+			{
+				"<leader>te",
+				"<cmd>EasyTablesImportThisTable<cr>",
+				desc = "Edit Markdown Table",
 			},
 		},
 	},

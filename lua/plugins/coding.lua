@@ -29,7 +29,46 @@ return {
 					return fallback()
 				end
 			end
+			local function border(hl_name)
+				return {
+					{ "╭", hl_name },
+					{ "─", hl_name },
+					{ "╮", hl_name },
+					{ "│", hl_name },
+					{ "╯", hl_name },
+					{ "─", hl_name },
+					{ "╰", hl_name },
+					{ "│", hl_name },
+				}
+			end
 			return {
+				experimental = {
+					ghost_text = true,
+				},
+				window = {
+					completion = {
+						side_padding = 0,
+						winhighlight = "Normal:CmpPmenu,CursorLine:CmpSel,Search:None",
+						scrollbar = false,
+						border = border("FloatBorder"),
+					},
+					documentation = {
+						border = border("CmpDocumentationBorder"),
+						winhighlight = "Normal:CmpDocumentation",
+					},
+				},
+				view = {
+					docs = {
+						auto_open = true,
+					},
+					entries = {
+						follow_cursor = true,
+					},
+				},
+				performance = {
+					debounce = 0, -- default = 60ms
+					throttle = 0, -- default = 30ms
+				},
 				completion = {
 					completeopt = "menu,menuone,noinsert" .. (auto_select and "" or ",noselect"),
 				},
@@ -65,6 +104,13 @@ return {
 					{ name = "buffer" },
 				}),
 				sorting = defaults.sorting,
+				matching = {
+					disallow_fuzzy_matching = true,
+					disallow_fullfuzzy_matching = true,
+					disallow_partial_fuzzy_matching = true,
+					disallow_partial_matching = true,
+					disallow_prefix_unmatching = true,
+				},
 			}
 		end,
 	},
@@ -81,6 +127,11 @@ return {
 			-- imap_expr("<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]])
 			require("mini.completion").setup({
 				fallback_action = function() end,
+				delay = {
+					completion = 0,
+					info = 0,
+					signature = 50,
+				},
 			})
 		end,
 	},
@@ -107,6 +158,7 @@ return {
 	},
 	{
 		"ThePrimeagen/harpoon",
+		enabled = O.harpoon,
 		branch = "harpoon2",
 		dependencies = { "nvim-lua/plenary.nvim" },
 		opts = {
@@ -116,7 +168,52 @@ return {
 			settings = {
 				save_on_toggle = true,
 			},
+			["overseer"] = {
+				add = function(cmd)
+					return {
+						value = cmd.name,
+						context = {
+							cmd = cmd,
+						},
+					}
+				end,
+				select = function(list_item, list, options)
+					require("overseer").new_task(list_item.cmd):start()
+					require("overseer").open()
+				end,
+				display = function(item)
+					return item.value
+				end,
+			},
 		},
+		config = function(_, _)
+			-- require("harpoon"):setup(opts)
+			require("harpoon"):setup({
+				menu = {
+					width = vim.api.nvim_win_get_width(0),
+				},
+				settings = {
+					save_on_toggle = true,
+				},
+				["overseer"] = {
+					add = function(cmd)
+						return {
+							value = cmd.name,
+							context = {
+								cmd = cmd,
+							},
+						}
+					end,
+					select = function(list_item, list, options)
+						require("overseer").new_task(list_item.cmd):start()
+						require("overseer").open()
+					end,
+					display = function(item)
+						return item.value
+					end,
+				},
+			})
+		end,
 		keys = function()
 			local harpoon = require("harpoon")
 			return {
@@ -189,6 +286,127 @@ return {
 						end, { buffer = cx.bufnr })
 					end,
 				}),
+			}
+		end,
+	},
+	{
+		"otavioschwanck/arrow.nvim",
+		enabled = O.arrow,
+		opts = {
+			show_icons = true,
+			leader_key = "<C-e>", -- Recommended to be a single key
+			buffer_leader_key = "<leader>m", -- Per Buffer Mappings
+		},
+		keys = {
+			"<C-e>",
+			"<leader>m",
+			{
+				"<leader>a",
+				function()
+					require("arrow.persist").save(vim.api.nvim_buf_get_name(0))
+				end,
+			},
+			{
+				"<C-h>",
+				function()
+					require("arrow.persist").go_to(1)
+				end,
+			},
+			{
+				"<C-j>",
+				function()
+					require("arrow.persist").go_to(2)
+				end,
+			},
+			{
+				"<C-k>",
+				function()
+					require("arrow.persist").go_to(3)
+				end,
+			},
+			{
+				"<C-l>",
+				function()
+					require("arrow.persist").go_to(4)
+				end,
+			},
+			{
+				"<leader>5",
+				function()
+					require("arrow.persist").go_to(5)
+				end,
+			},
+			{
+				"<leader>6",
+				function()
+					require("arrow.persist").go_to(6)
+				end,
+			},
+		},
+	},
+	{
+		"stevearc/overseer.nvim",
+		opts = {
+			templates = {
+				"builtin",
+				"user.cpp_build",
+				"user.c_build",
+			},
+		},
+		cmd = { "OverseerBuild", "OverseerRun" },
+		keys = function()
+			local function prompt()
+				return vim.fn.input({
+					prompt = "Compile > ",
+					default = vim.g.last_compile_command,
+				})
+			end
+			return {
+				{
+					"<leader>cp",
+					function()
+						local command = prompt()
+						if command == "" then
+							return
+						end
+						local overseer = require("overseer")
+						overseer
+							.new_task({
+								cmd = command,
+							})
+							:start()
+						overseer.open()
+						vim.g.last_compile_command = command
+					end,
+					desc = "Compile Project",
+				},
+				{
+					"<leader>ca",
+					function()
+						local overseer = require("overseer")
+						local tasks = overseer.list_tasks({ recent_first = true })
+						if vim.tbl_isempty(tasks) then
+							local command = prompt()
+							if command == "" then
+								return
+							end
+							overseer
+								.new_task({
+									cmd = command,
+								})
+								:start()
+							overseer.open()
+						else
+							overseer
+								.new_task({
+									cmd = vim.g.last_compile_command,
+								})
+								:start()
+							overseer.open()
+						end
+					end,
+					desc = "Compile last task",
+				},
 			}
 		end,
 	},

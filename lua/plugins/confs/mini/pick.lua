@@ -55,5 +55,3 @@ function MiniPick.registry.center_grep()
 	vim.b.minipick_config = {}
 	return res
 end
-
-vim.ui.select = MiniPick.ui_select
