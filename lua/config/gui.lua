@@ -8,10 +8,10 @@ opt.linespace = 10
 g.neovide_transparency_point = 1.0
 g.neovide_underline_stroke_scale = 1.5
 g.neovide_transparency = 1.0
-vim.g.neovide_padding_top = 15
-vim.g.neovide_padding_bottom = 0
-vim.g.neovide_padding_right = 15
-vim.g.neovide_padding_left = 70
+vim.g.neovide_padding_top = 30
+vim.g.neovide_padding_bottom = 30
+vim.g.neovide_padding_right = 100
+vim.g.neovide_padding_left = 100
 g.neovide_floating_shadow = false
 
 -- o.guifont = "GoMono Nerd Font:h16"

@@ -1,20 +1,23 @@
 local conditions = require("heirline.conditions")
 local htils = require("heirline.utils")
 
-local function get_hl(name)
+local function get_hl(name, property)
 	local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
-	return vim.tbl_isempty(hl) == false and hl
-		or (function()
-			local hl = get_hl("StatusLine")
-			if not hl then
-				error("recursive normal")
-			end
-			return hl
-		end)()
+	if hl[property] then
+		return hl[property]
+	elseif hl.fg then
+		return hl.fg
+	elseif hl.bg then
+		return hl.bg
+	else
+		return get_hl("StatusLine", property)
+	end
 end
 
 local Git = {
-	condition = vim.b.minigit_summary ~= nil,
+	condition = function()
+		return vim.b.minigit_summary ~= nil
+	end,
 	init = function(self)
 		self.status = vim.b.minigit_summary or {}
 		if vim.b.minidiff_summary and vim.b.minidiff_summary.add then
@@ -287,6 +290,58 @@ local Overseer = {
 	},
 }
 
+local signature = {
+	update = {
+		"TextChangedI",
+		"CursorMoved",
+		"CursorMovedI",
+		"InsertEnter",
+		"BufEnter",
+		"CursorHold",
+	},
+	condition = function()
+		return package.loaded.lsp_signature
+	end,
+	init = function(self)
+		self.sig = nil
+		self.label1 = nil
+		self.label2 = nil
+		self.sig = require("lsp_signature").status_line(80)
+		if self.sig.range ~= nil then
+			if self.sig.range["start"] and self.sig.range["end"] then
+				self.label1 = self.sig.label:sub(1, self.sig.range.start - 1)
+				self.label2 = self.sig.label:sub(self.sig.range["end"] + 1)
+			end
+		end
+	end,
+	{
+		{
+			provider = function(self)
+				if self.label1 then
+					return self.label1
+				end
+				return ""
+			end,
+			hl = { fg = "fg", bg = get_hl("CursorLine", "bg") },
+		},
+		{
+			provider = function(self)
+				return self.sig.hint
+			end,
+			hl = { fg = "yellow", bg = get_hl("CursorLine", "bg") },
+		},
+		{
+			provider = function(self)
+				if self.label2 then
+					return self.label2
+				end
+				return ""
+			end,
+			hl = { fg = "fg", bg = get_hl("CursorLine", "bg") },
+		},
+	},
+}
+
 local ruler = {
 	condition = function()
 		return vim.g.enable_ruler
@@ -300,7 +355,9 @@ local space = { provider = " " }
 local NormalStatusLine = {
 	Git,
 	align,
-	file_name,
+	-- file_name,
+	-- space,
+	signature,
 	align,
 	Overseer,
 	diagnostics,

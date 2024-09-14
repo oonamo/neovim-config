@@ -1,4 +1,4 @@
--- HACK Disable semantic tokens for highlights that already incorporate the highlight
+-- HACK Disable semantic tokens for highlights that already incorporate the highlightlsp
 -- vim.highlight.priorities.semantic_tokens = 95
 
 ---@param client vim.lsp.Client
@@ -8,14 +8,6 @@ local function on_attach(client, buffer, use_code_lens)
 	local methods = vim.lsp.protocol.Methods
 	local telescope = require("telescope.builtin")
 	require("onam.helpers.lsp.codeaction")
-	-- if client.name == "rust_analyzer" then
-	-- 	vim.keymap.set("n", "K", function()
-	-- 		vim.cmd.RustLsp({ "hover", "actions" })
-	-- 	end, { desc = "Rust Hover Actions", buffer = buffer })
-	-- 	vim.keymap.set("n", "<leader>vca", function()
-	-- 		vim.cmd.RustLsp("codeAction")
-	-- 	end, { desc = "Rust code actions", buffer = buffer })
-	-- else
 	vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, {
 		desc = "Preview code actions",
 		buffer = buffer,
@@ -51,19 +43,27 @@ local function on_attach(client, buffer, use_code_lens)
 		desc = "Go to lsp references",
 		buffer = buffer,
 	})
-	vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, {
-		desc = "Rename variable",
-		buffer = buffer,
-	})
+	-- vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, {
+	-- 	desc = "Rename variable",
+	-- 	buffer = buffer,
+	-- })
+	vim.keymap.set("n", "<leader>vxx", function()
+		telescope.diagnostics()
+	end, { desc = "Find diagnostics", buffer = buffer })
 	vim.keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, {
 		desc = "Signature help",
 		buffer = buffer,
 	})
-	vim.keymap.set("n", "<leader>vxx", function()
-		telescope.diagnostics()
-	end, { desc = "Find diagnostics", buffer = buffer })
 	if O.ui.signature == "custom" then
 		require("onam.helpers.lsp.signature").setup(client, buffer)
+	elseif O.ui.signature == "lsp_signature" then
+		vim.keymap.set("n", "<C-s>", function()
+			require("lsp_signature").toggle_float_win()
+		end, { silent = true, noremap = true, desc = "toggle signature" })
+
+		vim.keymap.set("n", "<Leader>k", function()
+			vim.lsp.buf.signature_help()
+		end, { silent = true, noremap = true, desc = "toggle signature" })
 	end
 
 	-- refresh codelens on TextChanged and InsertLeave as well
@@ -253,5 +253,56 @@ return {
 				},
 			})
 		end,
+	},
+	{
+		"ray-x/lsp_signature.nvim",
+		event = "LspAttach",
+		lazy = false,
+		cond = O.ui.signature == "lsp_signature",
+		opts = {
+			hint_enable = true,
+			handler_opts = { border = "single" },
+			floating_window = false,
+			fix_pos = true,
+			doc_lines = 0,
+			bind = true,
+			floating_window_above_cur_line = true,
+			max_height = 4,
+			zindex = 2000,
+			time_interval = 50,
+			floating_window_off_x = 5, -- adjust float windows x position.
+			floating_window_off_y = function() -- adjust float windows y position. e.g. set to -2 can make floating window move up 2 lines
+				local pumheight = vim.o.pumheight
+				local winline = vim.fn.winline() -- line number in the window
+				local winheight = vim.fn.winheight(0)
+
+				-- window top
+				if winline - 1 < pumheight then
+					return pumheight
+				end
+
+				-- window bottom
+				if winheight - winline < pumheight then
+					return -pumheight
+				end
+				return 0
+			end,
+		},
+		config = function(_, opts)
+			require("lsp_signature").setup(opts)
+			require("lsp_signature").on_attach(opts)
+		end,
+	},
+	{
+		"smjonas/inc-rename.nvim",
+		config = function(_, opts)
+			require("inc_rename").setup(opts)
+			vim.keymap.set("n", "<leader>vrn", function()
+				return ":IncRename " .. vim.fn.expand("<cword>")
+			end, { expr = true, desc = "Rename Variable" })
+		end,
+		keys = {
+			"<leader>vrn",
+		},
 	},
 }

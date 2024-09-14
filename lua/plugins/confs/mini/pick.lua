@@ -29,12 +29,30 @@ end
 
 pick.setup({
 	-- window = { config = win_config },
+	delay = {
+		async = 1,
+		busy = 20,
+	},
 	mappings = {
 		choose_marked = "<C-l>",
 		send_all_to_qf = {
 			char = "<C-q>",
 			func = send_all_to_qf,
 		},
+		-- go_in = {
+		-- 	char = "<Tab>",
+		-- 	func = function()
+		-- 		vim.api.nvim_input("<CR>")
+		-- 	end,
+		-- },
+		-- toggle_preview = "",
+		-- go_in = {
+		-- 	char = "<Tab>",
+		-- 	func = function()
+		-- 		vim.api.nvim_input("<CR>")
+		-- 	end,
+		-- },
+		-- toggle_preview = nil,
 	},
 	options = {
 		use_cache = true,

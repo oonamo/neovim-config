@@ -1,18 +1,21 @@
 return {
 	{
-		"hrsh7th/nvim-cmp",
-		event = { "InsertEnter" },
+		"yioneko/nvim-cmp",
+		name = "cmp",
+		branch = "perf",
+		-- "hrsh7th/nvim-cmp",
+		event = { "InsertEnter", "CmdLineEnter" },
 		cond = O.lsp.cmp == true,
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-buffer",
-			-- "hrsh7th/cmp-cmdline",
-			-- { "hrsh7th/cmp-buffer", cond = vim.bo.ft == "markdown" },
-			-- "hrsh7th/cmp-nvim-lsp-signature-help",
+			{ "hrsh7th/cmp-cmdline", cond = not O.ui.noice },
+			{ "hrsh7th/cmp-nvim-lsp-signature-help", cond = O.ui.signature == "cmp" },
 			-- load on markdown files only
 		},
 		opts = function()
 			local cmp = require("cmp")
+			local icons = require("mini.icons")
 			local defaults = require("cmp.config.default")()
 			local auto_select = true
 			local function confirm(opts)
@@ -47,15 +50,21 @@ return {
 				},
 				window = {
 					completion = {
-						side_padding = 0,
-						winhighlight = "Normal:CmpPmenu,CursorLine:CmpSel,Search:None",
 						scrollbar = false,
-						border = border("FloatBorder"),
 					},
 					documentation = {
 						border = border("CmpDocumentationBorder"),
 						winhighlight = "Normal:CmpDocumentation",
 					},
+				},
+				formatting = {
+					fields = { "kind", "abbr", "menu" },
+					format = function(_, item)
+						local kind = item.kind
+						item.kind = icons.get("lsp", kind)
+						item.menu = kind:gsub("(%l)(%u)", "%1 %2"):lower()
+						return item
+					end,
 				},
 				view = {
 					docs = {
@@ -65,10 +74,10 @@ return {
 						follow_cursor = true,
 					},
 				},
-				performance = {
-					debounce = 0, -- default = 60ms
-					throttle = 0, -- default = 30ms
-				},
+				-- performance = {
+				-- 	debounce = 0, -- default = 60ms
+				-- 	throttle = 0, -- default = 30ms
+				-- },
 				completion = {
 					completeopt = "menu,menuone,noinsert" .. (auto_select and "" or ",noselect"),
 				},
@@ -100,6 +109,7 @@ return {
 				sources = cmp.config.sources({
 					{ name = "nvim_lsp" },
 					{ name = "path" },
+					{ name = "nvim_lsp_signature_help" },
 				}, {
 					{ name = "buffer" },
 				}),
@@ -113,25 +123,32 @@ return {
 				},
 			}
 		end,
-	},
-	{
-		"mini.completion",
-		dev = true,
-		event = { "InsertEnter" },
-		cond = O.lsp.mini == true,
-		config = function()
-			-- local imap_expr = function(lhs, rhs)
-			-- 	vim.keymap.set("i", lhs, rhs, { expr = true })
+		config = function(_, opts)
+			local cmp = require("cmp")
+			local entries = { name = "wildmenu", seperator = "|" }
+			-- if O.ui.noice then
+			-- 	entries = {}
 			-- end
-			-- imap_expr("<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]])
-			-- imap_expr("<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]])
-			require("mini.completion").setup({
-				fallback_action = function() end,
-				delay = {
-					completion = 0,
-					info = 0,
-					signature = 50,
+			cmp.setup(opts)
+			cmp.setup.cmdline("/", {
+				mapping = cmp.mapping.preset.cmdline(),
+				view = {
+					entries = entries,
 				},
+			})
+			cmp.setup.cmdline(":", {
+				mapping = cmp.mapping.preset.cmdline(),
+				view = {
+					entries = entries,
+				},
+				sources = cmp.config.sources({
+					{
+						name = "cmdline",
+						option = {
+							ignore_cmds = { "Man", "!" },
+						},
+					},
+				}),
 			})
 		end,
 	},
@@ -155,139 +172,6 @@ return {
 				}
 			end,
 		},
-	},
-	{
-		"ThePrimeagen/harpoon",
-		enabled = O.harpoon,
-		branch = "harpoon2",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		opts = {
-			menu = {
-				width = vim.api.nvim_win_get_width(0),
-			},
-			settings = {
-				save_on_toggle = true,
-			},
-			["overseer"] = {
-				add = function(cmd)
-					return {
-						value = cmd.name,
-						context = {
-							cmd = cmd,
-						},
-					}
-				end,
-				select = function(list_item, list, options)
-					require("overseer").new_task(list_item.cmd):start()
-					require("overseer").open()
-				end,
-				display = function(item)
-					return item.value
-				end,
-			},
-		},
-		config = function(_, _)
-			-- require("harpoon"):setup(opts)
-			require("harpoon"):setup({
-				menu = {
-					width = vim.api.nvim_win_get_width(0),
-				},
-				settings = {
-					save_on_toggle = true,
-				},
-				["overseer"] = {
-					add = function(cmd)
-						return {
-							value = cmd.name,
-							context = {
-								cmd = cmd,
-							},
-						}
-					end,
-					select = function(list_item, list, options)
-						require("overseer").new_task(list_item.cmd):start()
-						require("overseer").open()
-					end,
-					display = function(item)
-						return item.value
-					end,
-				},
-			})
-		end,
-		keys = function()
-			local harpoon = require("harpoon")
-			return {
-				utils.vim_to_lazy_map("n", "<leader>a", function()
-					harpoon:list():add()
-				end, {}),
-				utils.vim_to_lazy_map("n", "<leader>ph", function()
-					if not MiniPick then
-						require("mini.pick").setup()
-					end
-					local items = harpoon:list().items
-					local values = vim.iter(items)
-						:enumerate()
-						:map(function(i, item)
-							return i .. " " .. item.value
-						end)
-						:totable()
-					local old_map = MiniPick.config.mappings.stop
-					MiniPick.config.mappings.stop = "<C-e>"
-					vim.ui.select(values, {}, function(selection)
-						MiniPick.config.mappings.stop = old_map
-						if not selection then
-							return
-						end
-						local idx = selection:sub(1, 1)
-						harpoon:list():select(tonumber(idx))
-					end)
-				end, {}),
-				utils.vim_to_lazy_map("n", "<C-e>", function()
-					harpoon.ui:toggle_quick_menu(harpoon:list())
-				end, {}),
-				utils.vim_to_lazy_map("n", "<C-h>", function()
-					harpoon:list():select(1)
-				end, {}),
-				utils.vim_to_lazy_map("n", "<C-j>", function()
-					harpoon:list():select(2)
-				end, {}),
-				utils.vim_to_lazy_map("n", "<C-k>", function()
-					harpoon:list():select(3)
-				end, {}),
-				utils.vim_to_lazy_map("n", "<C-l>", function()
-					harpoon:list():select(4)
-				end, {}),
-				utils.vim_to_lazy_map("n", "<leader>5", function()
-					harpoon:list():select(5)
-				end, {}),
-				utils.vim_to_lazy_map("n", "<leader>6", function()
-					harpoon:list():select(6)
-				end, {}),
-				utils.vim_to_lazy_map("n", "<leader>7", function()
-					harpoon:list():select(7)
-				end, {}),
-				utils.vim_to_lazy_map("n", "<leader>8", function()
-					harpoon:list():select(8)
-				end, {}),
-				utils.vim_to_lazy_map("n", "<leader>9", function()
-					harpoon:list():select(9)
-				end, {}),
-				-- Toggle previous & next buffers stored within Harpoon list
-				utils.vim_to_lazy_map("n", "<C-S-P>", function()
-					harpoon:list():prev()
-				end, {}),
-				utils.vim_to_lazy_map("n", "<C-S-N>", function()
-					harpoon:list():next()
-				end, {}),
-				harpoon:extend({
-					UI_CREATE = function(cx)
-						vim.keymap.set("n", "l", function()
-							harpoon.ui:select_menu_item()
-						end, { buffer = cx.bufnr })
-					end,
-				}),
-			}
-		end,
 	},
 	{
 		"otavioschwanck/arrow.nvim",

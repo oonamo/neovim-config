@@ -18,6 +18,7 @@ local disable_list = {
 
 require("mini.indentscope").setup({
 	symbol = "│",
+	-- symbol = "▐",
 	options = {
 		try_as_border = true,
 		border = "both",
@@ -45,8 +46,9 @@ require("mini.indentscope").setup({
 -- end
 vim.api.nvim_create_autocmd({ "FileType" }, {
 	callback = function()
-		if vim.tbl_contains(disable_list, vim.bo.filetype) then
+		if vim.tbl_contains(disable_list, vim.bo.filetype) or vim.bo.ft == "" then
 			vim.b.miniindentscope_disable = true
+			vim.b.minicursorword_disable = true
 		end
 	end,
 })

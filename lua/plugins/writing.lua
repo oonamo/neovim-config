@@ -1,42 +1,66 @@
 return {
 	{
+		"MeanderingProgrammer/render-markdown.nvim",
+		ft = "markdown",
+		opts = {
+			render_modes = { "n", "v", "i", "c" },
+			quote = { repeat_linebreak = true },
+			callout = {
+				schedule = { raw = "[!SCHEDULE]", rendered = " Schedule", highlight = "Special" },
+				formula = { raw = "[!FORMULA]", rendered = "󰡱 Formula", highlight = "Boolean" },
+			},
+			win_options = {
+				showbreak = { default = "", rendered = "  " },
+				breakindent = { default = false, rendered = true },
+				breakindentopt = { default = "", rendered = "" },
+			},
+			code = {
+				width = "block",
+				min_width = 45,
+				left_pad = 2,
+				language_pad = 2,
+				border = "thick",
+			},
+			heading = {
+				position = "inline",
+				width = "block",
+				min_width = 40,
+			},
+			pipe_table = { preset = "heavy" },
+		},
+	},
+	{
 		"epwalsh/obsidian.nvim",
 		event = {
 			"BufReadPre C:/Users/onam7/Desktop/DB/DB/**.md",
 			"BufNewFile C:/Users/onam7/Desktop/DB/DB/**.md",
 		},
 		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"folke/zen-mode.nvim",
+			"MeanderingProgrammer/render-markdown.nvim",
 			{
-				"MeanderingProgrammer/render-markdown.nvim",
-				opts = {
-					render_modes = { "n", "v", "i", "c" },
-					quote = { repeat_linebreak = true },
-					callout = {
-						schedule = { raw = "[!SCHEDULE]", rendered = " Schedule", highlight = "Special" },
-						formula = { raw = "[!FORMULA]", rendered = "󰡱 Formula", highlight = "Boolean" },
+				"jbyuki/nabla.nvim",
+				keys = {
+					{
+						"<leader>np",
+						function()
+							require("nabla").popup()
+						end,
+						desc = "nabla popup",
 					},
-					win_options = {
-						showbreak = { default = "", rendered = "  " },
-						breakindent = { default = false, rendered = true },
-						breakindentopt = { default = "", rendered = "" },
+					{
+						"<leader>nv",
+						function()
+							require("nabla").toggle_virt({
+								autogen = true,
+								silent = true,
+							})
+						end,
+						desc = "toggle nabla virtual text",
 					},
-					code = {
-						width = "block",
-						min_width = 45,
-						left_pad = 2,
-						language_pad = 2,
-						border = "thick",
-					},
-					heading = {
-						position = "inline",
-						width = "block",
-						min_width = 40,
-					},
-					pipe_table = { preset = "heavy" },
 				},
 			},
+			"nvim-lua/plenary.nvim",
+			"folke/zen-mode.nvim",
 		},
 		cmd = "GoToNotes",
 		config = function()
@@ -87,8 +111,8 @@ return {
 						note:add_alias(note.title)
 					end
 
-                -- stylua: ignore
-				local out = { id = note.id, aliases = note.aliases, tags = note.tags, hubs = note.hubs or { "[[]]" } }
+					local out =
+						{ id = note.id, aliases = note.aliases, tags = note.tags, hubs = note.hubs or { "[[]]" } }
 
 					if note.metadata ~= nil and not vim.tbl_isempty(note.metadata) then
 						for k, v in pairs(note.metadata) do

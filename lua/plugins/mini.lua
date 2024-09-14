@@ -3,54 +3,48 @@ return {
 		"echasnovski/mini.nvim",
 		lazy = true,
 	},
-	-- {
-	-- 	"mini.starter",
-	-- 	event = "VimEnter",
-	-- 	dev = true,
-	-- 	config = function()
-	-- 		if not MiniSessions or not MiniSessions.detected then
-	-- 			_G.MiniSessions = nil
-	-- 		end
-	-- 		require("plugins.confs.mini.starter")
-	-- 	end,
-	-- },
-	-- {
-	-- 	"mini.bracketed",
-	-- 	dev = true,
-	-- 	config = function()
-	-- 		require("mini.bracketed").setup()
-	-- 	end,
-	-- 	keys = {
-	-- 		{ "[" },
-	-- 		{ "]" },
-	-- 	},
-	-- },
+	{
+		"mini.cursorword",
+		dev = true,
+		event = "LazyFile",
+		config = function()
+			require("mini.cursorword").setup()
+		end,
+	},
 	{
 		"mini.extra",
 		dev = true,
 		config = function()
 			require("mini.extra").setup()
 		end,
-		-- lazy = false,
 	},
 	{
 		"mini.pick",
 		dev = true,
-		-- init = function()
-		-- 	vim.ui.select = require("mini.pick").ui_select
-		-- end,
-		-- Telescope native is as fast as mini pick
 		config = function()
 			require("plugins.confs.mini.pick")
 		end,
 		keys = function()
 			if not MiniExtra then
-				require("mini.extra").setup()
+				require("plugins.confs.mini.pick")
 			end
 			return {
 				{
 					"<leader>ff",
-					"<cmd>Pick explorer<CR>",
+					function()
+						require("mini.extra").pickers.explorer({}, {
+							mappings = {
+								go_in = {
+									char = "<Tab>",
+									func = function()
+										vim.api.nvim_input("<CR>")
+									end,
+								},
+								toggle_preview = "",
+							},
+						})
+					end,
+					-- "<cmd>Pick explorer<CR>",
 					-- function()
 					-- 	local cmd = vim.fn.input({
 					-- 		prompt = "Command: ",
@@ -64,28 +58,28 @@ return {
 			}
 		end,
 	},
-	-- {
-	-- 	"mini.files",
-	-- 	dev = true,
-	-- 	config = function()
-	-- 		require("plugins.confs.mini.files")
-	-- 	end,
-	-- 	-- keys = {
-	-- 	-- 	utils.vim_to_lazy_map("n", "<leader>e", function()
-	-- 	-- 		require("mini.files").open()
-	-- 	-- 	end, { desc = "open cwd files" }),
-	-- 	--
-	-- 	-- 	utils.vim_to_lazy_map("n", "-", function()
-	-- 	-- 		local bufname = vim.api.nvim_buf_get_name(0)
-	-- 	-- 		local path = vim.fn.fnamemodify(bufname, ":p")
-	-- 	--
-	-- 	-- 		-- Noop if the buffer isn't valid.
-	-- 	-- 		if path and vim.uv.fs_stat(path) then
-	-- 	-- 			require("mini.files").open(bufname, false)
-	-- 	-- 		end
-	-- 	-- 	end, { desc = "open bufdir files" }),
-	-- 	-- },
-	-- },
+	{
+		"mini.files",
+		dev = true,
+		config = function()
+			require("plugins.confs.mini.files")
+		end,
+		keys = {
+			utils.vim_to_lazy_map("n", "<leader>e", function()
+				require("mini.files").open()
+			end, { desc = "open cwd files" }),
+
+			utils.vim_to_lazy_map("n", "-", function()
+				local bufname = vim.api.nvim_buf_get_name(0)
+				local path = vim.fn.fnamemodify(bufname, ":p")
+
+				-- Noop if the buffer isn't valid.
+				if path and vim.uv.fs_stat(path) then
+					require("mini.files").open(bufname, false)
+				end
+			end, { desc = "open bufdir files" }),
+		},
+	},
 	{
 		"mini.notify",
 		event = "VeryLazy",
@@ -96,56 +90,6 @@ return {
 		cmd = "Notifications",
 		config = function()
 			require("plugins.confs.mini.notify")
-		end,
-	},
-	{
-		"mini.sessions",
-		dev = true,
-		config = function()
-			require("mini.sessions").setup({
-				auto_write = true,
-			})
-		end,
-		keys = function()
-			_G.MiniSessions = _G.MiniSessions or {}
-			function MiniSessions._sessions_complete(arg_lead)
-				return vim.tbl_filter(function(v)
-					return v:find(arg_lead, 1, true) ~= nil
-				end, vim.tbl_keys(MiniSessions.detached))
-			end
-
-			local function get_session_from_user(prompt)
-				local completion = "customlist,v:lua.MiniSessions._session_complete"
-				local ok, res = pcall(vim.fn.input, {
-					prompt = prompt,
-					cancelreturn = false,
-					completion = completion,
-				})
-				if not ok or res == false then
-					return nil
-				end
-				return res
-			end
-			local function delete()
-				local res = get_session_from_user("Delete session: ")
-				if res ~= nil then
-					MiniSessions.delete(res, { force = true })
-				end
-			end
-
-			local function save()
-				local res = get_session_from_user("Save session as: ")
-				if res ~= nil then
-					MiniSessions.write(res)
-				end
-			end
-			return {
-				utils.vim_to_lazy_map("n", "<leader>ss", save, { desc = "save session" }),
-				utils.vim_to_lazy_map("n", "<leader>sd", delete, { desc = "delete session" }),
-				utils.vim_to_lazy_map("n", "<leader>ms", function()
-					MiniSessions.select()
-				end, { desc = "select session" }),
-			}
 		end,
 	},
 	{
@@ -161,11 +105,11 @@ return {
 	{
 		"mini.ai",
 		dev = true,
-		event = "InsertEnter",
+		event = "VeryLazy",
 		config = function()
 			require("mini.ai").setup({
 				custom_textobjects = {
-					B = MiniExtra.gen_ai_spec.buffer(),
+					B = require("mini.extra").gen_ai_spec.buffer(),
 				},
 			})
 		end,
@@ -198,13 +142,13 @@ return {
 			require("plugins.confs.mini.surround")
 		end,
 		keys = {
-			{ mode = "n", "sa" }, -- Add surrounding in Normal and Visual modes
-			{ mode = "n", "sd" }, -- Delete surrounding
-			{ mode = "n", "sf" }, -- Find surrounding (to the right)
-			{ mode = "n", "sF" }, -- Find surrounding (to the left)
-			{ mode = "n", "sh" }, -- Highlight surrounding
-			{ mode = "n", "sr" }, -- Replace surrounding
-			{ mode = "n", "sn" }, -- Update `n_lines`
+			{ mode = "n", "sa", desc = "Add surrounding" }, -- Add surrounding in Normal and Visual modes
+			{ mode = "n", "sd", desc = "Delete surrounding" }, -- Delete surrounding
+			{ mode = "n", "sf", desc = "Find surrounding" }, -- Find surrounding (to the right)
+			{ mode = "n", "sF", desc = "Find surrounding (left)" }, -- Find surrounding (to the left)
+			{ mode = "n", "sh", desc = "Highlight surrounding" }, -- Highlight surrounding
+			{ mode = "n", "sr", desc = "Replace surrounding" }, -- Replace surrounding
+			{ mode = "n", "sn", desc = "Update search lines" }, -- Update `n_lines`
 		},
 	},
 	{
@@ -251,7 +195,7 @@ return {
 				end,
 				desc = "Show info at cursor",
 			},
-			{ "<leader>gc" },
+			utils.vim_to_lazy_map("n", "<leader>gc", "<CMD>Git commit<CR>", { desc = "Git commit" }),
 		},
 	},
 	{
@@ -269,28 +213,37 @@ return {
 			require("plugins.confs.mini.jump")
 		end,
 		keys = {
-			{ "F" },
-			{ "f" },
-			{ "T" },
-			{ "t" },
+			{ "F", desc = "Jump to previous occurrence" },
+			{ "f", desc = "Jump to next occurrence" },
+			{ "T", desc = "Jump till previous occurrence" },
+			{ "t", desc = "Jump till next occurrence" },
 		},
 	},
 	{
 		"mini.icons",
 		dev = true,
+		event = "LazyFile",
 		init = function()
 			package.preload["nvim-web-devicons"] = function()
 				require("mini.icons").mock_nvim_web_devicons()
 				return package.loaded["nvim-web-devicons"]
 			end
 		end,
+		config = function()
+			require("mini.icons").setup({
+				lsp = {
+					["function"] = { glyph = "󰡱", hl = "MiniIconsAzure" },
+					["Function"] = { glyph = "󰡱", hl = "MiniIconsAzure" },
+				},
+			})
+		end,
 	},
-	-- {
-	-- 	"mini.tabline",
-	-- 	dev = true,
-	-- 	event = "LazyFile",
-	-- 	config = function()
-	-- 		require("plugins.confs.mini.tabline")
-	-- 	end,
-	-- },
+	{
+		"mini.tabline",
+		dev = true,
+		event = "LazyFile",
+		config = function()
+			require("plugins.confs.mini.tabline")
+		end,
+	},
 }

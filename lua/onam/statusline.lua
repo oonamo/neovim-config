@@ -143,6 +143,7 @@ local diff = {
     }
 }
 
+
 local Diagnostics = {
     init = function(self, bufnr)
         if M.diag_str_cache then
@@ -415,6 +416,22 @@ local space = {
 	str = " ",
 }
 
+local signature = {
+	buf_update = function()
+		return package.loaded.lsp_signature
+	end,
+	init = function(self)
+		self.sig = require("lsp_signature").status_line(80)
+	end,
+    str = function(self)
+        local label = self.sig.label:gsub("[\n\r]+", " ")
+        local hint = self.sig.hint:gsub("[\n\r]+", " ")
+        print(label .. " " .. hint)
+        self.sig = nil
+        return label .. " " .. hint
+    end,
+}
+
 ---@type Component[]
 local components = {
     -- GitIcon,
@@ -423,6 +440,7 @@ local components = {
     diff,
     align,
     filename,
+    signature,
     align,
     Diagnostics,
     ClientIcon,

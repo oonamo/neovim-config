@@ -151,12 +151,18 @@ function Color:apply(flavour)
 		if self._apply_override then
 			self._apply_override()
 		end
+		if self._after then
+			self:_after()
+		end
 		return
 	end
 	M.found_flavour = false
 	local res = self:handle(flavour)
 	if self._apply_override then
 		self._apply_override()
+	end
+	if self._after then
+		self:_after()
 	end
 	return res
 end
@@ -168,6 +174,23 @@ end
 
 function Color:add_transparency()
 	return require("mini.colors").get_colorscheme():add_transparency()
+end
+
+function Color:add_light_toggle()
+	self:add_flavours({
+		"light",
+		"dark",
+	}, function(_, flavour)
+		vim.o.bg = "flavour"
+		local _ = self:handle(flavour)
+		if self._apply_override then
+			self._apply_override()
+		end
+	end)
+end
+
+function Color:after(fn)
+	self._after = fn
 end
 
 function Color:override(hls, fn)

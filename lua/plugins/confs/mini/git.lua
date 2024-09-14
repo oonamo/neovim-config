@@ -9,8 +9,6 @@ require("mini.git").setup({
 -- vim.keymap.set("n", "<leader>gaa", "<CMD>Git add .<CR>", { desc = "Git Add All" })
 -- vim.keymap.set("n", "<leader>gp", "<CMD>Git push<CR>", { desc = "Git Push" })
 
--- TODO: Wait for merge with main
-vim.keymap.set("n", "<leader>gc", "<CMD>Git commit<CR>", { desc = "Git commit" })
 vim.api.nvim_create_autocmd("User", {
 	pattern = "MiniGitCommandSplit",
 	callback = function(data)

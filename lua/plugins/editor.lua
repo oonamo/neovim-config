@@ -19,6 +19,11 @@ return {
 			local defaults = require("telescope.themes").get_ivy({
 				layout_config = { height = 0.30 },
 				prompt_prefix = "  ", -- ❯  
+				pickers = {
+					lsp_references = {
+						show_line = false,
+					},
+				},
 				selection_caret = "▍ ",
 				multi_icon = " ",
 				disable_devicons = true,
@@ -68,36 +73,47 @@ return {
 			require("telescope").load_extension("ui-select")
 		end,
 		keys = function()
-			local builtin = require("telescope.builtin")
 			return {
 				{
 					"<C-P>",
-					builtin.find_files,
+					function()
+						require("telescope.builtin").find_files()
+					end,
 					desc = "find files",
 				},
 				{
 					"<C-F>",
-					builtin.live_grep,
+					function()
+						require("telescope.builtin").live_grep()
+					end,
 					desc = "grep live",
 				},
 				{
 					"<leader>fh",
-					builtin.help_tags,
+					function()
+						require("telescope.builtin").help_tags()
+					end,
 					desc = "help tags",
 				},
 				{
 					"<leader>gw",
-					builtin.grep_string,
+					function()
+						require("telescope.builtin").grep_string()
+					end,
 					desc = "grep word",
 				},
 				{
 					"<leader>gw",
-					builtin.grep_string,
+					function()
+						require("telescope.builtin").grep_string()
+					end,
 					desc = "grep word",
 				},
 				{
 					"<leader>\\",
-					builtin.current_buffer_fuzzy_find,
+					function()
+						require("telescope.builtin").current_buffer_fuzzy_find()
+					end,
 					desc = "find from current buffer",
 				},
 				-- {
@@ -134,12 +150,16 @@ return {
 				},
 				{
 					"<leader>fi",
-					builtin.highlights,
+					function()
+						require("telescope.builtin").highlights()
+					end,
 					desc = "highlights",
 				},
 				{
 					"<leader>fm",
-					builtin.marks,
+					function()
+						require("telescope.builtin").marks()
+					end,
 					desc = "marks",
 				},
 			}
@@ -154,6 +174,7 @@ return {
 				function()
 					require("grug-far").grug_far({})
 				end,
+				desc = "Search whole project",
 			},
 			{
 				"<leader>sw",
@@ -162,12 +183,14 @@ return {
 						prefills = { search = vim.fn.expand("<cword>") },
 					})
 				end,
+				desc = "Search whole project using <cword>",
 			},
 			{
 				"<leader>sf",
 				function()
 					require("grug-far").grug_far({ prefills = { flags = vim.fn.expand("%") } })
 				end,
+				desc = "Search current file",
 			},
 		},
 	},
@@ -225,84 +248,6 @@ return {
 				},
 			})
 		end,
-	},
-	{
-		"stevearc/oil.nvim",
-		opts = function()
-			local type_hlgroups = setmetatable({
-				["-"] = "OilTypeFile",
-				["dir"] = "OilTypeDir",
-				["p"] = "OilTypeFifo",
-				["l"] = "OilTypeLink",
-				["s"] = "OilTypeSocket",
-			}, {
-				__index = function()
-					return "OilTypeFile"
-				end,
-			})
-			local function oil_sethl()
-				local sethl = utils.set_hl_from
-				sethl(0, "OilDir", { fg = "Directory" })
-				sethl(0, "OilDirIcon", { fg = "Directory" })
-				sethl(0, "OilLink", { fg = "Constant" })
-				sethl(0, "OilLinkTarget", { fg = "Comment" })
-				sethl(0, "OilCopy", { fg = "DiagnosticSignHint", bold = true })
-				sethl(0, "OilMove", { fg = "DiagnosticSignWarn", bold = true })
-				sethl(0, "OilChange", { fg = "DiagnosticSignWarn", bold = true })
-				sethl(0, "OilCreate", { fg = "DiagnosticSignInfo", bold = true })
-				sethl(0, "OilDelete", { fg = "DiagnosticSignError", bold = true })
-				sethl(0, "OilPermissionNone", { fg = "NonText" })
-				sethl(0, "OilPermissionRead", { fg = "DiagnosticSignWarn" })
-				sethl(0, "OilPermissionWrite", { fg = "DiagnosticSignError" })
-				sethl(0, "OilPermissionExecute", { fg = "DiagnosticSignOk" })
-				sethl(0, "OilTypeDir", { fg = "Directory" })
-				sethl(0, "OilTypeFifo", { fg = "Special" })
-				sethl(0, "OilTypeFile", { fg = "NonText" })
-				sethl(0, "OilTypeLink", { fg = "Constant" })
-				sethl(0, "OilTypeSocket", { fg = "OilSocket" })
-			end
-			oil_sethl()
-
-			vim.api.nvim_create_autocmd("ColorScheme", {
-				desc = "Set some default hlgroups for oil.",
-				group = vim.api.nvim_create_augroup("OilSetDefaultHlgroups", {}),
-				callback = oil_sethl,
-			})
-			return {
-				default_file_explorer = true,
-				columns = {
-					{
-						"type",
-						highlight = function(type_str)
-							return type_hlgroups[type_str]
-						end,
-					},
-					{ "size", highlight = "Special" },
-					{ "mtime", highlight = "Number" },
-				},
-				skip_confirm_for_simple_edits = true,
-				keymaps = {
-					["<C-p>"] = false,
-					["-"] = "actions.parent",
-					["H"] = "actions.parent",
-					["="] = "actions.select",
-					["+"] = "actions.select",
-					["<CR>"] = "actions.select",
-					["L"] = "actions.select",
-					["<C-h>"] = "actions.toggle_hidden",
-					["gh"] = "actions.toggle_hidden",
-					["gs"] = "actions.change_sort",
-					["gx"] = "actions.open_external",
-					["gY"] = "actions.copy_entry_filename",
-					["<C-c>"] = "actions.close",
-					q = "actions.close",
-				},
-			}
-		end,
-		keys = {
-			{ "<leader>e", "<CMD>Oil<CR>" },
-			{ "-", "<CMD>Oil --float<CR>" },
-		},
 	},
 	{
 		dir = "~/projects/command_pal",
@@ -444,35 +389,35 @@ return {
 						[[?^##\+\s.*$]],
 					},
 				},
+				{
+					"Resize Windows",
+					j = {
+						"]wh",
+						"resize -1",
+					},
+					k = {
+						"[wh",
+						"resize +1",
+					},
+				},
+				{
+					"Resize Windows Vertical",
+					j = {
+						"]wv",
+						"vertical resize -1",
+					},
+					k = {
+						"[wv",
+						"vertical resize +1",
+					},
+				},
 			},
-		},
-	},
-	{
-		"stevearc/aerial.nvim",
-		cmd = "AerialToggle",
-		opts = {
-			on_attach = function(bufnr)
-				vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
-				vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
-			end,
 		},
 	},
 	{
 		"stevearc/quicker.nvim",
 		event = "FileType qf",
 		opts = {},
-	},
-	{
-		"nacro90/numb.nvim",
-		event = "CmdlineEnter",
-		opts = {
-			show_numbers = true, -- Enable 'number' for the window while peeking
-			show_cursorline = true, -- Enable 'cursorline' for the window while peeking
-			hide_relativenumbers = true, -- Enable turning off 'relativenumber' for the window while peeking
-			number_only = false, -- Peek only when the command is only a number instead of when it starts with a number
-			centered_peeking = true, -- Peeked line will be centered relative to window
-		},
-		-- lazy = false,
 	},
 	{
 		"folke/which-key.nvim",
@@ -492,7 +437,6 @@ return {
 			},
 		},
 	},
-	{ "shortcuts/no-neck-pain.nvim", opts = {} },
 	{
 		"rebelot/heirline.nvim",
 		-- You can optionally lazy-load heirline on UiEnter
@@ -502,5 +446,71 @@ return {
 		opts = function()
 			return require("plugins.confs.heirline")
 		end,
+	},
+	{
+		"viocost/viedit",
+		opts = {
+			override_keys = true,
+			keys = {
+				next_occurrence = "n",
+				previous_occurrence = "N",
+			},
+		},
+		keys = {
+			{
+				mode = { "n", "v" },
+				"<leader>qc",
+				function()
+					require("viedit").toggle_all()
+				end,
+			},
+			{
+				mode = { "n", "v" },
+				"<leader>qq",
+				function()
+					require("viedit").restrict_to_function()
+				end,
+			},
+			{
+				mode = { "n", "v" },
+				"<leader>qs",
+				function()
+					require("viedit").toggle_single()
+				end,
+			},
+		},
+	},
+	{
+		"folke/noice.nvim",
+		event = "VeryLazy",
+		cond = O.ui.noice,
+		opts = {
+			lsp = {
+				["cmp.entry.get_documentation"] = false, -- requires hrsh7th/nvim-cmp
+			},
+			cmdline = {
+				view = "cmdline",
+			},
+			views = {
+				cmdline_popup = {
+					position = {
+						row = "100%",
+						col = "0%",
+					},
+					size = {
+						width = "100%",
+						height = "auto",
+					},
+				},
+			},
+		},
+		dependencies = {
+			-- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+			"MunifTanjim/nui.nvim",
+			-- OPTIONAL:
+			--   `nvim-notify` is only needed, if you want to use the notification view.
+			--   If not available, we use `mini` as the fallback
+			-- "rcarriga/nvim-notify",
+		},
 	},
 }

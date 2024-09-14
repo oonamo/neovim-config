@@ -17,6 +17,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 		lazypath,
 	})
 end
+
 vim.opt.rtp:prepend(lazypath)
 
 local function load(name, not_config)
@@ -60,20 +61,19 @@ _G.O = {
 		indent = {
 			mini = true,
 		},
-		signature = "custom",
+		noice = false,
+		signature = "lsp_signature",
 		clues = true,
 		saturate = true,
 		show_open_folds = false,
 		use_githl = false,
 		debug = false,
-		-- colorscheme = { "oh-lucy", "light" },
-		colorscheme = "oh-lucy",
-		-- colorscheme = function()
-		-- 	vim.cmd.colorscheme("catp-mocha")
-		-- end,
+		colorscheme = "rose-pine",
 		select = "telescope",
 	},
 }
+
+vim.o.background = O.ui.background or "dark"
 
 if O.ui.colorscheme ~= nil then
 	if type(O.ui.colorscheme) == "table" then
@@ -107,14 +107,13 @@ vim.api.nvim_create_autocmd("User", {
 		load("globals")
 		load("keymaps")
 		load("options")
-		require("onam.statuscolumn")
+		-- require("onam.statuscolumn")
 		-- require("onam.statusline")
 
 		if O.ui.select == "dropbar" then
 			vim.ui.select = require("dropbar.utils.menu").select
 		else
 			-- vim.ui.select = require("mini.pick").ui_select
-			require("telescope").load_extension("ui-select")
 		end
 
 		if vim.g.neovide then
@@ -132,7 +131,7 @@ require("lazy").setup({
 		lazy = true,
 	},
 	install = {
-		colorscheme = { "tokyonight-moon" },
+		colorscheme = { "melange" },
 	},
 	change_detection = {
 		notify = false,
