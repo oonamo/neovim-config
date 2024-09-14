@@ -255,7 +255,12 @@ end
 ---@param name string
 ---@param opts any
 function M.set_active(name, opts)
-	if vim.g.loaded_colors then
+	local color = M.get_color(name)
+	if not color then
+		vim.notify("colorscheme does not exist")
+		return
+	end
+	if vim.g.loaded_colors or color.spec[1] == nil then
 		M.get_color(name):set_variant_name(opts):apply(opts)
 	elseif M.colors[name] then
 		M.colors[name].spec.lazy = false
@@ -270,7 +275,9 @@ end
 function M.specs()
 	local specs = {}
 	for _, v in pairs(M.colors) do
-		table.insert(specs, v.spec)
+		if v.spec[1] ~= nil then
+			table.insert(specs, v.spec)
+		end
 	end
 	return specs
 end

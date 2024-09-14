@@ -157,3 +157,12 @@ Colors.register("aurora", nil, "ray-x/aurora"):override({
 	Normal = { fg = get_hl("Normal").fg, bg = "NONE" },
 	["@punctuation.delimiter"] = { fg = get_hl("Normal").fg },
 })
+
+Colors.register("catppuccin", nil, "catppuccin/nvim"):set_spec({
+	build = function()
+		require("local.colors.cat_colors").build_all_colors()
+	end,
+	name = "catppuccin",
+})
+
+require("local.colors.cat_colors").register()

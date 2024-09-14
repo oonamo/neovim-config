@@ -68,7 +68,8 @@ _G.O = {
 		show_open_folds = false,
 		use_githl = false,
 		debug = false,
-		colorscheme = "rose-pine",
+		-- colorscheme = "rose-pine",
+		colorscheme = { "cat-colors", "everlike-mocha" },
 		select = "telescope",
 	},
 }

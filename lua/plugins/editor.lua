@@ -331,13 +331,14 @@ return {
 								["cpp"] = "g++ -Wall -pedantic %f.cpp -o tmp && ./tmp",
 								["lua"] = function(file)
 									if file then
+										vim.notify("sourcing file " .. file .. "...")
 										vim.cmd("so " .. file)
 									end
 								end,
 							}
-							-- require("overseer").new_task({
-							-- 	cmd = compilers[vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":e")],
-							-- })
+							require("overseer").new_task({
+								cmd = compilers[vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":e")],
+							})
 						end,
 					},
 				},
@@ -368,7 +369,7 @@ return {
 					require("command_pal").open({
 						picker = "mini_pick",
 						mini_pick = {
-							ivy_style = false,
+							ivy_style = true,
 						},
 					})
 				end,
