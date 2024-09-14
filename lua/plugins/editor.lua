@@ -71,6 +71,7 @@ return {
 			require("telescope").setup(opts)
 			require("telescope").load_extension("fzf")
 			require("telescope").load_extension("ui-select")
+			require("telescope").load_extension("aerial")
 		end,
 		keys = function()
 			return {
@@ -161,6 +162,11 @@ return {
 						require("telescope.builtin").marks()
 					end,
 					desc = "marks",
+				},
+				{
+					"<leader>ss",
+					"<cmd>Telescope aerial<cr>",
+					desc = "Goto Symbol (aerial)",
 				},
 			}
 		end,

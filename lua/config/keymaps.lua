@@ -30,7 +30,7 @@ map({ "n", "v" }, "<leader>yy", '"+yy', opts("copy to clipboard", true))
 map({ "n", "v" }, "<leader>ps", '"+p', opts("paste from clipboard", true))
 map({ "n", "v" }, "<leader>P", '"+P', opts("paste from clipboard", true))
 -- Search and Replace
-map("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], opts("search and replace"))
+-- map("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], opts("search and replace"))
 
 -- window options
 map("n", "<leader>vs", "<CMD>vsplit<CR>", opts("vertical split", true))

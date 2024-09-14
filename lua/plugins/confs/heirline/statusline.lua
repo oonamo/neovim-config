@@ -418,6 +418,12 @@ local NoteStatus = {
 }
 
 return {
+	condition = function()
+		if vim.fn.mode():gsub(1, 1) == "c" then
+			return false
+		end
+		return true
+	end,
 	hl = function()
 		if conditions.is_active() then
 			return "StatusLine"

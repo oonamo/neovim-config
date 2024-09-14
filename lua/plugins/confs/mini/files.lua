@@ -107,3 +107,12 @@ vim.api.nvim_create_autocmd("User", {
 		map_split(buf_id, "<C-v>", "belowright vertical")
 	end,
 })
+
+vim.api.nvim_create_autocmd("User", {
+	desc = "Add minifiles split keymaps and options",
+	pattern = "MiniFilesWindowOpen",
+	callback = function(args)
+		local win_id = args.data.win_id
+		vim.wo[win_id].winbar = ""
+	end,
+})

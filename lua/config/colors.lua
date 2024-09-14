@@ -147,6 +147,7 @@ Colors.register("melange", nil, "savq/melange-nvim"):override({
 	MiniPickMatchCurrent = { link = "IncSearch" },
 })
 
+Colors.register("astrotheme", nil, "AstroNvim/astrotheme")
 Colors.register("kanagawa", nil, "rebelot/kanagawa.nvim")
 Colors.register("vague", nil, "vague2k/vague.nvim")
 Colors.register("papercolor", nil, "NLKNguyen/papercolor-theme")

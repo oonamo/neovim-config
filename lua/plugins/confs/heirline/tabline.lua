@@ -1,4 +1,4 @@
-local utils = require("heirline.utils")
+local htils = require("heirline.utils")
 
 local space = { provider = " " }
 
@@ -139,16 +139,16 @@ local TablineCloseButton = {
 }
 
 -- The final touch!
-local TablineBufferBlock = utils.surround({ "", "" }, function(self)
+local TablineBufferBlock = htils.surround({ "", "" }, function(self)
 	if self.is_active then
-		return utils.get_highlight("TabLineSel").bg
+		return htils.get_highlight("TabLineSel").bg
 	else
-		return utils.get_highlight("TabLine").bg
+		return htils.get_highlight("TabLine").bg
 	end
 end, { TablineFileNameBlock, TablineCloseButton, space })
 
 -- and here we go
-local BufferLine = utils.make_buflist(
+local BufferLine = htils.make_buflist(
 	TablineBufferBlock,
 	{ provider = "", hl = { fg = "gray" } }, -- left truncation, optional (defaults to "<")
 	{ provider = "", hl = { fg = "gray" } } -- right trunctation, also optional (defaults to ...... yep, ">")
@@ -179,7 +179,7 @@ local TabPages = {
 		return #vim.api.nvim_list_tabpages() >= 2
 	end,
 	{ provider = "%=" },
-	utils.make_tablist(Tabpage),
+	htils.make_tablist(Tabpage),
 	TabpageClose,
 }
 
@@ -187,6 +187,17 @@ vim.o.showtabline = 2
 vim.cmd([[au FileType * if index(['wipe', 'delete'], &bufhidden) >= 0 | set nobuflisted | endif]])
 
 return {
+	{
+		condition = function(self)
+			self.winid = vim.api.nvim_tabpage_list_wins(0)[1]
+			self.winwidth = vim.api.nvim_win_get_width(self.winid)
+			return self.winwidth ~= self.winid and not utils.buf_is_valid(vim.api.nvim_win_get_buf(self.winid))
+		end,
+		provider = function(self)
+			return (" "):rep(self.winwidth + 1)
+		end,
+		hl = { bg = "tabline_bg" },
+	},
 	BufferLine,
 	TabPages,
 }

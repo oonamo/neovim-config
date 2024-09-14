@@ -525,4 +525,33 @@ function utils.set_hl_from(ns, new_hl_name, opts)
 	end
 end
 
+---@param name string
+function utils.is_loaded(name)
+	local config = require("lazy.core.config")
+	return config.plugins[name] and config.plugins[name]._.loaded
+end
+
+function utils.on_load(name, fn)
+	if utils.is_loaded(name) then
+		fn(name)
+	else
+		vim.api.nvim_create_autocmd("User", {
+			pattern = "LazyLoad",
+			callback = function(event)
+				if event.data == name then
+					fn(name)
+					return true
+				end
+			end,
+		})
+	end
+end
+
+function utils.buf_is_valid(bufnr)
+	if not bufnr then
+		bufnr = 0
+	end
+	return vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buflisted
+end
+
 return utils
