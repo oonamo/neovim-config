@@ -195,4 +195,17 @@ vim.api.nvim_create_autocmd("TermOpen", {
 	end,
 })
 
+local function on_color()
+	local _, bg = utils.get_hl("Normal")
+	local sel_fg, _ = utils.get_hl("TablineSel")
+	vim.api.nvim_set_hl(0, "TablineSel", { fg = sel_fg, bg = bg })
+end
+on_color()
+
+vim.api.nvim_create_autocmd("Colorscheme", {
+	callback = function()
+		on_color()
+	end,
+})
+
 return M

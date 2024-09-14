@@ -5,6 +5,8 @@ vim.o.shada = "'100,<50,s10,:1000,/100,@100,h"
 o.title = true
 o.titlestring = "nvim"
 
+o.cmdheight = 0
+
 vim.g.bigfile_size = 1024 * 1024 * 1.5 -- 1.5 MB
 
 -- Relative line numbers
@@ -13,6 +15,7 @@ opt.rnu = true
 
 -- Show mode in statusline
 opt.showmode = false
+opt.showcmdloc = "statusline"
 
 -- set tab stop at 4
 opt.tabstop = 4

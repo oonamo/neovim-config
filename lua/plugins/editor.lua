@@ -512,6 +512,36 @@ return {
 		end,
 	},
 	{
-		V,
+		"rcarriga/nvim-notify",
+		event = "VeryLazy",
+		init = function()
+			vim.notify = require("notify")
+		end,
+		opts = {
+			max_height = function()
+				return math.floor(vim.o.lines * 0.75)
+			end,
+			max_width = function()
+				return math.floor(vim.o.columns * 0.75)
+			end,
+			on_open = function(win)
+				vim.api.nvim_win_set_config(win, { zindex = 125 })
+				vim.wo[win].conceallevel = 3
+				local buf = vim.api.nvim_win_get_buf(win)
+				if not pcall(vim.treesitter.start, buf, "markdown") then
+					vim.bo[buf].syntax = "markdown"
+				end
+				vim.wo[win].spell = false
+			end,
+		},
+		keys = {
+			{
+				"<leader>dd",
+				function()
+					require("notify").dismiss({ pending = true, silent = true })
+				end,
+				desc = "Dismiss notification",
+			},
+		},
 	},
 }

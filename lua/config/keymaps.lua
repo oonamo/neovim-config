@@ -12,8 +12,8 @@ map("n", "L", "$", { silent = true })
 map("n", "H", "^", { silent = true })
 
 -- center screen
-map("n", "<C-d>", "<C-d>zz", opts("smooth scroll down", true, { noremap = true }))
-map("n", "<C-u>", "<C-u>zz", opts("smooth scroll up", true, { noremap = true }))
+-- map("n", "<C-d>", "<C-d>zz", opts("smooth scroll down", true, { noremap = true }))
+-- map("n", "<C-u>", "<C-u>zz", opts("smooth scroll up", true, { noremap = true }))
 map("n", "n", "nzzzv", opts("smooth search down", true, { noremap = true }))
 map("n", "N", "Nzzzv", opts("smooth search up", true, { noremap = true }))
 map("n", "%", "%zz", opts("smooth match", true, { noremap = true }))

@@ -80,18 +80,18 @@ return {
 			end, { desc = "open bufdir files" }),
 		},
 	},
-	{
-		"mini.notify",
-		event = "VeryLazy",
-		dev = true,
-		init = function()
-			vim.notify = require("mini.notify").make_notify()
-		end,
-		cmd = "Notifications",
-		config = function()
-			require("plugins.confs.mini.notify")
-		end,
-	},
+	-- {
+	-- 	"mini.notify",
+	-- 	event = "VeryLazy",
+	-- 	dev = true,
+	-- 	init = function()
+	-- 		vim.notify = require("mini.notify").make_notify()
+	-- 	end,
+	-- 	cmd = "Notifications",
+	-- 	config = function()
+	-- 		require("plugins.confs.mini.notify")
+	-- 	end,
+	-- },
 	{
 		"mini.splitjoin",
 		dev = true,
@@ -238,12 +238,12 @@ return {
 			})
 		end,
 	},
-	{
-		"mini.tabline",
-		dev = true,
-		event = "LazyFile",
-		config = function()
-			require("plugins.confs.mini.tabline")
-		end,
-	},
+	-- {
+	-- 	"mini.tabline",
+	-- 	dev = true,
+	-- 	event = "LazyFile",
+	-- 	config = function()
+	-- 		require("plugins.confs.mini.tabline")
+	-- 	end,
+	-- },
 }

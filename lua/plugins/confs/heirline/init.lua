@@ -11,14 +11,6 @@ local function get_hl(name, property)
 	else
 		return get_hl("StatusLine", "fg")
 	end
-	-- return vim.tbl_isempty(hl) == false and hl
-	-- 	or (function()
-	-- 		local hl = get_hl("StatusLine")
-	-- 		if not hl then
-	-- 			error("recursive normal")
-	-- 		end
-	-- 		return hl
-	-- 	end)()
 end
 
 local function set_colors()
@@ -58,6 +50,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 local opts = {
 	statusline = require("plugins.confs.heirline.statusline"),
 	statuscolumn = require("plugins.confs.heirline.statuscolumn"),
+	tabline = require("plugins.confs.heirline.tabline"),
 	colors = set_colors(),
 }
 

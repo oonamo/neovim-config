@@ -1,6 +1,9 @@
 local conditions = require("heirline.conditions")
 local htils = require("heirline.utils")
 
+local align = { provider = "%=" }
+local space = { provider = " " }
+
 local function get_hl(name, property)
 	local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
 	if hl[property] then
@@ -29,13 +32,7 @@ local Git = {
 				delete = 0,
 			}
 		end
-		-- self.changes = vim.b.minidiff_summary or { data = {
-		-- 	add = 0,
-		-- 	change = 0,
-		-- 	delete = 0,
-		-- } }
 	end,
-	-- hl = { fg = get_hl("MiniDiffSignChange").fg, bg = get_hl("StatusLine").bg },
 	{
 		provider = function(self)
 			return (self.status.head_name or "") .. " "
@@ -49,7 +46,6 @@ local Git = {
 			end
 			return ""
 		end,
-		-- hl = "MiniDiffSignAdd_stl",
 		hl = { fg = "add" },
 	},
 	{
@@ -59,7 +55,6 @@ local Git = {
 			end
 			return ""
 		end,
-		-- hl = "MiniDiffSignChange_stl",
 		hl = { fg = "change" },
 	},
 	{
@@ -69,7 +64,6 @@ local Git = {
 			end
 			return ""
 		end,
-		-- hl = "MiniDiffSignDelete_stl",
 		hl = { fg = "del" },
 	},
 }
@@ -290,6 +284,53 @@ local Overseer = {
 	},
 }
 
+local macro_recording = {
+	condition = function()
+		return vim.fn.reg_recording() ~= "" and vim.o.cmdheight == 0
+	end,
+	update = { "RecordingEnter", "RecordingLeave" },
+	provider = function(self)
+		return " @ " .. vim.fn.reg_recording()
+	end,
+	hl = { fg = "green", bold = true },
+}
+
+local show_cmd = {
+	provider = "%0.5(%S%)",
+}
+
+local search_count = {
+	condition = function(self)
+		local search_count = vim.fn.searchcount({ recompute = 1, maxcount = -1 })
+		local active = false
+		if vim.v.hlsearch and vim.v.hlsearch == 1 and search_count.total > 0 then
+			active = true
+		end
+		if not active then
+			return
+		end
+		self.count = search_count
+		return true
+	end,
+	provider = function(self)
+		return self.count.current .. "/" .. self.count.total
+	end,
+	hl = {
+		fg = "orange",
+	},
+}
+
+local cmd_info = {
+	condition = function()
+		return vim.o.cmdheight == 0
+	end,
+	search_count,
+	space,
+	macro_recording,
+	-- space,
+	-- show_cmd,
+}
+
 local signature = {
 	update = {
 		"TextChangedI",
@@ -349,17 +390,15 @@ local ruler = {
 	provider = "%7(%l/%3L%):%2c %P",
 }
 
-local align = { provider = "%=" }
-local space = { provider = " " }
-
 local NormalStatusLine = {
 	Git,
+	Overseer,
 	align,
-	-- file_name,
-	-- space,
+	file_name,
+	space,
 	signature,
 	align,
-	Overseer,
+	cmd_info,
 	diagnostics,
 	space,
 	ruler,
@@ -373,6 +412,7 @@ local NoteStatus = {
 	align,
 	file_name,
 	align,
+	cmd_info,
 	space,
 	wordcount,
 }
