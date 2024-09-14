@@ -196,6 +196,10 @@ return {
 	},
 	{
 		"nvim-treesitter/nvim-treesitter",
+		dependencies = {
+			"nvim-treesitter/nvim-treesitter-textobjects",
+			event = "VeryLazy",
+		},
 		lazy = vim.fn.argc(-1) == 0,
 		build = function()
 			vim.cmd("TSUpdate")
@@ -244,6 +248,31 @@ return {
 						node_incremental = "<CR>",
 						scope_incremental = false,
 						node_decremental = "<BS>",
+					},
+				},
+				textobjects = {
+					move = {
+						enable = true,
+						goto_next_start = {
+							["]f"] = "@function.outer",
+							["]c"] = "@class.outer",
+							["]a"] = "@parameter.inner",
+						},
+						goto_next_end = {
+							["]F"] = "@function.outer",
+							["]C"] = "@class.outer",
+							["]A"] = "@parameter.inner",
+						},
+						goto_previous_start = {
+							["[f"] = "@function.outer",
+							["[c"] = "@class.outer",
+							["[a"] = "@parameter.inner",
+						},
+						goto_previous_end = {
+							["[F"] = "@function.outer",
+							["[C"] = "@class.outer",
+							["[A"] = "@parameter.inner",
+						},
 					},
 				},
 			})
@@ -423,6 +452,41 @@ return {
 		"folke/which-key.nvim",
 		event = "VeryLazy",
 		opts = {
+			defaults = {},
+			{
+				mode = { "n", "v" },
+				{ "<leader>f", group = "+Find" },
+				{ "<leader>c", group = "+Compile" },
+				{ "<leader>g", group = "+Git" },
+				{ "<leader>gd", group = "+Diff" },
+				{ "<leader>ga", group = "+Add" },
+				{ "<leader>v", group = "+Variables" },
+				{ "<leader>l", group = "+Location" },
+				{ "<leader>L", group = "+Lua" },
+				{ "<leader>n", group = "+Namespaces" },
+				{ "<leader>p", group = "+Perform" },
+				{ "[", group = "prev" },
+				{ "]", group = "next" },
+				{ "g", group = "goto" },
+				{ "s", group = "surround" },
+				{ "z", group = "fold" },
+				{ "gx", desc = "Open with system app" },
+				{
+					"<leader>b",
+					group = "buffer",
+					expand = function()
+						return require("which-key.extras").expand.buf()
+					end,
+				},
+				{
+					"<leader>w",
+					group = "windows",
+					proxy = "<c-w>",
+					expand = function()
+						return require("which-key.extras").expand.win()
+					end,
+				},
+			},
 			-- your configuration comes here
 			-- or leave it empty to use the default settings
 			-- refer to the configuration section below
@@ -448,69 +512,6 @@ return {
 		end,
 	},
 	{
-		"viocost/viedit",
-		opts = {
-			override_keys = true,
-			keys = {
-				next_occurrence = "n",
-				previous_occurrence = "N",
-			},
-		},
-		keys = {
-			{
-				mode = { "n", "v" },
-				"<leader>qc",
-				function()
-					require("viedit").toggle_all()
-				end,
-			},
-			{
-				mode = { "n", "v" },
-				"<leader>qq",
-				function()
-					require("viedit").restrict_to_function()
-				end,
-			},
-			{
-				mode = { "n", "v" },
-				"<leader>qs",
-				function()
-					require("viedit").toggle_single()
-				end,
-			},
-		},
-	},
-	{
-		"folke/noice.nvim",
-		event = "VeryLazy",
-		cond = O.ui.noice,
-		opts = {
-			lsp = {
-				["cmp.entry.get_documentation"] = false, -- requires hrsh7th/nvim-cmp
-			},
-			cmdline = {
-				view = "cmdline",
-			},
-			views = {
-				cmdline_popup = {
-					position = {
-						row = "100%",
-						col = "0%",
-					},
-					size = {
-						width = "100%",
-						height = "auto",
-					},
-				},
-			},
-		},
-		dependencies = {
-			-- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-			"MunifTanjim/nui.nvim",
-			-- OPTIONAL:
-			--   `nvim-notify` is only needed, if you want to use the notification view.
-			--   If not available, we use `mini` as the fallback
-			-- "rcarriga/nvim-notify",
-		},
+		V,
 	},
 }

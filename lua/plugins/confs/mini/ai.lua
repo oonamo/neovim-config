@@ -38,6 +38,11 @@ miniai.setup({
 		B = MiniExtra.gen_ai_spec.buffer(),
 		-- F = miniai.gen_spec.treesitter({ a = "@function.outer", i = "@function.inner" }, {}),
 		i = indent,
+		f = miniai.gen_spec.treesitter({ a = "@function.outer", i = "@function.inner" }), -- function
+		c = miniai.gen_spec.treesitter({ a = "@class.outer", i = "@class.inner" }), -- class
+		t = { "<([%p%w]-)%f[^<%w][^<>]->.-</%1>", "^<.->().*()</[^/]->$" }, -- tags
+		u = miniai.gen_spec.function_call(), -- u for "Usage"
+		U = miniai.gen_spec.function_call({ name_pattern = "[%w_]" }), -- w
 	},
 	search_method = "cover_or_next",
 })
