@@ -76,6 +76,11 @@ return {
 		keys = function()
 			return {
 				{
+					"<leader>,",
+					"<cmd>Telescope buffers sort_mru=true sort_lastused=true<cr>",
+					desc = "Switch Buffer",
+				},
+				{
 					"<C-P>",
 					function()
 						require("telescope.builtin").find_files()

@@ -1,10 +1,10 @@
 local opt, o, g = vim.opt, vim.o, vim.g
 
-g.neovide_scale_factor = 1.0
+-- g.neovide_scale_factor = 1.0
 g.neovide_hide_mouse_when_typing = true
 g.neovide_theme = "dark"
 -- g.neovide_scroll_animation_length = 0
-opt.linespace = 10
+-- opt.linespace = 10
 g.neovide_transparency_point = 1.0
 g.neovide_underline_stroke_scale = 1.5
 g.neovide_transparency = 1.0

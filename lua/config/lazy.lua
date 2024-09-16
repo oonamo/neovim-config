@@ -60,7 +60,7 @@ _G.O = {
 		indent = {
 			mini = true,
 		},
-		background = "light",
+		background = "dark",
 		noice = false,
 		signature = "lsp_signature",
 		clues = true,
@@ -69,8 +69,8 @@ _G.O = {
 		use_githl = false,
 		debug = false,
 		-- colorscheme = "rose-pine",
-		-- colorscheme = { "cat-colors", "everlike-mocha" },
-		colorscheme = "modus",
+		colorscheme = { "cat-colors", "everlike-mocha" },
+		-- colorscheme = "modus",
 		select = "telescope",
 	},
 }

@@ -19,3 +19,28 @@ vim.keymap.set("n", "<leader>ls", function()
 	vim.cmd.vsplit()
 	go_to_headerfile()
 end)
+
+local function handler(direction)
+	return function(err, uri)
+		if not uri or uri == "" then
+			vim.api.nvim_echo({
+				{ "Corresponding file does not exist", "DiagnosticWarn" },
+			}, false, {})
+		end
+		local filename = vim.uri_to_fname(uri)
+		if direction == "below" then
+			vim.cmd.split()
+		elseif direction == "vertial" then
+			vim.cmd.vsplit()
+		end
+		vim.cmd("edit " .. filename)
+	end
+end
+
+vim.keymap.set("n", "<leader>lh", function()
+	vim.lsp.buf_request(0, "textDocument/switchSourceHeader", {
+		uri = vim.uri_from_bufnr(0),
+	}, handler())
+end, {
+	desc = "go to header file",
+})

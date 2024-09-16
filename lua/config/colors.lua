@@ -180,7 +180,9 @@ Colors.register("modus", nil, "miikanissi/modus-themes.nvim")
 				keywords = { italic = false },
 				functions = { bold = true },
 			},
-			on_highlights = function(highlights, colors) end,
+			on_highlights = function(highlights, colors)
+				highlights.EndOfBuffer = { fg = highlights.Normal.fg }
+			end,
 		},
 	})
 Colors.register("aurora", nil, "ray-x/aurora"):override({
