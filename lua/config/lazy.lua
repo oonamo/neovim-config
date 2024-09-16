@@ -1,6 +1,5 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = ";"
-vim.o.background = "dark"
 vim.loader.enable()
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -61,6 +60,7 @@ _G.O = {
 		indent = {
 			mini = true,
 		},
+		background = "light",
 		noice = false,
 		signature = "lsp_signature",
 		clues = true,
@@ -69,7 +69,8 @@ _G.O = {
 		use_githl = false,
 		debug = false,
 		-- colorscheme = "rose-pine",
-		colorscheme = { "cat-colors", "everlike-mocha" },
+		-- colorscheme = { "cat-colors", "everlike-mocha" },
+		colorscheme = "modus",
 		select = "telescope",
 	},
 }

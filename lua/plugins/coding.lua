@@ -71,7 +71,7 @@ return {
 						auto_open = true,
 					},
 					entries = {
-						follow_cursor = true,
+						follow_cursor = false,
 					},
 				},
 				-- performance = {
@@ -181,52 +181,44 @@ return {
 			leader_key = "<C-e>", -- Recommended to be a single key
 			buffer_leader_key = "<leader>m", -- Per Buffer Mappings
 		},
-		keys = {
-			"<C-e>",
-			"<leader>m",
-			{
-				"<leader>a",
-				function()
-					require("arrow.persist").save(vim.api.nvim_buf_get_name(0))
-				end,
-			},
-			{
+		keys = function()
+			local keys = {
+				"<C-e>",
+				"<leader>m",
+				{
+					"<leader>a",
+					function()
+						require("arrow.persist").save(vim.api.nvim_buf_get_name(0))
+					end,
+				},
+			}
+			local maps = {
 				"<C-h>",
-				function()
-					require("arrow.persist").go_to(1)
-				end,
-			},
-			{
 				"<C-j>",
-				function()
-					require("arrow.persist").go_to(2)
-				end,
-			},
-			{
 				"<C-k>",
-				function()
-					require("arrow.persist").go_to(3)
-				end,
-			},
-			{
 				"<C-l>",
-				function()
-					require("arrow.persist").go_to(4)
-				end,
-			},
-			{
-				"<leader>5",
-				function()
-					require("arrow.persist").go_to(5)
-				end,
-			},
-			{
-				"<leader>6",
-				function()
-					require("arrow.persist").go_to(6)
-				end,
-			},
-		},
+			}
+			for i, key in ipairs(maps) do
+				table.insert(keys, {
+					key,
+					function()
+						require("arrow.persist").go_to(i)
+					end,
+					desc = "Go to Arrow File " .. i,
+				})
+			end
+
+			for i = #maps, 9 do
+				table.insert(keys, {
+					"<leader>" .. i,
+					function()
+						require("arrow.persist").go_to(i)
+					end,
+					desc = "Go to Arrow File " .. i,
+				})
+			end
+			return keys
+		end,
 	},
 	{
 		"stevearc/overseer.nvim",
@@ -235,6 +227,24 @@ return {
 				"builtin",
 				"user.cpp_build",
 				"user.c_build",
+			},
+			task_list = {
+				bindings = {
+					["<C-t>"] = "<cmd>OverseerQuickAction open tab<cr>",
+				},
+			},
+			component_aliases = {
+				default = {
+					{
+						"open_output",
+						direction = "horizontal",
+						focus = false,
+						on_start = "always",
+					},
+					"on_output_summarize",
+					"on_exit_set_status",
+					"on_complete_notify",
+				},
 			},
 		},
 		cmd = { "OverseerBuild", "OverseerRun" },
@@ -259,7 +269,6 @@ return {
 								cmd = command,
 							})
 							:start()
-						overseer.open()
 						vim.g.last_compile_command = command
 					end,
 					desc = "Compile Project",
@@ -277,16 +286,31 @@ return {
 							overseer
 								.new_task({
 									cmd = command,
+									-- components = {
+									-- 	{
+									-- 		"open_output",
+									-- 		direction = "tab",
+									-- 		focus = false,
+									-- 		on_start = "always",
+									-- 	},
+									-- },
 								})
 								:start()
-							overseer.open()
 						else
 							overseer
 								.new_task({
 									cmd = vim.g.last_compile_command,
+									components = {
+										{
+											"open_output",
+											direction = "tab",
+											focus = false,
+											on_start = "always",
+										},
+									},
 								})
 								:start()
-							overseer.open()
+							-- overseer.open()
 						end
 					end,
 					desc = "Compile last task",
@@ -329,16 +353,16 @@ return {
 					local aerial = require("aerial")
 					vim.keymap.set("n", "[y", function()
 						aerial.next(vim.v.count1)
-					end, { desc = "next symbol" })
+					end, { desc = "next symbol", buffer = bufnr })
 					vim.keymap.set("n", "]y", function()
 						aerial.prev(vim.v.count1)
-					end, { desc = "previous symbol" })
+					end, { desc = "previous symbol", buffer = bufnr })
 					vim.keymap.set("n", "[Y", function()
 						aerial.next_up(vim.v.count1)
-					end, { desc = "next symbol upwards" })
+					end, { desc = "next symbol upwards", buffer = bufnr })
 					vim.keymap.set("n", "]Y", function()
 						aerial.prev_up(vim.v.count1)
-					end, { desc = "previous symbol upwards" })
+					end, { desc = "previous symbol upwards", buffer = bufnr })
 				end,
 			}
 		end,

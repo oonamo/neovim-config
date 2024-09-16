@@ -15,7 +15,7 @@ M.flavours = {
 	"everlike-latte",
 	"gruber_dark-mocha",
 	"gruvvy-mocha",
-	"solarized_light-light",
+	"solarized_light-latte",
 }
 
 local function load(file)

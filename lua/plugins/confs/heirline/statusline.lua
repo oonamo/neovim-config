@@ -1,4 +1,5 @@
 local conditions = require("heirline.conditions")
+
 local htils = require("heirline.utils")
 
 local align = { provider = "%=" }
@@ -132,6 +133,54 @@ local wordcount = {
 	-- 		return self.charcount .. " chars "
 	-- 	end,
 	-- },
+}
+
+local EGit = {
+	condition = function()
+		return vim.b.minigit_summary ~= nil and vim.b.minigit_summary.head_name ~= nil
+	end,
+	init = function(self)
+		self.status = vim.b.minigit_summary or {}
+		if vim.b.minidiff_summary and vim.b.minidiff_summary.add then
+			self.changes = vim.b.minidiff_summary
+		else
+			self.changes = {
+				add = 0,
+				change = 0,
+				delete = 0,
+			}
+		end
+	end,
+	{
+		provider = function(self)
+			return (self.status.head_name or "") .. " "
+		end,
+		hl = { fg = "change", bold = true },
+	},
+	{
+		provider = "[",
+	},
+	{
+		provider = function(self)
+			return self.changes.add .. " "
+		end,
+		hl = { fg = "add" },
+	},
+	{
+		provider = function(self)
+			return self.changes.change .. " "
+		end,
+		hl = { fg = "change" },
+	},
+	{
+		provider = function(self)
+			return self.changes.delete
+		end,
+		hl = { fg = "del" },
+	},
+	{
+		provider = "]",
+	},
 }
 
 local diagnostics = {
@@ -391,7 +440,8 @@ local ruler = {
 }
 
 local NormalStatusLine = {
-	Git,
+	-- Git,
+	EGit,
 	Overseer,
 	align,
 	file_name,

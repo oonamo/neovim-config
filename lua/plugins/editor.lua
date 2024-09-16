@@ -168,6 +168,11 @@ return {
 					"<cmd>Telescope aerial<cr>",
 					desc = "Goto Symbol (aerial)",
 				},
+				{
+					"<leader>gb",
+					"<cmd>Telescope buffers<cr>",
+					desc = "Find Buffers",
+				},
 			}
 		end,
 	},
@@ -401,112 +406,59 @@ return {
 			},
 		},
 	},
-	{
-		"oonamo/everyones-jk.nvim",
-		dir = "~/projects/everyone-is-jk",
-		dev = true,
-		keys = {
-			{ "[" },
-			{ "]" },
-		},
-		opts = {
-			use_recommended = true,
-			j = "J",
-			k = "K",
-			keys = {
-				{
-					"Markdown",
-					j = {
-						"]m",
-						[[/^##\+\s.*$]],
-					},
-					k = {
-						"[m",
-						[[?^##\+\s.*$]],
-					},
-				},
-				{
-					"Resize Windows",
-					j = {
-						"]wh",
-						"resize -1",
-					},
-					k = {
-						"[wh",
-						"resize +1",
-					},
-				},
-				{
-					"Resize Windows Vertical",
-					j = {
-						"]wv",
-						"vertical resize -1",
-					},
-					k = {
-						"[wv",
-						"vertical resize +1",
-					},
-				},
-			},
-		},
-	},
+	-- {
+	-- 	"oonamo/everyones-jk.nvim",
+	-- 	dir = "~/projects/everyone-is-jk",
+	-- 	dev = true,
+	-- 	keys = {
+	-- 		{ "[" },
+	-- 		{ "]" },
+	-- 	},
+	-- 	opts = {
+	-- 		use_recommended = true,
+	-- 		j = "J",
+	-- 		k = "K",
+	-- 		keys = {
+	-- 			{
+	-- 				"Markdown",
+	-- 				j = {
+	-- 					"]m",
+	-- 					[[/^##\+\s.*$]],
+	-- 				},
+	-- 				k = {
+	-- 					"[m",
+	-- 					[[?^##\+\s.*$]],
+	-- 				},
+	-- 			},
+	-- 			{
+	-- 				"Resize Windows",
+	-- 				j = {
+	-- 					"]wh",
+	-- 					"resize -1",
+	-- 				},
+	-- 				k = {
+	-- 					"[wh",
+	-- 					"resize +1",
+	-- 				},
+	-- 			},
+	-- 			{
+	-- 				"Resize Windows Vertical",
+	-- 				j = {
+	-- 					"]wv",
+	-- 					"vertical resize -1",
+	-- 				},
+	-- 				k = {
+	-- 					"[wv",
+	-- 					"vertical resize +1",
+	-- 				},
+	-- 			},
+	-- 		},
+	-- 	},
+	-- },
 	{
 		"stevearc/quicker.nvim",
 		event = "FileType qf",
 		opts = {},
-	},
-	{
-		"folke/which-key.nvim",
-		event = "VeryLazy",
-		opts = {
-			defaults = {},
-			{
-				mode = { "n", "v" },
-				{ "<leader>f", group = "+Find" },
-				{ "<leader>c", group = "+Compile" },
-				{ "<leader>g", group = "+Git" },
-				{ "<leader>gd", group = "+Diff" },
-				{ "<leader>ga", group = "+Add" },
-				{ "<leader>v", group = "+Variables" },
-				{ "<leader>l", group = "+Location" },
-				{ "<leader>L", group = "+Lua" },
-				{ "<leader>n", group = "+Namespaces" },
-				{ "<leader>p", group = "+Perform" },
-				{ "[", group = "prev" },
-				{ "]", group = "next" },
-				{ "g", group = "goto" },
-				{ "s", group = "surround" },
-				{ "z", group = "fold" },
-				{ "gx", desc = "Open with system app" },
-				{
-					"<leader>b",
-					group = "buffer",
-					expand = function()
-						return require("which-key.extras").expand.buf()
-					end,
-				},
-				{
-					"<leader>w",
-					group = "windows",
-					proxy = "<c-w>",
-					expand = function()
-						return require("which-key.extras").expand.win()
-					end,
-				},
-			},
-			-- your configuration comes here
-			-- or leave it empty to use the default settings
-			-- refer to the configuration section below
-		},
-		keys = {
-			{
-				"<leader>?",
-				function()
-					require("which-key").show({ global = false })
-				end,
-				desc = "Buffer Local Keymaps (which-key)",
-			},
-		},
 	},
 	{
 		"rebelot/heirline.nvim",
@@ -514,8 +466,269 @@ return {
 		-- to make sure all required plugins and colorschemes are loaded before setup
 		-- event = "UiEnter",
 		event = "VeryLazy",
+		dependencies = { "zeioth/heirline-components.nvim" },
+		init = function()
+			vim.o.showtabline = 2
+		end,
 		opts = function()
-			return require("plugins.confs.heirline")
+			local lib = require("heirline-components.all")
+			local get_hl = utils.safe_get_hl("StatusLine")
+			return {
+				opts = {
+					disable_winbar_cb = function(args) -- We do this to avoid showing it on the greeter.
+						local is_disabled = not require("heirline-components.buffer").is_valid(args.buf)
+							or lib.condition.buffer_matches({
+								buftype = { "terminal", "prompt", "nofile", "help", "quickfix", "arrow" },
+								filetype = { "NvimTree", "neo%-tree", "dashboard", "Outline", "aerial", "arrow" },
+							}, args.buf)
+						return is_disabled
+					end,
+
+					colors = {},
+				},
+				tabline = { -- UI upper bar
+					lib.component.tabline_conditional_padding(),
+					lib.component.tabline_buffers(),
+					lib.component.fill({ hl = { bg = "tabline_bg" } }),
+					lib.component.tabline_tabpages(),
+				},
+				winbar = { -- UI breadcrumbs bar
+					init = function(self)
+						self.bufnr = vim.api.nvim_get_current_buf()
+					end,
+					fallthrough = false,
+					-- Winbar for terminal, neotree, and aerial.
+					{
+						condition = function()
+							return not lib.condition.is_active()
+						end,
+						{
+							lib.component.fill(),
+							lib.component.aerial(),
+						},
+					},
+					-- Regular winbar
+					{
+						lib.component.breadcrumbs({
+							hl = function()
+								return "Normal"
+							end,
+							icon = { enabled = true },
+						}),
+						lib.component.fill(),
+						lib.component.aerial(),
+					},
+				},
+				statuscolumn = require("plugins.confs.heirline.statuscolumn"),
+				statusline = require("plugins.confs.heirline.statusline"),
+				-- statusline = { -- UI statusbar
+				-- 	hl = { fg = "fg", bg = "bg" },
+				-- 	lib.component.mode(),
+				-- 	lib.component.git_branch(),
+				-- 	lib.component.file_info(),
+				-- 	lib.component.git_diff(),
+				-- 	lib.component.diagnostics(),
+				-- 	lib.component.fill(),
+				-- 	lib.component.cmd_info(),
+				-- 	lib.component.fill(),
+				-- 	lib.component.lsp(),
+				-- 	lib.component.virtual_env(),
+				-- 	lib.component.nav(),
+				-- 	lib.component.mode({ surround = { separator = "right" } }),
+				-- },
+			}
+		end,
+		config = function(_, opts)
+			local stl_get_hl = utils.safe_get_hl("StatusLine")
+			local stl_get_lualine_hl = utils.gen_safe_lualine_getter("StatusLine")
+			local heirline = require("heirline")
+			local function get_colors()
+				local colors = {
+					fg = stl_get_hl("StatusLine", "fg"),
+					bg = stl_get_hl("StatusLine", "bg"),
+					bright_bg = stl_get_hl("Folded", "bg"),
+					bright_fg = stl_get_hl("Folded", "fg"),
+					red = stl_get_hl("DiagnosticError", "fg"),
+					dark_red = stl_get_hl("DiffDelete", "bg"),
+					green = stl_get_hl("String", "fg"),
+					blue = stl_get_hl("Function", "fg"),
+					gray = stl_get_hl("NonText", "fg"),
+					orange = stl_get_hl("Constant", "fg"),
+					purple = stl_get_hl("Statement", "fg"),
+					cyan = stl_get_hl("Special", "fg"),
+					warn = stl_get_hl("DiagnosticWarn", "fg"),
+					error = stl_get_hl("DiagnosticError", "fg"),
+					hint = stl_get_hl("DiagnosticHint", "fg"),
+					info = stl_get_hl("DiagnosticInfo", "fg"),
+					del = stl_get_hl("MiniDiffSignDelete", "fg"),
+					add = stl_get_hl("MiniDiffSignAdd", "fg"),
+					change = stl_get_hl("MiniDiffSignChange", "fg"),
+					tabline_bg = stl_get_hl("TabLine", "bg"),
+					close_fg = stl_get_hl("Error", "fg"),
+					-- fg = get_hl("StatusLine", "fg"),
+					-- bg = get_hl("StatusLine", "bg"),
+					section_fg = stl_get_hl("StatusLine", "fg"),
+					section_bg = stl_get_hl("StatusLine", "bg"),
+					git_branch_fg = stl_get_hl("Conditional", "fg"),
+					mode_fg = stl_get_hl("StatusLine", "bg"),
+					treesitter_fg = stl_get_hl("String", "fg"),
+					virtual_env_fg = stl_get_hl("NvimEnvironmentName", "fg"),
+					scrollbar = stl_get_hl("TypeDef", "fg"),
+					git_added = stl_get_hl("GitSignsAdd", "fg"),
+					git_changed = stl_get_hl("GitSignsChange", "fg"),
+					git_removed = stl_get_hl("GitSignsDelete", "fg"),
+					diag_ERROR = stl_get_hl("DiagnosticError", "fg"),
+					diag_WARN = stl_get_hl("DiagnosticWarn", "fg"),
+					diag_INFO = stl_get_hl("DiagnosticInfo", "fg"),
+					diag_HINT = stl_get_hl("DiagnosticHint", "fg"),
+					winbar_fg = stl_get_hl("WinBar", "fg"),
+					winbar_bg = stl_get_hl("WinBar", "bg"),
+					winbarnc_fg = stl_get_hl("WinBarNC", "fg"),
+					winbarnc_bg = stl_get_hl("WinBarNC", "bg"),
+					-- tabline_bg = get_hl("TabLineFill", "bg"),
+					tabline_fg = stl_get_hl("TabLineFill", "bg"),
+					buffer_fg = stl_get_hl("Comment", "fg"),
+					buffer_path_fg = stl_get_hl("WinBarNC", "fg"),
+					buffer_close_fg = stl_get_hl("Comment", "fg"),
+					buffer_bg = stl_get_hl("TabLineFill", "bg"),
+					buffer_active_fg = stl_get_hl("Normal", "fg"),
+					buffer_active_path_fg = stl_get_hl("WinBarNC", "fg"),
+					buffer_active_close_fg = stl_get_hl("Error", "fg"),
+					buffer_active_bg = stl_get_hl("Normal", "bg"),
+					buffer_visible_fg = stl_get_hl("Normal", "fg"),
+					buffer_visible_path_fg = stl_get_hl("WinBarNC", "fg"),
+					buffer_visible_close_fg = stl_get_hl("Error", "fg"),
+					buffer_visible_bg = stl_get_hl("Normal", "bg"),
+					buffer_overflow_fg = stl_get_hl("Comment", "fg"),
+					buffer_overflow_bg = stl_get_hl("TabLineFill", "bg"),
+					buffer_picker_fg = stl_get_hl("Error", "fg"),
+					tab_close_fg = stl_get_hl("Error", "fg"),
+					tab_close_bg = stl_get_hl("TabLineFill", "bg"),
+					tab_fg = stl_get_hl("TabLine", "fg"),
+					tab_bg = stl_get_hl("TabLine", "bg"),
+					tab_active_fg = stl_get_hl("TabLineSel", "fg"),
+					tab_active_bg = stl_get_hl("TabLineSel", "bg"),
+					inactive = stl_get_lualine_hl("inactive"),
+					normal = stl_get_lualine_hl("normal"),
+					insert = stl_get_lualine_hl("insert"),
+					visual = stl_get_lualine_hl("visual"),
+					replace = stl_get_lualine_hl("replace"),
+					command = stl_get_lualine_hl("command"),
+					terminal = stl_get_lualine_hl("terminal"),
+				}
+				-- Checkings
+				for _, section in ipairs({
+					"git_branch",
+					"file_info",
+					"git_diff",
+					"diagnostics",
+					"lsp",
+					"macro_recording",
+					"mode",
+					"cmd_info",
+					"treesitter",
+					"nav",
+					"virtual_env",
+				}) do
+					if not colors[section .. "_bg"] then
+						colors[section .. "_bg"] = colors["section_bg"]
+					end
+					if not colors[section .. "_fg"] then
+						colors[section .. "_fg"] = colors["section_fg"]
+					end
+				end
+				-- require("heirline").load_colors(colors)
+				return colors
+			end
+			vim.api.nvim_create_augroup("Heirline", { clear = true })
+			vim.api.nvim_create_autocmd("ColorScheme", {
+				callback = function()
+					require("heirline.utils").on_colorscheme(get_colors)
+				end,
+				group = "Heirline",
+			})
+			vim.api.nvim_create_autocmd({ "BufAdd", "BufEnter", "TabNewEntered" }, {
+				desc = "Update buffers when adding new buffers",
+				callback = function(args)
+					if not vim.t.bufs then
+						vim.t.bufs = {}
+					end
+
+					if not utils.buf_is_valid(args.buf) then
+						return
+					end
+					local bufs = vim.t.bufs
+					if not vim.tbl_contains(bufs, args.buf) then
+						table.insert(bufs, args.buf)
+						vim.t.bufs = bufs
+					end
+					vim.t.bufs = vim.tbl_filter(utils.buf_is_valid, vim.t.bufs)
+					utils.trigger_event("User HeirlineComponentsTablineBuffersUpdated")
+				end,
+			})
+			vim.api.nvim_create_autocmd({ "UIEnter" }, {
+				desc = "Update buffers when adding new buffers",
+				callback = function()
+					if not vim.t.bufs then
+						vim.t.bufs = {}
+					end
+
+					-- get all buffers
+					local current_tab_bufs = vim.tbl_filter(function()
+						local win = vim.api.nvim_get_current_win()
+						return vim.api.nvim_win_get_tabpage(win)
+					end, vim.api.nvim_list_bufs())
+
+					-- add them to vim.t.bufs so tabline_buffers update.
+					local bufs
+					for _, buf in ipairs(current_tab_bufs) do
+						if not utils.buf_is_valid(buf) then
+							goto continue
+						end
+						bufs = vim.t.bufs
+						if not vim.tbl_contains(bufs, buf) then
+							table.insert(bufs, buf)
+							vim.t.bufs = bufs
+						end
+						vim.t.bufs = vim.tbl_filter(utils.buf_is_valid, vim.t.bufs)
+						utils.trigger_event("User HeirlineComponentsTablineBuffersUpdated")
+						::continue::
+					end
+				end,
+			})
+			vim.api.nvim_create_autocmd("BufDelete", {
+				desc = "Update buffers when deleting buffers",
+				callback = function(args)
+					if not vim.t.bufs then
+						vim.t.bufs = {}
+					end
+
+					local removed
+					for _, tab in ipairs(vim.api.nvim_list_tabpages()) do
+						local bufs = vim.t[tab].bufs
+						if bufs then
+							for i, bufnr in ipairs(bufs) do
+								if bufnr == args.buf then
+									removed = true
+									table.remove(bufs, i)
+									vim.t[tab].bufs = bufs
+									break
+								end
+							end
+						end
+					end
+					vim.t.bufs = vim.tbl_filter(utils.buf_is_valid, vim.t.bufs)
+					if removed then
+						utils.trigger_event("User HeirlineComponentsTablineBuffersUpdated")
+					end
+					vim.cmd.redrawtabline()
+				end,
+			})
+			local colors = get_colors()
+			opts.colors = colors
+
+			heirline.load_colors(colors)
+			heirline.setup(opts)
 		end,
 	},
 	{

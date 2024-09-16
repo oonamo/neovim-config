@@ -153,6 +153,36 @@ Colors.register("vague", nil, "vague2k/vague.nvim")
 Colors.register("papercolor", nil, "NLKNguyen/papercolor-theme")
 Colors.register("monokai-pro", nil, "loctvl842/monokai-pro.nvim")
 Colors.register("modus", nil, "miikanissi/modus-themes.nvim")
+	:auto_set_variant(false)
+	:add_flavours({
+		"dark",
+		"light",
+		"tinted-dark",
+		"tinted-light",
+	}, function(_, flavour)
+		if not flavour then
+			return
+		end
+		local variant, background = flavour:match("(.*)-(.*)")
+		if not variant or not background then
+			background = flavour
+		end
+		vim.o.background = background
+		-- require("modus-themes.config").options.variant = variant or "default"
+		require("modus-themes").load({
+			variant = variant or "default",
+		})
+	end)
+	:set_spec({
+		opts = {
+			-- variant = "tinted",
+			styles = {
+				keywords = { italic = false },
+				functions = { bold = true },
+			},
+			on_highlights = function(highlights, colors) end,
+		},
+	})
 Colors.register("aurora", nil, "ray-x/aurora"):override({
 	NormalNC = { link = "Normal" },
 	Normal = { fg = get_hl("Normal").fg, bg = "NONE" },

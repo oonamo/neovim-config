@@ -52,8 +52,13 @@ end
 miniclue.setup({
 	triggers = {
 		-- Leader triggers
+		-- { mode = "n", kyes = "]" },
+		-- { mode = "n", kyes = "[" },
 		{ mode = "n", keys = "<Leader>" },
 		{ mode = "x", keys = "<Leader>" },
+
+		{ mode = "n", keys = "<localleader>" },
+		{ mode = "x", keys = "<localleader>" },
 
 		{ mode = "n", keys = "[" },
 		{ mode = "x", keys = "[" },

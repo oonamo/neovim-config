@@ -4,6 +4,25 @@ return {
 		lazy = true,
 	},
 	{
+		"mini.clues",
+		dev = true,
+		event = "VeryLazy",
+		config = function()
+			require("plugins.confs.mini.clues")
+		end,
+	},
+	{
+		"mini.bracketed",
+		dev = true,
+		keys = {
+			"[",
+			"]",
+		},
+		config = function()
+			require("plugins.confs.mini.bracketed")
+		end,
+	},
+	{
 		"mini.cursorword",
 		dev = true,
 		event = "LazyFile",
@@ -80,18 +99,6 @@ return {
 			end, { desc = "open bufdir files" }),
 		},
 	},
-	-- {
-	-- 	"mini.notify",
-	-- 	event = "VeryLazy",
-	-- 	dev = true,
-	-- 	init = function()
-	-- 		vim.notify = require("mini.notify").make_notify()
-	-- 	end,
-	-- 	cmd = "Notifications",
-	-- 	config = function()
-	-- 		require("plugins.confs.mini.notify")
-	-- 	end,
-	-- },
 	{
 		"mini.splitjoin",
 		dev = true,

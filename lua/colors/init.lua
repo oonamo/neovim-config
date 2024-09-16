@@ -50,6 +50,7 @@ M.colors = {}
 ---@field handles table
 ---@field spec table
 ---@field before_fn fun(self)
+---@field _set_variant boolean
 local Color = {}
 Color.handles = {}
 
@@ -57,7 +58,10 @@ function Color:new_color(name, handle, source)
 	handle = handle or function()
 		vim.cmd.colorscheme(name)
 	end
-	local color = { name = name, handle = handle, flavours = {}, spec = {} }
+
+	-- Defaults
+	local color = { name = name, handle = handle, flavours = {}, spec = {}, _set_variant = true }
+
 	if source then
 		color.spec = { source }
 	end
@@ -109,7 +113,7 @@ end
 ---@param name string
 ---@param flavour? string
 function Color:set_variant_name(name, flavour)
-	if name then
+	if name and self._set_variant then
 		self.spec = self.spec or {}
 		if not self.spec.opts then
 			self.spec.opts = {}
@@ -122,6 +126,8 @@ function Color:set_variant_name(name, flavour)
 	return self
 end
 
+---@param flavour string
+---@param handle? fun(self)
 function Color:add_flavour(flavour, handle)
 	if handle == nil then
 		handle = function()
@@ -132,6 +138,9 @@ function Color:add_flavour(flavour, handle)
 	return self
 end
 
+---@param flavours string[]
+---@param handle? fun(self)
+---@return self
 function Color:add_flavours(flavours, handle)
 	for _, flavour in ipairs(flavours) do
 		self:add_flavour(flavour, handle)
@@ -139,6 +148,9 @@ function Color:add_flavours(flavours, handle)
 	return self
 end
 
+--- Applies color
+---@param flavour string
+---@return any
 function Color:apply(flavour)
 	if self.before_fn then
 		self:before_fn()
@@ -167,6 +179,9 @@ function Color:apply(flavour)
 	return res
 end
 
+--- Calls function before setting color
+---@param fn fun(self)
+---@return config.Color
 function Color:before(fn)
 	self.before_fn = fn
 	return self
@@ -193,6 +208,10 @@ function Color:after(fn)
 	self._after = fn
 end
 
+--- Overrides highlights
+---@param hls table<string, Highlight>
+---@param fn any
+---@return config.Color
 function Color:override(hls, fn)
 	self._apply_override = function()
 		local hl = vim.api.nvim_set_hl
@@ -203,6 +222,14 @@ function Color:override(hls, fn)
 			fn(self)
 		end
 	end
+	return self
+end
+
+--- Should variant be set automaticallly? 
+---@param should
+---@retutn config.Color
+function Color:auto_set_variant(should)
+	self._set_variant = should
 	return self
 end
 
@@ -251,7 +278,7 @@ function M.get_active()
 	return M.get_color(vim.g.colors_name)
 end
 
----Sets the active color. If colors have not been loaded, updates the lazy spec
+--- Sets the active color. If colors have not been loaded, updates the lazy spec
 ---@param name string
 ---@param opts any
 function M.set_active(name, opts)

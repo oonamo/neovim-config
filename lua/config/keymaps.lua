@@ -90,6 +90,11 @@ map("c", "<C-n>", "<Down>")
 map("c", "<C-p>", "<Up>")
 map("c", "<C-x>", "<C-f>?")
 
+map("n", "<localleader>n", "<cmd>tabnext<cr>", { desc = "Next tab" })
+map("n", "<localleader>b", "<cmd>tabprev<cr>", { desc = "Previous tab" })
+
+map("n", "gb", "<cmd>ls<cr>:b ", { desc = "select buffer" })
+
 -- Lua binds
 map("n", "<leader>Lcc", function()
 	require("colors.picker").pick_color()

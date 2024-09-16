@@ -1,5 +1,4 @@
---TODO:
--- split utils into seperate files depending on the
+--TODO: split utils into seperate files depending on the
 -- usecase
 local api = vim.api
 local fmt = string.format
@@ -552,6 +551,69 @@ function utils.buf_is_valid(bufnr)
 		bufnr = 0
 	end
 	return vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buflisted
+end
+
+function utils.safe_get_hl(default)
+	local function get_hl(name, property)
+		local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
+		if hl[property] then
+			return hl[property]
+		elseif hl.fg then
+			return hl.fg
+		elseif hl.bg then
+			return hl.bg
+		else
+			return get_hl(default, "fg")
+		end
+	end
+	return get_hl
+end
+
+function utils.get_lualine_color(mode, fallback)
+	if not vim.g.colors_name then
+		return fallback
+	end
+	local lualine_avail, lualine = pcall(require, "lualine.themes." .. vim.g.colors_name)
+	local lualine_opts = lualine_avail and lualine[mode]
+	return lualine_opts and type(lualine_opts.a) == "table" and lualine_opts.a.bg or fallback
+end
+
+function utils.gen_safe_lualine_getter(fallback)
+	return function(mode)
+		if not vim.g.colors_name then
+			local _, bg = utils.get_hl(fallback)
+			return bg
+		end
+		local lualine_avail, lualine = pcall(require, "lualine.themes." .. vim.g.colors_name)
+		local lualine_opts = lualine_avail and lualine[mode]
+		return lualine_opts and type(lualine_opts.a) == "table" and lualine_opts.a.bg or fallback
+	end
+end
+
+--- Convenient wapper to save code when we Trigger events.
+--- To listen for a event triggered by this function you can use `autocmd`.
+---@param event string Name of the event.
+---@param is_urgent boolean|nil If true, trigger directly instead of scheduling. Useful for startup events.
+-- @usage To run a User event:   `trigger_event("User MyUserEvent")`
+-- @usage To run a Neovim event: `trigger_event("BufEnter")
+function utils.trigger_event(event, is_urgent)
+	-- define behavior
+	local function trigger()
+		local is_user_event = string.match(event, "^User ") ~= nil
+		if is_user_event then
+			event = event:gsub("^User ", "")
+			vim.api.nvim_exec_autocmds("User", { pattern = event, modeline = false })
+		else
+			vim.api.nvim_exec_autocmds(event, { modeline = false })
+		end
+	end
+
+	-- execute
+	if is_urgent then
+		trigger()
+	else
+		vim.schedule(trigger)
+	end
 end
 
 return utils
