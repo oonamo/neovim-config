@@ -352,7 +352,7 @@ local search_count = {
 	condition = function(self)
 		local search_count = vim.fn.searchcount({ recompute = 1, maxcount = -1 })
 		local active = false
-		if vim.v.hlsearch and vim.v.hlsearch == 1 and search_count.total > 0 then
+		if vim.v.hlsearch and vim.v.hlsearch == 1 and search_count.total and search_count.total > 0 then
 			active = true
 		end
 		if not active then

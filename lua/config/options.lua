@@ -4,6 +4,7 @@ vim.o.shada = "'100,<50,s10,:1000,/100,@100,h"
 -- Allows for easy telling if pane is a nvim proccess
 o.title = true
 o.titlestring = "nvim"
+opt.completeopt = "menu,menuone,noselect"
 
 o.cmdheight = 0
 

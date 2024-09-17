@@ -27,6 +27,8 @@ return {
 				selection_caret = "▍ ",
 				multi_icon = " ",
 				disable_devicons = true,
+				border = false,
+
 				-- color_devicons = false,
 				vimgrep_arguments = {
 					"rg",
@@ -58,7 +60,7 @@ return {
 				defaults = defaults,
 				extensions = {
 					fzf = {
-						fuzzy = true, -- false will only do exact matching
+						fuzzy = false, -- false will only do exact matching
 						override_generic_sorter = true, -- override the generic sorter
 						override_file_sorter = true, -- override the file sorter
 						case_mode = "smart_case", -- or "ignore_case" or "respect_case"
@@ -460,11 +462,11 @@ return {
 	-- 		},
 	-- 	},
 	-- },
-	{
-		"stevearc/quicker.nvim",
-		event = "FileType qf",
-		opts = {},
-	},
+	-- {
+	-- 	"stevearc/quicker.nvim",
+	-- 	event = "FileType qf",
+	-- 	opts = {},
+	-- },
 	{
 		"rebelot/heirline.nvim",
 		-- You can optionally lazy-load heirline on UiEnter
@@ -473,7 +475,7 @@ return {
 		event = "VeryLazy",
 		dependencies = { "zeioth/heirline-components.nvim" },
 		init = function()
-			vim.o.showtabline = 2
+			-- vim.o.showtabline = 2
 		end,
 		opts = function()
 			local lib = require("heirline-components.all")
@@ -491,12 +493,12 @@ return {
 
 					colors = {},
 				},
-				tabline = { -- UI upper bar
-					lib.component.tabline_conditional_padding(),
-					lib.component.tabline_buffers(),
-					lib.component.fill({ hl = { bg = "tabline_bg" } }),
-					lib.component.tabline_tabpages(),
-				},
+				-- tabline = { -- UI upper bar
+				-- 	lib.component.tabline_conditional_padding(),
+				-- 	lib.component.tabline_buffers(),
+				-- 	lib.component.fill({ hl = { bg = "tabline_bg" } }),
+				-- 	lib.component.tabline_tabpages(),
+				-- },
 				winbar = { -- UI breadcrumbs bar
 					init = function(self)
 						self.bufnr = vim.api.nvim_get_current_buf()
@@ -767,6 +769,20 @@ return {
 				end,
 				desc = "Dismiss notification",
 			},
+		},
+	},
+	{
+		"monkoose/matchparen.nvim",
+		event = "LazyFile",
+		cmd = {
+			"MatchParenDisable",
+			"MatchParenEnable",
+		},
+		opts = {
+			on_startup = true, -- Should it be enabled by default
+			hl_group = "MatchParen", -- highlight group of the matched brackets
+			augroup_name = "matchparen", -- almost no reason to touch this unless there is already augroup with such name
+			debounce_time = 150, -- debounce time in milliseconds for rehighlighting of brackets.
 		},
 	},
 }

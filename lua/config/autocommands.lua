@@ -199,6 +199,7 @@ local function on_color()
 	local _, bg = utils.get_hl("Normal")
 	local sel_fg, _ = utils.get_hl("TablineSel")
 	vim.api.nvim_set_hl(0, "TablineSel", { fg = sel_fg, bg = bg })
+	vim.api.nvim_set_hl(0, "EndOfBuffer", { fg = bg })
 end
 on_color()
 

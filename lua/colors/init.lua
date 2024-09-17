@@ -100,7 +100,7 @@ function Color:set_spec(spec, override)
 		self.spec.config = hndl
 		self.spec[1] = src
 		if type(opts) == "table" then
-			vim.tbl_extend("force", opts or {}, self.spec.opts or {})
+			vim.tbl_extend("keep", opts or {}, self.spec.opts or {})
 		end
 	end
 	return self
@@ -113,6 +113,9 @@ end
 ---@param name string
 ---@param flavour? string
 function Color:set_variant_name(name, flavour)
+	if type(self._set_variant) == "boolean" then
+		self._set_variant = self._set_variant == true and "always" or "on_flavour"
+	end
 	if name and self._set_variant then
 		self.spec = self.spec or {}
 		if not self.spec.opts then
@@ -120,7 +123,13 @@ function Color:set_variant_name(name, flavour)
 		elseif type(self.spec.opts) == "function" then
 			return
 		end
-		self.spec.opts[name] = flavour or self.name
+		if self._set_variant == "on_flavour" then
+			if flavour then
+				self.spec.opts[name] = flavour
+			end
+		elseif self._set_variant == "always" then
+			self.spec.opts[name] = flavour or self.name
+		end
 		self.variant = name
 	end
 	return self
@@ -225,7 +234,7 @@ function Color:override(hls, fn)
 	return self
 end
 
---- Should variant be set automaticallly? 
+--- Should variant be set automaticallly?
 ---@param should
 ---@retutn config.Color
 function Color:auto_set_variant(should)

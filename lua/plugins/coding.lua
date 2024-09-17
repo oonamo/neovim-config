@@ -9,7 +9,7 @@ return {
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-buffer",
-			{ "hrsh7th/cmp-cmdline", cond = not O.ui.noice },
+			-- { "hrsh7th/cmp-cmdline", cond = not O.ui.noice },
 			{ "hrsh7th/cmp-nvim-lsp-signature-help", cond = O.ui.signature == "cmp" },
 			-- load on markdown files only
 		},
@@ -130,26 +130,26 @@ return {
 				entries = {}
 			end
 			cmp.setup(opts)
-			cmp.setup.cmdline("/", {
-				mapping = cmp.mapping.preset.cmdline(),
-				view = {
-					entries = entries,
-				},
-			})
-			cmp.setup.cmdline(":", {
-				mapping = cmp.mapping.preset.cmdline(),
-				view = {
-					entries = entries,
-				},
-				sources = cmp.config.sources({
-					{
-						name = "cmdline",
-						option = {
-							ignore_cmds = { "Man", "!" },
-						},
-					},
-				}),
-			})
+			-- cmp.setup.cmdline("/", {
+			-- 	mapping = cmp.mapping.preset.cmdline(),
+			-- 	view = {
+			-- 		entries = entries,
+			-- 	},
+			-- })
+			-- cmp.setup.cmdline(":", {
+			-- 	mapping = cmp.mapping.preset.cmdline(),
+			-- 	view = {
+			-- 		entries = entries,
+			-- 	},
+			-- 	sources = cmp.config.sources({
+			-- 		{
+			-- 			name = "cmdline",
+			-- 			option = {
+			-- 				ignore_cmds = { "Man", "!" },
+			-- 			},
+			-- 		},
+			-- 	}),
+			-- })
 		end,
 	},
 	{

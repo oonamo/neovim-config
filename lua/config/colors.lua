@@ -3,10 +3,35 @@ local function get_hl(name)
 		name = name,
 	})
 end
-Colors.register("tokyonight", nil, "folke/tokyonight.nvim"):add_flavours({
-	"night",
-	"moon",
-})
+
+Colors.register("tokyonight", nil, "folke/tokyonight.nvim")
+	:add_flavours({
+		"night",
+		"moon",
+	})
+	:set_spec({
+		opts = {
+			styles = {
+				keywords = { italic = false },
+			},
+			on_highlights = function(hl, c)
+				hl["@keyword.directive.define"] = { fg = hl.PreProc.fg, bold = true }
+				hl["@lsp.type.macro"] = { fg = hl.Normal.fg }
+				hl.PreProc.bold = true
+				hl.StatusLine.bg = "#161620"
+				hl.TelescopeMatching = { fg = "#ff9e64", bg = "#0a0c17" }
+				hl.TelescopePromptNormal = { fg = "#c0caf5", bg = "#161620" }
+				hl.TelescopeNormal = { link = "Normal" }
+				hl.CursorLineNr.fg = hl.Normal.fg
+				hl.MatchParen = {
+					fg = c.red,
+					bg = c.terminal_black,
+					bold = true,
+				}
+				hl.WinBar = { link = "Normal" }
+			end,
+		},
+	})
 
 Colors.register("everforest", nil, "sainnhe/everforest")
 	:add_flavours({
@@ -171,6 +196,15 @@ Colors.register("modus", nil, "miikanissi/modus-themes.nvim")
 		-- require("modus-themes.config").options.variant = variant or "default"
 		require("modus-themes").load({
 			variant = variant or "default",
+			styles = {
+				keywords = { italic = false },
+				functions = { bold = true },
+			},
+			on_highlights = function(highlights, colors)
+				highlights.EndOfBuffer = { fg = highlights.Normal.fg }
+				highlights.MiniCursorWord = { fg = colors.yellow, undercurl = true, sp = colors.yellow }
+				return highlights, colors
+			end,
 		})
 	end)
 	:set_spec({
@@ -182,6 +216,8 @@ Colors.register("modus", nil, "miikanissi/modus-themes.nvim")
 			},
 			on_highlights = function(highlights, colors)
 				highlights.EndOfBuffer = { fg = highlights.Normal.fg }
+				highlights.MiniCursorWord = { fg = colors.yellow, undercurl = true, sp = colors.yellow }
+				return highlights, colors
 			end,
 		},
 	})
