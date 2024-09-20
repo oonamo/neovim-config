@@ -387,4 +387,10 @@ return {
 			},
 		},
 	},
+	{
+		"k-lar/dynomark.nvim",
+		cmd = {
+			"Dynomark",
+		},
+	},
 }

@@ -62,7 +62,7 @@ _G.O = {
 		},
 		background = "dark",
 		noice = false,
-		signature = "lsp_signature",
+		signature = "cmp",
 		clues = true,
 		saturate = true,
 		show_open_folds = false,
@@ -70,7 +70,8 @@ _G.O = {
 		debug = false,
 		-- colorscheme = "rose-pine",
 		-- colorscheme = { "cat-colors", "everlike-mocha" },
-		colorscheme = { "tokyonight", "night" },
+		-- colorscheme = { "tokyonight", "night" },
+		colorscheme = "moonfly",
 		-- colorscheme = { "modus", "tinted-dark" },
 		-- colorscheme = "modus",
 		select = "telescope",
@@ -139,6 +140,9 @@ require("lazy").setup({
 	},
 	change_detection = {
 		notify = false,
+	},
+	git = {
+		timeout = 1000,
 	},
 	performance = {
 		rtp = {

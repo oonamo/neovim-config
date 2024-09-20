@@ -11,7 +11,8 @@ return {
 				"nvim-telescope/telescope-fzf-native.nvim",
 				build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
 			},
-			{ "nvim-telescope/telescope-ui-select.nvim" },
+			"nvim-telescope/telescope-ui-select.nvim",
+			"nvim-telescope/telescope-file-browser.nvim",
 		},
 		opts = function()
 			local actions = require("telescope.actions")
@@ -65,6 +66,10 @@ return {
 						override_file_sorter = true, -- override the file sorter
 						case_mode = "smart_case", -- or "ignore_case" or "respect_case"
 						-- the default case_mode is "smart_case"
+						hidden = true,
+					},
+					file_browser = {
+						quit = true,
 					},
 				},
 			}
@@ -73,7 +78,7 @@ return {
 			require("telescope").setup(opts)
 			require("telescope").load_extension("fzf")
 			require("telescope").load_extension("ui-select")
-			require("telescope").load_extension("aerial")
+			require("telescope").load_extension("file_browser")
 		end,
 		keys = function()
 			return {
@@ -179,6 +184,12 @@ return {
 					"<leader>gb",
 					"<cmd>Telescope buffers<cr>",
 					desc = "Find Buffers",
+				},
+				{
+					"<C-x><C-f>",
+					function()
+						require("telescope").extensions.file_browser.file_browser()
+					end,
 				},
 			}
 		end,
@@ -368,7 +379,7 @@ return {
 		end,
 		keys = {
 			{
-				"<C-x>",
+				"<A-x>",
 				function()
 					require("command_pal").open({})
 				end,
@@ -462,87 +473,16 @@ return {
 	-- 		},
 	-- 	},
 	-- },
-	-- {
-	-- 	"stevearc/quicker.nvim",
-	-- 	event = "FileType qf",
-	-- 	opts = {},
-	-- },
 	{
 		"rebelot/heirline.nvim",
 		-- You can optionally lazy-load heirline on UiEnter
 		-- to make sure all required plugins and colorschemes are loaded before setup
 		-- event = "UiEnter",
 		event = "VeryLazy",
-		dependencies = { "zeioth/heirline-components.nvim" },
-		init = function()
-			-- vim.o.showtabline = 2
-		end,
 		opts = function()
-			local lib = require("heirline-components.all")
-			local get_hl = utils.safe_get_hl("StatusLine")
 			return {
-				opts = {
-					disable_winbar_cb = function(args) -- We do this to avoid showing it on the greeter.
-						local is_disabled = not require("heirline-components.buffer").is_valid(args.buf)
-							or lib.condition.buffer_matches({
-								buftype = { "terminal", "prompt", "nofile", "help", "quickfix", "arrow" },
-								filetype = { "NvimTree", "neo%-tree", "dashboard", "Outline", "aerial", "arrow" },
-							}, args.buf)
-						return is_disabled
-					end,
-
-					colors = {},
-				},
-				-- tabline = { -- UI upper bar
-				-- 	lib.component.tabline_conditional_padding(),
-				-- 	lib.component.tabline_buffers(),
-				-- 	lib.component.fill({ hl = { bg = "tabline_bg" } }),
-				-- 	lib.component.tabline_tabpages(),
-				-- },
-				winbar = { -- UI breadcrumbs bar
-					init = function(self)
-						self.bufnr = vim.api.nvim_get_current_buf()
-					end,
-					fallthrough = false,
-					-- Winbar for terminal, neotree, and aerial.
-					{
-						condition = function()
-							return not lib.condition.is_active()
-						end,
-						{
-							lib.component.fill(),
-							lib.component.aerial(),
-						},
-					},
-					-- Regular winbar
-					{
-						lib.component.breadcrumbs({
-							hl = function()
-								return "Normal"
-							end,
-							icon = { enabled = true },
-						}),
-						lib.component.fill(),
-						lib.component.aerial(),
-					},
-				},
 				statuscolumn = require("plugins.confs.heirline.statuscolumn"),
 				statusline = require("plugins.confs.heirline.statusline"),
-				-- statusline = { -- UI statusbar
-				-- 	hl = { fg = "fg", bg = "bg" },
-				-- 	lib.component.mode(),
-				-- 	lib.component.git_branch(),
-				-- 	lib.component.file_info(),
-				-- 	lib.component.git_diff(),
-				-- 	lib.component.diagnostics(),
-				-- 	lib.component.fill(),
-				-- 	lib.component.cmd_info(),
-				-- 	lib.component.fill(),
-				-- 	lib.component.lsp(),
-				-- 	lib.component.virtual_env(),
-				-- 	lib.component.nav(),
-				-- 	lib.component.mode({ surround = { separator = "right" } }),
-				-- },
 			}
 		end,
 		config = function(_, opts)
@@ -644,7 +584,6 @@ return {
 						colors[section .. "_fg"] = colors["section_fg"]
 					end
 				end
-				-- require("heirline").load_colors(colors)
 				return colors
 			end
 			vim.api.nvim_create_augroup("Heirline", { clear = true })
@@ -654,83 +593,83 @@ return {
 				end,
 				group = "Heirline",
 			})
-			vim.api.nvim_create_autocmd({ "BufAdd", "BufEnter", "TabNewEntered" }, {
-				desc = "Update buffers when adding new buffers",
-				callback = function(args)
-					if not vim.t.bufs then
-						vim.t.bufs = {}
-					end
-
-					if not utils.buf_is_valid(args.buf) then
-						return
-					end
-					local bufs = vim.t.bufs
-					if not vim.tbl_contains(bufs, args.buf) then
-						table.insert(bufs, args.buf)
-						vim.t.bufs = bufs
-					end
-					vim.t.bufs = vim.tbl_filter(utils.buf_is_valid, vim.t.bufs)
-					utils.trigger_event("User HeirlineComponentsTablineBuffersUpdated")
-				end,
-			})
-			vim.api.nvim_create_autocmd({ "UIEnter" }, {
-				desc = "Update buffers when adding new buffers",
-				callback = function()
-					if not vim.t.bufs then
-						vim.t.bufs = {}
-					end
-
-					-- get all buffers
-					local current_tab_bufs = vim.tbl_filter(function()
-						local win = vim.api.nvim_get_current_win()
-						return vim.api.nvim_win_get_tabpage(win)
-					end, vim.api.nvim_list_bufs())
-
-					-- add them to vim.t.bufs so tabline_buffers update.
-					local bufs
-					for _, buf in ipairs(current_tab_bufs) do
-						if not utils.buf_is_valid(buf) then
-							goto continue
-						end
-						bufs = vim.t.bufs
-						if not vim.tbl_contains(bufs, buf) then
-							table.insert(bufs, buf)
-							vim.t.bufs = bufs
-						end
-						vim.t.bufs = vim.tbl_filter(utils.buf_is_valid, vim.t.bufs)
-						utils.trigger_event("User HeirlineComponentsTablineBuffersUpdated")
-						::continue::
-					end
-				end,
-			})
-			vim.api.nvim_create_autocmd("BufDelete", {
-				desc = "Update buffers when deleting buffers",
-				callback = function(args)
-					if not vim.t.bufs then
-						vim.t.bufs = {}
-					end
-
-					local removed
-					for _, tab in ipairs(vim.api.nvim_list_tabpages()) do
-						local bufs = vim.t[tab].bufs
-						if bufs then
-							for i, bufnr in ipairs(bufs) do
-								if bufnr == args.buf then
-									removed = true
-									table.remove(bufs, i)
-									vim.t[tab].bufs = bufs
-									break
-								end
-							end
-						end
-					end
-					vim.t.bufs = vim.tbl_filter(utils.buf_is_valid, vim.t.bufs)
-					if removed then
-						utils.trigger_event("User HeirlineComponentsTablineBuffersUpdated")
-					end
-					vim.cmd.redrawtabline()
-				end,
-			})
+			-- vim.api.nvim_create_autocmd({ "BufAdd", "BufEnter", "TabNewEntered" }, {
+			-- 	desc = "Update buffers when adding new buffers",
+			-- 	callback = function(args)
+			-- 		if not vim.t.bufs then
+			-- 			vim.t.bufs = {}
+			-- 		end
+			--
+			-- 		if not utils.buf_is_valid(args.buf) then
+			-- 			return
+			-- 		end
+			-- 		local bufs = vim.t.bufs
+			-- 		if not vim.tbl_contains(bufs, args.buf) then
+			-- 			table.insert(bufs, args.buf)
+			-- 			vim.t.bufs = bufs
+			-- 		end
+			-- 		vim.t.bufs = vim.tbl_filter(utils.buf_is_valid, vim.t.bufs)
+			-- 		utils.trigger_event("User HeirlineComponentsTablineBuffersUpdated")
+			-- 	end,
+			-- })
+			-- vim.api.nvim_create_autocmd({ "UIEnter" }, {
+			-- 	desc = "Update buffers when adding new buffers",
+			-- 	callback = function()
+			-- 		if not vim.t.bufs then
+			-- 			vim.t.bufs = {}
+			-- 		end
+			--
+			-- 		-- get all buffers
+			-- 		local current_tab_bufs = vim.tbl_filter(function()
+			-- 			local win = vim.api.nvim_get_current_win()
+			-- 			return vim.api.nvim_win_get_tabpage(win)
+			-- 		end, vim.api.nvim_list_bufs())
+			--
+			-- 		-- add them to vim.t.bufs so tabline_buffers update.
+			-- 		local bufs
+			-- 		for _, buf in ipairs(current_tab_bufs) do
+			-- 			if not utils.buf_is_valid(buf) then
+			-- 				goto continue
+			-- 			end
+			-- 			bufs = vim.t.bufs
+			-- 			if not vim.tbl_contains(bufs, buf) then
+			-- 				table.insert(bufs, buf)
+			-- 				vim.t.bufs = bufs
+			-- 			end
+			-- 			vim.t.bufs = vim.tbl_filter(utils.buf_is_valid, vim.t.bufs)
+			-- 			utils.trigger_event("User HeirlineComponentsTablineBuffersUpdated")
+			-- 			::continue::
+			-- 		end
+			-- 	end,
+			-- })
+			-- vim.api.nvim_create_autocmd("BufDelete", {
+			-- 	desc = "Update buffers when deleting buffers",
+			-- 	callback = function(args)
+			-- 		if not vim.t.bufs then
+			-- 			vim.t.bufs = {}
+			-- 		end
+			--
+			-- 		local removed
+			-- 		for _, tab in ipairs(vim.api.nvim_list_tabpages()) do
+			-- 			local bufs = vim.t[tab].bufs
+			-- 			if bufs then
+			-- 				for i, bufnr in ipairs(bufs) do
+			-- 					if bufnr == args.buf then
+			-- 						removed = true
+			-- 						table.remove(bufs, i)
+			-- 						vim.t[tab].bufs = bufs
+			-- 						break
+			-- 					end
+			-- 				end
+			-- 			end
+			-- 		end
+			-- 		vim.t.bufs = vim.tbl_filter(utils.buf_is_valid, vim.t.bufs)
+			-- 		if removed then
+			-- 			utils.trigger_event("User HeirlineComponentsTablineBuffersUpdated")
+			-- 		end
+			-- 		vim.cmd.redrawtabline()
+			-- 	end,
+			-- })
 			local colors = get_colors()
 			opts.colors = colors
 
@@ -784,5 +723,10 @@ return {
 			augroup_name = "matchparen", -- almost no reason to touch this unless there is already augroup with such name
 			debounce_time = 150, -- debounce time in milliseconds for rehighlighting of brackets.
 		},
+	},
+	{
+		"liuchengxu/vim-clap",
+		build = "cargo build --release",
+		cmd = { "Clap" },
 	},
 }

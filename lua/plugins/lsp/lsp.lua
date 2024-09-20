@@ -255,45 +255,6 @@ return {
 		end,
 	},
 	{
-		"ray-x/lsp_signature.nvim",
-		event = "LspAttach",
-		lazy = false,
-		cond = O.ui.signature == "lsp_signature",
-		opts = {
-			hint_enable = true,
-			handler_opts = { border = "single" },
-			floating_window = false,
-			fix_pos = true,
-			doc_lines = 0,
-			bind = true,
-			floating_window_above_cur_line = true,
-			max_height = 4,
-			zindex = 2000,
-			time_interval = 50,
-			floating_window_off_x = 5, -- adjust float windows x position.
-			floating_window_off_y = function() -- adjust float windows y position. e.g. set to -2 can make floating window move up 2 lines
-				local pumheight = vim.o.pumheight
-				local winline = vim.fn.winline() -- line number in the window
-				local winheight = vim.fn.winheight(0)
-
-				-- window top
-				if winline - 1 < pumheight then
-					return pumheight
-				end
-
-				-- window bottom
-				if winheight - winline < pumheight then
-					return -pumheight
-				end
-				return 0
-			end,
-		},
-		config = function(_, opts)
-			require("lsp_signature").setup(opts)
-			require("lsp_signature").on_attach(opts)
-		end,
-	},
-	{
 		"smjonas/inc-rename.nvim",
 		config = function(_, opts)
 			require("inc_rename").setup(opts)

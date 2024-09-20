@@ -22,14 +22,14 @@ return {
 			require("plugins.confs.mini.bracketed")
 		end,
 	},
-	{
-		"mini.cursorword",
-		dev = true,
-		event = "LazyFile",
-		config = function()
-			require("mini.cursorword").setup()
-		end,
-	},
+	-- {
+	-- 	"mini.cursorword",
+	-- 	dev = true,
+	-- 	event = "LazyFile",
+	-- 	config = function()
+	-- 		require("mini.cursorword").setup()
+	-- 	end,
+	-- },
 	{
 		"mini.extra",
 		dev = true,
@@ -245,12 +245,4 @@ return {
 			})
 		end,
 	},
-	-- {
-	-- 	"mini.tabline",
-	-- 	dev = true,
-	-- 	event = "LazyFile",
-	-- 	config = function()
-	-- 		require("plugins.confs.mini.tabline")
-	-- 	end,
-	-- },
 }

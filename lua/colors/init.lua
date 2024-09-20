@@ -235,7 +235,7 @@ function Color:override(hls, fn)
 end
 
 --- Should variant be set automaticallly?
----@param should
+---@param should boolean
 ---@retutn config.Color
 function Color:auto_set_variant(should)
 	self._set_variant = should

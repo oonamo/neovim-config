@@ -1,3 +1,4 @@
+---@return Highlight
 local function get_hl(name)
 	return vim.api.nvim_get_hl(0, {
 		name = name,
@@ -173,7 +174,20 @@ Colors.register("melange", nil, "savq/melange-nvim"):override({
 })
 
 Colors.register("astrotheme", nil, "AstroNvim/astrotheme")
-Colors.register("kanagawa", nil, "rebelot/kanagawa.nvim")
+Colors.register("kanagawa", nil, "rebelot/kanagawa.nvim"):set_spec({
+	opts = {
+		keywordStyle = { italic = false, bold = true },
+		colors = {
+			theme = {
+				all = {
+					ui = {
+						bg_gutter = "none",
+					},
+				},
+			},
+		},
+	},
+})
 Colors.register("vague", nil, "vague2k/vague.nvim")
 Colors.register("papercolor", nil, "NLKNguyen/papercolor-theme")
 Colors.register("monokai-pro", nil, "loctvl842/monokai-pro.nvim")
@@ -201,9 +215,10 @@ Colors.register("modus", nil, "miikanissi/modus-themes.nvim")
 				functions = { bold = true },
 			},
 			on_highlights = function(highlights, colors)
+				print("on_highlights")
 				highlights.EndOfBuffer = { fg = highlights.Normal.fg }
 				highlights.MiniCursorWord = { fg = colors.yellow, undercurl = true, sp = colors.yellow }
-				return highlights, colors
+				highlights.MiniCursorWordCurrent = { reverse = true }
 			end,
 		})
 	end)
@@ -217,7 +232,6 @@ Colors.register("modus", nil, "miikanissi/modus-themes.nvim")
 			on_highlights = function(highlights, colors)
 				highlights.EndOfBuffer = { fg = highlights.Normal.fg }
 				highlights.MiniCursorWord = { fg = colors.yellow, undercurl = true, sp = colors.yellow }
-				return highlights, colors
 			end,
 		},
 	})
@@ -233,5 +247,26 @@ Colors.register("catppuccin", nil, "catppuccin/nvim"):set_spec({
 	end,
 	name = "catppuccin",
 })
+
+Colors.register("moonfly", nil, "bluz71/vim-moonfly-colors"):override({
+	-- "#323437",
+	-- "#ff5454",
+	-- "#8cc85f",
+	-- "#e3c78a",
+	-- "#80a0ff",
+	-- "#cf87e8",
+	-- "#79dac8",
+	-- "#c6c6c6",
+	CursorLine = { sp = "#c6c6c6", underline = true },
+	-- TelescopeMatching = { fg = require("moonfly").orange, bg = require("moonfly").purple },
+	-- TelescopePromptNormal = { fg = "#c0caf5", bg = "#161620" },
+	-- TelescopeVisualMatch = { bg = require("moonfly").blue },
+}, function()
+	vim.api.nvim_set_hl(
+		0,
+		"TelescopeMatching",
+		{ fg = require("moonfly").palette.orange, bg = require("moonfly").palette.grey7 }
+	)
+end)
 
 require("local.colors.cat_colors").register()

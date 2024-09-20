@@ -4,7 +4,7 @@ return {
 		name = "cmp",
 		branch = "perf",
 		-- "hrsh7th/nvim-cmp",
-		event = { "InsertEnter", "CmdLineEnter" },
+		event = { "InsertEnter" },
 		cond = O.lsp.cmp == true,
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp",
@@ -323,48 +323,48 @@ return {
 		event = "LazyFile",
 		config = true,
 	},
-	{
-		"stevearc/aerial.nvim",
-		event = "LazyFile",
-		opts = function()
-			return {
-				attach_mode = "global",
-				backends = { "lsp", "treesitter", "markdown" },
-				layout = { min_width = 20 },
-				show_guides = true,
-				filter_kind = false,
-				guides = {
-					mid_item = "├ ",
-					last_item = "└ ",
-					nested_top = "│ ",
-					whitespace = "  ",
-				},
-				keymaps = {
-					["[y"] = "actions.prev",
-					["]y"] = "actions.next",
-					["[Y"] = "actions.prev_up",
-					["]Y"] = "actions.next_up",
-					["{"] = false,
-					["}"] = false,
-					["[["] = false,
-					["]]"] = false,
-				},
-				on_attach = function(bufnr)
-					local aerial = require("aerial")
-					vim.keymap.set("n", "[y", function()
-						aerial.next(vim.v.count1)
-					end, { desc = "next symbol", buffer = bufnr })
-					vim.keymap.set("n", "]y", function()
-						aerial.prev(vim.v.count1)
-					end, { desc = "previous symbol", buffer = bufnr })
-					vim.keymap.set("n", "[Y", function()
-						aerial.next_up(vim.v.count1)
-					end, { desc = "next symbol upwards", buffer = bufnr })
-					vim.keymap.set("n", "]Y", function()
-						aerial.prev_up(vim.v.count1)
-					end, { desc = "previous symbol upwards", buffer = bufnr })
-				end,
-			}
-		end,
-	},
+	-- {
+	-- 	"stevearc/aerial.nvim",
+	-- 	event = "LazyFile",
+	-- 	opts = function()
+	-- 		return {
+	-- 			attach_mode = "global",
+	-- 			backends = { "lsp", "treesitter", "markdown" },
+	-- 			layout = { min_width = 20 },
+	-- 			show_guides = true,
+	-- 			filter_kind = false,
+	-- 			guides = {
+	-- 				mid_item = "├ ",
+	-- 				last_item = "└ ",
+	-- 				nested_top = "│ ",
+	-- 				whitespace = "  ",
+	-- 			},
+	-- 			keymaps = {
+	-- 				["[y"] = "actions.prev",
+	-- 				["]y"] = "actions.next",
+	-- 				["[Y"] = "actions.prev_up",
+	-- 				["]Y"] = "actions.next_up",
+	-- 				["{"] = false,
+	-- 				["}"] = false,
+	-- 				["[["] = false,
+	-- 				["]]"] = false,
+	-- 			},
+	-- 			on_attach = function(bufnr)
+	-- 				local aerial = require("aerial")
+	-- 				vim.keymap.set("n", "[y", function()
+	-- 					aerial.next(vim.v.count1)
+	-- 				end, { desc = "next symbol", buffer = bufnr })
+	-- 				vim.keymap.set("n", "]y", function()
+	-- 					aerial.prev(vim.v.count1)
+	-- 				end, { desc = "previous symbol", buffer = bufnr })
+	-- 				vim.keymap.set("n", "[Y", function()
+	-- 					aerial.next_up(vim.v.count1)
+	-- 				end, { desc = "next symbol upwards", buffer = bufnr })
+	-- 				vim.keymap.set("n", "]Y", function()
+	-- 					aerial.prev_up(vim.v.count1)
+	-- 				end, { desc = "previous symbol upwards", buffer = bufnr })
+	-- 			end,
+	-- 		}
+	-- 	end,
+	-- },
 }
