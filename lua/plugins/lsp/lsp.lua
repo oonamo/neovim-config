@@ -81,6 +81,14 @@ local function on_attach(client, buffer, use_code_lens)
 		vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
 	end
 
+	if client.supports_method(methods.textDocument_signatureHelp) then
+		if O.ui.cmdlinesig == true then
+			require("local.signature-line").setup({
+				delay = 1000,
+			})
+		end
+	end
+
 	if client.supports_method(methods.textDocument_publishDiagnostics) then
 		-- vim.lsp.handlers[methods.textDocument_publishDiagnostics] =
 		-- 	vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {

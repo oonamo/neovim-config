@@ -6,9 +6,10 @@ o.title = true
 o.titlestring = "nvim"
 opt.completeopt = "menu,menuone,noselect"
 
-o.cmdheight = 0
+o.cmdheight = 1
 
 vim.g.bigfile_size = 1024 * 1024 * 1.5 -- 1.5 MB
+vim.o.lazyredraw = true
 
 -- Relative line numbers
 opt.nu = true
@@ -132,5 +133,3 @@ vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
 
 require("onam.float_term").setup("pwsh")
--- o.statusline =
--- 	[[%=%{%&bt==#''?'%t':(&bt==#'terminal'?'[Terminal] '.bufname()->substitute('^term://.\{-}//\d\+:\s*','',''):'%F')%}%m%= %l:%c]]

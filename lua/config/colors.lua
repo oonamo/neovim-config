@@ -1,4 +1,5 @@
 ---@return Highlight
+---
 local function get_hl(name)
 	return vim.api.nvim_get_hl(0, {
 		name = name,
@@ -268,5 +269,14 @@ Colors.register("moonfly", nil, "bluz71/vim-moonfly-colors"):override({
 		{ fg = require("moonfly").palette.orange, bg = require("moonfly").palette.grey7 }
 	)
 end)
+
+Colors.register("onedark", nil, "navarasu/onedark.nvim")
+Colors.register("aki", nil, "comfysage/aki")
+Colors.register("grail", nil, "chama-chomo/grail")
+Colors.register("gruber-darker", nil, "blazkowolf/gruber-darker.nvim"):override({
+	MiniDiffSignAdd = { fg = "#73d936" },
+	MiniDiffSignChange = { fg = "#ffdd33" },
+	MiniDiffSignDelete = { fg = "#f43841" },
+})
 
 require("local.colors.cat_colors").register()

@@ -12,7 +12,12 @@ return {
 				build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
 			},
 			"nvim-telescope/telescope-ui-select.nvim",
-			"nvim-telescope/telescope-file-browser.nvim",
+			{
+				"nvim-telescope/telescope-file-browser.nvim",
+				dir = "~/projects/nvim/telescope-file-browser.nvim",
+				dev = true,
+			},
+			"nvim-telescope/telescope-frecency.nvim",
 		},
 		opts = function()
 			local actions = require("telescope.actions")
@@ -69,7 +74,11 @@ return {
 						hidden = true,
 					},
 					file_browser = {
-						quit = true,
+						quiet = true,
+						hidden = {
+							file_browser = true,
+							folder_browse = true,
+						},
 					},
 				},
 			}
@@ -77,6 +86,7 @@ return {
 		config = function(_, opts)
 			require("telescope").setup(opts)
 			require("telescope").load_extension("fzf")
+			require("telescope").load_extension("frecency")
 			require("telescope").load_extension("ui-select")
 			require("telescope").load_extension("file_browser")
 		end,
@@ -129,11 +139,13 @@ return {
 					end,
 					desc = "find from current buffer",
 				},
-				-- {
-				-- 	"z=",
-				-- 	builtin.spell_suggest,
-				-- 	desc = "find from current buffer",
-				-- },
+				{
+					"z=",
+					function()
+						require("telescope.builtin").spell_suggest()
+					end,
+					desc = "Suggest spelling",
+				},
 				{
 					"<leader>fe",
 					function()
@@ -190,6 +202,17 @@ return {
 					function()
 						require("telescope").extensions.file_browser.file_browser()
 					end,
+					desc = "Open File Browser",
+				},
+				{
+					"<leader>of",
+					"<cmd>Telescope frecency workspace=CWD<cr>",
+					desc = "Old files (cwd)",
+				},
+				{
+					"<leader>oF",
+					"<cmd>Telescope frecency<cr>",
+					desc = "Old files",
 				},
 			}
 		end,
@@ -316,7 +339,7 @@ return {
 				actions = {
 					{
 						group = "Colorscheme",
-						name = "Toggle-Lightness",
+						name = "toggle-lightness",
 						desc = "Toggle the background of neovim. Some plugins may not have an autocommand to detect this change",
 						command = function()
 							vim.o.bg = vim.o.bg == "light" and "dark" or "light"
@@ -324,7 +347,7 @@ return {
 					},
 					{
 						group = "Format",
-						name = "Toggle-Auto-Format",
+						name = "toggle-auto-format",
 						desc = "Toggle formatting on save with conform. Useful for new repos without a formatting file",
 						command = function()
 							vim.g.disable_autoformat = not vim.g.disable_autoformat
@@ -332,27 +355,27 @@ return {
 					},
 					{
 						group = "Lua",
-						name = "Set-Global",
+						name = "lua-set-global",
 						desc = "Quickly set a global in the nvim cmdline",
 						command = utils.set_cmdline(":lua vim.g."),
 					},
 					{
 						group = "Lua",
-						name = "Set-Option",
+						name = "lua-set-option",
 						desc = "Quickly set an option in the nvim cmdline",
 						command = utils.set_cmdline(":lua vim.opt."),
 					},
 					{
-						group = "Lua",
-						name = "Toggle-Ruler",
+						group = "Statusline",
+						name = "statusline-toggle-ruler",
 						desc = "Set Ruler into statusline",
 						command = function()
 							vim.g.enable_ruler = not vim.g.enable_ruler
 						end,
 					},
 					{
-						group = "Compile",
-						name = "Compile file",
+						group = "Overseer",
+						name = "overseer-compile-file",
 						desc = "Use Overseer to compile",
 						command = function()
 							local compilers = {
@@ -383,6 +406,7 @@ return {
 				function()
 					require("command_pal").open({})
 				end,
+				desc = "Command Pal",
 			},
 			{
 				"<leader>fp",
@@ -391,6 +415,7 @@ return {
 						filter_group = { "Vim", "Quickfix", "User" },
 					})
 				end,
+				desc = "Find Vim, QF, User commands",
 			},
 			{
 				"<leader>pp",
@@ -402,6 +427,7 @@ return {
 						},
 					})
 				end,
+				desc = "MiniPick command pal",
 			},
 			{
 				"<leader>pi",
@@ -413,6 +439,7 @@ return {
 						},
 					})
 				end,
+				desc = "Ivy Style command_pal",
 			},
 			{
 				"<leader>pf",
@@ -421,6 +448,7 @@ return {
 						picker = "fzf-lua",
 					})
 				end,
+				desc = "Fzf-lua file",
 			},
 		},
 	},
@@ -588,88 +616,11 @@ return {
 			end
 			vim.api.nvim_create_augroup("Heirline", { clear = true })
 			vim.api.nvim_create_autocmd("ColorScheme", {
-				callback = function()
+				callback = vim.schedule_wrap(function()
 					require("heirline.utils").on_colorscheme(get_colors)
-				end,
+				end),
 				group = "Heirline",
 			})
-			-- vim.api.nvim_create_autocmd({ "BufAdd", "BufEnter", "TabNewEntered" }, {
-			-- 	desc = "Update buffers when adding new buffers",
-			-- 	callback = function(args)
-			-- 		if not vim.t.bufs then
-			-- 			vim.t.bufs = {}
-			-- 		end
-			--
-			-- 		if not utils.buf_is_valid(args.buf) then
-			-- 			return
-			-- 		end
-			-- 		local bufs = vim.t.bufs
-			-- 		if not vim.tbl_contains(bufs, args.buf) then
-			-- 			table.insert(bufs, args.buf)
-			-- 			vim.t.bufs = bufs
-			-- 		end
-			-- 		vim.t.bufs = vim.tbl_filter(utils.buf_is_valid, vim.t.bufs)
-			-- 		utils.trigger_event("User HeirlineComponentsTablineBuffersUpdated")
-			-- 	end,
-			-- })
-			-- vim.api.nvim_create_autocmd({ "UIEnter" }, {
-			-- 	desc = "Update buffers when adding new buffers",
-			-- 	callback = function()
-			-- 		if not vim.t.bufs then
-			-- 			vim.t.bufs = {}
-			-- 		end
-			--
-			-- 		-- get all buffers
-			-- 		local current_tab_bufs = vim.tbl_filter(function()
-			-- 			local win = vim.api.nvim_get_current_win()
-			-- 			return vim.api.nvim_win_get_tabpage(win)
-			-- 		end, vim.api.nvim_list_bufs())
-			--
-			-- 		-- add them to vim.t.bufs so tabline_buffers update.
-			-- 		local bufs
-			-- 		for _, buf in ipairs(current_tab_bufs) do
-			-- 			if not utils.buf_is_valid(buf) then
-			-- 				goto continue
-			-- 			end
-			-- 			bufs = vim.t.bufs
-			-- 			if not vim.tbl_contains(bufs, buf) then
-			-- 				table.insert(bufs, buf)
-			-- 				vim.t.bufs = bufs
-			-- 			end
-			-- 			vim.t.bufs = vim.tbl_filter(utils.buf_is_valid, vim.t.bufs)
-			-- 			utils.trigger_event("User HeirlineComponentsTablineBuffersUpdated")
-			-- 			::continue::
-			-- 		end
-			-- 	end,
-			-- })
-			-- vim.api.nvim_create_autocmd("BufDelete", {
-			-- 	desc = "Update buffers when deleting buffers",
-			-- 	callback = function(args)
-			-- 		if not vim.t.bufs then
-			-- 			vim.t.bufs = {}
-			-- 		end
-			--
-			-- 		local removed
-			-- 		for _, tab in ipairs(vim.api.nvim_list_tabpages()) do
-			-- 			local bufs = vim.t[tab].bufs
-			-- 			if bufs then
-			-- 				for i, bufnr in ipairs(bufs) do
-			-- 					if bufnr == args.buf then
-			-- 						removed = true
-			-- 						table.remove(bufs, i)
-			-- 						vim.t[tab].bufs = bufs
-			-- 						break
-			-- 					end
-			-- 				end
-			-- 			end
-			-- 		end
-			-- 		vim.t.bufs = vim.tbl_filter(utils.buf_is_valid, vim.t.bufs)
-			-- 		if removed then
-			-- 			utils.trigger_event("User HeirlineComponentsTablineBuffersUpdated")
-			-- 		end
-			-- 		vim.cmd.redrawtabline()
-			-- 	end,
-			-- })
 			local colors = get_colors()
 			opts.colors = colors
 
@@ -725,8 +676,20 @@ return {
 		},
 	},
 	{
-		"liuchengxu/vim-clap",
-		build = "cargo build --release",
-		cmd = { "Clap" },
+		"smoka7/multicursors.nvim",
+		event = "VeryLazy",
+		dependencies = {
+			"nvimtools/hydra.nvim",
+		},
+		opts = {},
+		cmd = { "MCstart", "MCvisual", "MCclear", "MCpattern", "MCvisualPattern", "MCunderCursor" },
+		keys = {
+			{
+				mode = { "v", "n" },
+				"<Leader>mc",
+				"<cmd>MCstart<cr>",
+				desc = "Create a selection for selected text or word under the cursor",
+			},
+		},
 	},
 }

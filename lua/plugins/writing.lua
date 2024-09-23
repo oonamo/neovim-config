@@ -12,7 +12,7 @@ return {
 			win_options = {
 				showbreak = { default = "", rendered = "  " },
 				breakindent = { default = false, rendered = true },
-				breakindentopt = { default = "", rendered = "" },
+				breakindentopt = { default = "list:-1", rendered = "" },
 			},
 			code = {
 				width = "block",
@@ -25,8 +25,18 @@ return {
 				position = "inline",
 				width = "block",
 				min_width = 40,
+				left_pad = 2,
+				right_pad = 4,
+				border = vim.g.neovide == nil,
 			},
-			pipe_table = { preset = "heavy" },
+			indent = {
+				enabled = true,
+				skip_heading = true,
+			},
+			pipe_table = {
+				preset = "round",
+				alignment_indicator = "┅",
+			},
 		},
 	},
 	{
@@ -372,25 +382,8 @@ return {
 		},
 	},
 	{
-		"Myzel394/easytables.nvim",
+		"Kicamon/markdown-table-mode.nvim",
+		ft = "markdown",
 		config = true,
-		keys = {
-			{
-				"<leader>tn",
-				"<cmd>EasyTablesCreateNew<cr>",
-				desc = "New Markdown Table",
-			},
-			{
-				"<leader>te",
-				"<cmd>EasyTablesImportThisTable<cr>",
-				desc = "Edit Markdown Table",
-			},
-		},
-	},
-	{
-		"k-lar/dynomark.nvim",
-		cmd = {
-			"Dynomark",
-		},
 	},
 }
