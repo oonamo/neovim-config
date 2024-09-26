@@ -245,4 +245,88 @@ return {
 			})
 		end,
 	},
+	{
+		"mini.jump2d",
+		dev = true,
+		opts = {
+			view = {
+				dim = true,
+			},
+		},
+		config = function(_, opts)
+			require("mini.jump2d").setup(opts)
+		end,
+		keys = {
+			"<CR>",
+			{
+				"sc",
+				function()
+					MiniJump2d.start(MiniJump2d.builtin_opts.single_character)
+				end,
+				desc = "Jump to character",
+			},
+			{
+				"gw",
+				function()
+					MiniJump2d.start(MiniJump2d.builtin_opts.word_start)
+				end,
+				desc = "Jump to word start",
+			},
+			{
+				"gq",
+				function()
+					MiniJump2d.start(MiniJump2d.builtin_opts.query)
+				end,
+				desc = "Search jump query",
+			},
+		},
+	},
+	{
+		"mini.starter",
+		dev = true,
+		lazy = false,
+		config = function()
+			require("plugins.confs.mini.starter")
+		end,
+	},
+	{
+		"mini.sessions",
+		event = "VeryLazy",
+		dev = true,
+		config = function()
+			require("plugins.confs.mini.sessions")
+		end,
+		keys = {
+			{
+				"<leader>Lw",
+				function()
+					local session = Config.get_session()
+					MiniSessions.write(session)
+				end,
+				desc = "Write session",
+			},
+			{
+				"<leader>Lr",
+				function()
+					local session = Config.get_session()
+					MiniSessions.read(session)
+				end,
+				desc = "Read session",
+			},
+			{
+				"<leader>Lsw",
+				function()
+					MiniSessions.select("write")
+				end,
+				desc = "Select session to write",
+			},
+			{
+				"<leader>Lsd",
+				function()
+					MiniSessions.select("delete")
+				end,
+				desc = "Select session to delete",
+			},
+		},
+	},
 }

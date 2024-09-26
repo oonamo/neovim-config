@@ -85,6 +85,7 @@ local function on_attach(client, buffer, use_code_lens)
 		if O.ui.cmdlinesig == true then
 			require("local.signature-line").setup({
 				delay = 1000,
+				buffer = buffer,
 			})
 		end
 	end

@@ -175,21 +175,52 @@ Colors.register("melange", nil, "savq/melange-nvim"):override({
 })
 
 Colors.register("astrotheme", nil, "AstroNvim/astrotheme")
-Colors.register("kanagawa", nil, "rebelot/kanagawa.nvim"):set_spec({
-	opts = {
-		keywordStyle = { italic = false, bold = true },
-		colors = {
-			theme = {
-				all = {
-					ui = {
-						bg_gutter = "none",
+Colors.register("kanagawa", nil, "rebelot/kanagawa.nvim")
+	:add_flavours({
+		"wave",
+		"dragon",
+		"lotus",
+	})
+	:set_spec({
+		opts = {
+			keywordStyle = { italic = false, bold = true },
+			overrides = function(colors)
+				local theme = colors.theme
+				return {
+					PreProc = { fg = theme.dragonRed, bold = true },
+					["@keyword.directive.define"] = { fg = theme.dragonRed, bold = true },
+					Pmenu = { fg = theme.ui.shade0, bg = theme.ui.bg_p1 }, -- add `blend = vim.o.pumblend` to enable transparency
+					PmenuSel = { fg = "NONE", bg = theme.ui.bg_p2 },
+					PmenuSbar = { bg = theme.ui.bg_m1 },
+					PmenuThumb = { bg = theme.ui.bg_p2 },
+				}
+			end,
+			colors = {
+				theme = {
+					all = {
+						ui = {
+							bg_gutter = "none",
+						},
 					},
 				},
 			},
 		},
+	})
+Colors.register("vague", nil, "vague2k/vague.nvim"):set_spec({
+	opts = {
+		colors = {
+			func = "#bc96b0",
+			keyword = "#787bab",
+			-- string = "#d4bd98",
+			string = "#8a739a",
+			-- string = "#f2e6ff",
+			-- number = "#f2e6ff",
+			-- string = "#d8d5b1",
+			number = "#8f729e",
+			-- type = "#dcaed7",
+		},
 	},
 })
-Colors.register("vague", nil, "vague2k/vague.nvim")
 Colors.register("papercolor", nil, "NLKNguyen/papercolor-theme")
 Colors.register("monokai-pro", nil, "loctvl842/monokai-pro.nvim")
 Colors.register("modus", nil, "miikanissi/modus-themes.nvim")
@@ -238,7 +269,7 @@ Colors.register("modus", nil, "miikanissi/modus-themes.nvim")
 	})
 Colors.register("aurora", nil, "ray-x/aurora"):override({
 	NormalNC = { link = "Normal" },
-	Normal = { fg = get_hl("Normal").fg, bg = "NONE" },
+	-- Normal = { fg = get_hl("Normal").fg, bg = "NONE" },
 	["@punctuation.delimiter"] = { fg = get_hl("Normal").fg },
 })
 
@@ -270,9 +301,10 @@ Colors.register("moonfly", nil, "bluz71/vim-moonfly-colors"):override({
 	)
 end)
 
-Colors.register("onedark", nil, "navarasu/onedark.nvim")
-Colors.register("aki", nil, "comfysage/aki")
-Colors.register("grail", nil, "chama-chomo/grail")
+Colors.register("onedark", nil, "navarasu/onedark.nvim"):set_spec({
+	style = "darker",
+})
+
 Colors.register("gruber-darker", nil, "blazkowolf/gruber-darker.nvim"):override({
 	MiniDiffSignAdd = { fg = "#73d936" },
 	MiniDiffSignChange = { fg = "#ffdd33" },

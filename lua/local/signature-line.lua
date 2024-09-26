@@ -115,6 +115,7 @@ function M.setup(opts)
 	opts.delay = opts.delay or 200
 	M.opts = opts
 	vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+		buffer = opts.buffer,
 		callback = function()
 			vim.defer_fn(function()
 				sig()
