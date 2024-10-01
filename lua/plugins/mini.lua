@@ -4,130 +4,79 @@ return {
 		lazy = true,
 	},
 	{
-		"mini.bracketed",
+		"mini.basic",
 		dev = true,
-		keys = {
-			"[",
-			"]",
+		event = "VeryLazy",
+		opts = {
+			mappings = {
+				windows = true,
+			},
+			silent = true,
 		},
-		config = function()
-			require("plugins.confs.mini.bracketed")
-		end,
-	},
-	{
-		"mini.extra",
-		dev = true,
-		config = function()
-			require("mini.extra").setup()
+		config = function(_, opts)
+			require("mini.basics").setup(opts)
 		end,
 	},
 	{
 		"mini.pick",
 		dev = true,
 		config = function()
-			require("plugins.confs.mini.pick")
-		end,
-		keys = function()
-			if not MiniExtra then
-				require("plugins.confs.mini.pick")
-			end
-			local minipicks = {
-				{
-					"<leader>,",
-					"<cmd>Pick buffers<cr>",
-					desc = "Switch Buffer",
+			require("mini.pick").setup({
+				source = {
+					show = require("mini.pick").default_show,
 				},
-				{
-					"<C-P>",
-					"<cmd>Pick files<cr>",
-					desc = "find files",
-				},
-				{
-					"<C-F>",
-					"<cmd>Pick grep_live<cr>",
-					desc = "grep live",
-				},
-				{
-					"<leader>fh",
-					"<cmd>Pick help<cr>",
-					desc = "help tags",
-				},
-				{
-					"<leader>gw",
-					"<cmd>Pick grep<cr>",
-					desc = "grep word",
-				},
-				{
-					"<leader>\\",
-					"<cmd>Pick buf_lines<cr>",
-					desc = "find from current buffer",
-				},
-				{
-					"<leader>fi",
-					"<cmd>Pick hl_groups<cr>",
-					desc = "highlights",
-				},
-				{
-					"<leader>fm",
-					"<cmd>Pick marks<cr>",
-					desc = "marks",
-				},
-				{
-					"<leader>of",
-					"<cmd>Pick oldfiles<cr>",
-					desc = "Old files (cwd)",
-				},
-			}
-			local always_opts = {
-				{
-					"<leader>ff",
-					function()
-						require("mini.extra").pickers.explorer({}, {
-							mappings = {
-								go_in = {
-									char = "<Tab>",
-									func = function()
-										vim.api.nvim_input("<CR>")
-									end,
-								},
-								toggle_preview = "",
-							},
-						})
-					end,
-				},
-			}
-			local keys = {}
-			if O.ui.select == "pick" then
-				for i, v in ipairs(minipicks) do
-					keys[i] = v
-				end
-				for _, v in ipairs(always_opts) do
-					table.insert(keys, v)
-				end
-			end
-			return keys
-		end,
-	},
-	{
-		"mini.files",
-		dev = true,
-		config = function()
-			require("plugins.confs.mini.files")
+			})
 		end,
 		keys = {
-			utils.vim_to_lazy_map("n", "<leader>e", function()
-				require("mini.files").open()
-			end, { desc = "open cwd files" }),
-
-			utils.vim_to_lazy_map("n", "-", function()
-				local bufname = vim.api.nvim_buf_get_name(0)
-				local path = vim.fn.fnamemodify(bufname, ":p")
-
-				-- Noop if the buffer isn't valid.
-				if path and vim.uv.fs_stat(path) then
-					require("mini.files").open(bufname, false)
-				end
-			end, { desc = "open bufdir files" }),
+			{
+				"<C-p>",
+				"<cmd>Pick files<cr>",
+			},
+			{
+				"<leader>,",
+				"<cmd>Pick buffers<cr>",
+				desc = "Switch Buffer",
+			},
+			{
+				"<C-P>",
+				"<cmd>Pick files<cr>",
+				desc = "find files",
+			},
+			{
+				"<C-F>",
+				"<cmd>Pick grep_live<cr>",
+				desc = "grep live",
+			},
+			{
+				"<leader>fh",
+				"<cmd>Pick help<cr>",
+				desc = "help tags",
+			},
+			{
+				"<leader>gw",
+				"<cmd>Pick grep<cr>",
+				desc = "grep word",
+			},
+			{
+				"<leader>\\",
+				"<cmd>Pick buf_lines<cr>",
+				desc = "find from current buffer",
+			},
+			{
+				"<leader>fi",
+				"<cmd>Pick hl_groups<cr>",
+				desc = "highlights",
+			},
+			{
+				"<leader>fm",
+				"<cmd>Pick marks<cr>",
+				desc = "marks",
+			},
+			{
+				"<leader>of",
+				"<cmd>Pick oldfiles<cr>",
+				desc = "Old files (cwd)",
+			},
 		},
 	},
 	{
@@ -155,23 +104,51 @@ return {
 	{
 		"mini.diff",
 		dev = true,
-		event = "LazyFile",
-		config = function()
-			require("plugins.confs.mini.diff")
+		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
+		opts = {
+			view = {
+				style = "sign",
+				-- signs = { add = "┃", change = "┃", delete = "┃" },
+				signs = { add = "▍ ", change = "▍ ", delete = " " },
+			},
+		},
+		config = function(_, opts)
+			require("mini.diff").setup(opts)
+			vim.keymap.set("n", "<leader>gdo", MiniDiff.toggle_overlay, { desc = "MiniDiff toggle overlay" })
+			vim.keymap.set("n", "<leader>gdf", MiniDiff.toggle_overlay, { desc = "MiniDiff show overlay" })
+			vim.keymap.set("n", "<leader>gh", function()
+				vim.fn.setqflist(MiniDiff.export("qf"))
+			end, { desc = "Export Hunks to Quickfix" })
 		end,
 	},
 	{
-		"mini.move",
+		"mini.jump",
 		dev = true,
 		config = function()
-			require("plugins.confs.mini.move")
+			require("mini.jump").setup()
 		end,
 		keys = {
-			{ mode = "v", "H" },
-			{ mode = "v", "L" },
-			{ mode = "v", "J" },
-			{ mode = "v", "K" },
+			{ "F", desc = "Jump to previous occurrence" },
+			{ "f", desc = "Jump to next occurrence" },
+			{ "T", desc = "Jump till previous occurrence" },
+			{ "t", desc = "Jump till next occurrence" },
 		},
+	},
+	{
+		"mini.hipatterns",
+		dev = true,
+		event = "VeryLazy",
+		opts = {
+			highlighters = {
+				fixme = { pattern = "FIXME", group = "MiniHipatternsFixme" },
+				hack = { pattern = "HACK", group = "MiniHipatternsHack" },
+				todo = { pattern = "TODO", group = "MiniHipatternsTodo" },
+				note = { pattern = "NOTE", group = "MiniHipatternsNote" },
+			},
+		},
+		config = function(_, opts)
+			require("mini.hipatterns").setup(opts)
+		end,
 	},
 	{
 		"mini.surround",
@@ -190,98 +167,120 @@ return {
 		},
 	},
 	{
-		"mini.bufremove",
+		"mini.move",
 		dev = true,
-		config = function()
-			require("mini.bufremove").setup()
-		end,
-		keys = {
-			{
-				"<leader>bd",
-				function()
-					MiniBufremove.delete()
-				end,
-				desc = "delete buffer",
+		opts = {
+			mappings = {
+				left = "H",
+				right = "L",
+				line_left = "H",
+				down = "J",
+				up = "K",
 			},
 		},
-	},
-	{
-		"mini.hipatterns",
-		dev = true,
-		event = "VeryLazy",
-		config = function()
-			require("plugins.confs.mini.hi")
-		end,
-	},
-	{
-		"mini.git",
-		dev = true,
-		event = "LazyFile",
-		config = function()
-			require("plugins.confs.mini.git")
+		config = function(_, opts)
+			require("mini.move").setup(opts)
 		end,
 		keys = {
-			utils.vim_to_lazy_map("n", "<leader>gs", "<CMD>Git status<CR>", { desc = "Git Status" }),
-			utils.vim_to_lazy_map("n", "<leader>gac", "<CMD>Git add %<CR>", { desc = "Git Add Current" }),
-			utils.vim_to_lazy_map("n", "<leader>gaa", "<CMD>Git add .<CR>", { desc = "Git Add All" }),
-			utils.vim_to_lazy_map("n", "<leader>gp", "<CMD>Git push<CR>", { desc = "Git Push" }),
-			{
-				mode = { "n", "x" },
-				"<leader>gx",
-				function()
-					require("mini.git").show_at_cursor()
-				end,
-				desc = "Show info at cursor",
-			},
-			utils.vim_to_lazy_map("n", "<leader>gc", "<CMD>Git commit<CR>", { desc = "Git commit" }),
+			{ mode = "v", "H" },
+			{ mode = "v", "L" },
+			{ mode = "v", "J" },
+			{ mode = "v", "K" },
 		},
 	},
 	{
-		"mini.indentline",
-		dev = true,
-		event = "VeryLazy",
-		config = function()
-			require("plugins.confs.mini.indent")
-		end,
-	},
-	{
-		"mini.jump",
-		dev = true,
-		config = function()
-			require("plugins.confs.mini.jump")
-		end,
-		keys = {
-			{ "F", desc = "Jump to previous occurrence" },
-			{ "f", desc = "Jump to next occurrence" },
-			{ "T", desc = "Jump till previous occurrence" },
-			{ "t", desc = "Jump till next occurrence" },
-		},
-	},
-	{
-		"mini.icons",
-		dev = true,
-		event = "LazyFile",
-		init = function()
-			package.preload["nvim-web-devicons"] = function()
-				require("mini.icons").mock_nvim_web_devicons()
-				return package.loaded["nvim-web-devicons"]
-			end
-		end,
-		config = function()
-			require("mini.icons").setup({
-				lsp = {
-					["function"] = { glyph = "󰡱", hl = "MiniIconsAzure" },
-					["Function"] = { glyph = "󰡱", hl = "MiniIconsAzure" },
-				},
-			})
-		end,
-	},
-	{
-		"mini.starter",
+		"mini.base16",
 		dev = true,
 		lazy = false,
 		config = function()
-			require("plugins.confs.mini.starter")
+			local ok, _ = pcall(require, "mini.base16")
+			vim.cmd.hi("clear")
+			local p = {
+				base00 = "#181818",
+				base01 = "#282828",
+				base02 = "#383838",
+				base03 = "#585858",
+				base04 = "#b8b8b8",
+				base05 = "#d8d8d8",
+				base06 = "#e8e8e8",
+				base07 = "#f8f8f8",
+				base08 = "#ab4642",
+				base09 = "#dc9656",
+				base0A = "#f7ca88",
+				base0B = "#a1b56c",
+				base0C = "#86c1b9",
+				base0D = "#7cafc2",
+				base0E = "#ba8baf",
+				base0F = "#a16946",
+			}
+
+			local function apply()
+				vim.cmd.hi("clear")
+				require("mini.base16").setup({ palette = p })
+				local hls = {
+					Delimiter = { fg = p.base05 },
+					Special = { fg = p.base0A },
+					Charcter = { fg = p.base09 },
+					["@lsp.type.variable"] = { fg = p.base06 },
+					Identifier = { fg = "#DE8452" },
+					["@lsp.mod.global"] = { fg = p.base08 },
+					StatusLine = { bg = p.base01, fg = p.base04 },
+					CursorLineNr = { fg = p.base04, bold = true, bg = p.base01 },
+					["@markup.heading.1.markdown"] = { fg = p.base08 },
+					["@markup.heading.2.markdown"] = { fg = p.base09 },
+					["@markup.heading.3.markdown"] = { fg = p.base0A },
+					["@markup.heading.4.markdown"] = { fg = p.base0B },
+					["@markup.heading.5.markdown"] = { fg = p.pase0B },
+					["@markup.heading.6.markdown"] = { fg = p.base0C },
+					RenderMarkdownH1 = { fg = p.base08 },
+					RenderMarkdownH2 = { fg = p.base09 },
+					RenderMarkdownH3 = { fg = p.base0A },
+					RenderMarkdownH4 = { fg = p.base0B },
+					RenderMarkdownH5 = { fg = p.pase0B },
+					RenderMarkdownH6 = { fg = p.base0C },
+					-- RenderMarkdownH1Bg = { fg = p.base08, bg = p.base01 },
+					-- RenderMarkdownH2Bg = { fg = p.base09, bg = p.base01 },
+					-- RenderMarkdownH3Bg = { fg = p.base0A, bg = p.base01 },
+					-- RenderMarkdownH4Bg = { fg = p.base0B, bg = p.base01 },
+					-- RenderMarkdownH5Bg = { fg = p.base0C, bg = p.base01 },
+					-- RenderMarkdownH6Bg = { fg = p.baseOD, bg = p.base01 },
+				}
+
+				for k, v in pairs(hls) do
+					vim.api.nvim_set_hl(0, k, v)
+				end
+				vim.api.nvim_exec_autocmds("Colorscheme", { modeline = false })
+				vim.g.colors_name = "default_dark"
+			end
+
+			if not ok then
+				vim.api.nvim_create_autocmd("User", {
+					pattern = "VeryLazy",
+					once = true,
+					callback = function()
+						apply()
+						return true
+					end,
+				})
+			else
+				apply()
+			end
+		end,
+	},
+	{
+		"mini.completion",
+		dev = true,
+		event = "InsertEnter",
+		config = function()
+			local imap_expr = function(lhs, rhs)
+				vim.keymap.set("i", lhs, rhs, { expr = true })
+			end
+			imap_expr("<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]])
+			imap_expr("<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]])
+
+			require("mini.completion").setup({
+				delay = { completion = 10, info = 100, signature = 50 },
+			})
 		end,
 	},
 }

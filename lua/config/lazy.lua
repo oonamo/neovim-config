@@ -40,63 +40,6 @@ if load_augroups then
 	load("autocommands", true)
 end
 
-require("colors")
-require("config.colors")
-
-_G.O = {
-	harpoon = false,
-	arrow = true,
-	lsp = {
-		cmp = true,
-		mini = false,
-	},
-	ui = {
-		transparency = {
-			enable = false,
-			exclude_list = {
-				"patana",
-			},
-		},
-		indent = {
-			mini = true,
-		},
-		noice = false,
-		signature = "cmp",
-		cmdlinesig = false,
-		clues = true,
-		saturate = true,
-		show_open_folds = false,
-		use_githl = false,
-		debug = false,
-		background = "dark",
-		colorscheme = "default_dark",
-		-- colorscheme = "astrotheme",
-		-- colorscheme = function()
-		-- 	vim.cmd.colorscheme("art")
-		-- end,
-		select = "telescope",
-	},
-}
-
-vim.o.background = O.ui.background or "dark"
-
-if O.ui.colorscheme ~= nil then
-	if type(O.ui.colorscheme) == "table" then
-		Colors.set_active(O.ui.colorscheme[1], O.ui.colorscheme[2])
-	elseif type(O.ui.colorscheme) == "string" then
-		if O.ui.colorscheme == "default" then
-			vim.cmd.colorscheme("default")
-		end
-		Colors.set_active(O.ui.colorscheme)
-	else
-		O.ui.colorscheme()
-	end
-else
-	vim.schedule(function()
-		vim.cmd.colorscheme("tokyonight")
-	end)
-end
-
 require("onam.utils")
 require("utils.lazy_file")
 
@@ -128,7 +71,6 @@ vim.api.nvim_create_autocmd("User", {
 require("lazy").setup({
 	spec = {
 		{ import = "plugins" },
-		{ import = "plugins.lsp" },
 	},
 	defaults = {
 		lazy = true,
