@@ -616,4 +616,9 @@ function utils.trigger_event(event, is_urgent)
 	end
 end
 
+function utils.extend_tbl(default, opts)
+	opts = opts or {}
+	return default and vim.tbl_deep_extend("force", default, opts) or opts
+end
+
 return utils

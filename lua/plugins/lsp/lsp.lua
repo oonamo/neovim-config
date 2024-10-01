@@ -37,16 +37,10 @@ local function on_attach(client, buffer, use_code_lens)
 		desc = "Go to previous diagnostic",
 		buffer = buffer,
 	})
-	vim.keymap.set("n", "<leader>vrr", function()
-		telescope.lsp_references()
-	end, {
+	vim.keymap.set("n", "<leader>vrr", vim.lsp.buf.references, {
 		desc = "Go to lsp references",
 		buffer = buffer,
 	})
-	-- vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, {
-	-- 	desc = "Rename variable",
-	-- 	buffer = buffer,
-	-- })
 	vim.keymap.set("n", "<leader>vxx", function()
 		telescope.diagnostics()
 	end, { desc = "Find diagnostics", buffer = buffer })

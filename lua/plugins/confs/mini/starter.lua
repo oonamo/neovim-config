@@ -4,7 +4,6 @@ starter.setup({
 	evaluate_single = true,
 	items = {
 		starter.sections.telescope(),
-		starter.sections.sessions(),
 	},
 	content_hooks = {
 		starter.gen_hook.adding_bullet(),

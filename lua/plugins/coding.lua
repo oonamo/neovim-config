@@ -190,6 +190,7 @@ return {
 					function()
 						require("arrow.persist").save(vim.api.nvim_buf_get_name(0))
 					end,
+					desc = "Add file (Arrow)",
 				},
 			}
 			local maps = {

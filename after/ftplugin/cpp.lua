@@ -19,3 +19,5 @@ vim.keymap.set("n", "<leader>ls", function()
 	vim.cmd.vsplit()
 	go_to_headerfile()
 end)
+
+vim.bo.commentstring = "// %s"

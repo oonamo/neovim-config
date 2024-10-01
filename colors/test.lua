@@ -410,6 +410,7 @@ local highlights = {
 	["RainbowDelimiterCyan"] = { fg = colors.cyan },
 	["RainbowDelimiterMagenta"] = { fg = colors.magenta },
 }
+
 for group, args in pairs(highlights) do
 	if next(args) ~= nil then
 		vim.api.nvim_set_hl(0, group, args)

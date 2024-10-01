@@ -5,6 +5,7 @@ return {
 		lazy = true,
 		branch = "0.1.x",
 		cmd = "Telescope",
+		cond = O.ui.select == "telescope",
 		-- tag = "0.1.6",
 		-- or                              , branch = '0.1.x',
 		dependencies = {
@@ -18,25 +19,13 @@ return {
 				dir = "~/projects/nvim/telescope-file-browser.nvim",
 				dev = true,
 			},
-			"nvim-telescope/telescope-frecency.nvim",
 		},
 		opts = function()
 			local actions = require("telescope.actions")
 			local layout = require("telescope.actions.layout")
-			local defaults = require("telescope.themes").get_ivy({
-				layout_config = { height = 0.30 },
-				prompt_prefix = "  ", -- ❯  
-				pickers = {
-					lsp_references = {
-						show_line = false,
-					},
-				},
-				selection_caret = "▍ ",
-				multi_icon = " ",
+			local dropdown = require("telescope.themes").get_dropdown({
+				color_devicons = false,
 				disable_devicons = true,
-				border = false,
-
-				-- color_devicons = false,
 				vimgrep_arguments = {
 					"rg",
 					"-L",
@@ -52,6 +41,18 @@ return {
 					hide_on_startup = true,
 				},
 
+				layout_config = {
+					preview_cutoff = 1, -- Preview should always show (unless previewer = false)
+
+					width = function(_, max_columns, _)
+						return math.floor(max_columns * 0.6)
+					end,
+
+					height = function(_, _, max_lines)
+						return math.floor(max_lines * 0.5)
+					end,
+				},
+
 				mappings = {
 					n = {
 						["<ESC>"] = actions.close,
@@ -63,11 +64,51 @@ return {
 					},
 				},
 			})
+			-- local defaults = require("telescope.themes").get_ivy({
+			-- 	layout_config = { height = 0.30 },
+			-- 	prompt_prefix = "  ", -- ❯  
+			-- 	pickers = {
+			-- 		lsp_references = {
+			-- 			show_line = false,
+			-- 		},
+			-- 	},
+			-- 	selection_caret = "▍ ",
+			-- 	multi_icon = " ",
+			-- 	disable_devicons = true,
+			-- 	border = false,
+			--
+			-- 	-- color_devicons = false,
+			-- 	vimgrep_arguments = {
+			-- 		"rg",
+			-- 		"-L",
+			-- 		"--color=never",
+			-- 		"--no-heading",
+			-- 		"--with-filename",
+			-- 		"--line-number",
+			-- 		"--column",
+			-- 		"--smart-case",
+			-- 	},
+			--
+			-- 	preview = {
+			-- 		hide_on_startup = true,
+			-- 	},
+			--
+			-- 	mappings = {
+			-- 		n = {
+			-- 			["<ESC>"] = actions.close,
+			-- 			["<C-c>"] = actions.close,
+			-- 			["<C-y>"] = layout.toggle_preview,
+			-- 		},
+			-- 		i = {
+			-- 			["<C-y>"] = layout.toggle_preview,
+			-- 		},
+			-- 	},
+			-- })
 			return {
-				defaults = defaults,
+				defaults = dropdown,
 				extensions = {
 					fzf = {
-						fuzzy = false, -- false will only do exact matching
+						fuzzy = true, -- false will only do exact matching
 						override_generic_sorter = true, -- override the generic sorter
 						override_file_sorter = true, -- override the file sorter
 						case_mode = "smart_case", -- or "ignore_case" or "respect_case"
@@ -82,12 +123,16 @@ return {
 						},
 					},
 				},
+				pickers = {
+					find_files = {
+						disable_devicons = true,
+					},
+				},
 			}
 		end,
 		config = function(_, opts)
 			require("telescope").setup(opts)
 			require("telescope").load_extension("fzf")
-			require("telescope").load_extension("frecency")
 			require("telescope").load_extension("ui-select")
 			require("telescope").load_extension("file_browser")
 		end,
@@ -139,13 +184,6 @@ return {
 						require("telescope.builtin").current_buffer_fuzzy_find()
 					end,
 					desc = "find from current buffer",
-				},
-				{
-					"z=",
-					function()
-						require("telescope.builtin").spell_suggest()
-					end,
-					desc = "Suggest spelling",
 				},
 				{
 					"<leader>fe",
@@ -249,10 +287,6 @@ return {
 	},
 	{
 		"nvim-treesitter/nvim-treesitter",
-		dependencies = {
-			"nvim-treesitter/nvim-treesitter-textobjects",
-			event = "VeryLazy",
-		},
 		lazy = vim.fn.argc(-1) == 0,
 		build = function()
 			vim.cmd("TSUpdate")
@@ -303,31 +337,6 @@ return {
 						node_decremental = "<BS>",
 					},
 				},
-				textobjects = {
-					move = {
-						enable = true,
-						goto_next_start = {
-							["]f"] = "@function.outer",
-							["]c"] = "@class.outer",
-							["]a"] = "@parameter.inner",
-						},
-						goto_next_end = {
-							["]F"] = "@function.outer",
-							["]C"] = "@class.outer",
-							["]A"] = "@parameter.inner",
-						},
-						goto_previous_start = {
-							["[f"] = "@function.outer",
-							["[c"] = "@class.outer",
-							["[a"] = "@parameter.inner",
-						},
-						goto_previous_end = {
-							["[F"] = "@function.outer",
-							["[C"] = "@class.outer",
-							["[A"] = "@parameter.inner",
-						},
-					},
-				},
 			})
 		end,
 	},
@@ -338,6 +347,14 @@ return {
 			local utils = require("command_pal.utils")
 			return {
 				actions = {
+					{
+						group = "Git",
+						name = "git-restore-file",
+						desc = "Restore current file to last commit",
+						command = function()
+							require("mini.diff").do_hunks(0, "reset")
+						end,
+					},
 					{
 						group = "Colorscheme",
 						name = "toggle-lightness",
@@ -453,55 +470,6 @@ return {
 			},
 		},
 	},
-	-- {
-	-- 	"oonamo/everyones-jk.nvim",
-	-- 	dir = "~/projects/everyone-is-jk",
-	-- 	dev = true,
-	-- 	keys = {
-	-- 		{ "[" },
-	-- 		{ "]" },
-	-- 	},
-	-- 	opts = {
-	-- 		use_recommended = true,
-	-- 		j = "J",
-	-- 		k = "K",
-	-- 		keys = {
-	-- 			{
-	-- 				"Markdown",
-	-- 				j = {
-	-- 					"]m",
-	-- 					[[/^##\+\s.*$]],
-	-- 				},
-	-- 				k = {
-	-- 					"[m",
-	-- 					[[?^##\+\s.*$]],
-	-- 				},
-	-- 			},
-	-- 			{
-	-- 				"Resize Windows",
-	-- 				j = {
-	-- 					"]wh",
-	-- 					"resize -1",
-	-- 				},
-	-- 				k = {
-	-- 					"[wh",
-	-- 					"resize +1",
-	-- 				},
-	-- 			},
-	-- 			{
-	-- 				"Resize Windows Vertical",
-	-- 				j = {
-	-- 					"]wv",
-	-- 					"vertical resize -1",
-	-- 				},
-	-- 				k = {
-	-- 					"[wv",
-	-- 					"vertical resize +1",
-	-- 				},
-	-- 			},
-	-- 		},
-	-- 	},
-	-- },
 	{
 		"rebelot/heirline.nvim",
 		-- You can optionally lazy-load heirline on UiEnter
@@ -511,7 +479,7 @@ return {
 		opts = function()
 			return {
 				statuscolumn = require("plugins.confs.heirline.statuscolumn"),
-				statusline = require("plugins.confs.heirline.statusline"),
+				statusline = require("plugins.confs.heirline.modeline"),
 			}
 		end,
 		config = function(_, opts)
@@ -522,16 +490,7 @@ return {
 				local colors = {
 					fg = stl_get_hl("StatusLine", "fg"),
 					bg = stl_get_hl("StatusLine", "bg"),
-					bright_bg = stl_get_hl("Folded", "bg"),
-					bright_fg = stl_get_hl("Folded", "fg"),
-					red = stl_get_hl("DiagnosticError", "fg"),
-					dark_red = stl_get_hl("DiffDelete", "bg"),
-					green = stl_get_hl("String", "fg"),
 					blue = stl_get_hl("Function", "fg"),
-					gray = stl_get_hl("NonText", "fg"),
-					orange = stl_get_hl("Constant", "fg"),
-					purple = stl_get_hl("Statement", "fg"),
-					cyan = stl_get_hl("Special", "fg"),
 					warn = stl_get_hl("DiagnosticWarn", "fg"),
 					error = stl_get_hl("DiagnosticError", "fg"),
 					hint = stl_get_hl("DiagnosticHint", "fg"),
@@ -539,58 +498,6 @@ return {
 					del = stl_get_hl("MiniDiffSignDelete", "fg"),
 					add = stl_get_hl("MiniDiffSignAdd", "fg"),
 					change = stl_get_hl("MiniDiffSignChange", "fg"),
-					tabline_bg = stl_get_hl("TabLine", "bg"),
-					close_fg = stl_get_hl("Error", "fg"),
-					-- fg = get_hl("StatusLine", "fg"),
-					-- bg = get_hl("StatusLine", "bg"),
-					section_fg = stl_get_hl("StatusLine", "fg"),
-					section_bg = stl_get_hl("StatusLine", "bg"),
-					git_branch_fg = stl_get_hl("Conditional", "fg"),
-					mode_fg = stl_get_hl("StatusLine", "bg"),
-					treesitter_fg = stl_get_hl("String", "fg"),
-					virtual_env_fg = stl_get_hl("NvimEnvironmentName", "fg"),
-					scrollbar = stl_get_hl("TypeDef", "fg"),
-					git_added = stl_get_hl("GitSignsAdd", "fg"),
-					git_changed = stl_get_hl("GitSignsChange", "fg"),
-					git_removed = stl_get_hl("GitSignsDelete", "fg"),
-					diag_ERROR = stl_get_hl("DiagnosticError", "fg"),
-					diag_WARN = stl_get_hl("DiagnosticWarn", "fg"),
-					diag_INFO = stl_get_hl("DiagnosticInfo", "fg"),
-					diag_HINT = stl_get_hl("DiagnosticHint", "fg"),
-					winbar_fg = stl_get_hl("WinBar", "fg"),
-					winbar_bg = stl_get_hl("WinBar", "bg"),
-					winbarnc_fg = stl_get_hl("WinBarNC", "fg"),
-					winbarnc_bg = stl_get_hl("WinBarNC", "bg"),
-					-- tabline_bg = get_hl("TabLineFill", "bg"),
-					tabline_fg = stl_get_hl("TabLineFill", "bg"),
-					buffer_fg = stl_get_hl("Comment", "fg"),
-					buffer_path_fg = stl_get_hl("WinBarNC", "fg"),
-					buffer_close_fg = stl_get_hl("Comment", "fg"),
-					buffer_bg = stl_get_hl("TabLineFill", "bg"),
-					buffer_active_fg = stl_get_hl("Normal", "fg"),
-					buffer_active_path_fg = stl_get_hl("WinBarNC", "fg"),
-					buffer_active_close_fg = stl_get_hl("Error", "fg"),
-					buffer_active_bg = stl_get_hl("Normal", "bg"),
-					buffer_visible_fg = stl_get_hl("Normal", "fg"),
-					buffer_visible_path_fg = stl_get_hl("WinBarNC", "fg"),
-					buffer_visible_close_fg = stl_get_hl("Error", "fg"),
-					buffer_visible_bg = stl_get_hl("Normal", "bg"),
-					buffer_overflow_fg = stl_get_hl("Comment", "fg"),
-					buffer_overflow_bg = stl_get_hl("TabLineFill", "bg"),
-					buffer_picker_fg = stl_get_hl("Error", "fg"),
-					tab_close_fg = stl_get_hl("Error", "fg"),
-					tab_close_bg = stl_get_hl("TabLineFill", "bg"),
-					tab_fg = stl_get_hl("TabLine", "fg"),
-					tab_bg = stl_get_hl("TabLine", "bg"),
-					tab_active_fg = stl_get_hl("TabLineSel", "fg"),
-					tab_active_bg = stl_get_hl("TabLineSel", "bg"),
-					inactive = stl_get_lualine_hl("inactive"),
-					normal = stl_get_lualine_hl("normal"),
-					insert = stl_get_lualine_hl("insert"),
-					visual = stl_get_lualine_hl("visual"),
-					replace = stl_get_lualine_hl("replace"),
-					command = stl_get_lualine_hl("command"),
-					terminal = stl_get_lualine_hl("terminal"),
 				}
 				-- Checkings
 				for _, section in ipairs({
@@ -660,62 +567,6 @@ return {
 				end,
 				desc = "Dismiss notification",
 			},
-		},
-	},
-	{
-		"monkoose/matchparen.nvim",
-		event = "LazyFile",
-		cmd = {
-			"MatchParenDisable",
-			"MatchParenEnable",
-		},
-		opts = {
-			on_startup = true, -- Should it be enabled by default
-			hl_group = "MatchParen", -- highlight group of the matched brackets
-			augroup_name = "matchparen", -- almost no reason to touch this unless there is already augroup with such name
-			debounce_time = 150, -- debounce time in milliseconds for rehighlighting of brackets.
-		},
-	},
-	{
-		"brenton-leighton/multiple-cursors.nvim",
-		version = "*", -- Use the latest tagged version
-		opts = {}, -- This causes the plugin setup function to be called
-		keys = {
-			{ "<leader>j", "<Cmd>MultipleCursorsAddDown<CR>", mode = { "n", "x" }, desc = "Add cursor and move down" },
-			{ "<leader>k", "<Cmd>MultipleCursorsAddUp<CR>", mode = { "n", "x" }, desc = "Add cursor and move up" },
-
-			{ "<C-Up>", "<Cmd>MultipleCursorsAddUp<CR>", mode = { "n", "i", "x" }, desc = "Add cursor and move up" },
-			{
-				"<C-Down>",
-				"<Cmd>MultipleCursorsAddDown<CR>",
-				mode = { "n", "i", "x" },
-				desc = "Add cursor and move down",
-			},
-
-			{
-				"<C-LeftMouse>",
-				"<Cmd>MultipleCursorsMouseAddDelete<CR>",
-				mode = { "n", "i" },
-				desc = "Add or remove cursor",
-			},
-
-			{ "<Leader>m", "<Cmd>MultipleCursorsAddMatches<CR>", mode = { "n", "x" }, desc = "Add cursors to cword" },
-			{
-				"<Leader>A",
-				"<Cmd>MultipleCursorsAddMatchesV<CR>",
-				mode = { "n", "x" },
-				desc = "Add cursors to cword in previous area",
-			},
-
-			{
-				"<Leader>d",
-				"<Cmd>MultipleCursorsAddJumpNextMatch<CR>",
-				mode = { "n", "x" },
-				desc = "Add cursor and jump to next cword",
-			},
-			{ "<Leader>D", "<Cmd>MultipleCursorsJumpNextMatch<CR>", mode = { "n", "x" }, desc = "Jump to next cword" },
-
-			{ "<Leader>lo", "<Cmd>MultipleCursorsLock<CR>", mode = { "n", "x" }, desc = "Lock virtual cursors" },
 		},
 	},
 }

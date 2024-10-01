@@ -1,4 +1,5 @@
 local api = vim.api
+
 local totext = vim.treesitter.get_node_text
 
 local M = {}

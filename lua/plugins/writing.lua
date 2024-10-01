@@ -1,3 +1,4 @@
+local block = "█"
 return {
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
@@ -22,12 +23,22 @@ return {
 				border = "thick",
 			},
 			heading = {
-				position = "inline",
+				position = "overlay",
 				width = "block",
+				sign = false,
 				min_width = 40,
 				left_pad = 2,
 				right_pad = 4,
 				border = vim.g.neovide == nil,
+				border_virtual = true,
+				icons = {
+					block .. " ",
+					block .. block .. " ",
+					block .. block .. block .. " ",
+					block .. block .. block .. block .. " ",
+					block .. block .. block .. block .. block .. " ",
+					block .. block .. block .. block .. block .. block .. " ",
+				},
 			},
 			indent = {
 				enabled = true,
@@ -37,6 +48,7 @@ return {
 				preset = "round",
 				alignment_indicator = "┅",
 			},
+			latex = { enabled = false },
 		},
 	},
 	{

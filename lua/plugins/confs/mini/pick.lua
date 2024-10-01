@@ -58,12 +58,13 @@ pick.setup({
 		use_cache = true,
 	},
 	window = {
-		config = function()
-			return {
-				height = math.floor(0.2 * vim.o.lines),
-				width = vim.o.columns,
-			}
-		end,
+		config = float_center(),
+		-- config = function()
+		-- 	-- return {
+		-- 	-- 	height = math.floor(0.2 * vim.o.lines),
+		-- 	-- 	width = vim.o.columns,
+		-- 	-- }
+		-- end,
 	},
 })
 

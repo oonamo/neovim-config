@@ -60,21 +60,20 @@ _G.O = {
 		indent = {
 			mini = true,
 		},
-		background = "dark",
 		noice = false,
 		signature = "cmp",
-		cmdlinesig = true,
+		cmdlinesig = false,
 		clues = true,
 		saturate = true,
 		show_open_folds = false,
 		use_githl = false,
 		debug = false,
-		-- colorscheme = "rose-pine",
-		-- colorscheme = { "cat-colors", "everlike-mocha" },
-		colorscheme = { "kanagawa", "dragon" },
-		-- colorscheme = "moonfly",
-		-- colorscheme = { "modus", "tinted-dark" },
-		-- colorscheme = "modus",
+		background = "dark",
+		colorscheme = "default_dark",
+		-- colorscheme = "astrotheme",
+		-- colorscheme = function()
+		-- 	vim.cmd.colorscheme("art")
+		-- end,
 		select = "telescope",
 	},
 }
@@ -90,9 +89,7 @@ if O.ui.colorscheme ~= nil then
 		end
 		Colors.set_active(O.ui.colorscheme)
 	else
-		vim.schedule(function()
-			O.ui.colorscheme()
-		end)
+		O.ui.colorscheme()
 	end
 else
 	vim.schedule(function()

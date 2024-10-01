@@ -82,25 +82,25 @@ function M.setup_writing_cmds()
 				vim.cmd("silent mkview")
 			end,
 		},
-		{
-			events = { "Colorscheme" },
-			command = function()
-				local hls = {
-					ObsidianTodo = { bold = true, fg = "#f78c6c" },
-					ObsidianDone = { bold = true, fg = "#89ddff" },
-					ObsidianRightArrow = { bold = true, fg = "#f78c6c" },
-					ObsidianTilde = { bold = true, fg = "#ff5370" },
-					ObsidianBullet = { bold = true, fg = "#89ddff" },
-					ObsidianRefText = { underline = true, fg = "#c792ea" },
-					ObsidianExtLinkIcon = { fg = "#c792ea" },
-					ObsidianTag = { italic = true, fg = "#89ddff" },
-					ObsidianHighlightText = { bg = "#75662e" },
-				}
-				for k, v in pairs(hls) do
-					vim.api.nvim_set_hl(0, k, v)
-				end
-			end,
-		},
+		-- {
+		-- 	events = { "Colorscheme" },
+		-- 	command = function()
+		-- 		local hls = {
+		-- 			ObsidianTodo = { bold = true, fg = "#f78c6c" },
+		-- 			ObsidianDone = { bold = true, fg = "#89ddff" },
+		-- 			ObsidianRightArrow = { bold = true, fg = "#f78c6c" },
+		-- 			ObsidianTilde = { bold = true, fg = "#ff5370" },
+		-- 			ObsidianBullet = { bold = true, fg = "#89ddff" },
+		-- 			ObsidianRefText = { underline = true, fg = "#c792ea" },
+		-- 			ObsidianExtLinkIcon = { fg = "#c792ea" },
+		-- 			ObsidianTag = { italic = true, fg = "#89ddff" },
+		-- 			ObsidianHighlightText = { bg = "#75662e" },
+		-- 		}
+		-- 		for k, v in pairs(hls) do
+		-- 			vim.api.nvim_set_hl(0, k, v)
+		-- 		end
+		-- 	end,
+		-- },
 		{
 			events = { "BufNew" },
 			targets = { "*.md", "*.norg", "*.org", "*.tex" },
@@ -201,7 +201,7 @@ local function on_color()
 	vim.api.nvim_set_hl(0, "TablineSel", { fg = sel_fg, bg = bg })
 	vim.api.nvim_set_hl(0, "EndOfBuffer", { fg = bg })
 end
-on_color()
+-- on_color()
 
 vim.api.nvim_create_autocmd("Colorscheme", {
 	callback = function()

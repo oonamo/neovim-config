@@ -35,6 +35,9 @@ gen_hls()
 
 vim.keymap.set("n", "<leader>gdo", MiniDiff.toggle_overlay, { desc = "MiniDiff toggle overlay" })
 vim.keymap.set("n", "<leader>gdf", MiniDiff.toggle_overlay, { desc = "MiniDiff show overlay" })
+vim.keymap.set("n", "<leader>gh", function()
+	vim.fn.setqflist(MiniDiff.export("qf"))
+end, { desc = "Export Hunks to Quickfix" })
 
 vim.api.nvim_create_autocmd("Colorscheme", {
 	callback = gen_hls,

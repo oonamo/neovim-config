@@ -4,14 +4,6 @@ return {
 		lazy = true,
 	},
 	{
-		"mini.clues",
-		dev = true,
-		event = "VeryLazy",
-		config = function()
-			require("plugins.confs.mini.clues")
-		end,
-	},
-	{
 		"mini.bracketed",
 		dev = true,
 		keys = {
@@ -22,14 +14,6 @@ return {
 			require("plugins.confs.mini.bracketed")
 		end,
 	},
-	-- {
-	-- 	"mini.cursorword",
-	-- 	dev = true,
-	-- 	event = "LazyFile",
-	-- 	config = function()
-	-- 		require("mini.cursorword").setup()
-	-- 	end,
-	-- },
 	{
 		"mini.extra",
 		dev = true,
@@ -47,7 +31,54 @@ return {
 			if not MiniExtra then
 				require("plugins.confs.mini.pick")
 			end
-			return {
+			local minipicks = {
+				{
+					"<leader>,",
+					"<cmd>Pick buffers<cr>",
+					desc = "Switch Buffer",
+				},
+				{
+					"<C-P>",
+					"<cmd>Pick files<cr>",
+					desc = "find files",
+				},
+				{
+					"<C-F>",
+					"<cmd>Pick grep_live<cr>",
+					desc = "grep live",
+				},
+				{
+					"<leader>fh",
+					"<cmd>Pick help<cr>",
+					desc = "help tags",
+				},
+				{
+					"<leader>gw",
+					"<cmd>Pick grep<cr>",
+					desc = "grep word",
+				},
+				{
+					"<leader>\\",
+					"<cmd>Pick buf_lines<cr>",
+					desc = "find from current buffer",
+				},
+				{
+					"<leader>fi",
+					"<cmd>Pick hl_groups<cr>",
+					desc = "highlights",
+				},
+				{
+					"<leader>fm",
+					"<cmd>Pick marks<cr>",
+					desc = "marks",
+				},
+				{
+					"<leader>of",
+					"<cmd>Pick oldfiles<cr>",
+					desc = "Old files (cwd)",
+				},
+			}
+			local always_opts = {
 				{
 					"<leader>ff",
 					function()
@@ -63,18 +94,18 @@ return {
 							},
 						})
 					end,
-					-- "<cmd>Pick explorer<CR>",
-					-- function()
-					-- 	local cmd = vim.fn.input({
-					-- 		prompt = "Command: ",
-					-- 	})
-					-- 	require("mini.pick").builtin.cli({
-					-- 		command = cmd,
-					-- 	})
-					-- end,
-					-- { desc = "cli" },
 				},
 			}
+			local keys = {}
+			if O.ui.select == "pick" then
+				for i, v in ipairs(minipicks) do
+					keys[i] = v
+				end
+				for _, v in ipairs(always_opts) do
+					table.insert(keys, v)
+				end
+			end
+			return keys
 		end,
 	},
 	{
@@ -246,87 +277,11 @@ return {
 		end,
 	},
 	{
-		"mini.jump2d",
-		dev = true,
-		opts = {
-			view = {
-				dim = true,
-			},
-		},
-		config = function(_, opts)
-			require("mini.jump2d").setup(opts)
-		end,
-		keys = {
-			"<CR>",
-			{
-				"sc",
-				function()
-					MiniJump2d.start(MiniJump2d.builtin_opts.single_character)
-				end,
-				desc = "Jump to character",
-			},
-			{
-				"gw",
-				function()
-					MiniJump2d.start(MiniJump2d.builtin_opts.word_start)
-				end,
-				desc = "Jump to word start",
-			},
-			{
-				"gq",
-				function()
-					MiniJump2d.start(MiniJump2d.builtin_opts.query)
-				end,
-				desc = "Search jump query",
-			},
-		},
-	},
-	{
 		"mini.starter",
 		dev = true,
 		lazy = false,
 		config = function()
 			require("plugins.confs.mini.starter")
 		end,
-	},
-	{
-		"mini.sessions",
-		event = "VeryLazy",
-		dev = true,
-		config = function()
-			require("plugins.confs.mini.sessions")
-		end,
-		keys = {
-			{
-				"<leader>Lw",
-				function()
-					local session = Config.get_session()
-					MiniSessions.write(session)
-				end,
-				desc = "Write session",
-			},
-			{
-				"<leader>Lr",
-				function()
-					local session = Config.get_session()
-					MiniSessions.read(session)
-				end,
-				desc = "Read session",
-			},
-			{
-				"<leader>Lsw",
-				function()
-					MiniSessions.select("write")
-				end,
-				desc = "Select session to write",
-			},
-			{
-				"<leader>Lsd",
-				function()
-					MiniSessions.select("delete")
-				end,
-				desc = "Select session to delete",
-			},
-		},
 	},
 }
