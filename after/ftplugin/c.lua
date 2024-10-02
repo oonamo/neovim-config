@@ -44,3 +44,7 @@ vim.keymap.set("n", "<leader>lh", function()
 end, {
 	desc = "go to header file",
 })
+
+vim.opt_local.tabstop = 2
+vim.opt_local.softtabstop = 2
+vim.opt_local.shiftwidth = 2

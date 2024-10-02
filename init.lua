@@ -1,5 +1,4 @@
 -- Bootstrap lazy.nvim
---
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
@@ -82,7 +81,7 @@ o.ttimeoutlen = 10
 opt.swapfile = false
 opt.backup = false
 opt.undofile = true
-opt.wildoptions = "tagfile,fuzzy"
+opt.wildoptions = "tagfile"
 opt.wildmenu = true
 o.makeprg = "just"
 opt.laststatus = 3 -- Or 3 for global statusline
@@ -94,26 +93,11 @@ o.list = true
 opt.listchars = "trail:∘,nbsp:‼,tab:  ,multispace: "
 o.fillchars = [[eob:~,vert:▕,vertleft:🭿,vertright:▕,verthoriz:🭿,horiz:▁,horizdown:▁,horizup:▔]]
 o.virtualedit = "block"
-o.shortmess = "acstFOSW"
+o.shortmess = "acstFOSWo"
 o.formatoptions = "rqnl1j"
 
 vim.g.netrw_banner = 0
 vim.g.netrw_mouse = 2
-
-if not vim.fn.has("win32") then
-	opt.clipboard = {
-		name = "WslClipboard",
-		copy = {
-			["+"] = "clip.exe",
-			["*"] = "clip.exe",
-		},
-		paste = {
-			["+"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-			["*"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-		},
-		cache_enabled = 0,
-	}
-end
 
 -- credit: https://github.com/nicknisi/dotfiles/blob/1360edda1bbb39168637d0dff13dd12c2a23d095/config/nvim/init.lua#L73
 -- if ripgrep installed, use that as a grepper
@@ -138,9 +122,7 @@ vim.api.nvim_create_autocmd("User", {
 
 ---@param client vim.lsp.Client
 ---@param buffer number
----@param use_code_lens boolean?
-local function on_attach(client, buffer, use_code_lens)
-	local methods = vim.lsp.protocol.Methods
+local function on_attach(client, buffer)
 	vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, {
 		desc = "Preview code actions",
 		buffer = buffer,
@@ -174,6 +156,10 @@ local function on_attach(client, buffer, use_code_lens)
 		desc = "Go to lsp references",
 		buffer = buffer,
 	})
+	vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, {
+		desc = "Rename symbol",
+		buffer = buffer,
+	})
 	vim.keymap.set("n", "<leader>vxx", function()
 		require("mini.extra").pickers.diagnostic()
 	end, { desc = "Find diagnostics", buffer = buffer })
@@ -189,6 +175,8 @@ local function on_attach(client, buffer, use_code_lens)
 	vim.keymap.set("n", "<leader>qf", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })
 	vim.keymap.set("n", "<leader>ld", vim.diagnostic.setloclist, { desc = "Quickfix [L]ist [D]iagnostics" })
 	vim.keymap.set("n", "<C-]>", "<C-w><C-]>")
+
+	vim.keymap.set("n", "<leader>ss", require("config.lsp").request)
 end
 
 local defaults = { on_attach = on_attach }
@@ -205,7 +193,7 @@ require("lazy").setup({
 			require("lazy.core.loader").add_to_rtp(plugin)
 			require("nvim-treesitter.query_predicates")
 		end,
-		event = { "BufEnter", "VeryLazy" },
+		event = { "BufWritePre", "BufReadPost", "BufNewFile", "VeryLazy" },
 		config = function()
 			require("nvim-treesitter.query_predicates")
 			local config = require("nvim-treesitter.configs")
@@ -280,7 +268,7 @@ require("lazy").setup({
 	},
 	{
 		"neovim/nvim-lspconfig",
-		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
+		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
 		opts = {
 			lua_ls = {
 				on_attach = on_attach,
@@ -337,62 +325,329 @@ require("lazy").setup({
 				end
 				lspconfig[server].setup(server_opts)
 			end
-			local diagnostics_symbols = {
-				[vim.diagnostic.severity.ERROR] = "x",
-				[vim.diagnostic.severity.WARN] = "!",
-				[vim.diagnostic.severity.HINT] = "?",
-				[vim.diagnostic.severity.INFO] = "i",
-			}
 			local sign_define = vim.fn.sign_define
 			sign_define("DiagnosticSignError", { text = "󰅙 ", texthl = "DiagnosticSignError" })
 			sign_define("DiagnosticSignWarn", { text = " ", texthl = "DiagnosticSignWarn" })
 			sign_define("DiagnosticSignHint", { text = " ", texthl = "DiagnosticSignHint" })
 			sign_define("DiagnosticSignInfo", { text = " ", texthl = "DiagnosticSignInfo" })
+		end,
+	},
+	{
+		"MeanderingProgrammer/render-markdown.nvim",
+		ft = "markdown",
+		opts = function()
+			local block = "█"
+			return {
+				render_modes = { "n", "v", "i", "c" },
+				quote = { repeat_linebreak = true },
+				callout = {
+					schedule = { raw = "[!SCHEDULE]", rendered = " Schedule", highlight = "Special" },
+					formula = { raw = "[!FORMULA]", rendered = "󰡱 Formula", highlight = "Boolean" },
+				},
+				win_options = {
+					showbreak = { default = "", rendered = "  " },
+					breakindent = { default = false, rendered = true },
+					breakindentopt = { default = "list:-1", rendered = "" },
+				},
+				code = {
+					width = "block",
+					min_width = 45,
+					left_pad = 2,
+					language_pad = 2,
+					border = "thick",
+				},
+				heading = {
+					position = "overlay",
+					width = "block",
+					sign = false,
+					min_width = 40,
+					left_pad = 2,
+					right_pad = 4,
+					border = vim.g.neovide == nil,
+					border_virtual = true,
+					icons = {
+						block .. " ",
+						block .. block .. " ",
+						block .. block .. block .. " ",
+						block .. block .. block .. block .. " ",
+						block .. block .. block .. block .. block .. " ",
+						block .. block .. block .. block .. block .. block .. " ",
+					},
+				},
+				indent = {
+					enabled = true,
+					skip_heading = true,
+				},
+				pipe_table = {
+					preset = "round",
+					alignment_indicator = "┅",
+				},
+				latex = { enabled = false },
+			}
+		end,
+	},
+	{
+		"epwalsh/obsidian.nvim",
+		event = {
+			"BufReadPre C:/Users/onam7/Desktop/DB/DB/**.md",
+			"BufNewFile C:/Users/onam7/Desktop/DB/DB/**.md",
+		},
+		dependencies = {
+			"MeanderingProgrammer/render-markdown.nvim",
+			{
+				"jbyuki/nabla.nvim",
+				keys = {
+					{
+						"<leader>np",
+						function()
+							require("nabla").popup()
+						end,
+						desc = "nabla popup",
+					},
+					{
+						"<leader>nv",
+						function()
+							require("nabla").toggle_virt({
+								autogen = true,
+								silent = true,
+							})
+						end,
+						desc = "toggle nabla virtual text",
+					},
+				},
+			},
+			"nvim-lua/plenary.nvim",
+			"folke/zen-mode.nvim",
+		},
+		cmd = "GoToNotes",
+		config = function()
+			local daily_path = "100 dailies/"
+			local daily_folder = os.date("%b %Y")
+			daily_path = daily_path .. "/" .. daily_folder
 
-			vim.diagnostic.config({
-				underline = true,
-				severity_sort = true,
-				virtual_text = {
-					prefix = function(diag)
-						return diagnostics_symbols[diag.severity]
+			require("obsidian").setup({
+				workspaces = {
+					{
+						name = "DB",
+						path = "~/Desktop/DB/DB/",
+					},
+				},
+				completion = {
+					-- Set to false to disable completion.
+					nvim_cmp = false,
+					-- Trigger completion at 2 chars.
+					min_chars = 2,
+				},
+
+				templates = {
+					subdir = "templates",
+				},
+
+				daily_notes = {
+					folder = daily_path,
+					date_format = "%Y-%m-%d",
+					alias_format = "%B %d, %Y",
+				},
+
+				-- disable_front
+				-- disable_frontmatter = true,
+				note_id_func = function(title)
+					if title ~= nil then
+						return title:gsub("%s+", "-")
+					else
+						local note_title
+						vim.ui.input({ prompt = "Title: " }, function(new_title)
+							note_title = new_title:gsub("%s+", "-")
+						end)
+						return note_title
+					end
+				end,
+
+				note_frontmatter_func = function(note)
+					if note.title then
+						note:add_alias(note.title)
+					end
+
+					local out =
+						{ id = note.id, aliases = note.aliases, tags = note.tags, hubs = note.hubs or { "[[]]" } }
+
+					if note.metadata ~= nil and not vim.tbl_isempty(note.metadata) then
+						for k, v in pairs(note.metadata) do
+							out[k] = v
+						end
+					end
+
+					return out
+				end,
+
+				notes_subdir = "900 Unordered",
+				new_notes_location = "notes_subdir",
+
+				-- For windows only
+				follow_url_func = function(url)
+					-- Open the URL in the default web browser.
+					local local_file = string.match(url, "file://(.*)")
+					if local_file ~= nil then
+						vim.cmd("e " .. local_file)
+					else
+						vim.fn.jobstart({ "explorer", url })
+					end
+				end,
+				picker = {
+					name = "mini.pick",
+					mappings = {
+						-- Create a new note from your query.
+						new = "<C-x>",
+						-- Insert a link to the selected note.
+						insert_link = "<C-l>",
+					},
+				},
+
+				callbacks = {
+					enter_note = function()
+						vim.schedule(function()
+							vim.cmd("SoftWrapMode")
+							vim.opt.shiftwidth = 2
+						end)
+					end,
+					post_setup = function()
+						if not package.loaded["wrapping"] then
+							require("wrapping").soft_wrap_mode()
+						else
+							vim.cmd.SoftWrapMode()
+						end
 					end,
 				},
-				float = {
-					header = " ",
-					border = "rounded",
-					source = "if_many",
-					title = { { " 󰌶 Diagnostics ", "FloatTitle" } },
-					prefix = function(diag)
-						local severity = vim.diagnostic.severity[diag.severity]
-						local level = severity:sub(1, 1) .. severity:sub(2):lower()
-						local prefix = string.format(" %s  ", tools.ui.lsp_signs[diag.severity].sym)
-						return prefix, "Diagnostic" .. level:gsub("^%l", string.upper)
-					end,
-				},
-				signs = {
-					text = {
-						[vim.diagnostic.severity.ERROR] = "󰅙 ",
-						[vim.diagnostic.severity.WARN] = " ",
-						[vim.diagnostic.severity.HINT] = " ",
-						[vim.diagnostic.severity.INFO] = " ",
+
+				ui = {
+					enable = false, -- set to false to disable all additional syntax features
+					update_debounce = 200, -- update delay after a text change (in milliseconds)
+					-- Define how various check-boxes are displayed
+					checkboxes = {
+						-- NOTE: the 'char' value has to be a single character, and the highlight groups are defined below.
+						[" "] = { char = "󰄱", hl_group = "ObsidianTodo" },
+						["x"] = { char = "", hl_group = "ObsidianDone" },
+						[">"] = { char = "", hl_group = "ObsidianRightArrow" },
+						["~"] = { char = "󰰱", hl_group = "ObsidianTilde" },
 					},
-					-- text = signs,
-					linehl = {
-						[vim.diagnostic.severity.ERROR] = "ErrorMsg",
-					},
-					numhl = {
-						[vim.diagnostic.severity.WARN] = "WarningMsg",
+					bullets = { char = "•", hl_group = "ObsidianBullet" },
+					external_link_icon = { char = "", hl_group = "ObsidianExtLinkIcon" },
+					-- Replace the above with this if you don't have a patched font:
+					-- external_link_icon = { char = "", hl_group = "ObsidianExtLinkIcon" },
+					reference_text = { hl_group = "ObsidianRefText" },
+					highlight_text = { hl_group = "ObsidianHighlightText" },
+					tags = { hl_group = "ObsidianTag" },
+					hl_groups = {
+						-- The options are passed directly to `vim.api.nvim_set_hl()`. See `:help nvim_set_hl`.
+						ObsidianTodo = { bold = true, fg = "#f78c6c" },
+						ObsidianDone = { bold = true, fg = "#89ddff" },
+						ObsidianRightArrow = { bold = true, fg = "#f78c6c" },
+						ObsidianTilde = { bold = true, fg = "#ff5370" },
+						ObsidianBullet = { bold = true, fg = "#89ddff" },
+						ObsidianRefText = { underline = true, fg = "#c792ea" },
+						ObsidianExtLinkIcon = { fg = "#c792ea" },
+						ObsidianTag = { italic = true, fg = "#89ddff" },
+						ObsidianHighlightText = { bg = "#75662e" },
 					},
 				},
 			})
+			-- Using ft instead
+			-- vim.g.markdown_folding = 1
+
+			vim.keymap.set("n", "<leader>nn", "<cmd>ObsidianTemplate notes<cr>", { desc = "Obisidan note template" })
+			vim.keymap.set("n", "<leader>ow", "<cmd>ObsidianWorkspace<CR>", { desc = "[O]bsidian [G]o" })
+			vim.keymap.set("n", "<leader>oq", "<cmd>ObsidianQuickSwitch<CR>", { desc = "[O]bsidian [F]ind" })
+			vim.keymap.set("n", "<leader>on", function()
+				vim.ui.input({ prompt = "Note name (optional): " }, function(name)
+					if name == nil then
+						return
+					end
+					local note_title = name:gsub("%s+", "-")
+					vim.cmd("ObsidianNew " .. note_title)
+				end)
+			end, { desc = "[O]bsidian [N]ew" })
+			vim.keymap.set("n", "<leader>os", "<cmd>ObsidianSearch<CR>", { desc = "[O]bsidian [S]earch" })
+			vim.keymap.set("n", "<leader>ot", "<cmd>ObsidianToday<CR>", { desc = "[O]bsidian [T]oday" })
+			vim.keymap.set("n", "<leader>oy", "<cmd>ObsidianYesterday<CR>", { desc = "[O]bsidian [Y]esterday" })
+			vim.keymap.set("n", "<leader>oo", "<cmd>ObsidianOpen<CR>", { desc = "[O]bsidian [O]pen" })
+			vim.keymap.set("n", "<leader>ol", "<cmd>ObsidianLinks<CR>", { desc = "[O]bsidian [L]inks" })
+			vim.keymap.set("n", "<leader>ob", "<cmd>ObsidianBacklinks<CR>", { desc = "[O]bsidian [B]acklinks" })
+			vim.keymap.set("n", "<leader>or", "<cmd>ObsidianRename<CR>", { desc = "[O]bsidian [R]ename" })
+			vim.keymap.set("n", "<leader>oe", function()
+				vim.ui.input({ prompt = "Enter title (optional): " }, function(input)
+					vim.cmd("ObsidianExtractNote " .. input)
+				end)
+			end, { desc = "[O]bsidian [E]xtract" })
+			vim.keymap.set("n", "<leader>ol", function()
+				vim.cmd("ObsidianLink")
+			end, { desc = "[O]bsidian [L]ink" })
+			vim.keymap.set("n", "<leader>od", function()
+				local day_of_week = os.date("%A")
+				print(day_of_week)
+				assert(type(day_of_week) == "string")
+				local offset_start
+				require("onam.fn").switch(day_of_week, {
+					["Monday"] = function()
+						offset_start = 1
+					end,
+					["Tuesday"] = function()
+						offset_start = 0
+					end,
+					["Wednesday"] = function()
+						offset_start = -1
+					end,
+					["Thursday"] = function()
+						offset_start = -2
+					end,
+					["Friday"] = function()
+						offset_start = -3
+					end,
+					["Saturday"] = function()
+						offset_start = -4
+					end,
+					["Sunday"] = function()
+						offset_start = 2
+					end,
+				})
+				if offset_start ~= nil then
+					vim.cmd(string.format("ObsidianDailies %d %d", offset_start, offset_start + 4))
+				end
+			end, { desc = "[O]bsidian [D]ailies" })
+
+			vim.api.nvim_create_user_command("GoToNotes", function()
+				require("mini.sessions").read("Notes")
+				vim.o.conceallevel = 2
+				if not package.loaded["wrapping"] then
+					require("wrapping").soft_wrap_mode()
+				else
+					vim.cmd.SoftWrapMode()
+				end
+			end, {})
 		end,
+	},
+	{
+		"andrewferrier/wrapping.nvim",
+		opts = {
+			notify_on_switch = false,
+			create_keymaps = false,
+			auto_set_mode_filetype_allowlist = {
+				"asciidoc",
+				"gitcommit",
+				"latex",
+				"mail",
+				"markdown",
+				"rst",
+				"tex",
+				"text",
+			},
+		},
 	},
 }, {
 	-- Configure any other settings here. See the documentation for more details.
 	-- colorscheme that will be used when installing plugins.
 	install = { colorscheme = { "habamax" } },
 	-- automatically check for plugin updates
-	checker = { enabled = true },
+	checker = { notify = false },
 	defaults = {
 		lazy = true,
 	},
@@ -417,10 +672,10 @@ require("lazy").setup({
 				"tarPlugin",
 				"rrhelper",
 				"vimball",
-				"netrw",
-				"netrwPlugin",
-				"netrwSettings",
-				"netrwFileHandlers",
+				-- "netrw",
+				-- "netrwPlugin",
+				-- "netrwSettings",
+				-- "netrwFileHandlers",
 				-- "health",
 				-- "shada",
 				-- "spellfile",

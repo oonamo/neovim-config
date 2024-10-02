@@ -92,7 +92,7 @@ return {
 	{
 		"mini.ai",
 		dev = true,
-		event = "VeryLazy",
+		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
 		config = function()
 			require("mini.ai").setup({
 				custom_textobjects = {
@@ -104,7 +104,7 @@ return {
 	{
 		"mini.diff",
 		dev = true,
-		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
+		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
 		opts = {
 			view = {
 				style = "sign",
@@ -137,7 +137,7 @@ return {
 	{
 		"mini.hipatterns",
 		dev = true,
-		event = "VeryLazy",
+		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
 		opts = {
 			highlighters = {
 				fixme = { pattern = "FIXME", group = "MiniHipatternsFixme" },
@@ -153,8 +153,24 @@ return {
 	{
 		"mini.surround",
 		dev = true,
-		config = function()
-			require("plugins.confs.mini.surround")
+		opts = {
+			highlight_duration = 500,
+			mappings = {
+				add = "sa", -- Add surrounding in Normal and Visual modes
+				delete = "sd", -- Delete surrounding
+				find = "sf", -- Find surrounding (to the right)
+				find_left = "sF", -- Find surrounding (to the left)
+				highlight = "sh", -- Highlight surrounding
+				replace = "sr", -- Replace surrounding
+				update_n_lines = "sn", -- Update `n_lines`
+
+				suffix_last = "l", -- Suffix to search with "prev" method
+				suffix_next = "n", -- Suffix to search with "next" method
+			},
+			search_method = "cover_or_next",
+		},
+		config = function(_, opts)
+			require("mini.surround").setup(opts)
 		end,
 		keys = {
 			{ mode = "n", "sa", desc = "Add surrounding" }, -- Add surrounding in Normal and Visual modes
@@ -279,7 +295,7 @@ return {
 			imap_expr("<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]])
 
 			require("mini.completion").setup({
-				delay = { completion = 10, info = 100, signature = 50 },
+				delay = { completion = 100, info = 100, signature = 50 },
 			})
 		end,
 	},

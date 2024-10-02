@@ -51,11 +51,43 @@ map("n", "<leader>bad", "<cmd>%bd|e#<cr>", { desc = "Delete all buffers" })
 
 map("n", "<leader>cp", function()
 	local args = vim.fn.input({
-		prompt = "Compile > ",
-		default = vim.o.makeprg .. " " .. (vim.g.last_compile_command or ""),
+		prompt = "Compile > " .. vim.o.makeprg,
+		default = (vim.g.last_compile_command or ""),
 	})
-	vim.cmd("make " .. args)
-end, {})
+	vim.g.last_compile_command = args
+	vim.cmd("tab term " .. vim.o.makeprg .. args)
+end, { desc = "Open compile in terminal " })
+
+map("n", "<leader>ca", function()
+	if not vim.g.last_compile_command or vim.g.last_compile_command == "" then
+		local args = vim.fn.input({
+			prompt = "Compile > " .. vim.o.makeprg .. " ",
+			default = (vim.g.last_compile_command or ""),
+		})
+		vim.g.last_compile_command = args
+	end
+	vim.cmd("tab term " .. vim.o.makeprg .. " " .. (vim.g.last_compile_command or ""))
+end, { desc = "Open compile in terminal " })
+
+map("n", "<leader>mp", function()
+	local args = vim.fn.input({
+		prompt = "Compile > " .. vim.o.makeprg .. " ",
+		default = (vim.g.last_make_command or ""),
+	})
+	vim.g.last_make_command = args
+	vim.cmd("make " .. (vim.g.last_make_command or ""))
+end)
+
+map("n", "<leader>ma", function()
+	if not vim.g.last_make_command or vim.g.last_make_command == "" then
+		local args = vim.fn.input({
+			prompt = "Compile > " .. vim.o.makeprg .. " ",
+			default = (vim.g.last_make_command or ""),
+		})
+		vim.g.last_make_command = args
+	end
+	vim.cmd("make " .. (vim.g.last_make_command or ""))
+end)
 
 vim.keymap.set("n", "<C-n>", "<cmd>cnext<cr>")
 vim.keymap.set("n", "<C-y>", "<cmd>cprev<cr>")
