@@ -39,11 +39,13 @@ function M._open_preview()
 		return preview_win, bufnr
 	end
 
+	vim.api.nvim_command("new")
 	M.height = vim.api.nvim_get_option_value("previewheight", {})
-	local buf = vim.api.nvim_create_buf(false, false)
 	M.win = vim.api.nvim_get_current_win()
+
+	local buf = vim.api.nvim_win_get_buf(M.win)
 	vim.api.nvim_set_option_value("previewwindow", true, {
-		buf = M.win,
+		win = M.win,
 	})
 	vim.api.nvim_win_set_height(M.win, M.height)
 	vim.bo[buf].bufhidden = "wipe"
@@ -53,6 +55,7 @@ function M._open_preview()
 	vim.keymap.set("n", "<esc>", function()
 		vim.cmd("close")
 	end, { buffer = buf })
+
 	return M.win, buf
 end
 
@@ -78,8 +81,14 @@ end
 ---@param preview string[]
 ---@return integer
 function M.set_preview(syntax, preview)
+	local prev_win = vim.api.nvim_get_current_win()
+	local cursor_pos = vim.api.nvim_win_get_cursor(prev_win)
 	local win, buf = M._open_preview()
 	M.buf_set_preview(buf, win, syntax, preview)
+	if M.restore_pos then
+		vim.api.nvim_set_current_win(prev_win)
+		vim.api.nvim_win_set_cursor(prev_win, cursor_pos)
+	end
 	return buf
 end
 
@@ -140,10 +149,11 @@ function M.hover(err, result, ctx, config)
 	end
 end
 
-function M.request()
+function M.request(restore_pos)
 	M.height = vim.api.nvim_get_option_value("previewheight", {})
 	M.width = vim.o.columns
 	M.win = vim.api.nvim_get_current_win()
+	M.restore_pos = restore_pos
 	local params = vim.lsp.util.make_position_params()
 	vim.lsp.buf_request(0, "textDocument/signatureHelp", params, signature_handler)
 end

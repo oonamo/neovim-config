@@ -97,6 +97,7 @@ return {
 			require("mini.ai").setup({
 				custom_textobjects = {
 					B = require("mini.extra").gen_ai_spec.buffer(),
+					F = require("mini.ai").gen_spec.argument({ brackets = { "%b()" } }),
 				},
 			})
 		end,
@@ -297,6 +298,175 @@ return {
 			require("mini.completion").setup({
 				delay = { completion = 100, info = 100, signature = 50 },
 			})
+		end,
+	},
+	{
+		"mini.statusline",
+		dev = true,
+		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
+		config = function()
+			require("mini.statusline").setup({
+				use_icons = true,
+			})
+		end,
+	},
+	{
+		"mini.files",
+		dev = true,
+		opts = {
+			mappings = {
+				go_in_plus = "<cr>",
+				go_out_plus = "<tab>",
+				close = "q",
+				go_in = "L",
+				go_out = "H",
+				reset = "<BS>",
+				reveal_cwd = "@",
+				show_help = "g?",
+				synchronize = "=",
+				trim_left = "<",
+				trim_right = ">",
+			},
+			content = {
+				prevfix = function() end,
+				filter = function(entry)
+					return entry.fs_type ~= "file" or entry.name ~= ".DS_Store"
+				end,
+				sort = function(entries)
+					local function compare_alphanumerically(e1, e2)
+						-- Put directories first.
+						if e1.is_dir and not e2.is_dir then
+							return true
+						end
+						if not e1.is_dir and e2.is_dir then
+							return false
+						end
+						-- Order numerically based on digits if the text before them is equal.
+						if e1.pre_digits == e2.pre_digits and e1.digits ~= nil and e2.digits ~= nil then
+							return e1.digits < e2.digits
+						end
+						-- Otherwise order alphabetically ignoring case.
+						return e1.lower_name < e2.lower_name
+					end
+
+					local sorted = vim.tbl_map(function(entry)
+						local pre_digits, digits = entry.name:match("^(%D*)(%d+)")
+						if digits ~= nil then
+							digits = tonumber(digits)
+						end
+
+						return {
+							fs_type = entry.fs_type,
+							name = entry.name,
+							path = entry.path,
+							lower_name = entry.name:lower(),
+							is_dir = entry.fs_type == "directory",
+							pre_digits = pre_digits,
+							digits = digits,
+						}
+					end, entries)
+					table.sort(sorted, compare_alphanumerically)
+					-- Keep only the necessary fields.
+					return vim.tbl_map(function(x)
+						return { name = x.name, fs_type = x.fs_type, path = x.path }
+					end, sorted)
+				end,
+			},
+			windows = { width_nofocus = 25 },
+			-- Move stuff to the minifiles trash instead of it being gone forever.
+			options = {
+				permanent_delete = false,
+				use_as_default_explorer = true,
+			},
+		},
+		config = function(_, opts)
+			local function map_split(buf_id, lhs, direction)
+				local minifiles = require("mini.files")
+				local function rhs()
+					local window = minifiles.get_target_window()
+
+					-- Noop if the explorer isn't open or the cursor is on a directory.
+					if window == nil or minifiles.get_fs_entry().fs_type == "directory" then
+						return
+					end
+
+					local new_target_window
+					vim.api.nvim_win_call(window, function()
+						vim.cmd(direction .. " split")
+						new_target_window = vim.api.nvim_get_current_win()
+					end)
+
+					minifiles.set_target_window(new_target_window)
+
+					-- Go in and close the explorer.
+					minifiles.go_in({ close_on_file = true })
+				end
+
+				vim.keymap.set("n", lhs, rhs, { buffer = buf_id, desc = "Split " .. string.sub(direction, 12) })
+			end
+
+			require("mini.files").setup(opts)
+
+			vim.api.nvim_create_autocmd("User", {
+				desc = "Add minifiles split keymaps and options",
+				pattern = "MiniFilesBufferCreate",
+				callback = function(args)
+					local buf_id = args.data.buf_id
+					map_split(buf_id, "<C-s>", "belowright horizontal")
+					map_split(buf_id, "<C-v>", "belowright vertical")
+				end,
+			})
+
+			vim.api.nvim_create_autocmd("User", {
+				desc = "Add minifiles split keymaps and options",
+				pattern = "MiniFilesWindowOpen",
+				callback = function(args)
+					local win_id = args.data.win_id
+					vim.wo[win_id].winbar = ""
+				end,
+			})
+		end,
+		keys = {
+			{
+				"<leader>e",
+				function()
+					require("mini.files").open()
+				end,
+				desc = "MiniFiles (CWD)",
+			},
+			{
+				"-",
+				function()
+					local bufname = vim.api.nvim_buf_get_name(0)
+					local path = vim.fn.fnamemodify(bufname, ":p")
+
+					-- Noop if the buffer isn't valid.
+					if path and vim.uv.fs_stat(path) then
+						require("mini.files").open(bufname, false)
+					end
+				end,
+				desc = "MiniFiles (BufDir)",
+			},
+		},
+	},
+	{
+		"mini.pairs",
+		event = "InsertEnter",
+		dev = true,
+		opts = {
+			modes = { insert = true, command = false, terminal = false },
+			-- skip autopair when next character is one of these
+			skip_next = [=[[%w%%%'%[%"%.%`%$]]=],
+			-- skip autopair when the cursor is inside these treesitter nodes
+			skip_ts = { "string" },
+			-- skip autopair when next character is closing pair
+			-- and there are more closing pairs than opening pairs
+			skip_unbalanced = true,
+			-- better deal with markdown code blocks
+			markdown = true,
+		},
+		config = function(_, opts)
+			require("mini.pairs").setup(opts)
 		end,
 	},
 }

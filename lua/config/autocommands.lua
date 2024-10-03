@@ -31,13 +31,29 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
 })
 
 vim.api.nvim_create_autocmd({ "InsertEnter" }, {
-	callback = function(ev)
+	callback = function()
 		vim.wo.rnu = false
 	end,
 })
 
 vim.api.nvim_create_autocmd({ "InsertLeave" }, {
-	callback = function(ev)
+	callback = function()
 		vim.wo.rnu = true
+	end,
+})
+
+vim.api.nvim_create_autocmd("CmdwinEnter", {
+	callback = function()
+		vim.cmd("startinsert")
+	end,
+})
+
+vim.api.nvim_create_autocmd("TermOpen", {
+	callback = function(event)
+		if event.buf then
+			vim.opt_local.number = false
+			vim.opt_local.relativenumber = false
+			vim.opt_local.scl = "no"
+		end
 	end,
 })

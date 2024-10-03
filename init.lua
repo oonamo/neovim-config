@@ -95,6 +95,7 @@ o.fillchars = [[eob:~,vert:▕,vertleft:🭿,vertright:▕,verthoriz:🭿,horiz:
 o.virtualedit = "block"
 o.shortmess = "acstFOSWo"
 o.formatoptions = "rqnl1j"
+o.cmdwinheight = 4
 
 vim.g.netrw_banner = 0
 vim.g.netrw_mouse = 2
@@ -104,7 +105,7 @@ vim.g.netrw_mouse = 2
 o.grepprg = "rg --vimgrep --color=never --with-filename --line-number --no-heading --smart-case --"
 o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
 
-o.cursorline = true
+o.cursorline = false
 
 vim.g.loaded_node_provider = 0
 vim.g.loaded_python3_provider = 0
@@ -176,7 +177,9 @@ local function on_attach(client, buffer)
 	vim.keymap.set("n", "<leader>ld", vim.diagnostic.setloclist, { desc = "Quickfix [L]ist [D]iagnostics" })
 	vim.keymap.set("n", "<C-]>", "<C-w><C-]>")
 
-	vim.keymap.set("n", "<leader>ss", require("config.lsp").request)
+	vim.keymap.set("n", "<leader>ss", function()
+		require("config.lsp").request(true)
+	end)
 end
 
 local defaults = { on_attach = on_attach }
@@ -271,12 +274,28 @@ require("lazy").setup({
 		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
 		opts = {
 			lua_ls = {
-				on_attach = on_attach,
+				on_attach = function(client, bufnr)
+					on_attach(client, bufnr)
+					-- `MiniCompletion` experience
+					client.server_capabilities.completionProvider.triggerCharacters = { ".", ":" }
+				end,
+				handlers = {
+					["textDocument/definition"] = function(err, result, ctx, config)
+						if type(result) == "table" then
+							result = { result[1] }
+						end
+						vim.lsp.handlers["textDocument/definition"](err, result, ctx, config)
+					end,
+				},
 				settings = {
 					Lua = {
 						runtime = { version = "LuaJIT" },
 						diagnostics = {
 							globals = { "vim", "bit" },
+							workspaceDelay = -1,
+						},
+						telemetry = {
+							enable = false,
 						},
 						workspace = {
 							library = {
@@ -284,6 +303,7 @@ require("lazy").setup({
 								[vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
 								[vim.fn.stdpath("config") .. "/lua"] = true,
 							},
+							ignoreSubmodules = true,
 						},
 						hint = {
 							enable = true,
@@ -296,13 +316,13 @@ require("lazy").setup({
 					},
 				},
 			},
-			clangd = {
-				on_attach = on_attach,
-			},
-			rust_analyzer = defaults,
-			markdown_oxide = {
-				on_attach = on_attach,
-			},
+		},
+		clangd = {
+			on_attach = on_attach,
+		},
+		rust_analyzer = defaults,
+		markdown_oxide = {
+			on_attach = on_attach,
 		},
 		config = function(_, opts)
 			local lspconfig = require("lspconfig")
@@ -338,7 +358,7 @@ require("lazy").setup({
 		opts = function()
 			local block = "█"
 			return {
-				render_modes = { "n", "v", "i", "c" },
+				render_modes = { "n", "c" },
 				quote = { repeat_linebreak = true },
 				callout = {
 					schedule = { raw = "[!SCHEDULE]", rendered = " Schedule", highlight = "Special" },

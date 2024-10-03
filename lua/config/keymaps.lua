@@ -34,6 +34,8 @@ map({ "c", "i" }, "<C-l>", "<End>")
 map("c", "<C-n>", "<Down>")
 map("c", "<C-p>", "<Up>")
 map("c", "<C-x>", "<C-f>?")
+map("c", "<C-d>", "<C-right>")
+map("c", "<C-s>", "<C-left>")
 
 map("n", "<localleader>n", "<cmd>tabnext<cr>", { desc = "Next tab" })
 map("n", "<localleader>b", "<cmd>tabprev<cr>", { desc = "Previous tab" })
@@ -91,3 +93,4 @@ end)
 
 vim.keymap.set("n", "<C-n>", "<cmd>cnext<cr>")
 vim.keymap.set("n", "<C-y>", "<cmd>cprev<cr>")
+vim.keymap.set("n", "<leader>gl", "<cmd>tab terminal lazygit<cr>")
