@@ -4,6 +4,15 @@ return {
 		lazy = true,
 	},
 	{
+		"mini.base16",
+		dev = true,
+		-- lazy = false,
+		-- priority = 1000,
+		config = function()
+			vim.cmd.colorscheme("burn")
+		end,
+	},
+	{
 		"mini.basic",
 		dev = true,
 		event = "VeryLazy",
@@ -18,12 +27,33 @@ return {
 		end,
 	},
 	{
+		"mini.misc",
+		dev = true,
+		event = "VeryLazy",
+		config = function()
+			require("mini.misc").setup()
+			MiniMisc.setup_auto_root({
+				".git",
+				"Makefile",
+				"justfile",
+			})
+		end,
+	},
+	{
 		"mini.pick",
 		dev = true,
+		init = function()
+			vim.ui.select = require("mini.pick").ui_select
+		end,
 		config = function()
 			require("mini.pick").setup({
 				source = {
 					show = require("mini.pick").default_show,
+				},
+				mappings = {
+					paste = "<C-y>",
+					refine = "<C-Space>",
+					refine_marked = "<C-r>",
 				},
 			})
 		end,
@@ -64,7 +94,9 @@ return {
 			},
 			{
 				"<leader>fi",
-				"<cmd>Pick hl_groups<cr>",
+				function()
+					require("mini.extra").pickers.hl_groups()
+				end,
 				desc = "highlights",
 			},
 			{
@@ -76,6 +108,31 @@ return {
 				"<leader>of",
 				"<cmd>Pick oldfiles<cr>",
 				desc = "Old files (cwd)",
+			},
+			{
+				"<C-x><C-f>",
+				function()
+					require("mini.extra").pickers.explorer()
+				end,
+				desc = "File explorer",
+			},
+			{
+				"<leader>fn",
+				function()
+					require("mini.extra").pickers.hipatterns({
+						highlighters = { "note", "fixme", "hack", "todo" },
+					})
+				end,
+				desc = "Find notes",
+			},
+			{
+				"<leader>ft",
+				function()
+					require("mini.extra").pickers.hipatterns({
+						highlighters = { "todo" },
+					})
+				end,
+				desc = "Find todos",
 			},
 		},
 	},
@@ -97,6 +154,7 @@ return {
 			require("mini.ai").setup({
 				custom_textobjects = {
 					B = require("mini.extra").gen_ai_spec.buffer(),
+					i = require("mini.extra").gen_ai_spec.indent(),
 					F = require("mini.ai").gen_spec.argument({ brackets = { "%b()" } }),
 				},
 			})
@@ -139,16 +197,16 @@ return {
 		"mini.hipatterns",
 		dev = true,
 		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
-		opts = {
-			highlighters = {
-				fixme = { pattern = "FIXME", group = "MiniHipatternsFixme" },
-				hack = { pattern = "HACK", group = "MiniHipatternsHack" },
-				todo = { pattern = "TODO", group = "MiniHipatternsTodo" },
-				note = { pattern = "NOTE", group = "MiniHipatternsNote" },
-			},
-		},
-		config = function(_, opts)
-			require("mini.hipatterns").setup(opts)
+		config = function()
+			require("mini.hipatterns").setup({
+				highlighters = {
+					fixme = { pattern = "FIXME", group = "MiniHipatternsFixme" },
+					hack = { pattern = "HACK", group = "MiniHipatternsHack" },
+					todo = { pattern = "TODO", group = "MiniHipatternsTodo" },
+					note = { pattern = "NOTE", group = "MiniHipatternsNote" },
+					hex_color = require("mini.hipatterns").gen_highlighter.hex_color(),
+				},
+			})
 		end,
 	},
 	{
@@ -205,85 +263,93 @@ return {
 			{ mode = "v", "K" },
 		},
 	},
-	{
-		"mini.base16",
-		dev = true,
-		lazy = false,
-		config = function()
-			local ok, _ = pcall(require, "mini.base16")
-			vim.cmd.hi("clear")
-			local p = {
-				base00 = "#181818",
-				base01 = "#282828",
-				base02 = "#383838",
-				base03 = "#585858",
-				base04 = "#b8b8b8",
-				base05 = "#d8d8d8",
-				base06 = "#e8e8e8",
-				base07 = "#f8f8f8",
-				base08 = "#ab4642",
-				base09 = "#dc9656",
-				base0A = "#f7ca88",
-				base0B = "#a1b56c",
-				base0C = "#86c1b9",
-				base0D = "#7cafc2",
-				base0E = "#ba8baf",
-				base0F = "#a16946",
-			}
-
-			local function apply()
-				vim.cmd.hi("clear")
-				require("mini.base16").setup({ palette = p })
-				local hls = {
-					Delimiter = { fg = p.base05 },
-					Special = { fg = p.base0A },
-					Charcter = { fg = p.base09 },
-					["@lsp.type.variable"] = { fg = p.base06 },
-					Identifier = { fg = "#DE8452" },
-					["@lsp.mod.global"] = { fg = p.base08 },
-					StatusLine = { bg = p.base01, fg = p.base04 },
-					CursorLineNr = { fg = p.base04, bold = true, bg = p.base01 },
-					["@markup.heading.1.markdown"] = { fg = p.base08 },
-					["@markup.heading.2.markdown"] = { fg = p.base09 },
-					["@markup.heading.3.markdown"] = { fg = p.base0A },
-					["@markup.heading.4.markdown"] = { fg = p.base0B },
-					["@markup.heading.5.markdown"] = { fg = p.pase0B },
-					["@markup.heading.6.markdown"] = { fg = p.base0C },
-					RenderMarkdownH1 = { fg = p.base08 },
-					RenderMarkdownH2 = { fg = p.base09 },
-					RenderMarkdownH3 = { fg = p.base0A },
-					RenderMarkdownH4 = { fg = p.base0B },
-					RenderMarkdownH5 = { fg = p.pase0B },
-					RenderMarkdownH6 = { fg = p.base0C },
-					-- RenderMarkdownH1Bg = { fg = p.base08, bg = p.base01 },
-					-- RenderMarkdownH2Bg = { fg = p.base09, bg = p.base01 },
-					-- RenderMarkdownH3Bg = { fg = p.base0A, bg = p.base01 },
-					-- RenderMarkdownH4Bg = { fg = p.base0B, bg = p.base01 },
-					-- RenderMarkdownH5Bg = { fg = p.base0C, bg = p.base01 },
-					-- RenderMarkdownH6Bg = { fg = p.baseOD, bg = p.base01 },
-				}
-
-				for k, v in pairs(hls) do
-					vim.api.nvim_set_hl(0, k, v)
-				end
-				vim.api.nvim_exec_autocmds("Colorscheme", { modeline = false })
-				vim.g.colors_name = "default_dark"
-			end
-
-			if not ok then
-				vim.api.nvim_create_autocmd("User", {
-					pattern = "VeryLazy",
-					once = true,
-					callback = function()
-						apply()
-						return true
-					end,
-				})
-			else
-				apply()
-			end
-		end,
-	},
+	-- {
+	-- 	"mini.base16",
+	-- 	dev = true,
+	-- 	lazy = false,
+	-- 	config = function()
+	-- 		local ok, _ = pcall(require, "mini.base16")
+	-- 		vim.cmd.hi("clear")
+	-- 		local p = {
+	-- 			base00 = "#181818",
+	-- 			base01 = "#282828",
+	-- 			base02 = "#383838",
+	-- 			base03 = "#585858",
+	-- 			base04 = "#b8b8b8",
+	-- 			base05 = "#d8d8d8",
+	-- 			base06 = "#e8e8e8",
+	-- 			base07 = "#f8f8f8",
+	-- 			base08 = "#ab4642",
+	-- 			base09 = "#dc9656",
+	-- 			base0A = "#f7ca88",
+	-- 			base0B = "#a1b56c",
+	-- 			base0C = "#86c1b9",
+	-- 			base0D = "#7cafc2",
+	-- 			base0E = "#ba8baf",
+	-- 			base0F = "#a16946",
+	-- 		}
+	--
+	-- 		local function apply()
+	-- 			vim.cmd.hi("clear")
+	-- 			require("mini.base16").setup({ palette = p })
+	-- 			local hls = {
+	-- 				Delimiter = { fg = p.base05 },
+	-- 				Special = { fg = p.base0A },
+	-- 				Charcter = { fg = p.base09 },
+	-- 				["@lsp.type.variable"] = { fg = p.base06 },
+	-- 				Identifier = { fg = "#DE8452" },
+	-- 				["@lsp.mod.global"] = { fg = p.base08 },
+	-- 				StatusLine = { bg = p.base01, fg = p.base04 },
+	-- 				CursorLineNr = { fg = p.base04, bold = true, bg = p.base01 },
+	-- 				["@markup.heading.1.markdown"] = { fg = p.base08 },
+	-- 				["@markup.heading.2.markdown"] = { fg = p.base09 },
+	-- 				["@markup.heading.3.markdown"] = { fg = p.base0A },
+	-- 				["@markup.heading.4.markdown"] = { fg = p.base0B },
+	-- 				["@markup.heading.5.markdown"] = { fg = p.pase0B },
+	-- 				["@markup.heading.6.markdown"] = { fg = p.base0C },
+	-- 				RenderMarkdownH1 = { fg = p.base08 },
+	-- 				RenderMarkdownH2 = { fg = p.base09 },
+	-- 				RenderMarkdownH3 = { fg = p.base0A },
+	-- 				RenderMarkdownH4 = { fg = p.base0B },
+	-- 				RenderMarkdownH5 = { fg = p.pase0B },
+	-- 				RenderMarkdownH6 = { fg = p.base0C },
+	-- 				-- RenderMarkdownH1Bg = { fg = p.base08, bg = p.base01 },
+	-- 				-- RenderMarkdownH2Bg = { fg = p.base09, bg = p.base01 },
+	-- 				-- RenderMarkdownH3Bg = { fg = p.base0A, bg = p.base01 },
+	-- 				-- RenderMarkdownH4Bg = { fg = p.base0B, bg = p.base01 },
+	-- 				-- RenderMarkdownH5Bg = { fg = p.base0C, bg = p.base01 },
+	-- 				-- RenderMarkdownH6Bg = { fg = p.baseOD, bg = p.base01 },
+	-- 			}
+	--
+	-- 			for k, v in pairs(hls) do
+	-- 				vim.api.nvim_set_hl(0, k, v)
+	-- 			end
+	-- 			vim.api.nvim_exec_autocmds("Colorscheme", { modeline = false })
+	-- 			vim.g.colors_name = "default_dark"
+	-- 		end
+	--
+	-- 		if not ok then
+	-- 			vim.api.nvim_create_autocmd("User", {
+	-- 				pattern = "VeryLazy",
+	-- 				once = true,
+	-- 				callback = function()
+	-- 					apply()
+	-- 					return true
+	-- 				end,
+	-- 			})
+	-- 		else
+	-- 			apply()
+	-- 		end
+	-- 	end,
+	-- },
+	-- {
+	-- 	"mini.hues",
+	-- 	dev = true,
+	-- 	lazy = false,
+	-- 	config = function()
+	-- 		vim.cmd.colorscheme("randomhue")
+	-- 	end,
+	-- },
 	{
 		"mini.completion",
 		dev = true,
@@ -300,16 +366,43 @@ return {
 			})
 		end,
 	},
-	{
-		"mini.statusline",
-		dev = true,
-		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
-		config = function()
-			require("mini.statusline").setup({
-				use_icons = true,
-			})
-		end,
-	},
+	-- {
+	-- 	"mini.statusline",
+	-- 	dev = true,
+	-- 	event = { "BufWritePre", "BufReadPost", "BufNewFile" },
+	-- 	config = function()
+	-- 		require("mini.statusline").setup({
+	-- 			use_icons = true,
+	-- 			content = {
+	-- 				active = function()
+	-- 					local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 130 })
+	-- 					local git = MiniStatusline.section_git({ trunc_width = 40 })
+	-- 					local diff = MiniStatusline.section_diff({ trunc_width = 75 })
+	-- 					local diagnostics = MiniStatusline.section_diagnostics({
+	-- 						trunc_width = 70,
+	-- 						icon = "D:",
+	-- 						{ ERROR = "E", WARN = "W", INFO = "I", HINT = "H" },
+	-- 					})
+	-- 					local lsp = MiniStatusline.section_lsp({ trunc_width = 120, icon = "LSP" })
+	-- 					local filename = MiniStatusline.section_filename({ trunc_width = 140 })
+	-- 					local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = 120 })
+	-- 					local location = MiniStatusline.section_location({ trunc_width = 75 })
+	-- 					local search = MiniStatusline.section_searchcount({ trunc_width = 75 })
+	--
+	-- 					return MiniStatusline.combine_groups({
+	-- 						{ hl = mode_hl, strings = { mode } },
+	-- 						{ hl = "MiniStatuslineDevinfo", strings = { git, diff, diagnostics, lsp } },
+	-- 						"%<", -- Mark general truncate point
+	-- 						{ hl = "MiniStatuslineFilename", strings = { filename } },
+	-- 						"%=", -- End left alignment
+	-- 						{ hl = "MiniStatuslineFileinfo", strings = { fileinfo } },
+	-- 						{ hl = mode_hl, strings = { search, location } },
+	-- 					})
+	-- 				end,
+	-- 			},
+	-- 		})
+	-- 	end,
+	-- },
 	{
 		"mini.files",
 		dev = true,
@@ -423,8 +516,26 @@ return {
 				callback = function(args)
 					local win_id = args.data.win_id
 					vim.wo[win_id].winbar = ""
+					vim.wo[win_id].relativenumber = false
 				end,
 			})
+
+			-- Oil style
+			-- vim.api.nvim_create_autocmd("User", {
+			-- 	pattern = "MiniFilesWindowUpdate",
+			-- 	callback = function(args)
+			-- 		local state = MiniFiles.get_explorer_state()
+			-- 		if state and state.windows and #state.windows ~= 0 then
+			-- 			local wincount = #state.windows
+			-- 			for _, v in ipairs(state.windows) do
+			-- 				local config = vim.api.nvim_win_get_config(v.win_id)
+			-- 				config.height = vim.o.lines
+			-- 				config.width = math.floor(vim.o.columns / wincount)
+			-- 				vim.api.nvim_win_set_config(v.win_id, config)
+			-- 			end
+			-- 		end
+			-- 	end,
+			-- })
 		end,
 		keys = {
 			{
@@ -450,23 +561,149 @@ return {
 		},
 	},
 	{
-		"mini.pairs",
-		event = "InsertEnter",
+		"mini.jump2d",
 		dev = true,
 		opts = {
-			modes = { insert = true, command = false, terminal = false },
-			-- skip autopair when next character is one of these
-			skip_next = [=[[%w%%%'%[%"%.%`%$]]=],
-			-- skip autopair when the cursor is inside these treesitter nodes
-			skip_ts = { "string" },
-			-- skip autopair when next character is closing pair
-			-- and there are more closing pairs than opening pairs
-			skip_unbalanced = true,
-			-- better deal with markdown code blocks
-			markdown = true,
+			view = {
+				dim = true,
+				n_steps_ahead = 100,
+			},
+			mappings = {
+				-- start_jumping = "",
+			},
 		},
 		config = function(_, opts)
-			require("mini.pairs").setup(opts)
+			require("mini.jump2d").setup(opts)
 		end,
+		keys = {
+			"<CR>",
+			{
+				"sk",
+				function()
+					MiniJump2d.start(MiniJump2d.builtin_opts.single_character)
+				end,
+			},
+			{
+				"sl",
+				function()
+					MiniJump2d.start(MiniJump2d.builtin_opts.query)
+				end,
+			},
+		},
+	},
+	{
+		"mini.clue",
+		dev = true,
+		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
+		config = function()
+			local miniclue = require("mini.clue")
+			local opts = {
+				triggers = {
+					{ mode = "n", keys = "<Leader>" },
+					{ mode = "x", keys = "<Leader>" },
+
+					{ mode = "n", keys = "<localleader>" },
+					{ mode = "x", keys = "<localleader>" },
+
+					{ mode = "n", keys = "[" },
+					{ mode = "x", keys = "[" },
+					{ mode = "n", keys = "]" },
+					{ mode = "x", keys = "]" },
+
+					-- Built-in completion
+					{ mode = "i", keys = "<C-x>" },
+
+					-- `g` key
+					{ mode = "n", keys = "g" },
+					{ mode = "x", keys = "g" },
+
+					-- Marks
+					{ mode = "n", keys = "'" },
+					{ mode = "n", keys = "`" },
+					{ mode = "n", keys = '"' },
+					{ mode = "x", keys = "'" },
+					{ mode = "x", keys = "`" },
+
+					-- Registers
+					{ mode = "n", keys = '"' },
+					{ mode = "x", keys = '"' },
+					{ mode = "i", keys = "<C-r>" },
+					{ mode = "c", keys = "<C-r>" },
+
+					-- Window commands
+					{ mode = "n", keys = "<C-w>" },
+
+					-- `z` key
+					{ mode = "n", keys = "z" },
+					{ mode = "x", keys = "z" },
+				},
+
+				clues = { -- {{{
+					{ mode = "n", keys = "<Leader>b", desc = "+Buffers" },
+					{ mode = "n", keys = "<Leader>ba", desc = "+All" },
+					{ mode = "c", keys = "<leader>c", desc = "+Compile" },
+					{ mode = "n", keys = "<Leader>f", desc = "+Find" },
+					{ mode = "n", keys = "<Leader>g", desc = "+Git" },
+					{ mode = "n", keys = "<Leader>gd", desc = "+GitDiff" },
+					{ mode = "n", keys = "<leader>i", desc = "+Inlay" },
+					{ mode = "n", keys = "<leader>l", desc = "+Loclist" },
+					{ mode = "n", keys = "<leader>m", desc = "+Make" },
+					{ mode = "n", keys = "<leader>n", desc = "+Nabla" },
+					{ mode = "n", keys = "<leader>o", desc = "+Old/Obsidian" },
+					{ mode = "n", keys = "<Leader>p", desc = "+Place" },
+					{ mode = "n", keys = "<Leader>q", desc = "+Quickfix" },
+					{ mode = "n", keys = "<Leader>s", desc = "+Signature" },
+					{ mode = "n", keys = "<Leader>v", desc = "+Variable" },
+					{ mode = "n", keys = "<Leader>vr", desc = "+Ref/Rename" },
+					{ mode = "n", keys = "<leader><tab>", desc = "+Tab" },
+					{ mode = "n", keys = "<localleader>t", desc = "+Terminal" },
+					-- Enhance this by adding descriptions for <Leader> mapping groups
+					miniclue.gen_clues.builtin_completion(),
+					miniclue.gen_clues.g(),
+					miniclue.gen_clues.marks(),
+					miniclue.gen_clues.registers(),
+					miniclue.gen_clues.windows({
+						submode_move = true,
+						submode_navigate = false,
+						submode_resize = true,
+					}),
+					miniclue.gen_clues.z(),
+				}, -- }}}
+			}
+			miniclue.setup(opts)
+		end,
+	},
+	{
+		"mini.git",
+		dev = true,
+		cmd = "Git",
+		opts = {
+			command = {
+				split = "horizontal",
+			},
+		},
+		config = function(_, opts)
+			require("mini.git").setup(opts)
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "MiniGitCommandSplit",
+				callback = function(data)
+					vim.keymap.set("n", "q", "<cmd>quit<cr>", { desc = "quit", buffer = data.buf })
+				end,
+			})
+		end,
+		keys = {
+			{
+				mode = { "n", "x" },
+				"<leader>gs",
+				function()
+					require("mini.git").show_at_cursor()
+				end,
+				desc = "Show at cursor",
+			},
+			{
+				"<leader>gc",
+				"<cmd>Git commit<cr>",
+			},
+		},
 	},
 }

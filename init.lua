@@ -27,7 +27,6 @@ vim.o.shada = "'100,<50,s10,:1000,/100,@100,h"
 o.title = true
 o.titlestring = "nvim"
 opt.completeopt = "menu,menuone,noselect"
-
 o.cmdheight = 1
 
 vim.g.bigfile_size = 1024 * 1024 * 1.5 -- 1.5 MB
@@ -36,6 +35,8 @@ vim.o.lazyredraw = true
 -- Relative line numbers
 opt.nu = true
 opt.rnu = true
+-- opt.nu = false
+-- opt.rnu = false
 
 -- set tab stop at 4
 opt.tabstop = 4
@@ -75,7 +76,7 @@ o.emoji = true
 -- Editor
 o.showmode = false
 opt.scrolloff = 8
-o.updatetime = 300
+-- o.updatetime = 300
 o.timeoutlen = 500
 o.ttimeoutlen = 10
 opt.swapfile = false
@@ -84,26 +85,28 @@ opt.undofile = true
 opt.wildoptions = "tagfile"
 opt.wildmenu = true
 o.makeprg = "just"
-opt.laststatus = 3 -- Or 3 for global statusline
+opt.laststatus = 2 -- Or 3 for global statusline
 opt.foldlevel = 99
 o.foldmethod = "expr"
-vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-vim.o.foldtext = ""
+o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+o.foldtext = ""
 o.list = true
 opt.listchars = "trail:∘,nbsp:‼,tab:  ,multispace: "
-o.fillchars = [[eob:~,vert:▕,vertleft:🭿,vertright:▕,verthoriz:🭿,horiz:▁,horizdown:▁,horizup:▔]]
+o.fillchars = [[eob: ,vert:▕,vertleft:🭿,vertright:▕,verthoriz:🭿,horiz:▁,horizdown:▁,horizup:▔]]
 o.virtualedit = "block"
-o.shortmess = "acstFOSWo"
+o.shortmess = "tacstFOSWCo"
 o.formatoptions = "rqnl1j"
 o.cmdwinheight = 4
+-- credit: https://github.com/nicknisi/dotfiles/blob/1360edda1bbb39168637d0dff13dd12c2a23d095/config/nvim/init.lua#L73
+-- if ripgrep installed, use that as a grepper
+-- o.grepprg = "rg --vimgrep --color=never --with-filename --line-number --no-heading --smart-case --"
+o.grepprg = [[rg --glob "!.git" --no-heading --with-filename --line-number --vimgrep --follow $*]]
+o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
 
 vim.g.netrw_banner = 0
 vim.g.netrw_mouse = 2
 
--- credit: https://github.com/nicknisi/dotfiles/blob/1360edda1bbb39168637d0dff13dd12c2a23d095/config/nvim/init.lua#L73
--- if ripgrep installed, use that as a grepper
-o.grepprg = "rg --vimgrep --color=never --with-filename --line-number --no-heading --smart-case --"
-o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
+-- o.background = "light"
 
 o.cursorline = false
 
@@ -118,6 +121,10 @@ vim.api.nvim_create_autocmd("User", {
 	callback = function()
 		require("config.autocommands")
 		require("config.keymaps")
+		if vim.g.neovide then
+			require("config.gui")
+		end
+		require("statusline")
 	end,
 })
 
@@ -169,7 +176,7 @@ local function on_attach(client, buffer)
 		buffer = buffer,
 	})
 	if client.supports_method("textDocument/inlayHint") then
-		vim.keymap.set("n", "<leader>h", function()
+		vim.keymap.set("n", "<leader>ih", function()
 			vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
 		end, { desc = "Inlay Hint" })
 	end
@@ -185,6 +192,71 @@ end
 local defaults = { on_attach = on_attach }
 -- Setup lazy.nvim
 require("lazy").setup({
+	-- Colorscheme
+	{
+		"ilof2/posterpole.nvim",
+		-- lazy = false,
+		-- priority = 1000,
+		opts = {
+			transparent = false,
+			-- colorless_bg = false, -- grayscale or not
+			dim_inactive = true, -- highlight inactive splits
+			brightness = 0, -- negative numbers - darker, positive - lighter
+			selected_tab_highlight = true, --highlight current selected tab
+			fg_saturation = 10, -- font saturation, gray colors become more brighter
+			bg_saturation = 0, -- background saturation
+		},
+		config = function(_, opts)
+			require("posterpole").setup(opts)
+			vim.cmd.colorscheme("posterpole")
+		end,
+	},
+	{
+		"AstroNvim/astrotheme",
+		-- lazy = false,
+		-- priority = 1000,
+		opts = {
+			highlights = {
+				global = {
+					modify_hl_groups = function(hl, c)
+						hl.MiniJump = { bold = true, bg = c.ui.red, fg = c.syntax.text }
+					end,
+				},
+			},
+		},
+		config = function(_, opts)
+			require("astrotheme").setup(opts)
+			vim.cmd.colorscheme("astrotheme")
+		end,
+	},
+	{
+		"junegunn/seoul256.vim",
+		lazy = false,
+		priority = 1000,
+		config = function()
+			local hi = function(name, v)
+				vim.api.nvim_set_hl(0, name, v)
+			end
+			vim.cmd.colorscheme("seoul256")
+			hi("Boolean", { fg = "#98bede" })
+			hi("Constant", { fg = "#79a8d0" })
+			hi("Comment", { fg = "#8ca98c" })
+			hi("String", { fg = "#98bcbd" })
+			hi("Exception", { fg = "#d96969" })
+			hi("Identifier", { fg = "#ddbdbf", bold = true })
+			hi("Keyword", { fg = "#e09b99" })
+			hi("Statusline", { bg = "#e09b99" })
+			hi("Statement", { fg = "#98bc99" })
+			hi("Special", { fg = "#e0bebc" })
+			hi("Tag", { fg = "#dfdebd" })
+			hi("Type", { fg = "#ffdddd" })
+			hi("Include", { fg = "#d3c6ac" })
+			hi("Delimiter", { fg = "#ad9493" })
+			hi("MiniJump", { bold = true, bg = "#d96969", fg = "#dfdebd" })
+			hi("MiniPickMatchRanges", { bold = true, bg = "#1c1c1c", fg = "#e09b99" })
+			hi("MiniPickMatchCurrent", { bold = true, bg = "#1c1c1c", fg = "#98bc99" })
+		end,
+	},
 	require("plugins.mini"),
 	{
 		"nvim-treesitter/nvim-treesitter",
@@ -316,13 +388,13 @@ require("lazy").setup({
 					},
 				},
 			},
-		},
-		clangd = {
-			on_attach = on_attach,
-		},
-		rust_analyzer = defaults,
-		markdown_oxide = {
-			on_attach = on_attach,
+			clangd = {
+				on_attach = on_attach,
+			},
+			rust_analyzer = defaults,
+			markdown_oxide = {
+				on_attach = on_attach,
+			},
 		},
 		config = function(_, opts)
 			local lspconfig = require("lspconfig")
@@ -350,6 +422,42 @@ require("lazy").setup({
 			sign_define("DiagnosticSignWarn", { text = " ", texthl = "DiagnosticSignWarn" })
 			sign_define("DiagnosticSignHint", { text = " ", texthl = "DiagnosticSignHint" })
 			sign_define("DiagnosticSignInfo", { text = " ", texthl = "DiagnosticSignInfo" })
+			local diagnostics_symbols = {
+				[vim.diagnostic.severity.ERROR] = "x",
+				[vim.diagnostic.severity.WARN] = "!",
+				[vim.diagnostic.severity.HINT] = "?",
+				[vim.diagnostic.severity.INFO] = "i",
+			}
+			vim.diagnostic.config({
+				underline = true,
+				severity_sort = true,
+				virtual_text = {
+					prefix = function(diag)
+						return diagnostics_symbols[diag.severity]
+					end,
+				},
+				float = {
+					header = " ",
+					border = "rounded",
+					source = "if_many",
+					title = { { " 󰌶 Diagnostics ", "FloatTitle" } },
+				},
+				signs = {
+					text = {
+						[vim.diagnostic.severity.ERROR] = "󰅙 ",
+						[vim.diagnostic.severity.WARN] = " ",
+						[vim.diagnostic.severity.HINT] = " ",
+						[vim.diagnostic.severity.INFO] = " ",
+					},
+					-- text = signs,
+					linehl = {
+						[vim.diagnostic.severity.ERROR] = "ErrorMsg",
+					},
+					numhl = {
+						[vim.diagnostic.severity.WARN] = "WarningMsg",
+					},
+				},
+			})
 		end,
 	},
 	{
@@ -473,11 +581,11 @@ require("lazy").setup({
 				-- disable_frontmatter = true,
 				note_id_func = function(title)
 					if title ~= nil then
-						return title:gsub("%s+", "-")
+						return title
 					else
 						local note_title
 						vim.ui.input({ prompt = "Title: " }, function(new_title)
-							note_title = new_title:gsub("%s+", "-")
+							note_title = new_title
 						end)
 						return note_title
 					end
@@ -665,7 +773,7 @@ require("lazy").setup({
 }, {
 	-- Configure any other settings here. See the documentation for more details.
 	-- colorscheme that will be used when installing plugins.
-	install = { colorscheme = { "habamax" } },
+	install = { colorscheme = { "zenner" } },
 	-- automatically check for plugin updates
 	checker = { notify = false },
 	defaults = {

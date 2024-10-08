@@ -93,4 +93,22 @@ end)
 
 vim.keymap.set("n", "<C-n>", "<cmd>cnext<cr>")
 vim.keymap.set("n", "<C-y>", "<cmd>cprev<cr>")
-vim.keymap.set("n", "<leader>gl", "<cmd>tab terminal lazygit<cr>")
+vim.keymap.set("n", "<leader>gl", "<cmd>tab terminal lazygit<cr>", {
+	desc = "open lazy git in tab",
+})
+
+map("n", "<localleader>tc", function()
+	vim.cmd.new()
+	vim.cmd.wincmd("j")
+	vim.api.nvim_win_set_height(0, 12)
+	vim.wo.winfixheight = true
+	vim.cmd.term()
+end, { desc = "Open cmd (split)" })
+
+map("n", "<localleader>tp", function()
+	vim.cmd.new()
+	vim.cmd.wincmd("j")
+	vim.api.nvim_win_set_height(0, 12)
+	vim.wo.winfixheight = true
+	vim.cmd.term("pwsh")
+end, { desc = "Open pwsh (split)" })

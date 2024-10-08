@@ -1,5 +1,7 @@
 local M = {}
 
+---Creates message in the message area. Will trim if the message will prompt an enter key
+---@param message string|table[]
 function M.message(message)
 	message = type(message) == "table" and message or { { message, "WarningMsg" } }
 	local max_width = vim.o.columns * math.max(vim.o.cmdheight - 1, 0) + vim.v.echospace
@@ -16,6 +18,8 @@ function M.message(message)
 	vim.api.nvim_echo(chunks, false, {})
 end
 
+---Gets all active preview windows
+---@return number[]
 function M.preview_windows()
 	local tab = vim.api.nvim_get_current_tabpage()
 	local wins = vim.api.nvim_tabpage_list_wins(tab)
@@ -30,6 +34,7 @@ function M.preview_windows()
 	return previewwindows
 end
 
+---Opens Signature Preview window
 function M._open_preview()
 	local previews = M.preview_windows()
 	local preview_win = previews[1]
@@ -135,20 +140,8 @@ local function signature_handler(_, result, ctx, config)
 	return actSig
 end
 
----etslkdjtlaksdj tlkasjdtlk jasdlkjtlk ajsdlk jlkasjdtlkajlksdjtlakjdt lkasdjtlkajlsdkjtalk jalksdjtlkajsdlkjtalkjtlka lkasdjtlka
----@param err any
----@param result any
----@param ctx any
----@param config any
-function M.hover(err, result, ctx, config)
-	config = config or {}
-	if result and result.contents then
-		local _, buf = M._open_preview()
-		M.set_preview(result.kind, result.contents.value)
-		vim.treesitter.start(buf, result.kind or "markdown")
-	end
-end
-
+---Request a function signature, and open a split
+---@param restore_pos boolean
 function M.request(restore_pos)
 	M.height = vim.api.nvim_get_option_value("previewheight", {})
 	M.width = vim.o.columns

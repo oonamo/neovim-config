@@ -31,13 +31,19 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
 })
 
 vim.api.nvim_create_autocmd({ "InsertEnter" }, {
-	callback = function()
+	callback = function(event)
+		if vim.bo[event.buf].ft == "minifiles" then
+			return
+		end
 		vim.wo.rnu = false
 	end,
 })
 
 vim.api.nvim_create_autocmd({ "InsertLeave" }, {
-	callback = function()
+	callback = function(event)
+		if vim.bo[event.buf].ft == "minifiles" then
+			return
+		end
 		vim.wo.rnu = true
 	end,
 })
