@@ -35,12 +35,10 @@ vim.o.lazyredraw = true
 -- Relative line numbers
 opt.nu = true
 opt.rnu = true
--- opt.nu = false
--- opt.rnu = false
 
 -- set tab stop at 4
-opt.tabstop = 4
-opt.softtabstop = 4
+opt.tabstop = 2
+opt.softtabstop = 2
 opt.expandtab = true
 
 -- autoindent
