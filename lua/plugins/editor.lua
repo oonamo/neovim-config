@@ -70,7 +70,10 @@ return {
 			{
 				"<leader>gc",
         function()
-          require("neogit").open()
+          require("neogit").open({
+            "commit",
+            kind = "split",
+          })
         end,
         desc = "Commit",
 			},

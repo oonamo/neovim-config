@@ -654,24 +654,14 @@ return {
 			{
 				"<leader>gaf",
 				mode = { "n", "x" },
-        "<cmd>Git add %<cr>",
+				"<cmd>Git add %<cr>",
 				desc = "Add current file",
 			},
 			{
 				"<leader>gap",
 				mode = { "n", "x" },
-        "<cmd>Git add .<cr>",
+				"<cmd>Git add .<cr>",
 				desc = "Add current project",
-			},
-			{
-				"<leader>gc",
-				"<cmd>Git commit<cr>",
-        desc = "Commit",
-			},
-			{
-				"<leader>gs",
-				"<cmd>Git status<cr>",
-        desc = "Status",
 			},
 		},
 	},
