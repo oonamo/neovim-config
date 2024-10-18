@@ -30,23 +30,25 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
 	end,
 })
 
-vim.api.nvim_create_autocmd({ "InsertEnter" }, {
-	callback = function(event)
-		if vim.bo[event.buf].ft == "minifiles" then
-			return
-		end
-		vim.wo.rnu = false
-	end,
-})
+if vim.o.rnu and vim.o.nu then
+	vim.api.nvim_create_autocmd({ "InsertEnter" }, {
+		callback = function(event)
+			if vim.bo[event.buf].ft == "minifiles" then
+				return
+			end
+			vim.wo.rnu = false
+		end,
+	})
 
-vim.api.nvim_create_autocmd({ "InsertLeave" }, {
-	callback = function(event)
-		if vim.bo[event.buf].ft == "minifiles" then
-			return
-		end
-		vim.wo.rnu = true
-	end,
-})
+	vim.api.nvim_create_autocmd({ "InsertLeave" }, {
+		callback = function(event)
+			if vim.bo[event.buf].ft == "minifiles" then
+				return
+			end
+			vim.wo.rnu = true
+		end,
+	})
+end
 
 vim.api.nvim_create_autocmd("CmdwinEnter", {
 	callback = function()

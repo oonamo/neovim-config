@@ -41,9 +41,11 @@ opt.tabstop = 2
 opt.softtabstop = 2
 opt.expandtab = true
 
+o.guicursor = ""
+
 -- autoindent
 opt.smartindent = true
-opt.shiftwidth = 4
+opt.shiftwidth = 2
 
 -- smarter breaking
 o.breakindent = true
@@ -104,9 +106,9 @@ o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
 vim.g.netrw_banner = 0
 vim.g.netrw_mouse = 2
 
--- o.background = "light"
-
-o.cursorline = false
+o.cursorline = true
+o.winblend = 15
+o.pumblend = 25
 
 vim.g.loaded_node_provider = 0
 vim.g.loaded_python3_provider = 0
@@ -123,6 +125,7 @@ vim.api.nvim_create_autocmd("User", {
 			require("config.gui")
 		end
 		require("statusline")
+		vim.o.statuscolumn = [[%!v:lua.require'config.statuscolumn'.statuscolumn()]]
 	end,
 })
 
@@ -192,67 +195,50 @@ local defaults = { on_attach = on_attach }
 require("lazy").setup({
 	-- Colorscheme
 	{
-		"ilof2/posterpole.nvim",
-		-- lazy = false,
-		-- priority = 1000,
-		opts = {
-			transparent = false,
-			-- colorless_bg = false, -- grayscale or not
-			dim_inactive = true, -- highlight inactive splits
-			brightness = 0, -- negative numbers - darker, positive - lighter
-			selected_tab_highlight = true, --highlight current selected tab
-			fg_saturation = 10, -- font saturation, gray colors become more brighter
-			bg_saturation = 0, -- background saturation
-		},
-		config = function(_, opts)
-			require("posterpole").setup(opts)
-			vim.cmd.colorscheme("posterpole")
-		end,
-	},
-	{
-		"AstroNvim/astrotheme",
-		-- lazy = false,
-		-- priority = 1000,
-		opts = {
-			highlights = {
-				global = {
-					modify_hl_groups = function(hl, c)
-						hl.MiniJump = { bold = true, bg = c.ui.red, fg = c.syntax.text }
-					end,
-				},
-			},
-		},
-		config = function(_, opts)
-			require("astrotheme").setup(opts)
-			vim.cmd.colorscheme("astrotheme")
-		end,
-	},
-	{
 		"junegunn/seoul256.vim",
-		lazy = false,
-		priority = 1000,
+		-- lazy = false,
+		-- priority = 1000,
 		config = function()
+			-- DARK: 233 - 239
+			-- vim.g.seoul256_background = 233
+			-- LIGHT: 252 - 256
+			vim.g.seoul256_background = 256
 			local hi = function(name, v)
 				vim.api.nvim_set_hl(0, name, v)
 			end
-			vim.cmd.colorscheme("seoul256")
-			hi("Boolean", { fg = "#98bede" })
-			hi("Constant", { fg = "#79a8d0" })
-			hi("Comment", { fg = "#8ca98c" })
-			hi("String", { fg = "#98bcbd" })
-			hi("Exception", { fg = "#d96969" })
-			hi("Identifier", { fg = "#ddbdbf", bold = true })
-			hi("Keyword", { fg = "#e09b99" })
-			hi("Statusline", { bg = "#e09b99" })
-			hi("Statement", { fg = "#98bc99" })
-			hi("Special", { fg = "#e0bebc" })
-			hi("Tag", { fg = "#dfdebd" })
-			hi("Type", { fg = "#ffdddd" })
-			hi("Include", { fg = "#d3c6ac" })
-			hi("Delimiter", { fg = "#ad9493" })
+			if vim.o.background == "light" then
+				vim.cmd.colorscheme("seoul256-light")
+			else
+				vim.cmd.colorscheme("seoul256")
+				-- hi("Boolean", { fg = "#98bede" })
+				-- hi("Constant", { fg = "#79a8d0" })
+				-- hi("Comment", { fg = "#8ca98c" })
+				-- hi("String", { fg = "#98bcbd" })
+				-- hi("Exception", { fg = "#d96969" })
+				-- hi("Identifier", { fg = "#ddbdbf", bold = true })
+				-- hi("Keyword", { fg = "#e09b99" })
+				-- hi("Statusline", { bg = "#e09b99" })
+				-- hi("Statement", { fg = "#98bc99" })
+				-- hi("Special", { fg = "#e0bebc" })
+				-- hi("Tag", { fg = "#dfdebd" })
+				-- hi("Type", { fg = "#ffdddd" })
+				-- hi("Include", { fg = "#d3c6ac" })
+				-- hi("Delimiter", { fg = "#ad9493" })
+			end
+			hi("SignColumn", { fg = "#d19972", bg = "NONE" })
 			hi("MiniJump", { bold = true, bg = "#d96969", fg = "#dfdebd" })
 			hi("MiniPickMatchRanges", { bold = true, bg = "#1c1c1c", fg = "#e09b99" })
 			hi("MiniPickMatchCurrent", { bold = true, bg = "#1c1c1c", fg = "#98bc99" })
+		end,
+	},
+	{
+		"EdenEast/nightfox.nvim",
+		lazy = false,
+		priority = 1000,
+		opts = {},
+		config = function(_, opts)
+			require("nightfox").setup(opts)
+			vim.cmd.colorscheme("duskfox")
 		end,
 	},
 	require("plugins.mini"),
@@ -328,15 +314,27 @@ require("lazy").setup({
 				cpp = { "clang-format" },
 			},
 			timeout_ms = 500,
-			format_on_save = function()
-				if vim.g.disable_autoformat then
-					return
-				end
-				return {
-					timeout_ms = 500,
-					lsp_fallback = true,
-				}
-			end,
+		},
+		keys = {
+			{
+				"<leader>ff",
+				function()
+					require("conform").format({
+						timeout_ms = 500,
+						lsp_fallback = true,
+					})
+				end,
+			},
+			{
+				"gf",
+				mode = "v",
+				function()
+					require("conform").format({
+						timeout_ms = 500,
+						lsp_fallback = true,
+					})
+				end,
+			},
 		},
 	},
 	{
@@ -442,10 +440,10 @@ require("lazy").setup({
 				},
 				signs = {
 					text = {
-						[vim.diagnostic.severity.ERROR] = "󰅙 ",
-						[vim.diagnostic.severity.WARN] = " ",
-						[vim.diagnostic.severity.HINT] = " ",
-						[vim.diagnostic.severity.INFO] = " ",
+						[vim.diagnostic.severity.ERROR] = " ",
+						[vim.diagnostic.severity.WARN] = " ",
+						[vim.diagnostic.severity.HINT] = " ",
+						[vim.diagnostic.severity.INFO] = " ",
 					},
 					-- text = signs,
 					linehl = {
@@ -464,6 +462,7 @@ require("lazy").setup({
 		opts = function()
 			local block = "█"
 			return {
+				preset = "obsidian",
 				render_modes = { "n", "c" },
 				quote = { repeat_linebreak = true },
 				callout = {
@@ -483,26 +482,22 @@ require("lazy").setup({
 					border = "thick",
 				},
 				heading = {
-					position = "overlay",
 					width = "block",
 					sign = false,
 					min_width = 40,
+					-- left_pad = 0.5,
 					left_pad = 2,
 					right_pad = 4,
-					border = vim.g.neovide == nil,
-					border_virtual = true,
-					icons = {
-						block .. " ",
-						block .. block .. " ",
-						block .. block .. block .. " ",
-						block .. block .. block .. block .. " ",
-						block .. block .. block .. block .. block .. " ",
-						block .. block .. block .. block .. block .. block .. " ",
-					},
-				},
-				indent = {
-					enabled = true,
-					skip_heading = true,
+					-- right_pad = 0.5,
+					-- border_virtual = true,
+					-- icons = {
+					-- block .. " ",
+					-- block .. block .. " ",
+					-- block .. block .. block .. " ",
+					-- block .. block .. block .. block .. " ",
+					-- block .. block .. block .. block .. block .. " ",
+					-- block .. block .. block .. block .. block .. block .. " ",
+					--     },
 				},
 				pipe_table = {
 					preset = "round",
@@ -543,7 +538,9 @@ require("lazy").setup({
 				},
 			},
 			"nvim-lua/plenary.nvim",
-			"folke/zen-mode.nvim",
+			{
+				"folke/zen-mode.nvim",
+			},
 		},
 		cmd = "GoToNotes",
 		config = function()
@@ -632,7 +629,7 @@ require("lazy").setup({
 				callbacks = {
 					enter_note = function()
 						vim.schedule(function()
-							vim.cmd("SoftWrapMode")
+							require("wrapping").soft_wrap_mode()
 							vim.opt.shiftwidth = 2
 						end)
 					end,
@@ -743,11 +740,7 @@ require("lazy").setup({
 			vim.api.nvim_create_user_command("GoToNotes", function()
 				require("mini.sessions").read("Notes")
 				vim.o.conceallevel = 2
-				if not package.loaded["wrapping"] then
-					require("wrapping").soft_wrap_mode()
-				else
-					vim.cmd.SoftWrapMode()
-				end
+				require("wrapping").soft_wrap_mode()
 			end, {})
 		end,
 	},
@@ -756,6 +749,7 @@ require("lazy").setup({
 		opts = {
 			notify_on_switch = false,
 			create_keymaps = false,
+			create_commands = false,
 			auto_set_mode_filetype_allowlist = {
 				"asciidoc",
 				"gitcommit",

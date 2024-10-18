@@ -4,15 +4,6 @@ return {
 		lazy = true,
 	},
 	{
-		"mini.base16",
-		dev = true,
-		-- lazy = false,
-		-- priority = 1000,
-		config = function()
-			vim.cmd.colorscheme("burn")
-		end,
-	},
-	{
 		"mini.basic",
 		dev = true,
 		event = "VeryLazy",
@@ -47,13 +38,28 @@ return {
 		end,
 		config = function()
 			require("mini.pick").setup({
-				source = {
-					show = require("mini.pick").default_show,
-				},
+				-- source = {
+				-- 	show = require("mini.pick").default_show,
+				-- },
 				mappings = {
 					paste = "<C-y>",
 					refine = "<C-Space>",
 					refine_marked = "<C-r>",
+					choose_marked = "<C-q>",
+				},
+				window = {
+					prompt_cursor = "█",
+					config = function()
+						local height = math.floor(0.618 * vim.o.lines)
+						local width = math.floor(0.618 * vim.o.columns)
+						return {
+							anchor = "NW",
+							height = height,
+							width = width,
+							row = math.floor(0.5 * (vim.o.lines - height)),
+							col = math.floor(0.5 * (vim.o.columns - width)),
+						}
+					end,
 				},
 			})
 		end,
@@ -101,7 +107,9 @@ return {
 			},
 			{
 				"<leader>fm",
-				"<cmd>Pick marks<cr>",
+				function()
+					require("mini.extra").pickers.marks()
+				end,
 				desc = "marks",
 			},
 			{
@@ -263,93 +271,85 @@ return {
 			{ mode = "v", "K" },
 		},
 	},
-	-- {
-	-- 	"mini.base16",
-	-- 	dev = true,
-	-- 	lazy = false,
-	-- 	config = function()
-	-- 		local ok, _ = pcall(require, "mini.base16")
-	-- 		vim.cmd.hi("clear")
-	-- 		local p = {
-	-- 			base00 = "#181818",
-	-- 			base01 = "#282828",
-	-- 			base02 = "#383838",
-	-- 			base03 = "#585858",
-	-- 			base04 = "#b8b8b8",
-	-- 			base05 = "#d8d8d8",
-	-- 			base06 = "#e8e8e8",
-	-- 			base07 = "#f8f8f8",
-	-- 			base08 = "#ab4642",
-	-- 			base09 = "#dc9656",
-	-- 			base0A = "#f7ca88",
-	-- 			base0B = "#a1b56c",
-	-- 			base0C = "#86c1b9",
-	-- 			base0D = "#7cafc2",
-	-- 			base0E = "#ba8baf",
-	-- 			base0F = "#a16946",
-	-- 		}
-	--
-	-- 		local function apply()
-	-- 			vim.cmd.hi("clear")
-	-- 			require("mini.base16").setup({ palette = p })
-	-- 			local hls = {
-	-- 				Delimiter = { fg = p.base05 },
-	-- 				Special = { fg = p.base0A },
-	-- 				Charcter = { fg = p.base09 },
-	-- 				["@lsp.type.variable"] = { fg = p.base06 },
-	-- 				Identifier = { fg = "#DE8452" },
-	-- 				["@lsp.mod.global"] = { fg = p.base08 },
-	-- 				StatusLine = { bg = p.base01, fg = p.base04 },
-	-- 				CursorLineNr = { fg = p.base04, bold = true, bg = p.base01 },
-	-- 				["@markup.heading.1.markdown"] = { fg = p.base08 },
-	-- 				["@markup.heading.2.markdown"] = { fg = p.base09 },
-	-- 				["@markup.heading.3.markdown"] = { fg = p.base0A },
-	-- 				["@markup.heading.4.markdown"] = { fg = p.base0B },
-	-- 				["@markup.heading.5.markdown"] = { fg = p.pase0B },
-	-- 				["@markup.heading.6.markdown"] = { fg = p.base0C },
-	-- 				RenderMarkdownH1 = { fg = p.base08 },
-	-- 				RenderMarkdownH2 = { fg = p.base09 },
-	-- 				RenderMarkdownH3 = { fg = p.base0A },
-	-- 				RenderMarkdownH4 = { fg = p.base0B },
-	-- 				RenderMarkdownH5 = { fg = p.pase0B },
-	-- 				RenderMarkdownH6 = { fg = p.base0C },
-	-- 				-- RenderMarkdownH1Bg = { fg = p.base08, bg = p.base01 },
-	-- 				-- RenderMarkdownH2Bg = { fg = p.base09, bg = p.base01 },
-	-- 				-- RenderMarkdownH3Bg = { fg = p.base0A, bg = p.base01 },
-	-- 				-- RenderMarkdownH4Bg = { fg = p.base0B, bg = p.base01 },
-	-- 				-- RenderMarkdownH5Bg = { fg = p.base0C, bg = p.base01 },
-	-- 				-- RenderMarkdownH6Bg = { fg = p.baseOD, bg = p.base01 },
-	-- 			}
-	--
-	-- 			for k, v in pairs(hls) do
-	-- 				vim.api.nvim_set_hl(0, k, v)
-	-- 			end
-	-- 			vim.api.nvim_exec_autocmds("Colorscheme", { modeline = false })
-	-- 			vim.g.colors_name = "default_dark"
-	-- 		end
-	--
-	-- 		if not ok then
-	-- 			vim.api.nvim_create_autocmd("User", {
-	-- 				pattern = "VeryLazy",
-	-- 				once = true,
-	-- 				callback = function()
-	-- 					apply()
-	-- 					return true
-	-- 				end,
-	-- 			})
-	-- 		else
-	-- 			apply()
-	-- 		end
-	-- 	end,
-	-- },
-	-- {
-	-- 	"mini.hues",
-	-- 	dev = true,
-	-- 	lazy = false,
-	-- 	config = function()
-	-- 		vim.cmd.colorscheme("randomhue")
-	-- 	end,
-	-- },
+	{
+		"mini.base16",
+		dev = true,
+		-- lazy = false,
+		config = function()
+			local ok, _ = pcall(require, "mini.base16")
+			vim.cmd.hi("clear")
+			local p = {
+				base00 = "#181818",
+				base01 = "#282828",
+				base02 = "#383838",
+				base03 = "#585858",
+				base04 = "#b8b8b8",
+				base05 = "#d8d8d8",
+				base06 = "#e8e8e8",
+				base07 = "#f8f8f8",
+				base08 = "#ab4642",
+				base09 = "#dc9656",
+				base0A = "#f7ca88",
+				base0B = "#a1b56c",
+				base0C = "#86c1b9",
+				base0D = "#7cafc2",
+				base0E = "#ba8baf",
+				base0F = "#a16946",
+			}
+
+			local function apply()
+				vim.cmd.hi("clear")
+				require("mini.base16").setup({ palette = p })
+				local hls = {
+					Delimiter = { fg = p.base05 },
+					Special = { fg = p.base0A },
+					Charcter = { fg = p.base09 },
+					["@lsp.type.variable"] = { fg = p.base06 },
+					Identifier = { fg = "#DE8452" },
+					["@lsp.mod.global"] = { fg = p.base08 },
+					StatusLine = { bg = p.base01, fg = p.base04 },
+					CursorLineNr = { fg = p.base04, bold = true, bg = p.base01 },
+					["@markup.heading.1.markdown"] = { fg = p.base08 },
+					["@markup.heading.2.markdown"] = { fg = p.base09 },
+					["@markup.heading.3.markdown"] = { fg = p.base0A },
+					["@markup.heading.4.markdown"] = { fg = p.base0B },
+					["@markup.heading.5.markdown"] = { fg = p.pase0B },
+					["@markup.heading.6.markdown"] = { fg = p.base0C },
+					RenderMarkdownH1 = { fg = p.base08 },
+					RenderMarkdownH2 = { fg = p.base09 },
+					RenderMarkdownH3 = { fg = p.base0A },
+					RenderMarkdownH4 = { fg = p.base0B },
+					RenderMarkdownH5 = { fg = p.pase0B },
+					RenderMarkdownH6 = { fg = p.base0C },
+					-- RenderMarkdownH1Bg = { fg = p.base08, bg = p.base01 },
+					-- RenderMarkdownH2Bg = { fg = p.base09, bg = p.base01 },
+					-- RenderMarkdownH3Bg = { fg = p.base0A, bg = p.base01 },
+					-- RenderMarkdownH4Bg = { fg = p.base0B, bg = p.base01 },
+					-- RenderMarkdownH5Bg = { fg = p.base0C, bg = p.base01 },
+					-- RenderMarkdownH6Bg = { fg = p.baseOD, bg = p.base01 },
+				}
+
+				for k, v in pairs(hls) do
+					vim.api.nvim_set_hl(0, k, v)
+				end
+				vim.api.nvim_exec_autocmds("Colorscheme", { modeline = false })
+				vim.g.colors_name = "default_dark"
+			end
+
+			if not ok then
+				vim.api.nvim_create_autocmd("User", {
+					pattern = "VeryLazy",
+					once = true,
+					callback = function()
+						apply()
+						return true
+					end,
+				})
+			else
+				apply()
+			end
+		end,
+	},
 	{
 		"mini.completion",
 		dev = true,
@@ -366,43 +366,6 @@ return {
 			})
 		end,
 	},
-	-- {
-	-- 	"mini.statusline",
-	-- 	dev = true,
-	-- 	event = { "BufWritePre", "BufReadPost", "BufNewFile" },
-	-- 	config = function()
-	-- 		require("mini.statusline").setup({
-	-- 			use_icons = true,
-	-- 			content = {
-	-- 				active = function()
-	-- 					local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 130 })
-	-- 					local git = MiniStatusline.section_git({ trunc_width = 40 })
-	-- 					local diff = MiniStatusline.section_diff({ trunc_width = 75 })
-	-- 					local diagnostics = MiniStatusline.section_diagnostics({
-	-- 						trunc_width = 70,
-	-- 						icon = "D:",
-	-- 						{ ERROR = "E", WARN = "W", INFO = "I", HINT = "H" },
-	-- 					})
-	-- 					local lsp = MiniStatusline.section_lsp({ trunc_width = 120, icon = "LSP" })
-	-- 					local filename = MiniStatusline.section_filename({ trunc_width = 140 })
-	-- 					local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = 120 })
-	-- 					local location = MiniStatusline.section_location({ trunc_width = 75 })
-	-- 					local search = MiniStatusline.section_searchcount({ trunc_width = 75 })
-	--
-	-- 					return MiniStatusline.combine_groups({
-	-- 						{ hl = mode_hl, strings = { mode } },
-	-- 						{ hl = "MiniStatuslineDevinfo", strings = { git, diff, diagnostics, lsp } },
-	-- 						"%<", -- Mark general truncate point
-	-- 						{ hl = "MiniStatuslineFilename", strings = { filename } },
-	-- 						"%=", -- End left alignment
-	-- 						{ hl = "MiniStatuslineFileinfo", strings = { fileinfo } },
-	-- 						{ hl = mode_hl, strings = { search, location } },
-	-- 					})
-	-- 				end,
-	-- 			},
-	-- 		})
-	-- 	end,
-	-- },
 	{
 		"mini.files",
 		dev = true,
@@ -517,6 +480,9 @@ return {
 					local win_id = args.data.win_id
 					vim.wo[win_id].winbar = ""
 					vim.wo[win_id].relativenumber = false
+					vim.api.nvim_win_set_config(args.data.win_id, {
+						border = { " " },
+					})
 				end,
 			})
 
@@ -564,19 +530,21 @@ return {
 		"mini.jump2d",
 		dev = true,
 		opts = {
+			spotter = nil,
 			view = {
 				dim = true,
 				n_steps_ahead = 100,
 			},
 			mappings = {
-				-- start_jumping = "",
+				start_jumping = "<C-s>",
 			},
 		},
 		config = function(_, opts)
+      opts.spotter = require("mini.jump2d").gen_pattern_spotter("[^%s%p]+")
 			require("mini.jump2d").setup(opts)
 		end,
 		keys = {
-			"<CR>",
+			"<C-s>",
 			{
 				"sk",
 				function()
@@ -693,8 +661,8 @@ return {
 		end,
 		keys = {
 			{
-				mode = { "n", "x" },
 				"<leader>gs",
+				mode = { "n", "x" },
 				function()
 					require("mini.git").show_at_cursor()
 				end,
@@ -705,5 +673,56 @@ return {
 				"<cmd>Git commit<cr>",
 			},
 		},
+	},
+	{
+		"mini.icons",
+		dev = true,
+		event = "VeryLazy",
+		config = function()
+			require("mini.icons").setup()
+			require("mini.icons").mock_nvim_web_devicons()
+			require("mini.icons").tweak_lsp_kind()
+		end,
+	},
+	{
+		"mini.align",
+		dev = true,
+		config = function()
+			require("mini.align").setup()
+		end,
+		keys = {
+			{ mode = { "x", "v" }, "ga" },
+		},
+	},
+	{
+		"mini.notify",
+		dev = true,
+		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
+		init = function()
+			local opts = { ERROR = { duration = 10000 } }
+			vim.notify = require("mini.notify").make_notify(opts)
+		end,
+		config = function()
+			local filterout_lua_diagnosing = function(notif_arr)
+				local not_diagnosing = function(notif)
+					return not vim.startswith(notif.msg, "lua_ls: Diagnosing")
+				end
+				notif_arr = vim.tbl_filter(not_diagnosing, notif_arr)
+				return MiniNotify.default_sort(notif_arr)
+			end
+			require("mini.notify").setup({
+				content = {
+					sort = filterout_lua_diagnosing,
+				},
+				window = {
+					config = function()
+						local has_statusline = vim.o.laststatus > 0
+						local pad = vim.o.cmdheight + (has_statusline and 1 or 0)
+						return { anchor = "SE", col = vim.o.columns, row = vim.o.lines - pad, border = "none" }
+					end,
+					winblend = 50,
+				},
+			})
+		end,
 	},
 }

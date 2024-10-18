@@ -53,22 +53,22 @@ map("n", "<leader>bad", "<cmd>%bd|e#<cr>", { desc = "Delete all buffers" })
 
 map("n", "<leader>cp", function()
 	local args = vim.fn.input({
-		prompt = "Compile > " .. vim.o.makeprg,
+		prompt = "Compile > ",
 		default = (vim.g.last_compile_command or ""),
 	})
 	vim.g.last_compile_command = args
-	vim.cmd("tab term " .. vim.o.makeprg .. args)
+	vim.cmd("tab term " .. args)
 end, { desc = "Open compile in terminal " })
 
 map("n", "<leader>ca", function()
 	if not vim.g.last_compile_command or vim.g.last_compile_command == "" then
 		local args = vim.fn.input({
-			prompt = "Compile > " .. vim.o.makeprg .. " ",
+			prompt = "Compile > ",
 			default = (vim.g.last_compile_command or ""),
 		})
 		vim.g.last_compile_command = args
 	end
-	vim.cmd("tab term " .. vim.o.makeprg .. " " .. (vim.g.last_compile_command or ""))
+	vim.cmd("tab term " .. (vim.g.last_compile_command or ""))
 end, { desc = "Open compile in terminal " })
 
 map("n", "<leader>mp", function()
