@@ -7,7 +7,7 @@ return {
 			-- DARK: 233 - 239
 			-- vim.g.seoul256_background = 233
 			-- LIGHT: 252 - 256
-			vim.g.seoul256_background = 256
+			-- vim.g.seoul256_background = 256
 			local hi = function(name, v)
 				vim.api.nvim_set_hl(0, name, v)
 			end

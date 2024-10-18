@@ -485,23 +485,6 @@ return {
 					})
 				end,
 			})
-
-			-- Oil style
-			-- vim.api.nvim_create_autocmd("User", {
-			-- 	pattern = "MiniFilesWindowUpdate",
-			-- 	callback = function(args)
-			-- 		local state = MiniFiles.get_explorer_state()
-			-- 		if state and state.windows and #state.windows ~= 0 then
-			-- 			local wincount = #state.windows
-			-- 			for _, v in ipairs(state.windows) do
-			-- 				local config = vim.api.nvim_win_get_config(v.win_id)
-			-- 				config.height = vim.o.lines
-			-- 				config.width = math.floor(vim.o.columns / wincount)
-			-- 				vim.api.nvim_win_set_config(v.win_id, config)
-			-- 			end
-			-- 		end
-			-- 	end,
-			-- })
 		end,
 		keys = {
 			{
@@ -540,7 +523,7 @@ return {
 			},
 		},
 		config = function(_, opts)
-      opts.spotter = require("mini.jump2d").gen_pattern_spotter("[^%s%p]+")
+			opts.spotter = require("mini.jump2d").gen_pattern_spotter("[^%s%p]+")
 			require("mini.jump2d").setup(opts)
 		end,
 		keys = {
@@ -661,7 +644,7 @@ return {
 		end,
 		keys = {
 			{
-				"<leader>gs",
+				"<leader>gac",
 				mode = { "n", "x" },
 				function()
 					require("mini.git").show_at_cursor()
@@ -669,8 +652,26 @@ return {
 				desc = "Show at cursor",
 			},
 			{
+				"<leader>gaf",
+				mode = { "n", "x" },
+        "<cmd>Git add %<cr>",
+				desc = "Add current file",
+			},
+			{
+				"<leader>gap",
+				mode = { "n", "x" },
+        "<cmd>Git add .<cr>",
+				desc = "Add current project",
+			},
+			{
 				"<leader>gc",
 				"<cmd>Git commit<cr>",
+        desc = "Commit",
+			},
+			{
+				"<leader>gs",
+				"<cmd>Git status<cr>",
+        desc = "Status",
 			},
 		},
 	},
