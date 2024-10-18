@@ -59,4 +59,28 @@ return {
 			},
 		})
 	end,
+	{
+		"NeogitOrg/neogit",
+		dependencies = {
+			"sindrets/diffview.nvim", -- optional - Diff integration
+		},
+		config = true,
+		cmd = "Neogit",
+    keys = {
+			{
+				"<leader>gc",
+        function()
+          require("neogit").open()
+        end,
+        desc = "Commit",
+			},
+			{
+				"<leader>gs",
+        function()
+          require("neogit").open()
+        end,
+        desc = "Status",
+			},
+    },
+	},
 }

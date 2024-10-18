@@ -106,7 +106,7 @@ o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
 vim.g.netrw_banner = 0
 vim.g.netrw_mouse = 2
 
-o.cursorline = true
+o.cursorline = false
 o.winblend = 15
 o.pumblend = 25
 

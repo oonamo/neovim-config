@@ -7,7 +7,11 @@ return {
 			-- DARK: 233 - 239
 			-- vim.g.seoul256_background = 233
 			-- LIGHT: 252 - 256
-			-- vim.g.seoul256_background = 256
+			if vim.o.bg == "light" then
+				vim.g.seoul256_background = 256
+			else
+        vim.g.seoul256_background = 235
+			end
 			local hi = function(name, v)
 				vim.api.nvim_set_hl(0, name, v)
 			end
@@ -43,7 +47,15 @@ return {
 		opts = {},
 		config = function(_, opts)
 			require("nightfox").setup(opts)
-			vim.cmd.colorscheme("duskfox")
+			vim.cmd.colorscheme("nordfox")
 		end,
 	},
+  {
+    "catppuccin/nvim",
+    name = "catppuccin"
+  },
+  {
+    "rose-pine/nvim",
+    name = "rose-pine",
+  },
 }

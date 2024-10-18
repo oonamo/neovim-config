@@ -1,20 +1,4 @@
 local palette = {
-	base00 = "#191724",
-	base01 = "#1f1d2e",
-	base02 = "#26233a",
-	base03 = "#6e6a86",
-	base04 = "#908caa",
-	base05 = "#e0def4",
-	base06 = "#e0def4",
-	base07 = "#524f67",
-	base08 = "#eb6f92",
-	base09 = "#f6c177",
-	base0A = "#ebbcba",
-	base0B = "#31748f",
-	base0C = "#9ccfd8",
-	base0D = "#c4a7e7",
-	base0E = "#f6c177",
-	base0F = "#524f67",
 	-- base00 = "#faf0dc",
 	-- base01 = "#c8c8c8",
 	-- base02 = "#888888",
@@ -31,6 +15,11 @@ local palette = {
 	-- base0D = "#5890f8",
 	-- base0E = "#c173d1",
 	-- base0F = "#b3684f",
+  --
+    base00 = '#212121', base01 = '#303030', base02 = '#353535', base03 = '#4a4a4a',
+    base04 = '#b2ccd6', base05 = '#eeffff', base06 = '#eeffff', base07 = '#ffffff',
+    base08 = '#f07178', base09 = '#f78c6c', base0A = '#ffcb6b', base0B = '#c3e88d',
+    base0C = '#89ddff', base0D = '#82aaff', base0E = '#c792ea', base0F = '#ff5370'
 }
 
 require("mini.base16").setup({ palette = palette })
