@@ -108,6 +108,7 @@ return {
 			},
 		},
 		clangd = {
+      cmd = { "clangd", "--enable-config" },
 			on_attach = on_attach,
 		},
 		rust_analyzer = defaults,

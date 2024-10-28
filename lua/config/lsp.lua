@@ -24,13 +24,11 @@ function M.preview_windows()
 	local tab = vim.api.nvim_get_current_tabpage()
 	local wins = vim.api.nvim_tabpage_list_wins(tab)
 	local previewwindows = {}
-	for _, win in ipairs(wins) do
-		if vim.api.nvim_get_option_value("previewwindow", {
+	previewwindows = vim.iter(wins):filter(function(win)
+		return vim.api.nvim_get_option_value("previewwindow", {
 			win = win,
-		}) then
-			table.insert(previewwindows, win)
-		end
-	end
+		})
+	end):totable()
 	return previewwindows
 end
 
@@ -52,6 +50,7 @@ function M._open_preview()
 	vim.api.nvim_set_option_value("previewwindow", true, {
 		win = M.win,
 	})
+
 	vim.api.nvim_win_set_height(M.win, M.height)
 	vim.bo[buf].bufhidden = "wipe"
 	vim.keymap.set("n", "q", function()
@@ -70,15 +69,15 @@ end
 ---@param syntax string
 ---@param preview string[]
 function M.buf_set_preview(buf, win, syntax, preview)
+	vim.bo[buf].filetype = "markdown"
 	vim.bo[buf].undolevels = -1
 	vim.bo[buf].buftype = "nofile"
 	vim.bo[buf].modifiable = true
-	vim.wo[win].wrap = true
 	vim.api.nvim_buf_set_lines(0, 0, -1, true, preview)
+	vim.wo[win].wrap = true
 	vim.bo[buf].modifiable = false
 	vim.wo[win].spell = false
-	vim.bo[buf].filetype = "markdown"
-	-- vim.bo[buf].syntax = syntax
+	vim.bo[buf].syntax = syntax
 end
 
 ---Sets preview
@@ -93,13 +92,14 @@ function M.set_preview(syntax, preview)
 	if M.restore_pos then
 		vim.api.nvim_set_current_win(prev_win)
 		vim.api.nvim_win_set_cursor(prev_win, cursor_pos)
+		vim.api.nvim_input("zz")
 	end
 	return buf
 end
 
-local function signature_handler(_, result, ctx, config)
-	config = config or {}
-	config.focus_id = ctx.method
+---@param result lsp.SignatureHelp
+---@param ctx lsp.HandlerContext
+local function signature_handler(_, result, ctx)
 	if vim.api.nvim_get_current_buf() ~= ctx.bufnr then
 		return
 	end
@@ -140,6 +140,28 @@ local function signature_handler(_, result, ctx, config)
 	return actSig
 end
 
+---@param result lsp.Hover
+local function hover_handler(_, result, _)
+	if not result then
+		return
+	end
+	local lines = vim.lsp.util.convert_input_to_markdown_lines(result.contents)
+
+	local md_lines = vim.iter(lines)
+		:map(function(line)
+			return vim.split(line, "\n", { trimempty = true })[1]
+		end)
+		:totable()
+
+	if not md_lines or vim.tbl_isempty(md_lines) then
+		M.message("no docs available")
+		return
+	end
+
+	local buf = M.set_preview(result.contents.kind, md_lines)
+	vim.treesitter.start(buf)
+end
+
 ---Request a function signature, and open a split
 ---@param restore_pos boolean
 function M.request(restore_pos)
@@ -148,7 +170,7 @@ function M.request(restore_pos)
 	M.win = vim.api.nvim_get_current_win()
 	M.restore_pos = restore_pos
 	local params = vim.lsp.util.make_position_params()
-	vim.lsp.buf_request(0, "textDocument/signatureHelp", params, signature_handler)
+	vim.lsp.buf_request(0, "textDocument/hover", params, hover_handler)
 end
 
 return M

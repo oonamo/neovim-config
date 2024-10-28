@@ -7,6 +7,8 @@ local function opts(desc, silent, options)
 end
 
 local map = vim.keymap.set
+map("n", "<Esc>", "<cmd>nohlsearch<cr><Esc>")
+map("n", "<C-c>", "<cmd>nohlsearch<cr><C-c>", { silent = true })
 
 vim.api.nvim_set_keymap("i", "<C-c>", "<Esc>", opts("escape insert mode", true, { noremap = true }))
 
@@ -33,9 +35,9 @@ map({ "c", "i" }, "<C-h>", "<Home>")
 map({ "c", "i" }, "<C-l>", "<End>")
 map("c", "<C-n>", "<Down>")
 map("c", "<C-p>", "<Up>")
-map("c", "<C-x>", "<C-f>?")
-map("c", "<C-d>", "<C-right>")
-map("c", "<C-s>", "<C-left>")
+map("c", "<C-x>", "<C-f><Esc>?")
+map({ "c", "i" }, "<C-d>", "<C-right>")
+map({ "c", "i" }, "<C-s>", "<C-left>")
 
 map("n", "<localleader>n", "<cmd>tabnext<cr>", { desc = "Next tab" })
 map("n", "<localleader>b", "<cmd>tabprev<cr>", { desc = "Previous tab" })
@@ -60,17 +62,6 @@ map("n", "<leader>cp", function()
 	vim.cmd("tab term " .. args)
 end, { desc = "Open compile in terminal " })
 
-map("n", "<leader>ca", function()
-	if not vim.g.last_compile_command or vim.g.last_compile_command == "" then
-		local args = vim.fn.input({
-			prompt = "Compile > ",
-			default = (vim.g.last_compile_command or ""),
-		})
-		vim.g.last_compile_command = args
-	end
-	vim.cmd("tab term " .. (vim.g.last_compile_command or ""))
-end, { desc = "Open compile in terminal " })
-
 map("n", "<leader>mp", function()
 	local args = vim.fn.input({
 		prompt = "Compile > " .. vim.o.makeprg .. " ",
@@ -93,16 +84,13 @@ end)
 
 vim.keymap.set("n", "<C-n>", "<cmd>cnext<cr>")
 vim.keymap.set("n", "<C-y>", "<cmd>cprev<cr>")
-vim.keymap.set("n", "<leader>gl", "<cmd>tab terminal lazygit<cr>", {
-	desc = "open lazy git in tab",
-})
 
 map("n", "<localleader>tc", function()
 	vim.cmd.new()
 	vim.cmd.wincmd("j")
 	vim.api.nvim_win_set_height(0, 12)
 	vim.wo.winfixheight = true
-	vim.cmd.term()
+	vim.cmd.term("cmd.exe")
 end, { desc = "Open cmd (split)" })
 
 map("n", "<localleader>tp", function()
@@ -110,5 +98,5 @@ map("n", "<localleader>tp", function()
 	vim.cmd.wincmd("j")
 	vim.api.nvim_win_set_height(0, 12)
 	vim.wo.winfixheight = true
-	vim.cmd.term("pwsh")
+	vim.cmd.term(vim.o.shell)
 end, { desc = "Open pwsh (split)" })

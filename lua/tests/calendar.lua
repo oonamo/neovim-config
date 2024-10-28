@@ -69,6 +69,7 @@ local function num_days(month, year)
 	return monthMap[month]
 end
 
+-- This is a comment
 local function printCalendar(month)
 	print("Calendar")
   local string = ""

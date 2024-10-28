@@ -38,9 +38,6 @@ return {
 		end,
 		config = function()
 			require("mini.pick").setup({
-				-- source = {
-				-- 	show = require("mini.pick").default_show,
-				-- },
 				mappings = {
 					paste = "<C-y>",
 					refine = "<C-Space>",
@@ -48,18 +45,18 @@ return {
 					choose_marked = "<C-q>",
 				},
 				window = {
-					prompt_cursor = "█",
-					config = function()
-						local height = math.floor(0.618 * vim.o.lines)
-						local width = math.floor(0.618 * vim.o.columns)
-						return {
-							anchor = "NW",
-							height = height,
-							width = width,
-							row = math.floor(0.5 * (vim.o.lines - height)),
-							col = math.floor(0.5 * (vim.o.columns - width)),
-						}
-					end,
+					-- prompt_cursor = "█",
+					-- config = function()
+					-- 	local height = math.floor(0.618 * vim.o.lines)
+					-- 	local width = math.floor(0.618 * vim.o.columns)
+					-- 	return {
+					-- 		anchor = "NW",
+					-- 		height = height,
+					-- 		width = width,
+					-- 		row = math.floor(0.5 * (vim.o.lines - height)),
+					-- 		col = math.floor(0.5 * (vim.o.columns - width)),
+					-- 	}
+					-- end,
 				},
 			})
 		end,
@@ -142,6 +139,10 @@ return {
 				end,
 				desc = "Find todos",
 			},
+			{
+				"<leader>oi",
+				function() end,
+			},
 		},
 	},
 	{
@@ -223,16 +224,16 @@ return {
 		opts = {
 			highlight_duration = 500,
 			mappings = {
-				add = "sa", -- Add surrounding in Normal and Visual modes
-				delete = "sd", -- Delete surrounding
-				find = "sf", -- Find surrounding (to the right)
-				find_left = "sF", -- Find surrounding (to the left)
-				highlight = "sh", -- Highlight surrounding
-				replace = "sr", -- Replace surrounding
-				update_n_lines = "sn", -- Update `n_lines`
+				add = "gsa", -- Add surrounding in Normal and Visual modes
+				delete = "gsd", -- Delete surrounding
+				find = "gsf", -- Find surrounding (to the right)
+				find_left = "gsF", -- Find surrounding (to the left)
+				highlight = "gsh", -- Highlight surrounding
+				replace = "gsr", -- Replace surrounding
+				update_n_lines = "gsn", -- Update `n_lines`
 
-				suffix_last = "l", -- Suffix to search with "prev" method
-				suffix_next = "n", -- Suffix to search with "next" method
+				suffix_last = "", -- Suffix to search with "prev" method
+				suffix_next = "", -- Suffix to search with "next" method
 			},
 			search_method = "cover_or_next",
 		},
@@ -240,13 +241,13 @@ return {
 			require("mini.surround").setup(opts)
 		end,
 		keys = {
-			{ mode = "n", "sa", desc = "Add surrounding" }, -- Add surrounding in Normal and Visual modes
-			{ mode = "n", "sd", desc = "Delete surrounding" }, -- Delete surrounding
-			{ mode = "n", "sf", desc = "Find surrounding" }, -- Find surrounding (to the right)
-			{ mode = "n", "sF", desc = "Find surrounding (left)" }, -- Find surrounding (to the left)
-			{ mode = "n", "sh", desc = "Highlight surrounding" }, -- Highlight surrounding
-			{ mode = "n", "sr", desc = "Replace surrounding" }, -- Replace surrounding
-			{ mode = "n", "sn", desc = "Update search lines" }, -- Update `n_lines`
+			{ mode = "n", "gsa", desc = "Add surrounding" }, -- Add surrounding in Normal and Visual modes
+			{ mode = "n", "gsd", desc = "Delete surrounding" }, -- Delete surrounding
+			{ mode = "n", "gsf", desc = "Find surrounding" }, -- Find surrounding (to the right)
+			{ mode = "n", "gsF", desc = "Find surrounding (left)" }, -- Find surrounding (to the left)
+			{ mode = "n", "gsh", desc = "Highlight surrounding" }, -- Highlight surrounding
+			{ mode = "n", "gsr", desc = "Replace surrounding" }, -- Replace surrounding
+			{ mode = "n", "gsn", desc = "Update search lines" }, -- Update `n_lines`
 		},
 	},
 	{
@@ -352,6 +353,7 @@ return {
 	},
 	{
 		"mini.completion",
+		cond = false,
 		dev = true,
 		event = "InsertEnter",
 		config = function()
@@ -368,6 +370,7 @@ return {
 	},
 	{
 		"mini.files",
+		lazy = not (vim.fn.argc() == 1 and vim.fn.argv()[1] == "."),
 		dev = true,
 		opts = {
 			mappings = {
@@ -428,7 +431,10 @@ return {
 					end, sorted)
 				end,
 			},
-			windows = { width_nofocus = 25 },
+			windows = {
+				-- width_focuse = 15,
+				-- width_nofocus = 25,
+			},
 			-- Move stuff to the minifiles trash instead of it being gone forever.
 			options = {
 				permanent_delete = false,
@@ -436,26 +442,16 @@ return {
 			},
 		},
 		config = function(_, opts)
-			local function map_split(buf_id, lhs, direction)
-				local minifiles = require("mini.files")
-				local function rhs()
-					local window = minifiles.get_target_window()
-
-					-- Noop if the explorer isn't open or the cursor is on a directory.
-					if window == nil or minifiles.get_fs_entry().fs_type == "directory" then
-						return
-					end
-
-					local new_target_window
-					vim.api.nvim_win_call(window, function()
+			local map_split = function(buf_id, lhs, direction)
+				local rhs = function()
+					-- Make new window and set it as target
+					local cur_target = MiniFiles.get_explorer_state().target_window
+					local new_target = vim.api.nvim_win_call(cur_target, function()
 						vim.cmd(direction .. " split")
-						new_target_window = vim.api.nvim_get_current_win()
+						return vim.api.nvim_get_current_win()
 					end)
 
-					minifiles.set_target_window(new_target_window)
-
-					-- Go in and close the explorer.
-					minifiles.go_in({ close_on_file = true })
+					MiniFiles.set_target_window(new_target)
 				end
 
 				vim.keymap.set("n", lhs, rhs, { buffer = buf_id, desc = "Split " .. string.sub(direction, 12) })
@@ -480,9 +476,9 @@ return {
 					local win_id = args.data.win_id
 					vim.wo[win_id].winbar = ""
 					vim.wo[win_id].relativenumber = false
-					vim.api.nvim_win_set_config(args.data.win_id, {
-						border = { " " },
-					})
+					-- vim.api.nvim_win_set_config(args.data.win_id, {
+					-- 	border = { " " },
+					-- })
 				end,
 			})
 		end,
@@ -513,7 +509,7 @@ return {
 		"mini.jump2d",
 		dev = true,
 		opts = {
-			spotter = nil,
+			-- spotter = nil,
 			view = {
 				dim = true,
 				n_steps_ahead = 100,
@@ -523,23 +519,56 @@ return {
 			},
 		},
 		config = function(_, opts)
-			opts.spotter = require("mini.jump2d").gen_pattern_spotter("[^%s%p]+")
+			opts = opts or {}
+
+			-- Produce `opts` which modifies spotter based on user input
+			local function user_input_opts(input_fun)
+				local res = {
+					spotter = function()
+						return {}
+					end,
+					allowed_lines = { blank = false, fold = false },
+				}
+
+				res.hooks = {
+					before_start = function()
+						local input = input_fun()
+						if input == nil then
+							res.spotter = function()
+								return {}
+							end
+						else
+							local pattern = vim.pesc(input)
+							res.spotter = MiniJump2d.gen_pattern_spotter(pattern)
+						end
+					end,
+				}
+
+				return res
+			end
+
+			local function n_characters(n)
+				return user_input_opts(function()
+					local chars = ""
+					for i = 1, n do
+						chars = chars .. require("utils").getcharstr(i .. " charcter for search")
+					end
+					return chars
+				end)
+			end
+
+			-- match beginning of words, punctuation, _, uppercase letters
+			opts.spotter = require("mini.jump2d").gen_pattern_spotter("[^%s%p%u]+")
 			require("mini.jump2d").setup(opts)
+
+			local leap = n_characters(2)
+			vim.keymap.set("n", "s", function()
+				MiniJump2d.start(leap)
+			end)
 		end,
 		keys = {
 			"<C-s>",
-			{
-				"sk",
-				function()
-					MiniJump2d.start(MiniJump2d.builtin_opts.single_character)
-				end,
-			},
-			{
-				"sl",
-				function()
-					MiniJump2d.start(MiniJump2d.builtin_opts.query)
-				end,
-			},
+			"s",
 		},
 	},
 	{
@@ -686,34 +715,70 @@ return {
 		},
 	},
 	{
-		"mini.notify",
+		"mini.statusline",
 		dev = true,
 		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
-		init = function()
-			local opts = { ERROR = { duration = 10000 } }
-			vim.notify = require("mini.notify").make_notify(opts)
-		end,
-		config = function()
-			local filterout_lua_diagnosing = function(notif_arr)
-				local not_diagnosing = function(notif)
-					return not vim.startswith(notif.msg, "lua_ls: Diagnosing")
+		opts = {
+			content = {
+				active = function()
+					local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 70 })
+					local git = MiniStatusline.section_git({ trunc_width = 40 })
+					local diff = MiniStatusline.section_diff({ trunc_width = 75 })
+					local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = 75 })
+					local lsp = MiniStatusline.section_lsp({ trunc_width = 75 })
+					local filename = MiniStatusline.section_filename({ trunc_width = 140 })
+					local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = 120 })
+					local location = MiniStatusline.section_location({ trunc_width = 75 })
+					local search = MiniStatusline.section_searchcount({ trunc_width = 75 })
+
+					return MiniStatusline.combine_groups({
+						{ hl = mode_hl, strings = { mode } },
+						{ hl = "MiniStatuslineDevinfo", strings = { git, diff, diagnostics, lsp } },
+						"%<", -- Mark general truncate point
+						{ hl = "MiniStatuslineFilename", strings = { filename } },
+						"%=", -- End left alignment
+						{ hl = "MiniStatuslineFileinfo", strings = { fileinfo } },
+						{ hl = mode_hl, strings = { search, location } },
+					})
+				end,
+			},
+		},
+	},
+	{
+		"mini.indentscope",
+		dev = true,
+		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
+		opts = {
+			options = {
+				try_as_border = true,
+			},
+		},
+	},
+	{
+		"mini.cursorword",
+		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
+		dev = true,
+		opts = {},
+		config = function(_, opts)
+			_G.cursorword_blocklist = function()
+				local curword = vim.fn.expand("<cword>")
+				local filetype = vim.bo.filetype
+
+				-- Add any disabling global or filetype-specific logic here
+				local blocklist = {}
+				if filetype == "lua" then
+					blocklist = { "local", "require", "vim" }
+				elseif filetype == "javascript" then
+					blocklist = { "import" }
+				elseif filetype == "c" then
+					blocklist = { "include" }
 				end
-				notif_arr = vim.tbl_filter(not_diagnosing, notif_arr)
-				return MiniNotify.default_sort(notif_arr)
+
+				vim.b.minicursorword_disable = vim.tbl_contains(blocklist, curword)
 			end
-			require("mini.notify").setup({
-				content = {
-					sort = filterout_lua_diagnosing,
-				},
-				window = {
-					config = function()
-						local has_statusline = vim.o.laststatus > 0
-						local pad = vim.o.cmdheight + (has_statusline and 1 or 0)
-						return { anchor = "SE", col = vim.o.columns, row = vim.o.lines - pad, border = "none" }
-					end,
-					winblend = 50,
-				},
-			})
+			vim.cmd("au CursorMoved * lua _G.cursorword_blocklist()")
+
+			require("mini.cursorword").setup(opts)
 		end,
 	},
 }

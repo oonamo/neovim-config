@@ -13,8 +13,16 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 		os.exit(1)
 	end
 end
-vim.opt.rtp:prepend(lazypath)
 
+vim.o.shell = "pwsh"
+vim.o.shellcmdflag =
+	"-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8; $PSStyle.OutputRendering = [System.Management.Automation.OutputRendering]::PlainText;"
+vim.o.shellredir = "-RedirectStandardOutput %s -NoNewWindow -Wait"
+vim.o.shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode"
+vim.o.shellquote = ""
+vim.o.shellxquote = ""
+
+vim.opt.rtp:prepend(lazypath)
 -- Make sure to setup `mapleader` and `maplocalleader` before
 -- loading lazy.nvim so that mappings are correct.
 -- This is also a good place to setup other settings (vim.opt)
@@ -23,10 +31,12 @@ vim.g.maplocalleader = ";"
 local o, opt = vim.o, vim.opt
 vim.o.shada = "'100,<50,s10,:1000,/100,@100,h"
 
+o.background = "light"
+
 -- Allows for easy telling if pane is a nvim proccess
 o.title = true
 o.titlestring = "nvim"
-opt.completeopt = "menu,menuone,noselect"
+-- opt.completeopt = "menu,menuone,noselect"
 o.cmdheight = 1
 
 vim.g.bigfile_size = 1024 * 1024 * 1.5 -- 1.5 MB
@@ -48,7 +58,7 @@ opt.smartindent = true
 opt.shiftwidth = 2
 
 -- smarter breaking
-o.breakindent = true
+-- o.breakindent = true
 
 -- better searching
 o.inccommand = "split"
@@ -66,7 +76,7 @@ o.splitbelow = true
 o.splitright = true
 
 -- set completion options
-opt.completeopt = { "menu", "menuone", "noselect" }
+-- opt.completeopt = { "menu", "menuone", "noselect" }
 
 -- set signcolumn
 opt.signcolumn = "yes"
@@ -85,7 +95,7 @@ opt.undofile = true
 opt.wildoptions = "tagfile"
 opt.wildmenu = true
 o.makeprg = "just"
-opt.laststatus = 2 -- Or 3 for global statusline
+opt.laststatus = 3 -- Or 3 for global statusline
 opt.foldlevel = 99
 o.foldmethod = "expr"
 o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
@@ -107,7 +117,7 @@ vim.g.netrw_banner = 0
 vim.g.netrw_mouse = 2
 
 o.cursorline = false
-o.winblend = 15
+o.winblend = 0
 o.pumblend = 25
 
 vim.g.loaded_node_provider = 0
@@ -124,7 +134,7 @@ vim.api.nvim_create_autocmd("User", {
 		if vim.g.neovide then
 			require("config.gui")
 		end
-		require("statusline")
+		-- require("statusline")
 		vim.o.statuscolumn = [[%!v:lua.require'config.statuscolumn'.statuscolumn()]]
 	end,
 })
@@ -196,7 +206,7 @@ require("lazy").setup({
 	-- Configure any other settings here. See the documentation for more details.
 	-- colorscheme that will be used when installing plugins.
 	install = { colorscheme = { "zenner" } },
-  spec = { import =  "plugins"  },
+	spec = { import = "plugins" },
 	-- automatically check for plugin updates
 	checker = { notify = false },
 	defaults = {
@@ -218,18 +228,18 @@ require("lazy").setup({
 				"logipat",
 				"matchit",
 				"man",
-				"matchparen",
+				-- "matchparen",
 				"tar",
 				"tarPlugin",
 				"rrhelper",
 				"vimball",
-				-- "netrw",
-				-- "netrwPlugin",
-				-- "netrwSettings",
-				-- "netrwFileHandlers",
-				-- "health",
-				-- "shada",
-				-- "spellfile",
+				"netrw",
+				"netrwPlugin",
+				"netrwSettings",
+				"netrwFileHandlers",
+				"health",
+				"shada",
+				"spellfile",
 				"tohtml",
 				"tutor",
 				"vimballPlugin",
@@ -240,3 +250,11 @@ require("lazy").setup({
 		},
 	},
 })
+
+if not vim.g.colors_name then
+	vim.api.nvim_set_hl(0, "Normal", { fg = "NvimLightGrey2", bg = "#1b1c20" })
+end
+
+-- if vim.o.bg ~= "light" and vim.g.colors_name == "" then
+--   vim.cmd.colorscheme("zenner")
+-- end

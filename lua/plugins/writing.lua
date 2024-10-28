@@ -6,23 +6,25 @@ return {
 			local block = "█"
 			return {
 				preset = "obsidian",
-				render_modes = { "n", "c" },
+				-- render_modes = { "n", "c" },
 				quote = { repeat_linebreak = true },
 				callout = {
 					schedule = { raw = "[!SCHEDULE]", rendered = " Schedule", highlight = "Special" },
 					formula = { raw = "[!FORMULA]", rendered = "󰡱 Formula", highlight = "Boolean" },
 				},
 				win_options = {
-					showbreak = { default = "", rendered = "  " },
-					breakindent = { default = false, rendered = true },
-					breakindentopt = { default = "list:-1", rendered = "" },
+					-- showbreak = { default = "", rendered = "  " },
+					breakindent = { default = true, rendered = true },
+					wrap = { default = true, rendered = true },
+					-- breakindentopt = { default = "list:-1", rendered = "" },
 				},
 				code = {
+					sign = false,
 					width = "block",
-					min_width = 45,
-					left_pad = 2,
-					language_pad = 2,
-					border = "thick",
+					left_margin = 0.5,
+					left_pad = 0.2,
+					right_pad = 0.2,
+					-- left_margin = 0,
 				},
 				heading = {
 					width = "block",
@@ -31,6 +33,14 @@ return {
 					-- left_pad = 0.5,
 					left_pad = 2,
 					right_pad = 4,
+					icons = {
+						"# ",
+						"## ",
+						"### ",
+						"#### ",
+						"##### ",
+						"###### ",
+					},
 					-- right_pad = 0.5,
 					-- border_virtual = true,
 					-- icons = {
@@ -46,7 +56,13 @@ return {
 					preset = "round",
 					alignment_indicator = "┅",
 				},
-				latex = { enabled = false },
+				latex = {
+					enabled = false,
+					converter = {
+						"latex2text",
+						"--code",
+					},
+				},
 			}
 		end,
 	},
@@ -57,7 +73,20 @@ return {
 			"BufNewFile C:/Users/onam7/Desktop/DB/DB/**.md",
 		},
 		dependencies = {
+			"mini.pick",
 			"MeanderingProgrammer/render-markdown.nvim",
+			{
+				"jmbuhr/otter.nvim",
+				opts = {},
+				keys = {
+					{
+						"<leader>oe",
+						function()
+							require("otter").activate()
+						end,
+					},
+				},
+			},
 			{
 				"jbyuki/nabla.nvim",
 				keys = {
@@ -106,40 +135,6 @@ return {
 							require("zen-mode").toggle()
 						end,
 						desc = "Toggle Zen mode",
-					},
-				},
-			},
-			{
-				"folke/twilight.nvim",
-				opts = {
-					dimming = {
-						-- alpha = 0.25, -- amount of dimming
-						alpha = 0.1,
-						-- we try to get the foreground from the highlight groups or fallback color
-						color = { "Normal", "#ffffff" },
-						term_bg = "#000000", -- if guibg=NONE, this will be used to calculate text color
-						inactive = false, -- when true, other windows will be fully dimmed (unless they contain the same buffer)
-					},
-					context = 10, -- amount of lines we will try to show around the current line
-					treesitter = true, -- use treesitter when available for the filetype
-					-- treesitter is used to automatically expand the visible text,
-					-- but you can further control the types of nodes that should always be fully expanded
-					expand = { -- for treesitter, we we always try to expand to the top-most ancestor with these types
-            "paragraph",
-            "fenced_code_block",
-            "list",
-						"function",
-						"method",
-						"table",
-						"if_statement",
-					},
-					exclude = {}, -- exclude these filetypes
-				},
-				keys = {
-					{
-						"<leader>xt",
-						"<cmd>Twilight<cr>",
-						desc = "Toggle Twilight",
 					},
 				},
 			},
@@ -212,6 +207,15 @@ return {
 				follow_url_func = function(url)
 					-- Open the URL in the default web browser.
 					local local_file = string.match(url, "file://(.*)")
+					local is_pdf = string.sub(url, #url - 2, -1)
+					if is_pdf then
+						vim.fn.jobstart({
+							"sumatrapdf",
+							"-reuse-instance",
+							local_file,
+						})
+						return
+					end
 					if local_file ~= nil then
 						vim.cmd("e " .. local_file)
 					else
@@ -231,16 +235,16 @@ return {
 				callbacks = {
 					enter_note = function()
 						vim.schedule(function()
-							require("wrapping").soft_wrap_mode()
+							-- require("wrapping").soft_wrap_mode()
 							vim.opt.shiftwidth = 2
 						end)
 					end,
 					post_setup = function()
-						if not package.loaded["wrapping"] then
-							require("wrapping").soft_wrap_mode()
-						else
-							vim.cmd.SoftWrapMode()
-						end
+						-- if not package.loaded["wrapping"] then
+						-- 	require("wrapping").soft_wrap_mode()
+						-- else
+						-- 	vim.cmd.SoftWrapMode()
+						-- end
 					end,
 				},
 
@@ -279,6 +283,11 @@ return {
 			-- Using ft instead
 			-- vim.g.markdown_folding = 1
 
+			local mdtils = require("tests.mini_pick")
+			vim.keymap.set("n", "<leader>gf", function()
+				mdtils.current_link()
+			end)
+			vim.keymap.set("n", "<leader>og", "<cmd>Pick goodnotes<cr>", { desc = "insert goodnotes pdf" })
 			vim.keymap.set("n", "<leader>nn", "<cmd>ObsidianTemplate notes<cr>", { desc = "Obisidan note template" })
 			vim.keymap.set("n", "<leader>ow", "<cmd>ObsidianWorkspace<CR>", { desc = "[O]bsidian [G]o" })
 			vim.keymap.set("n", "<leader>oq", "<cmd>ObsidianQuickSwitch<CR>", { desc = "[O]bsidian [F]ind" })
@@ -339,29 +348,50 @@ return {
 				end
 			end, { desc = "[O]bsidian [D]ailies" })
 
-			vim.api.nvim_create_user_command("GoToNotes", function()
-				require("mini.sessions").read("Notes")
-				vim.o.conceallevel = 2
-				require("wrapping").soft_wrap_mode()
-			end, {})
+			local writing_group = vim.api.nvim_create_augroup("Writing", { clear = true })
+			vim.api.nvim_create_autocmd("BufWritePre", {
+				group = writing_group,
+				pattern = { "*.md", "*.norg", "*.org", "*.tex" },
+				callback = function()
+					require("mini.trailspace").trim()
+					vim.cmd("silent! mkview")
+				end,
+			})
+			vim.api.nvim_create_autocmd({ "BufNew", "BufEnter" }, {
+				group = writing_group,
+				pattern = { "*.md", "*.norg", "*.org", "*.tex" },
+				callback = function()
+					vim.schedule(function()
+						vim.cmd("silent! loadview")
+					end)
+				end,
+			})
 		end,
 	},
 	{
-		"andrewferrier/wrapping.nvim",
+		"HakonHarnes/img-clip.nvim",
+		event = "VeryLazy",
 		opts = {
-			notify_on_switch = false,
-			create_keymaps = false,
-			create_commands = false,
-			auto_set_mode_filetype_allowlist = {
-				"asciidoc",
-				"gitcommit",
-				"latex",
-				"mail",
-				"markdown",
-				"rst",
-				"tex",
-				"text",
-			},
+			-- add options here
+			-- or leave it empty to use the default settings
 		},
+		keys = {
+			-- suggested keymap
+			{ "<leader>ip", "<cmd>PasteImage<cr>", desc = "Paste image from system clipboard" },
+		},
+	},
+	{
+		"toppair/peek.nvim",
+		build = "deno task --quiet build:fast",
+    cmd = { "PeekOpen", "PeekClose" },
+    opts = {
+      -- app = "webview",
+      app = { "chromium", "--new-window" },
+    },
+    config = function(_, opts)
+			require("peek").setup(opts)
+			vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
+			vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
+		end,
 	},
 }
