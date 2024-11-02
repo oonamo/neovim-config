@@ -80,13 +80,13 @@ M.modes = {
 	["t"] = "TER",
 }
 
-function M.mode()
+function M.mode(data)
 	local vim_mode = vim.api.nvim_get_mode().mode
 	local mode = M.modes[vim_mode] or M.modes[vim_mode:sub(1, 1)] or "UNK"
 	return mode
 end
 
-function M.diagnostic()
+function M.diagnostic(data)
 	if #vim.diagnostic.get(0) > 0 then
 		local errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
 		local error_format = stl_format("error", " " .. errors, {
@@ -120,7 +120,7 @@ function M.diagnostic()
 	return ""
 end
 
-function M.diff()
+function M.diff(data)
 	local summary = vim.b.minidiff_summary
 	if not summary or not summary.source_name then
 		return ""
@@ -154,18 +154,26 @@ function M.diff()
 	return add_format .. " " .. change_format .. " " .. delete_format .. " %#StatusLine# "
 end
 
-local function build()
+---@class status.Data
+---@field buf number
+
+---@param data status.Data
+local function build(data)
 	return {
-		-- M.mode(),
+		M.mode(data),
 		"%=%f%=",
-		M.diff(),
-		M.diagnostic(),
+		M.diff(data),
+		M.diagnostic(data),
 		"%l|%c",
 	}
 end
 
 function M.statusline()
-	local components = build()
+  ---@type status.Data
+	local data = {
+    buf = vim.api.nvim_get_current_buf()
+  }
+	local components = build(data)
 	local statusline = ""
 	for _, component in ipairs(components) do
 		statusline = statusline .. component

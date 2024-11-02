@@ -4,7 +4,7 @@ return {
 		lazy = true,
 	},
 	{
-		"mini.basic",
+		"mini.basics",
 		dev = true,
 		event = "VeryLazy",
 		opts = {
@@ -13,9 +13,6 @@ return {
 			},
 			silent = true,
 		},
-		config = function(_, opts)
-			require("mini.basics").setup(opts)
-		end,
 	},
 	{
 		"mini.misc",
@@ -36,29 +33,42 @@ return {
 		init = function()
 			vim.ui.select = require("mini.pick").ui_select
 		end,
-		config = function()
-			require("mini.pick").setup({
-				mappings = {
-					paste = "<C-y>",
-					refine = "<C-Space>",
-					refine_marked = "<C-r>",
-					choose_marked = "<C-q>",
-				},
-				window = {
-					-- prompt_cursor = "█",
-					-- config = function()
-					-- 	local height = math.floor(0.618 * vim.o.lines)
-					-- 	local width = math.floor(0.618 * vim.o.columns)
-					-- 	return {
-					-- 		anchor = "NW",
-					-- 		height = height,
-					-- 		width = width,
-					-- 		row = math.floor(0.5 * (vim.o.lines - height)),
-					-- 		col = math.floor(0.5 * (vim.o.columns - width)),
-					-- 	}
-					-- end,
-				},
-			})
+		opts = {
+			mappings = {
+				paste = "<C-y>",
+				refine = "<C-Space>",
+				refine_marked = "<C-r>",
+				choose_marked = "<C-q>",
+			},
+			window = {
+				-- prompt_cursor = "█",
+				config = function()
+					--- Center Float
+					-- local height = math.floor(0.618 * vim.o.lines)
+					-- local width = math.floor(0.618 * vim.o.columns)
+					-- return {
+					-- 	anchor = "NW",
+					-- 	height = height,
+					-- 	width = width,
+					-- 	row = math.floor(0.5 * (vim.o.lines - height)),
+					-- 	col = math.floor(0.5 * (vim.o.columns - width)),
+					-- }
+
+					--- Ivy Style
+					local height = math.floor(0.5 * vim.o.lines)
+					local width = math.floor(vim.o.columns)
+					return {
+						anchor = "NW",
+						height = height,
+						width = width,
+						row = vim.o.lines,
+						-- col = math.floor(0.5 * (vim.o.columns - width)),
+					}
+				end,
+			},
+		},
+		config = function(_, opts)
+			require("mini.pick").setup(opts)
 		end,
 		keys = {
 			{
@@ -148,9 +158,7 @@ return {
 	{
 		"mini.splitjoin",
 		dev = true,
-		config = function()
-			require("mini.splitjoin").setup()
-		end,
+		config = true,
 		keys = {
 			"gS",
 		},
@@ -180,21 +188,34 @@ return {
 				signs = { add = "▍ ", change = "▍ ", delete = " " },
 			},
 		},
-		config = function(_, opts)
-			require("mini.diff").setup(opts)
-			vim.keymap.set("n", "<leader>gdo", MiniDiff.toggle_overlay, { desc = "MiniDiff toggle overlay" })
-			vim.keymap.set("n", "<leader>gdf", MiniDiff.toggle_overlay, { desc = "MiniDiff show overlay" })
-			vim.keymap.set("n", "<leader>gh", function()
-				vim.fn.setqflist(MiniDiff.export("qf"))
-			end, { desc = "Export Hunks to Quickfix" })
-		end,
+		keys = {
+			{
+				"<leader>gdo",
+				function()
+					MiniDiff.toggle_overlay()
+				end,
+				desc = "MiniDiff toggle overlay",
+			},
+			{
+				"<leader>gdf",
+				function()
+					MiniDiff.toggle_overlay()
+				end,
+				desc = "MiniDiff show overlay",
+			},
+			{
+				"<leader>ghq",
+				function()
+					vim.fn.setqflist(MiniDiff.export("qf"))
+				end,
+				desc = "Export Hunks to Quickfix",
+			},
+		},
 	},
 	{
 		"mini.jump",
 		dev = true,
-		config = function()
-			require("mini.jump").setup()
-		end,
+		config = true,
 		keys = {
 			{ "F", desc = "Jump to previous occurrence" },
 			{ "f", desc = "Jump to next occurrence" },
@@ -237,9 +258,6 @@ return {
 			},
 			search_method = "cover_or_next",
 		},
-		config = function(_, opts)
-			require("mini.surround").setup(opts)
-		end,
 		keys = {
 			{ mode = "n", "gsa", desc = "Add surrounding" }, -- Add surrounding in Normal and Visual modes
 			{ mode = "n", "gsd", desc = "Delete surrounding" }, -- Delete surrounding
@@ -262,9 +280,6 @@ return {
 				up = "K",
 			},
 		},
-		config = function(_, opts)
-			require("mini.move").setup(opts)
-		end,
 		keys = {
 			{ mode = "v", "H" },
 			{ mode = "v", "L" },
@@ -275,6 +290,7 @@ return {
 	{
 		"mini.base16",
 		dev = true,
+		cond = false,
 		-- lazy = false,
 		config = function()
 			local ok, _ = pcall(require, "mini.base16")
@@ -697,12 +713,18 @@ return {
 	{
 		"mini.icons",
 		dev = true,
-		event = "VeryLazy",
-		config = function()
-			require("mini.icons").setup()
-			require("mini.icons").mock_nvim_web_devicons()
-			require("mini.icons").tweak_lsp_kind()
+		lazy = true,
+		init = function()
+			package.preload["nvim-web-devicons"] = function()
+				require("mini.icons").mock_nvim_web_devicons()
+				return package.loaded["nvim-web-devicons"]
+			end
 		end,
+		-- config = function()
+		-- 	require("mini.icons").setup()
+		-- 	require("mini.icons").mock_nvim_web_devicons()
+		--     require("mini.icons").tweak_lsp_kind()
+		-- end,
 	},
 	{
 		"mini.align",
@@ -714,36 +736,36 @@ return {
 			{ mode = { "x", "v" }, "ga" },
 		},
 	},
-	{
-		"mini.statusline",
-		dev = true,
-		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
-		opts = {
-			content = {
-				active = function()
-					local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 70 })
-					local git = MiniStatusline.section_git({ trunc_width = 40 })
-					local diff = MiniStatusline.section_diff({ trunc_width = 75 })
-					local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = 75 })
-					local lsp = MiniStatusline.section_lsp({ trunc_width = 75 })
-					local filename = MiniStatusline.section_filename({ trunc_width = 140 })
-					local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = 120 })
-					local location = MiniStatusline.section_location({ trunc_width = 75 })
-					local search = MiniStatusline.section_searchcount({ trunc_width = 75 })
-
-					return MiniStatusline.combine_groups({
-						{ hl = mode_hl, strings = { mode } },
-						{ hl = "MiniStatuslineDevinfo", strings = { git, diff, diagnostics, lsp } },
-						"%<", -- Mark general truncate point
-						{ hl = "MiniStatuslineFilename", strings = { filename } },
-						"%=", -- End left alignment
-						{ hl = "MiniStatuslineFileinfo", strings = { fileinfo } },
-						{ hl = mode_hl, strings = { search, location } },
-					})
-				end,
-			},
-		},
-	},
+	-- {
+	-- 	"mini.statusline",
+	-- 	dev = true,
+	-- 	event = { "BufWritePre", "BufReadPost", "BufNewFile" },
+	-- 	opts = {
+	-- 		content = {
+	-- 			active = function()
+	-- 				local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 70 })
+	-- 				local git = MiniStatusline.section_git({ trunc_width = 40 })
+	-- 				local diff = MiniStatusline.section_diff({ trunc_width = 75 })
+	-- 				local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = 75 })
+	-- 				local lsp = MiniStatusline.section_lsp({ trunc_width = 75 })
+	-- 				local filename = MiniStatusline.section_filename({ trunc_width = 140 })
+	-- 				local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = 120 })
+	-- 				local location = MiniStatusline.section_location({ trunc_width = 75 })
+	-- 				local search = MiniStatusline.section_searchcount({ trunc_width = 75 })
+	--
+	-- 				return MiniStatusline.combine_groups({
+	-- 					{ hl = mode_hl, strings = { mode } },
+	-- 					{ hl = "MiniStatuslineDevinfo", strings = { git, diff, diagnostics, lsp } },
+	-- 					"%<", -- Mark general truncate point
+	-- 					{ hl = "MiniStatuslineFilename", strings = { filename } },
+	-- 					"%=", -- End left alignment
+	-- 					{ hl = "MiniStatuslineFileinfo", strings = { fileinfo } },
+	-- 					{ hl = mode_hl, strings = { search, location } },
+	-- 				})
+	-- 			end,
+	-- 		},
+	-- 	},
+	-- },
 	{
 		"mini.indentscope",
 		dev = true,
@@ -779,6 +801,142 @@ return {
 			vim.cmd("au CursorMoved * lua _G.cursorword_blocklist()")
 
 			require("mini.cursorword").setup(opts)
+		end,
+	},
+	{
+		"mini.pairs",
+		dev = true,
+		event = "InsertEnter",
+		opts = {
+			modes = { insert = true, command = true, terminal = false },
+			-- skip autopair when next character is one of these
+			skip_next = [=[[%w%%%'%[%"%.%`%$]]=],
+			-- skip autopair when the cursor is inside these treesitter nodes
+			skip_ts = { "string" },
+			-- skip autopair when next character is closing pair
+			-- and there are more closing pairs than opening pairs
+			skip_unbalanced = true,
+			-- better deal with markdown code blocks
+			markdown = true,
+		},
+		config = function(_, opts)
+			-- FROM: https://github.com/LazyVim/LazyVim/blob/f11890bf99477898f9c003502397786026ba4287/lua/lazyvim/util/mini.lua#L123-L168
+			local pairs = require("mini.pairs")
+			pairs.setup(opts)
+			local open = pairs.open
+			pairs.open = function(pair, neigh_pattern)
+				if vim.fn.getcmdline() ~= "" then
+					return open(pair, neigh_pattern)
+				end
+				local o, c = pair:sub(1, 1), pair:sub(2, 2)
+				local line = vim.api.nvim_get_current_line()
+				local cursor = vim.api.nvim_win_get_cursor(0)
+				local next = line:sub(cursor[2] + 1, cursor[2] + 1)
+				local before = line:sub(1, cursor[2])
+				if opts.markdown and o == "`" and vim.bo.filetype == "markdown" and before:match("^%s*``") then
+					return "`\n```" .. vim.api.nvim_replace_termcodes("<up>", true, true, true)
+				end
+				if opts.skip_next and next ~= "" and next:match(opts.skip_next) then
+					return o
+				end
+				if opts.skip_ts and #opts.skip_ts > 0 then
+					local ok, captures =
+						pcall(vim.treesitter.get_captures_at_pos, 0, cursor[1] - 1, math.max(cursor[2] - 1, 0))
+					for _, capture in ipairs(ok and captures or {}) do
+						if vim.tbl_contains(opts.skip_ts, capture.capture) then
+							return o
+						end
+					end
+				end
+				if opts.skip_unbalanced and next == c and c ~= o then
+					local _, count_open = line:gsub(vim.pesc(pair:sub(1, 1)), "")
+					local _, count_close = line:gsub(vim.pesc(pair:sub(2, 2)), "")
+					if count_close > count_open then
+						return o
+					end
+				end
+				return open(pair, neigh_pattern)
+			end
+		end,
+	},
+	{
+		"mini.starter",
+		event = "VimEnter",
+		dev = true,
+		opts = function()
+			local logo = table.concat({
+				"            ██╗      █████╗ ███████╗██╗   ██╗██╗   ██╗██╗███╗   ███╗          Z",
+				"            ██║     ██╔══██╗╚══███╔╝╚██╗ ██╔╝██║   ██║██║████╗ ████║      Z    ",
+				"            ██║     ███████║  ███╔╝  ╚████╔╝ ██║   ██║██║██╔████╔██║   z       ",
+				"            ██║     ██╔══██║ ███╔╝    ╚██╔╝  ╚██╗ ██╔╝██║██║╚██╔╝██║ z         ",
+				"            ███████╗██║  ██║███████╗   ██║    ╚████╔╝ ██║██║ ╚═╝ ██║           ",
+				"            ╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝     ╚═══╝  ╚═╝╚═╝     ╚═╝           ",
+			}, "\n")
+			local pad = string.rep(" ", 22)
+			local new_section = function(name, action, section)
+				return { name = name, action = action, section = pad .. section }
+			end
+
+			local starter = require("mini.starter")
+			local config = {
+				evaluate_single = true,
+				header = logo,
+				items = {
+					new_section("Files", function()
+						require("mini.pick").registry.files()
+					end, "Mini"),
+					new_section("New file", "ene | startinsert", "Built-in"),
+					new_section("Recent files", function()
+						require("mini.pick").registry.oldfiles()
+					end, "Mini"),
+					new_section("Text", function()
+						require("mini.pick").registry.grep_live()
+					end, "Mini"),
+					new_section("Quit", "qa", "Built-in"),
+				},
+				content_hooks = {
+					starter.gen_hook.adding_bullet(pad .. "░ ", false),
+					starter.gen_hook.aligning("center", "center"),
+				},
+			}
+			return config
+		end,
+		config = function(_, opts)
+			if vim.o.filetype == "lazy" then
+				vim.cmd.close()
+				vim.api.nvim_create_autocmd("User", {
+					pattern = "MiniStarterOpened",
+					callback = function()
+						require("lazy").show()
+					end,
+				})
+			end
+
+
+			if vim.fn.argc() == 0 then
+        local starter = require("mini.starter")
+        starter.setup(opts)
+				vim.api.nvim_create_autocmd("User", {
+					pattern = "LazyVimStarted",
+					callback = function(ev)
+						local stats = require("lazy").stats()
+						local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
+						local pad_footer = string.rep(" ", 8)
+						starter.config.footer = pad_footer
+							.. "⚡ Neovim loaded "
+							.. stats.loaded
+							.. "/"
+							.. stats.count
+							.. " plugins in "
+							.. ms
+							.. "ms"
+						-- INFO: based on @echasnovski's recommendation (thanks a lot!!!)
+						if vim.bo[ev.buf].filetype == "ministarter" then
+							pcall(starter.refresh)
+						end
+					end,
+				})
+			end
 		end,
 	},
 }

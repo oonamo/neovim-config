@@ -6,7 +6,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	if vim.v.shell_error ~= 0 then
 		vim.api.nvim_echo({
 			{ "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-			{ out, "WarningMsg" },
+      { out, "WarningMsg" },
 			{ "\nPress any key to exit..." },
 		}, true, {})
 		vim.fn.getchar()
@@ -31,7 +31,7 @@ vim.g.maplocalleader = ";"
 local o, opt = vim.o, vim.opt
 vim.o.shada = "'100,<50,s10,:1000,/100,@100,h"
 
-o.background = "light"
+o.background = "dark"
 
 -- Allows for easy telling if pane is a nvim proccess
 o.title = true
@@ -51,7 +51,7 @@ opt.tabstop = 2
 opt.softtabstop = 2
 opt.expandtab = true
 
-o.guicursor = ""
+-- o.guicursor = ""
 
 -- autoindent
 opt.smartindent = true
@@ -116,9 +116,9 @@ o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
 vim.g.netrw_banner = 0
 vim.g.netrw_mouse = 2
 
-o.cursorline = false
+o.cursorline = true
 o.winblend = 0
-o.pumblend = 25
+o.pumblend = 0
 
 vim.g.loaded_node_provider = 0
 vim.g.loaded_python3_provider = 0
@@ -134,73 +134,13 @@ vim.api.nvim_create_autocmd("User", {
 		if vim.g.neovide then
 			require("config.gui")
 		end
-		-- require("statusline")
+		require("statusline")
 		vim.o.statuscolumn = [[%!v:lua.require'config.statuscolumn'.statuscolumn()]]
 	end,
 })
 
----@param client vim.lsp.Client
----@param buffer number
-local function on_attach(client, buffer)
-	vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, {
-		desc = "Preview code actions",
-		buffer = buffer,
-	})
-	-- end
-	vim.keymap.set("n", "gd", vim.lsp.buf.definition, {
-		desc = "go to buffer definition",
-		buffer = buffer,
-	})
-	vim.keymap.set("n", "gD", function()
-		require("mini.extra").pickers.lsp({ scope = "definition" })
-	end, { desc = "go to multiple definition", buffer = buffer })
-	vim.keymap.set("n", "<leader>vws", function()
-		require("mini.extra").pickers.lsp({ scope = "workspace_symbol" })
-	end, { desc = "Find workspace_symbol", buffer = buffer })
-	vim.keymap.set("n", "<leader>vd", function()
-		vim.diagnostic.open_float()
-	end, {
-		desc = "Open float menu",
-		buffer = buffer,
-	})
-	vim.keymap.set("n", "[d", vim.diagnostic.goto_next, {
-		desc = "Got to next diagnostic",
-		buffer = buffer,
-	})
-	vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, {
-		desc = "Go to previous diagnostic",
-		buffer = buffer,
-	})
-	vim.keymap.set("n", "<leader>vrr", vim.lsp.buf.references, {
-		desc = "Go to lsp references",
-		buffer = buffer,
-	})
-	vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, {
-		desc = "Rename symbol",
-		buffer = buffer,
-	})
-	vim.keymap.set("n", "<leader>vxx", function()
-		require("mini.extra").pickers.diagnostic()
-	end, { desc = "Find diagnostics", buffer = buffer })
-	vim.keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, {
-		desc = "Signature help",
-		buffer = buffer,
-	})
-	if client.supports_method("textDocument/inlayHint") then
-		vim.keymap.set("n", "<leader>ih", function()
-			vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
-		end, { desc = "Inlay Hint" })
-	end
-	vim.keymap.set("n", "<leader>qf", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })
-	vim.keymap.set("n", "<leader>ld", vim.diagnostic.setloclist, { desc = "Quickfix [L]ist [D]iagnostics" })
-	vim.keymap.set("n", "<C-]>", "<C-w><C-]>")
+vim.cmd.colorscheme("jellybeans")
 
-	vim.keymap.set("n", "<leader>ss", function()
-		require("config.lsp").request(true)
-	end)
-end
-
-local defaults = { on_attach = on_attach }
 -- Setup lazy.nvim
 require("lazy").setup({
 	-- Configure any other settings here. See the documentation for more details.

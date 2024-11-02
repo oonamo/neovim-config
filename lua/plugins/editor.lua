@@ -18,7 +18,7 @@ return {
 				ensure_installed = {
 					"lua",
 					"javascript",
-					"c",
+          "c",
 					"norg",
 					"rust",
 					"vim",
@@ -107,11 +107,15 @@ return {
 						border = border("CmpDocumentationBorder"),
 						winhighlight = "Normal:CmpDocumentation",
 					},
+					-- completion = cmp.config.window.bordered(),
 					completion = {
 						scrollbar = false,
 						side_padding = 1,
+						-- winhighlight = "Normal:Pmenu,CursorLine:CmpSel,Search:None,FloatBorder:FloatBorder",
 						winhighlight = "Normal:CmpPmenu,CursorLine:CmpSel,Search:None,FloatBorder:CmpBorder",
 						border = "single",
+						-- border = border("FloatBorder"),
+						-- border = "single",
 					},
 				},
 				formatting = {
@@ -189,6 +193,10 @@ return {
 				[[<cmd>ToggleTerm<cr>]],
 			},
 			{
+				"<leader><tab>t",
+				"<cmd>ToggleTerm direction=tab<cr>",
+			},
+			{
 				"<leader>gl",
 				function()
 					toggleterms.lg:toggle()
@@ -201,14 +209,37 @@ return {
 			{
 				"<leader>ca",
 				function()
-					if not vim.g.last_compile_command or vim.g.last_compile_command == "" then
-						local args = vim.fn.input({
-							prompt = "Compile > ",
-							default = (vim.g.last_compile_command or ""),
-						})
-						vim.g.last_compile_command = args
+					if toggleterms[vim.g.last_compile_command] then
+						toggleterms[vim.g.last_compile_command]:toggle()
+						return
 					end
-					require("toggleterm").exec(vim.g.last_compile_command or "")
+					local args = vim.fn.input({
+						prompt = "Compile > ",
+						default = (vim.g.last_compile_command or ""),
+					})
+					vim.g.last_compile_command = args
+					toggleterms[vim.g.last_compile_command] = require("toggleterm.terminal").Terminal:new({
+						cmd = vim.g.last_compile_command,
+						hidden = true,
+						direction = "float",
+					})
+					toggleterms[vim.g.last_compile_command]:toggle()
+				end,
+			},
+			{
+				"<leader>cp",
+				function()
+					local args = vim.fn.input({
+						prompt = "Compile > ",
+						default = (vim.g.last_compile_command or ""),
+					})
+					vim.g.last_compile_command = args
+					toggleterms[vim.g.last_compile_command] = require("toggleterm.terminal").Terminal:new({
+						cmd = vim.g.last_compile_command,
+						hidden = true,
+						direction = "float",
+					})
+					toggleterms[vim.g.last_compile_command]:toggle()
 				end,
 			},
 		},
@@ -219,5 +250,41 @@ return {
 			_G.toggleterms.lg = Terminal:new({ cmd = "lazygit", hidden = true, direction = "float" })
 		end,
 	},
-	{},
+	{
+		"ej-shafran/compile-mode.nvim",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			{ "m00qek/baleia.nvim", tag = "v1.3.0" },
+			-- if you want to enable coloring of ANSI escape codes in
+			-- compilation output, add:
+		},
+		opts = {
+			baleia_setup = true,
+		},
+		config = function(_, opts)
+			vim.g.compile_mode = opts
+		end,
+		keys = {
+			{
+				"<leader>mp",
+				"<cmd>Compile<cr>",
+				desc = "Compile",
+			},
+			{
+				"<leader>ma",
+				"<cmd>Recompile<cr>",
+				desc = "Recompile",
+			},
+			{
+				"<leader>mq",
+				function()
+					require("compile-mode").send_to_qflist()
+				end,
+			},
+			{
+				"[e",
+				"<cmd>NextError<cr>",
+			},
+		},
+	},
 }

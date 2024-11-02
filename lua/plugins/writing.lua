@@ -20,49 +20,44 @@ return {
 				},
 				code = {
 					sign = false,
+
+					-- Obsidian Style
 					width = "block",
-					left_margin = 0.5,
-					left_pad = 0.2,
-					right_pad = 0.2,
-					-- left_margin = 0,
+					min_width = 60,
+					left_pad = 3,
+					position = "right",
+					border = "thick",
+
+					-- Center code blocks
+					-- sign = false,
+					-- width = "block",
+					-- left_margin = 0.5,
+					-- left_pad = 0.2,
+					-- right_pad = 0.2,
+					-- border = "thick",
 				},
 				heading = {
-					width = "block",
-					sign = false,
-					min_width = 40,
-					-- left_pad = 0.5,
-					left_pad = 2,
-					right_pad = 4,
-					icons = {
-						"# ",
-						"## ",
-						"### ",
-						"#### ",
-						"##### ",
-						"###### ",
-					},
-					-- right_pad = 0.5,
-					-- border_virtual = true,
-					-- icons = {
-					-- block .. " ",
-					-- block .. block .. " ",
-					-- block .. block .. block .. " ",
-					-- block .. block .. block .. block .. " ",
-					-- block .. block .. block .. block .. block .. " ",
-					-- block .. block .. block .. block .. block .. block .. " ",
-					--     },
+          border = false,
+					border_virtual = true,
+          border_prefix = true,
+          sign = false,
 				},
 				pipe_table = {
 					preset = "round",
 					alignment_indicator = "┅",
 				},
 				latex = {
-					enabled = false,
-					converter = {
-						"latex2text",
-						"--code",
-					},
+					enabled = true,
+          top_pad = 1,
+          bottom_pad = 1,
+					-- converter = {
+					-- 	"latex2text",
+					-- 	"--code",
+					-- },
 				},
+        signs = {
+          enabled = false,
+        },
 			}
 		end,
 	},
@@ -73,7 +68,7 @@ return {
 			"BufNewFile C:/Users/onam7/Desktop/DB/DB/**.md",
 		},
 		dependencies = {
-			"mini.pick",
+      { "mini.pick", dev = true },
 			"MeanderingProgrammer/render-markdown.nvim",
 			{
 				"jmbuhr/otter.nvim",
@@ -296,8 +291,7 @@ return {
 					if name == nil then
 						return
 					end
-					local note_title = name:gsub("%s+", "-")
-					vim.cmd("ObsidianNew " .. note_title)
+					vim.cmd("ObsidianNew " .. name)
 				end)
 			end, { desc = "[O]bsidian [N]ew" })
 			vim.keymap.set("n", "<leader>os", "<cmd>ObsidianSearch<CR>", { desc = "[O]bsidian [S]earch" })
@@ -369,26 +363,14 @@ return {
 		end,
 	},
 	{
-		"HakonHarnes/img-clip.nvim",
-		event = "VeryLazy",
-		opts = {
-			-- add options here
-			-- or leave it empty to use the default settings
-		},
-		keys = {
-			-- suggested keymap
-			{ "<leader>ip", "<cmd>PasteImage<cr>", desc = "Paste image from system clipboard" },
-		},
-	},
-	{
 		"toppair/peek.nvim",
 		build = "deno task --quiet build:fast",
-    cmd = { "PeekOpen", "PeekClose" },
-    opts = {
-      -- app = "webview",
-      app = { "chromium", "--new-window" },
-    },
-    config = function(_, opts)
+		cmd = { "PeekOpen", "PeekClose" },
+		opts = {
+			-- app = "webview",
+			app = { "chromium", "--new-window" },
+		},
+		config = function(_, opts)
 			require("peek").setup(opts)
 			vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
 			vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})

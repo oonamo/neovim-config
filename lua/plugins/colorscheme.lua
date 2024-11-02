@@ -14,7 +14,168 @@ return {
 		-- lazy = false, -- make sure we load this during startup if it is your main colorscheme
 		-- priority = 1000, -- make sure to load this before all the other start plugins
 		name = "catppuccin",
-		config = function()
+		opts = {
+			color_overrides = {
+				macchiato = {
+					rosewater = "#ffffff",
+					flamingo = "#ffffff",
+					red = "#ffdd33",
+					maroon = "#ffffff",
+					pink = "#ffdd33",
+					mauve = "#ffdd33",
+					peach = "#96a6c8",
+					yellow = "#899b92",
+					green = "#73c936",
+					teal = "#88b992",
+					sky = "#cc8c3c",
+					sapphire = "#96a6c8",
+					blue = "#778899",
+					lavender = "#778899",
+					text = "#eae3d5",
+					subtext1 = "#d5c9b7",
+					subtext0 = "#bfb3a5",
+					overlay2 = "#aca195",
+					overlay1 = "#958b7e",
+					overlay0 = "#6f6660",
+					surface2 = "#585858",
+					surface1 = "#4b4b4b",
+					surface0 = "#353535",
+					base = "#181818",
+					mantle = "#1d2021",
+					crust = "#1d2021",
+				},
+				-- everforest
+			},
+			highlight_overrides = {
+				macchiato = function(colors)
+					return {
+						CurSearch = { bg = colors.sky },
+						IncSearch = { bg = colors.sky },
+						-- DashboardFooter = { fg = colors.overlay0 },
+						-- TreesitterContextBottom = { style = {} },
+						-- ["@markup.italic"] = { fg = colors.blue, style = { "italic" } },
+						-- ["@markup.strong"] = { fg = colors.blue, style = { "bold" } },
+						-- Headline = { style = { "bold" } },
+						-- Headline1 = { fg = colors.blue, style = { "bold" } },
+						-- Headline2 = { fg = colors.pink, style = { "bold" } },
+						-- Headline3 = { fg = colors.lavender, style = { "bold" } },
+						-- Headline4 = { fg = colors.green, style = { "bold" } },
+						-- Headline5 = { fg = colors.peach, style = { "bold" } },
+						-- Headline6 = { fg = colors.flamingo, style = { "bold" } },
+						-- rainbow1 = { fg = colors.blue, style = { "bold" } },
+						-- rainbow2 = { fg = colors.pink, style = { "bold" } },
+						-- rainbow3 = { fg = colors.lavender, style = { "bold" } },
+						-- rainbow4 = { fg = colors.green, style = { "bold" } },
+						-- rainbow5 = { fg = colors.peach, style = { "bold" } },
+						-- rainbow6 = { fg = colors.flamingo, style = { "bold" } },
+						--
+						-- NormalFloat = { bg = colors.base },
+						-- Pmenu = { bg = colors.mantle, fg = "" },
+						-- PmenuSel = { bg = colors.surface0, fg = "" },
+						-- CursorLineNr = { fg = colors.red },
+						-- LineNr = { fg = colors.yellow },
+						-- LineNrAbove = { fg = colors.surface1 },
+						-- LineNrBelow = { fg = colors.surface1 },
+						-- FloatBorder = { bg = colors.base, fg = colors.surface0 },
+						-- VertSplit = { bg = colors.base, fg = colors.surface0 },
+						-- WinSeparator = { bg = colors.base, fg = colors.surface0 },
+						-- LspInfoBorder = { link = "FloatBorder" },
+						-- YankHighlight = { bg = colors.surface2 },
+						-- CmpItemMenu = { fg = colors.surface2 },
+						--
+						-- GitSignsChange = { fg = colors.peach },
+						--
+						-- NeoTreeDirectoryIcon = { fg = colors.subtext1 },
+						-- NeoTreeDirectoryName = { fg = colors.subtext1 },
+						-- NeoTreeFloatBorder = { link = "TelescopeResultsBorder" },
+						-- NeoTreeGitConflict = { fg = colors.red },
+						-- NeoTreeGitDeleted = { fg = colors.red },
+						-- NeoTreeGitIgnored = { fg = colors.overlay0 },
+						-- NeoTreeGitModified = { fg = colors.peach },
+						-- NeoTreeGitStaged = { fg = colors.green },
+						-- NeoTreeGitUnstaged = { fg = colors.red },
+						-- NeoTreeGitUntracked = { fg = colors.green },
+						-- NeoTreeIndent = { link = "IblIndent" },
+						-- NeoTreeNormal = { bg = colors.mantle },
+						-- NeoTreeNormalNC = { bg = colors.mantle },
+						-- NeoTreeRootName = { fg = colors.subtext1, style = { "bold" } },
+						-- NeoTreeTabActive = { fg = colors.text, bg = colors.mantle },
+						-- NeoTreeTabInactive = { fg = colors.surface2, bg = colors.crust },
+						-- NeoTreeTabSeparatorActive = { fg = colors.mantle, bg = colors.mantle },
+						-- NeoTreeTabSeparatorInactive = { fg = colors.crust, bg = colors.crust },
+						-- NeoTreeWinSeparator = { fg = colors.base, bg = colors.base },
+						--
+						-- TelescopePreviewBorder = { bg = colors.crust, fg = colors.crust },
+						-- TelescopePreviewNormal = { bg = colors.crust },
+						-- TelescopePreviewTitle = { fg = colors.crust, bg = colors.crust },
+						-- TelescopePromptBorder = { bg = colors.surface0, fg = colors.surface0 },
+						-- TelescopePromptCounter = { fg = colors.mauve, style = { "bold" } },
+						-- TelescopePromptNormal = { bg = colors.surface0 },
+						-- TelescopePromptPrefix = { bg = colors.surface0 },
+						-- TelescopePromptTitle = { fg = colors.surface0, bg = colors.surface0 },
+						-- TelescopeResultsBorder = { bg = colors.mantle, fg = colors.mantle },
+						-- TelescopeResultsNormal = { bg = colors.mantle },
+						-- TelescopeResultsTitle = { fg = colors.mantle, bg = colors.mantle },
+						-- TelescopeSelection = { bg = colors.surface0 },
+						--
+						-- WhichKeyFloat = { bg = colors.mantle },
+						--
+						-- IblIndent = { fg = colors.surface0 },
+						-- IblScope = { fg = colors.overlay0 },
+						--
+						-- MasonNormal = { bg = colors.mantle },
+						-- MasonMutedBlock = { link = "CursorLine" },
+						--
+						-- LazyNormal = { bg = colors.mantle },
+					}
+				end,
+			},
+			custom_highlights = function(c)
+				return {
+					CmpItemKindSnippet = { fg = c.mauve },
+					CmpItemKindKeyword = { fg = c.red },
+					CmpItemKindText = { fg = c.teal },
+					CmpItemKindMethod = { fg = c.blue },
+					CmpItemKindConstructor = { fg = c.blue },
+					CmpItemKindFunction = { fg = c.blue },
+					CmpItemKindFolder = { fg = c.blue },
+					CmpItemKindModule = { fg = c.blue },
+					CmpItemKindConstant = { fg = c.peach },
+					CmpItemKindField = { fg = c.green },
+					CmpItemKindProperty = { fg = c.green },
+					CmpItemKindEnum = { fg = c.green },
+					CmpItemKindUnit = { fg = c.green },
+					CmpItemKindClass = { fg = c.yellow },
+					CmpItemKindVariable = { fg = c.flamingo },
+					CmpItemKindFile = { fg = c.blue },
+					CmpItemKindInterface = { fg = c.yellow },
+					CmpItemKindColor = { fg = c.red },
+					CmpItemKindReference = { fg = c.red },
+					CmpItemKindEnumMember = { fg = c.red },
+					CmpItemKindStruct = { fg = c.blue },
+					CmpItemKindValue = { fg = c.peach },
+					CmpItemKindEvent = { fg = c.blue },
+					CmpItemKindOperator = { fg = c.blue },
+					CmpItemKindTypeParameter = { fg = c.blue },
+					CmpItemKindCopilot = { fg = c.teal },
+					PmenuSel = { bg = c.green, fg = c.base },
+					CmpItemAbbr = { fg = c.text },
+					CmpItemAbbrMatch = { fg = c.blue, bold = true },
+					CmpSel = { bg = c.surface0 },
+					Pmenu = { bg = c.mantle },
+					CmpBorder = { fg = c.mantle, bg = c.mantle },
+					CmpDoc = {
+						bg = c.crust,
+					},
+					CmpDocBorder = {
+						fg = c.crust,
+						bg = c.crust,
+					},
+				}
+			end,
+		},
+		config = function(_, opts)
+			require("catppuccin").setup(opts)
 			vim.cmd.colorscheme("catppuccin")
 		end,
 	},
@@ -30,21 +191,6 @@ return {
 		"rebelot/kanagawa.nvim",
 		-- lazy = false,
 		-- priority = 1000,
-	},
-	{
-		"zenbones-theme/zenbones.nvim",
-		init = function()
-			vim.g.zenbones_compat = 1
-			vim.g.bones_compat = 1
-		end,
-		config = function()
-			vim.g.forestbones_lightness = "dim"
-			vim.cmd.colorscheme("forestbones")
-			local normal = vim.api.nvim_get_hl(0, {
-				name = "Normal",
-			})
-			vim.api.nvim_set_hl(0, "Normal", { fg = normal.fg, bg = "#1c2225" })
-		end,
 	},
 	-- {
 	-- 	"sainnhe/everforest",
@@ -66,8 +212,8 @@ return {
 	-- },
 	{
 		"neanias/everforest-nvim",
-		lazy = false,
-		priority = 1000, -- make sure to load this before all the other start plugins
+		-- lazy = false,
+		-- priority = 1000, -- make sure to load this before all the other start plugins
 		-- Optional; default configuration will be used if setup isn't called.
 		config = function()
 			require("everforest").setup({
@@ -148,15 +294,6 @@ return {
 		end,
 	},
 	{
-		"comfysage/evergarden",
-		config = function()
-			require("evergarden").setup({
-				contrast_dark = "hard", -- 'hard'|'medium'|'soft'
-			})
-			vim.cmd.colorscheme("evergarden")
-		end,
-	},
-	{
 		"rose-pine/neovim",
 		name = "rose-pine",
 		-- lazy = false,
@@ -174,4 +311,14 @@ return {
 			vim.cmd.colorscheme("rose-pine")
 		end,
 	},
+  {
+    "Mofiqul/vscode.nvim",
+    -- lazy = false,
+    -- priority = 1000,
+    opts = {},
+    config = function(_, opts)
+      require("vscode").setup(opts)
+      vim.cmd.colorscheme("vscode")
+    end
+  },
 }
