@@ -154,6 +154,14 @@ function M.diff(data)
 	return add_format .. " " .. change_format .. " " .. delete_format .. " %#StatusLine# "
 end
 
+function M.treesitter(data)
+  local ok, ts = pcall(require, "nvim-treesitter")
+  if not ok then
+    return
+  end
+  return ts.statusline() or ""
+end
+
 ---@class status.Data
 ---@field buf number
 
@@ -168,6 +176,12 @@ local function build(data)
 	}
 end
 
+local function buildwinbar(data)
+  return {
+    M.treesitter(data)
+  }
+end
+
 function M.statusline()
   ---@type status.Data
 	local data = {
@@ -180,6 +194,18 @@ function M.statusline()
 	end
 	return statusline
 end
+
+-- function M.winbar()
+-- 	local data = {
+--     buf = vim.api.nvim_get_current_buf()
+--   }
+-- 	local components = buildwinbar(data)
+-- 	local winbar = ""
+-- 	for _, component in ipairs(components) do
+-- 		winbar = winbar .. component
+-- 	end
+-- 	return winbar
+-- end
 
 vim.api.nvim_create_autocmd("Colorscheme", {
 	group = vim.api.nvim_create_augroup("Statusline", { clear = true }),

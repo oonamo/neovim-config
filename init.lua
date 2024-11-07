@@ -31,7 +31,7 @@ vim.g.maplocalleader = ";"
 local o, opt = vim.o, vim.opt
 vim.o.shada = "'100,<50,s10,:1000,/100,@100,h"
 
-o.background = "dark"
+o.background = "light"
 
 -- Allows for easy telling if pane is a nvim proccess
 o.title = true
@@ -45,6 +45,7 @@ vim.o.lazyredraw = true
 -- Relative line numbers
 opt.nu = true
 opt.rnu = true
+
 
 -- set tab stop at 4
 opt.tabstop = 2
@@ -135,11 +136,11 @@ vim.api.nvim_create_autocmd("User", {
 			require("config.gui")
 		end
 		require("statusline")
-		vim.o.statuscolumn = [[%!v:lua.require'config.statuscolumn'.statuscolumn()]]
+		-- vim.o.statuscolumn = [[%!v:lua.require'config.statuscolumn'.statuscolumn()]]
 	end,
 })
 
-vim.cmd.colorscheme("jellybeans")
+vim.cmd.colorscheme("neovim_light")
 
 -- Setup lazy.nvim
 require("lazy").setup({
@@ -190,11 +191,3 @@ require("lazy").setup({
 		},
 	},
 })
-
-if not vim.g.colors_name then
-	vim.api.nvim_set_hl(0, "Normal", { fg = "NvimLightGrey2", bg = "#1b1c20" })
-end
-
--- if vim.o.bg ~= "light" and vim.g.colors_name == "" then
---   vim.cmd.colorscheme("zenner")
--- end

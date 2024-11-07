@@ -9,6 +9,7 @@ end
 local map = vim.keymap.set
 map("n", "<Esc>", "<cmd>nohlsearch<cr><Esc>")
 map("n", "<C-c>", "<cmd>nohlsearch<cr><C-c>", { silent = true })
+map("n", "J", "mzJ'z", opts("Join and keep position"))
 
 vim.api.nvim_set_keymap("i", "<C-c>", "<Esc>", opts("escape insert mode", true, { noremap = true }))
 

@@ -129,13 +129,14 @@ return {
 			},
 		}
 		for server, settings in pairs(opts) do
-			local server_opts = vim.tbl_deep_extend("force", {
-				capabilities = vim.deepcopy(capabilities),
-			}, settings or {})
-			if server_opts.root_dir then
-				server_opts.root_dir = lspconfig.util.root_pattern(unpack(server_opts.root_dir))
+			-- local server_opts = vim.tbl_deep_extend("force", {
+			-- 	capabilities = 
+			-- }, settings or {})
+      settings.capabilities = require("blink.cmp").get_lsp_capabilities(settings.capabilities)
+			if settings.root_dir then
+				settings.root_dir = lspconfig.util.root_pattern(unpack(settings.root_dir))
 			end
-			lspconfig[server].setup(server_opts)
+			lspconfig[server].setup(settings)
 		end
 		local sign_define = vim.fn.sign_define
 		sign_define("DiagnosticSignError", { text = "󰅙 ", texthl = "DiagnosticSignError" })
