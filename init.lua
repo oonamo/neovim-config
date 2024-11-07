@@ -140,7 +140,7 @@ vim.api.nvim_create_autocmd("User", {
 	end,
 })
 
-vim.cmd.colorscheme("neovim_light")
+vim.cmd.colorscheme("tokyonight-moon")
 
 -- Setup lazy.nvim
 require("lazy").setup({

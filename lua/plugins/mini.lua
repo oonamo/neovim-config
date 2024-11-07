@@ -149,13 +149,13 @@ return {
 				end,
 				desc = "Find todos",
 			},
-      {
-        "z=",
-        function()
+			{
+				"z=",
+				function()
 					require("mini.extra").pickers.spellsuggest()
-        end,
-        desc = "Spell Suggest",
-      },
+				end,
+				desc = "Spell Suggest",
+			},
 		},
 	},
 	{
@@ -500,6 +500,13 @@ return {
 					-- })
 				end,
 			})
+
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "MiniFilesActionRename",
+				callback = function(event)
+					Snacks.rename.on_rename_file(event.data.from, event.data.to)
+				end,
+			})
 		end,
 		keys = {
 			{
@@ -779,33 +786,6 @@ return {
 			},
 		},
 	},
-	{
-		"mini.cursorword",
-		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
-		dev = true,
-		opts = {},
-		config = function(_, opts)
-			_G.cursorword_blocklist = function()
-				local curword = vim.fn.expand("<cword>")
-				local filetype = vim.bo.filetype
-
-				-- Add any disabling global or filetype-specific logic here
-				local blocklist = {}
-				if filetype == "lua" then
-					blocklist = { "local", "require", "vim" }
-				elseif filetype == "javascript" then
-					blocklist = { "import" }
-				elseif filetype == "c" then
-					blocklist = { "include" }
-				end
-
-				vim.b.minicursorword_disable = vim.tbl_contains(blocklist, curword)
-			end
-			vim.cmd("au CursorMoved * lua _G.cursorword_blocklist()")
-
-			require("mini.cursorword").setup(opts)
-		end,
-	},
 	-- {
 	-- 	"mini.pairs",
 	-- 	dev = true,
@@ -915,10 +895,9 @@ return {
 				})
 			end
 
-
 			if vim.fn.argc() == 0 then
-        local starter = require("mini.starter")
-        starter.setup(opts)
+				local starter = require("mini.starter")
+				starter.setup(opts)
 				vim.api.nvim_create_autocmd("User", {
 					pattern = "LazyVimStarted",
 					callback = function(ev)
