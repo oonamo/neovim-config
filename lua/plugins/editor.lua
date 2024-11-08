@@ -52,6 +52,13 @@ return {
 				},
 				incremental_selection = {
 					enable = true,
+					disable = function(_, buf)
+						local max_filesize = 100 * 1024 -- 100 KB
+						local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+						if ok and stats and stats.size > max_filesize then
+							return true
+						end
+					end,
 					keymaps = {
 						init_selection = "<C-i>",
 						node_incremental = "<CR>",
@@ -310,7 +317,10 @@ return {
 				setup = function(ctx)
 					vim.b.minianimate_disable = true
 					vim.b.minicursorword_disable = true
+					vim.b.miniindentscope_disable = true
 					vim.schedule(function()
+						vim.w.statusline = nil
+						vim.w.statuscolumn = nil
 						vim.bo[ctx.buf].syntax = ctx.ft
 					end)
 				end,
@@ -393,25 +403,17 @@ return {
 			},
 			{
 				"<c-\\>",
-        mode = { "n", "t" },
+				mode = { "n", "t" },
 				function()
-					Snacks.terminal()
+					Snacks.terminal(nil, {
+						bo = {
+							minianimate_disable = true,
+							minicursorword_disable = true,
+							miniindentscope_disable = true,
+						},
+					})
 				end,
 				desc = "Toggle Terminal",
-			},
-			{
-				"]]",
-				function()
-					Snacks.words.jump(vim.v.count1)
-				end,
-				desc = "Next Reference",
-			},
-			{
-				"[[",
-				function()
-					Snacks.words.jump(-vim.v.count1)
-				end,
-				desc = "Prev Reference",
 			},
 		},
 		init = function()
@@ -425,15 +427,31 @@ return {
 					_G.bt = function()
 						Snacks.debug.backtrace()
 					end
-					vim.print = _G.dd -- Override print to use snacks for `:=` command
+					-- vim.print = _G.dd -- Override print to use snacks for `:=` command
 				end,
 			})
 		end,
 	},
 	-- Generate NVChad colorschemes
 	{
-	  "genchad",
-	  dir = "~/projects/nvim/chadschemes/",
-	  dev = true,
+		"genchad",
+		dir = "~/projects/nvim/chadschemes/",
+		dev = true,
+	},
+	{
+		"cbochs/grapple.nvim",
+		opts = {
+			scope = "git_branch",
+			icons = true,
+			status = true,
+		},
+		keys = {
+			{ "<leader>a", "<cmd>Grapple toggle<cr>", desc = "Grapple Tag File" },
+			{ "<c-e><c-e>", "<cmd>Grapple toggle_tags<cr>", desc = "Toggle tags menu" },
+			{ "<c-e><c-h>", "<cmd>Grapple select index=1<cr>", desc = "Select first tag" },
+			{ "<c-e><c-j>", "<cmd>Grapple select index=2<cr>", desc = "Select second tag" },
+			{ "<c-e><c-k>", "<cmd>Grapple select index=3<cr>", desc = "Select third tag" },
+			{ "<c-e><c-l>", "<cmd>Grapple select index=4<cr>", desc = "Select fourth tag" },
+		},
 	},
 }

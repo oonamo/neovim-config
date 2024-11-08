@@ -1,5 +1,11 @@
+local get_opt = vim.api.nvim_get_option_value
+
 local M = {}
 M.hl = {}
+
+---@class status.Data
+---@field buf number
+---@field fname string
 
 ---@param hl string
 ---@param v table
@@ -29,10 +35,11 @@ end
 ---@param hl string
 ---@param value any
 ---@param hl_keys table
+---@param reset boolean?
 ---@return string
-local function stl_format(hl, value, hl_keys)
+local function stl_format(hl, value, hl_keys, reset)
 	local mod_hl = get_hl(hl, hl_keys)
-	return string.format("%%#%s#%s", mod_hl, value)
+	return string.format("%%#%s#%s%s", mod_hl, value, reset and "%#Statusline#" or "")
 end
 
 function M.make_his(hl_list)
@@ -80,46 +87,51 @@ M.modes = {
 	["t"] = "TER",
 }
 
+---@param data status.Data
 function M.mode(data)
 	local vim_mode = vim.api.nvim_get_mode().mode
 	local mode = M.modes[vim_mode] or M.modes[vim_mode:sub(1, 1)] or "UNK"
 	return mode
 end
 
+---@param data status.Data
 function M.diagnostic(data)
 	if #vim.diagnostic.get(0) > 0 then
 		local errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
-		local error_format = stl_format("error", " " .. errors, {
+		local error_format = stl_format("error", "x ", {
 			fg = "DiagnosticError",
 			bg = "StatusLine",
-		})
+		}, true) .. errors
+
 		local err = errors > 0 and error_format .. " " or ""
 
 		local warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
-		local warn_format = stl_format("warn", " " .. warnings, {
+		local warn_format = stl_format("warn", "▲ ", {
 			fg = "DiagnosticWarn",
 			bg = "StatusLine",
-		})
+		}, true) .. warnings
 		local warn = warnings > 0 and warn_format .. " " or ""
 
-		local hints = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.HINT })
-		local hint_format = stl_format("hint", " " .. hints, {
-			fg = "DiagnosticHint",
-			bg = "StatusLine",
-		})
-		local hint = hints > 0 and hint_format .. " " or ""
-
-		local infos = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO })
-		local info_format = stl_format("info", " " .. infos, {
-			fg = "DiagnosticInfo",
-			bg = "StatusLine",
-		})
-		local info = infos > 0 and info_format .. " " or ""
-		return err .. warn .. hint .. info .. "%#StatusLine# "
+		-- local hints = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.HINT })
+		-- local hint_format = stl_format("hint", "H " .. hints, {
+		-- 	fg = "DiagnosticHint",
+		-- 	bg = "StatusLine",
+		-- })
+		-- local hint = hints > 0 and hint_format .. " " or ""
+		--
+		-- local infos = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO })
+		-- local info_format = stl_format("info", "I " .. infos, {
+		-- 	fg = "DiagnosticInfo",
+		-- 	bg = "StatusLine",
+		-- })
+		-- local info = infos > 0 and info_format .. " " or ""
+		-- return err .. warn .. hint .. info .. "%#StatusLine# "
+		return err .. warn .. "%#StatusLine# "
 	end
 	return ""
 end
 
+---@param data status.Data
 function M.diff(data)
 	local summary = vim.b.minidiff_summary
 	if not summary or not summary.source_name then
@@ -154,39 +166,159 @@ function M.diff(data)
 	return add_format .. " " .. change_format .. " " .. delete_format .. " %#StatusLine# "
 end
 
+---@param data status.Data
 function M.treesitter(data)
-  local ok, ts = pcall(require, "nvim-treesitter")
-  if not ok then
-    return
-  end
-  return ts.statusline() or ""
+	local ok, ts = pcall(require, "nvim-treesitter")
+	if not ok then
+		return
+	end
+	return ts.statusline() or ""
 end
 
----@class status.Data
----@field buf number
+---@param data status.Data
+function M.file(data)
+	local file_name = vim.fn.fnamemodify(data.fname, ":t"):gsub("\\", "/")
+	local file_icon, icon_hl = require("mini.icons").get("file", file_name)
+
+	local file_icon_name = stl_format(icon_hl, file_icon, {
+		fg = icon_hl,
+		bg = "Statusline",
+	}, true) .. " " .. file_name
+
+	if vim.bo.filetype == "help" then
+		-- return table.concat({ file_icon, file_icon_name })
+		return file_icon_name
+	end
+
+	local dir_path = vim.fn.fnamemodify(data.fname, ":h:~"):gsub("\\", "/") .. "/"
+	local win_width = vim.api.nvim_win_get_width(0)
+	local dir_threshold_width = 15
+
+	dir_path = win_width >= dir_threshold_width + #dir_path + #file_icon_name and dir_path or ""
+	-- return stl_format("file", "╼ " .. dir_path, {
+	-- 	fg = "NonText",
+	--    bg = "Statusline",
+	-- }) .. file_icon_name
+	return stl_format("file", "╼ ", {
+		fg = "DiffAdd",
+		bg = "Statusline",
+	}) .. stl_format("dir", dir_path, {
+		fg = "NonText",
+		bg = "Statusline",
+	}) .. file_icon_name
+end
+
+---@return string, nil|integer: Vline count
+local function vline_count()
+	local raw_count = vim.fn.line(".") - vim.fn.line("v")
+	raw_count = raw_count < 0 and raw_count - 1 or raw_count + 1
+
+	if raw_count < 999 then
+		return tostring(raw_count)
+	else
+		local raw_count_str = tostring(raw_count) --[[@as string]]
+		return raw_count_str:reverse():gsub("(%d%d%d)", "%1,"):reverse():gsub("^,", "")
+	end
+end
+
+---@return boolean
+local function is_in_search()
+	local cmd_type = vim.fn.getcmdtype()
+	return cmd_type == "/" or cmd_type == "?"
+end
+
+local non_programming_modes = {
+	markdown = {},
+	org = {},
+	neorg = {},
+	latex = {},
+}
+
+local function group_number(num, sep)
+	if num < 999 then
+		return tostring(num)
+	else
+		local tmp = tostring(num) --[[@as string]]
+		return tmp:reverse():gsub("(%d%d%d)", "%1" .. sep):reverse():gsub("^,", "")
+	end
+end
+
+---@param data status.Data
+function M.file_info(data)
+	if vim.v.hlsearch == 1 and not is_in_search() then
+		local sinfo = vim.fn.searchcount()
+		local search_stat = sinfo.incomplete > 0 and "press enter"
+			or sinfo.total > 0 and ("%s/%s"):format(sinfo.current, sinfo.total)
+			or nil
+
+		if search_stat ~= nil then
+			-- return table.concat({ icon_tbl.searchcount, " ", search_stat, " " })
+			return stl_format("searchcount", "⌘", {
+				fg = "DiagnosticInfo",
+				bg = "Statusline",
+			}) .. " " .. search_stat
+		end
+	end
+	local ft = get_opt("filetype", {})
+	local raw_lines = vim.api.nvim_buf_line_count(0)
+	local lines = group_number(raw_lines, ",")
+
+	if not non_programming_modes[ft] then
+		return stl_format("fileinfo", "≡", {
+			fg = "DiagnosticInfo",
+			bg = "Statusline",
+		}, true) .. " " .. lines .. " lines"
+	end
+	local wc_table = vim.fn.wordcount()
+	if not wc_table.visual_words or not wc_table.visual_chars then
+		local raw_word_count
+		if raw_lines < 999 then
+			raw_word_count = tostring(wc_table.words)
+		else
+			local wc_table_words_str = tostring(wc_table.words) --[[@as string]]
+			raw_word_count = wc_table.words_str:reverse():gsub("(%d%d%d)", "%1,"):reverse():gsub("^,", "")
+		end
+		return stl_format("fileinfo", "≡", {
+			fg = "DiagnosticInfo",
+			bg = "Statusline",
+		}, true) .. " " .. lines .. " lines  " .. raw_word_count .. " words "
+	else
+		return stl_format("fileinfo", "‹›", {
+			fg = "DiagnosticInfo",
+			bg = "Statusline",
+		}, true) .. " " .. vline_count() .. " lines  ",
+			group_number(wc_table.visual_words, ",") .. " words  ",
+			group_number(wc_table.visual_chars, ",") .. " chars"
+	end
+end
 
 ---@param data status.Data
 local function build(data)
 	return {
-		M.mode(data),
-		"%=%f%=",
+		-- M.mode(data),
+		-- "%=",
+		M.file(data),
+		"%=",
+		-- "%=%f%=",
 		M.diff(data),
 		M.diagnostic(data),
-		"%l|%c",
+    M.file_info(data),
+		" %l|%c",
 	}
 end
 
 local function buildwinbar(data)
-  return {
-    M.treesitter(data)
-  }
+	return {
+		M.treesitter(data),
+	}
 end
 
 function M.statusline()
-  ---@type status.Data
+	---@type status.Data
 	local data = {
-    buf = vim.api.nvim_get_current_buf()
-  }
+		buf = vim.api.nvim_get_current_buf(),
+		fname = vim.api.nvim_buf_get_name(0),
+	}
 	local components = build(data)
 	local statusline = ""
 	for _, component in ipairs(components) do

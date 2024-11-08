@@ -642,6 +642,8 @@ return {
 					-- `z` key
 					{ mode = "n", keys = "z" },
 					{ mode = "x", keys = "z" },
+
+					{ mode = "n", keys = "<C-e>" },
 				},
 
 				clues = { -- {{{
@@ -920,5 +922,16 @@ return {
 				})
 			end
 		end,
+	},
+	{
+		"mini.bracketed",
+    dev =  true,
+		opts = {
+			indent = { suffix = "" },
+		},
+		keys = {
+			"[",
+			"]",
+		},
 	},
 }

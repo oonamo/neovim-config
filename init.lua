@@ -31,7 +31,7 @@ vim.g.maplocalleader = ";"
 local o, opt = vim.o, vim.opt
 vim.o.shada = "'100,<50,s10,:1000,/100,@100,h"
 
-o.background = "light"
+o.background = "dark"
 
 -- Allows for easy telling if pane is a nvim proccess
 o.title = true
@@ -140,7 +140,9 @@ vim.api.nvim_create_autocmd("User", {
 	end,
 })
 
-vim.cmd.colorscheme("tokyonight-moon")
+vim.cmd.colorscheme("chadracula-evondev")
+-- vim.cmd.colorscheme("neovim_dark")
+-- vim.cmd.colorscheme("kanagawa")
 
 -- Setup lazy.nvim
 require("lazy").setup({
@@ -169,7 +171,7 @@ require("lazy").setup({
 				"logipat",
 				"matchit",
 				"man",
-				-- "matchparen",
+				"matchparen",
 				"tar",
 				"tarPlugin",
 				"rrhelper",
