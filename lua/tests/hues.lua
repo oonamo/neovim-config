@@ -5,9 +5,9 @@
 --   accent = "purple",
 -- })
 
-require("mini.hues").setup({
-  background = "#616161",
-  foreground = "#d9d9d9",
-  saturation = "medium",
-  n_hues = 8,
-})
+-- require("mini.hues").setup({
+--   background = "#616161",
+--   foreground = "#d9d9d9",
+--   saturation = "medium",
+--   n_hues = 8,
+-- })

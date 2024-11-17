@@ -5,7 +5,8 @@ local utils = require("tests.utils")
 ---@param theme table
 ---@param base30 table
 ---@param override? fun(table, table): table
-function M.gencolorscheme(name, theme, base30, override)
+---@param test? boolean: try before writing
+function M.gencolorscheme(name, theme, base30, override, test)
 	require("mini.base16").setup({ palette = theme })
 	M.minioverrides()
 	for _, v in ipairs(M.clearhi()) do
@@ -38,7 +39,9 @@ function M.gencolorscheme(name, theme, base30, override)
 	for k, v in pairs(overrides) do
 		vim.api.nvim_set_hl(0, k, v)
 	end
-	require("mini.colors").get_colorscheme(nil, { new_name = name }):compress():add_cterm_attributes():write()
+  if not test then
+    require("mini.colors").get_colorscheme(nil, { new_name = name }):compress():write()
+  end
 end
 
 function M.minioverrides()

@@ -1,3 +1,4 @@
+-- Made with 'mini.colors' module of https://github.com/echasnovski/mini.nvim
 
 if vim.g.colors_name ~= nil then vim.cmd('highlight clear') end
 vim.g.colors_name = "kanagawa"
@@ -416,6 +417,11 @@ hi(0, "MatchWord", { bg = "#43434c", ctermbg = 238, ctermfg = 187, fg = "#dcd7ba
 hi(0, "MiniAnimateCursor", { nocombine = true, reverse = true })
 hi(0, "MiniAnimateNormalFloat", { link = "NormalFloat" })
 hi(0, "MiniClueBorder", { link = "NormalFloat" })
+hi(0, "MiniClueDescGroup", { link = "DiagnosticFloatingWarn" })
+hi(0, "MiniClueDescSingle", { link = "NormalFloat" })
+hi(0, "MiniClueNextKey", { link = "DiagnosticFloatingHint" })
+hi(0, "MiniClueNextKeyWithPostkeys", { link = "DiagnosticFloatingError" })
+hi(0, "MiniClueSeparator", { link = "DiagnosticFloatingInfo" })
 hi(0, "MiniClueTitle", { bg = "#2a2a37", bold = true, ctermbg = 236, ctermfg = 140, fg = "#7e9cd8" })
 hi(0, "MiniCompletionActiveParameter", { bg = "#223249", ctermbg = 236 })
 hi(0, "MiniCursorword", { underline = true })
@@ -483,9 +489,9 @@ hi(0, "MiniPickNormal", { bg = "#191922", ctermbg = 234 })
 hi(0, "MiniPickPreviewLine", { bg = "#223249", ctermbg = 236 })
 hi(0, "MiniPickPreviewRegion", { link = "IncSearch" })
 hi(0, "MiniPickPrompt", { bg = "#25252e", ctermbg = 235, ctermfg = 187, fg = "#dcd7ba" })
-hi(0, "MiniStarterCurrent", {})
 hi(0, "MiniStarterFooter", { ctermfg = 140, fg = "#7e9cd8" })
 hi(0, "MiniStarterHeader", { ctermfg = 140, fg = "#7e9cd8" })
+hi(0, "MiniStarterInactive", { link = "Comment" })
 hi(0, "MiniStarterItem", { ctermfg = 251, fg = "#c8c3a6" })
 hi(0, "MiniStarterItemBullet", { ctermfg = 167, fg = "#d8616b" })
 hi(0, "MiniStarterItemPrefix", { bold = true, ctermfg = 167, fg = "#d8616b" })

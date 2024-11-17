@@ -51,7 +51,7 @@ opt.tabstop = 2
 opt.softtabstop = 2
 opt.expandtab = true
 
-o.guicursor = ""
+-- o.guicursor = ""
 
 -- autoindent
 opt.smartindent = true
@@ -139,7 +139,7 @@ vim.api.nvim_create_autocmd("User", {
 })
 
 -- vim.cmd.colorscheme("chadracula-evondev")
-vim.cmd.colorscheme("doomchad")
+vim.cmd.colorscheme("onedark")
 -- vim.cmd.colorscheme("neovim_dark")
 -- vim.cmd.colorscheme("kanagawa")
 

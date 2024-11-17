@@ -14,6 +14,7 @@ return {
 				"Makefile",
 				"justfile",
 			})
+      MiniMisc.setup_termbg_sync()
 		end,
 	},
 	{
@@ -25,7 +26,7 @@ return {
 		opts = {
 			mappings = {
 				paste = "<C-y>",
-				refine = "<C-Space>",
+				refine = "<C-g>",
 				refine_marked = "<C-r>",
 				choose_marked = "<C-q>",
 			},

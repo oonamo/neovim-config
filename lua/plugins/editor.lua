@@ -111,7 +111,7 @@ return {
 
 			windows = {
 				autocomplete = {
-					winhighlight = "Normal:CmpPmenu,CursorLine:CmpSel,Search:None,FloatBorder:CmpBorder",
+					-- winhighlight = "Normal:CmpPmenu,CursorLine:CmpSel,Search:None,FloatBorder:CmpBorder",
 					border = "single",
 					draw = "reversed",
 				},
@@ -329,6 +329,8 @@ return {
 					{ "<leader>u", group = "ui", icon = { icon = "󰙵 ", color = "cyan" } },
 					{ "<leader>v", group = "split" },
 					{ "<leader>x", group = "zen" },
+					{ "<leader>c", group = "compile" },
+					{ "<leader>i", group = "inlay" },
 					-- { "<leader>s", group = "search" },
 					-- { "<leader>x", group = "diagnostics/quickfix", icon = { icon = "󱖫 ", color = "green" } },
 					{ "[", group = "prev" },
