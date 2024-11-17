@@ -6,10 +6,12 @@ local function on_attach(client, buffer)
 		buffer = buffer,
 	})
 	-- end
+
 	vim.keymap.set("n", "gd", vim.lsp.buf.definition, {
 		desc = "go to buffer definition",
 		buffer = buffer,
 	})
+
 	vim.keymap.set("n", "gD", function()
 		require("mini.extra").pickers.lsp({ scope = "definition" })
 	end, { desc = "go to multiple definition", buffer = buffer })
@@ -34,10 +36,10 @@ local function on_attach(client, buffer)
 		desc = "Go to lsp references",
 		buffer = buffer,
 	})
-	vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, {
-		desc = "Rename symbol",
-		buffer = buffer,
-	})
+	-- vim.keymap.set("n", "<leader>vrn", function()
+	--   -- return ":IncRename " .. vim.fn.expand("<cword>")
+	-- 	vim.lsp.buf.rename()
+	-- end, { desc = "Rename symbol", buffer = buffer, expr = true })
 	vim.keymap.set("n", "<leader>vxx", function()
 		require("mini.extra").pickers.diagnostic()
 	end, { desc = "Find diagnostics", buffer = buffer })
@@ -57,127 +59,174 @@ local function on_attach(client, buffer)
 	vim.keymap.set("n", "<leader>ss", function()
 		require("config.lsp").request(true)
 	end)
+
+	vim.api.nvim_create_autocmd("LspProgress", {
+		---@param ev {data: {client_id: integer, params: lsp.ProgressParams}}
+		callback = function(ev)
+			local spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
+			vim.notify(vim.lsp.status(), "info", {
+				id = "lsp_progress",
+				title = "LSP Progress",
+				opts = function(notif)
+					notif.icon = ev.data.params.value == "end" and " "
+						or spinner[math.floor(vim.uv.hrtime() / (1e6 * 80)) % #spinner + 1]
+				end,
+			})
+		end,
+	})
 end
 local defaults = { on_attach = on_attach }
 
 return {
-	"neovim/nvim-lspconfig",
-	event = { "BufWritePre", "BufReadPost", "BufNewFile" },
-	opts = {
-		lua_ls = {
-			on_attach = function(client, bufnr)
-				on_attach(client, bufnr)
-				-- `MiniCompletion` experience
-				client.server_capabilities.completionProvider.triggerCharacters = { ".", ":" }
-			end,
-			handlers = {
-				["textDocument/definition"] = function(err, result, ctx, config)
-					if type(result) == "table" then
-						result = { result[1] }
-					end
-					vim.lsp.handlers["textDocument/definition"](err, result, ctx, config)
+	{
+		"neovim/nvim-lspconfig",
+		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
+		opts = {
+			lua_ls = {
+				on_attach = function(client, bufnr)
+					on_attach(client, bufnr)
+					-- `MiniCompletion` experience
+					client.server_capabilities.completionProvider.triggerCharacters = { ".", ":" }
 				end,
-			},
-			settings = {
-				Lua = {
-					runtime = { version = "LuaJIT" },
-					diagnostics = {
-						globals = { "vim", "bit" },
-						workspaceDelay = -1,
-					},
-					telemetry = {
-						enable = false,
-					},
-					workspace = {
-						library = {
-							[vim.fn.expand("$VIMRUNTIME/lua")] = true,
-							[vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
-							[vim.fn.stdpath("config") .. "/lua"] = true,
+				handlers = {
+					["textDocument/definition"] = function(err, result, ctx, config)
+						if type(result) == "table" then
+							result = { result[1] }
+						end
+						vim.lsp.handlers["textDocument/definition"](err, result, ctx, config)
+					end,
+				},
+				settings = {
+					Lua = {
+						runtime = { version = "LuaJIT" },
+						diagnostics = {
+							globals = { "vim", "bit" },
+							workspaceDelay = -1,
 						},
-						ignoreSubmodules = true,
-					},
-					hint = {
-						enable = true,
-						setType = false,
-						paramType = true,
-						paramName = true,
-						semicolon = "Disable",
-						arrayIndex = "Disable",
+						telemetry = {
+							enable = false,
+						},
+						workspace = {
+							library = {
+								[vim.fn.expand("$VIMRUNTIME/lua")] = true,
+								[vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
+								[vim.fn.stdpath("config") .. "/lua"] = true,
+							},
+							ignoreSubmodules = true,
+						},
+						hint = {
+							enable = true,
+							setType = false,
+							paramType = true,
+							paramName = true,
+							semicolon = "Disable",
+							arrayIndex = "Disable",
+						},
 					},
 				},
 			},
+			-- ccls = {
+			-- 	init_options = {
+			-- 		-- compilationDatabaseDirectory = "build",
+			-- 		index = {
+			-- 			threads = 0,
+			-- 		},
+			-- 		clang = {
+			-- 			excludeArgs = { "-frounding-math" },
+			-- 		},
+			-- 	},
+			--     on_attach = on_attach,
+			-- },
+			clangd = {
+				-- cmd = { "clangd" },
+				on_attach = on_attach,
+				capabilities = {
+					semanticTokensProvider = false,
+				},
+			},
+			rust_analyzer = defaults,
+			markdown_oxide = {
+				on_attach = on_attach,
+			},
 		},
-		clangd = {
-      cmd = { "clangd", "--enable-config" },
-			on_attach = on_attach,
-		},
-		rust_analyzer = defaults,
-		markdown_oxide = {
-			on_attach = on_attach,
+		config = function(_, opts)
+			local lspconfig = require("lspconfig")
+			local capabilities = (function()
+				return {
+					workspace = {},
+				}
+			end)()
+			capabilities.workspace = {
+				didChangeWatchedFiles = {
+					dynamicRegistration = true,
+				},
+			}
+			for server, settings in pairs(opts) do
+				-- local server_opts = vim.tbl_deep_extend("force", {
+				-- 	capabilities =
+				-- }, settings or {})
+				settings.capabilities = require("blink.cmp").get_lsp_capabilities(settings.capabilities)
+				if settings.root_dir then
+					settings.root_dir = lspconfig.util.root_pattern(unpack(settings.root_dir))
+				end
+				lspconfig[server].setup(settings)
+			end
+			local sign_define = vim.fn.sign_define
+			sign_define("DiagnosticSignError", { text = "󰅙 ", texthl = "DiagnosticSignError" })
+			sign_define("DiagnosticSignWarn", { text = " ", texthl = "DiagnosticSignWarn" })
+			sign_define("DiagnosticSignHint", { text = " ", texthl = "DiagnosticSignHint" })
+			sign_define("DiagnosticSignInfo", { text = " ", texthl = "DiagnosticSignInfo" })
+			local diagnostics_symbols = {
+				[vim.diagnostic.severity.ERROR] = "x",
+				[vim.diagnostic.severity.WARN] = "!",
+				[vim.diagnostic.severity.HINT] = "?",
+				[vim.diagnostic.severity.INFO] = "i",
+			}
+			vim.diagnostic.config({
+				underline = true,
+				severity_sort = true,
+				virtual_text = {
+					prefix = function(diag)
+						return diagnostics_symbols[diag.severity]
+					end,
+				},
+				float = {
+					header = " ",
+					border = "rounded",
+					source = "if_many",
+					title = { { " 󰌶 Diagnostics ", "FloatTitle" } },
+				},
+				signs = {
+					-- text = {
+					-- 	[vim.diagnostic.severity.ERROR] = " ",
+					-- 	[vim.diagnostic.severity.WARN] = " ",
+					-- 	[vim.diagnostic.severity.HINT] = " ",
+					-- 	[vim.diagnostic.severity.INFO] = " ",
+					-- },
+					-- text = signs,
+					linehl = {
+						[vim.diagnostic.severity.ERROR] = "ErrorMsg",
+					},
+					numhl = {
+						[vim.diagnostic.severity.WARN] = "WarningMsg",
+					},
+				},
+			})
+		end,
+	},
+	{
+		"smjonas/inc-rename.nvim",
+		cmd = "IncRename",
+		opts = {},
+		keys = {
+			{
+				"<leader>vrn",
+				function()
+					return ":IncRename " .. vim.fn.expand("<cword>")
+				end,
+				expr = true,
+				desc = "Rename (inc-rename.nvim)",
+			},
 		},
 	},
-	config = function(_, opts)
-		local lspconfig = require("lspconfig")
-		local capabilities = (function()
-			return {
-				workspace = {},
-			}
-		end)()
-		capabilities.workspace = {
-			didChangeWatchedFiles = {
-				dynamicRegistration = true,
-			},
-		}
-		for server, settings in pairs(opts) do
-			-- local server_opts = vim.tbl_deep_extend("force", {
-			-- 	capabilities = 
-			-- }, settings or {})
-      settings.capabilities = require("blink.cmp").get_lsp_capabilities(settings.capabilities)
-			if settings.root_dir then
-				settings.root_dir = lspconfig.util.root_pattern(unpack(settings.root_dir))
-			end
-			lspconfig[server].setup(settings)
-		end
-		local sign_define = vim.fn.sign_define
-		sign_define("DiagnosticSignError", { text = "󰅙 ", texthl = "DiagnosticSignError" })
-		sign_define("DiagnosticSignWarn", { text = " ", texthl = "DiagnosticSignWarn" })
-		sign_define("DiagnosticSignHint", { text = " ", texthl = "DiagnosticSignHint" })
-		sign_define("DiagnosticSignInfo", { text = " ", texthl = "DiagnosticSignInfo" })
-		local diagnostics_symbols = {
-			[vim.diagnostic.severity.ERROR] = "x",
-			[vim.diagnostic.severity.WARN] = "!",
-			[vim.diagnostic.severity.HINT] = "?",
-			[vim.diagnostic.severity.INFO] = "i",
-		}
-		vim.diagnostic.config({
-			underline = true,
-			severity_sort = true,
-			virtual_text = {
-				prefix = function(diag)
-					return diagnostics_symbols[diag.severity]
-				end,
-			},
-			float = {
-				header = " ",
-				border = "rounded",
-				source = "if_many",
-				title = { { " 󰌶 Diagnostics ", "FloatTitle" } },
-			},
-			signs = {
-				-- text = {
-				-- 	[vim.diagnostic.severity.ERROR] = " ",
-				-- 	[vim.diagnostic.severity.WARN] = " ",
-				-- 	[vim.diagnostic.severity.HINT] = " ",
-				-- 	[vim.diagnostic.severity.INFO] = " ",
-				-- },
-				-- text = signs,
-				linehl = {
-					[vim.diagnostic.severity.ERROR] = "ErrorMsg",
-				},
-				numhl = {
-					[vim.diagnostic.severity.WARN] = "WarningMsg",
-				},
-			},
-		})
-	end,
 }

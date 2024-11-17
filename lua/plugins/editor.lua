@@ -69,194 +69,6 @@ return {
 			})
 		end,
 	},
-	-- {
-	-- 	"hrsh7th/nvim-cmp",
-	-- 	cond = false,
-	-- 	event = "InsertEnter",
-	-- 	dependencies = {
-	-- 		"hrsh7th/cmp-nvim-lsp",
-	-- 		"hrsh7th/cmp-buffer",
-	-- 		{ "hrsh7th/cmp-nvim-lsp-signature-help" },
-	-- 	},
-	-- 	opts = function()
-	-- 		local cmp = require("cmp")
-	-- 		local icons = require("mini.icons")
-	-- 		local function border(hl_name)
-	-- 			return {
-	-- 				{ "╭", hl_name },
-	-- 				{ "─", hl_name },
-	-- 				{ "╮", hl_name },
-	-- 				{ "│", hl_name },
-	-- 				{ "╯", hl_name },
-	-- 				{ "─", hl_name },
-	-- 				{ "╰", hl_name },
-	-- 				{ "│", hl_name },
-	-- 			}
-	-- 		end
-	-- 		local auto_select = true
-	-- 		local function confirm(opts)
-	-- 			opts = vim.tbl_extend("force", {
-	-- 				select = true,
-	-- 				behavior = cmp.ConfirmBehavior.insert,
-	-- 			}, opts or {})
-	-- 			return function(fallback)
-	-- 				if cmp.core.view:visible() or vim.fn.pumvisible() == 1 then
-	-- 					if cmp.confirm(opts) then
-	-- 						return
-	-- 					end
-	-- 				end
-	-- 				return fallback()
-	-- 			end
-	-- 		end
-	-- 		return {
-	-- 			window = {
-	-- 				documentation = {
-	-- 					border = border("CmpDocumentationBorder"),
-	-- 					winhighlight = "Normal:CmpDocumentation",
-	-- 				},
-	-- 				-- completion = cmp.config.window.bordered(),
-	-- 				completion = {
-	-- 					scrollbar = false,
-	-- 					side_padding = 1,
-	-- 					-- winhighlight = "Normal:Pmenu,CursorLine:CmpSel,Search:None,FloatBorder:FloatBorder",
-	-- 					winhighlight = "Normal:CmpPmenu,CursorLine:CmpSel,Search:None,FloatBorder:CmpBorder",
-	-- 					border = "single",
-	-- 					-- border = border("FloatBorder"),
-	-- 					-- border = "single",
-	-- 				},
-	-- 			},
-	-- 			formatting = {
-	-- 				fields = { "kind", "abbr", "menu" },
-	-- 				format = function(_, item)
-	-- 					local kind = item.kind
-	-- 					item.kind = icons.get("lsp", kind)
-	-- 					item.menu = kind:gsub("(%l)(%u)", "%1 %2"):lower()
-	-- 					return item
-	-- 				end,
-	-- 			},
-	-- 			view = {
-	-- 				docs = {
-	-- 					auto_open = true,
-	-- 				},
-	-- 				entries = {
-	-- 					follow_cursor = false,
-	-- 				},
-	-- 			},
-	-- 			completion = {
-	-- 				completeopt = "menu,menuone,noinsert" .. (auto_select and "" or ",noselect"),
-	-- 			},
-	-- 			preselect = auto_select and cmp.PreselectMode.Item or cmp.PreselectMode.None,
-	-- 			mapping = cmp.mapping.preset.insert({
-	-- 				["<C-b>"] = cmp.mapping.scroll_docs(-4),
-	-- 				["<C-f>"] = cmp.mapping.scroll_docs(4),
-	-- 				["<C-Space>"] = cmp.mapping.complete(),
-	-- 				["<CR>"] = confirm({ select = auto_select }),
-	-- 				["<C-y>"] = confirm({ select = true }),
-	-- 				["<S-CR>"] = confirm({ behavior = cmp.ConfirmBehavior.Replace }),
-	-- 				["<C-e>"] = cmp.mapping.abort(),
-	-- 				["<Tab>"] = cmp.mapping(function(fallback)
-	-- 					if vim.snippet.active({ direction = 1 }) then
-	-- 						vim.snippet.jump(1)
-	-- 					else
-	-- 						fallback()
-	-- 					end
-	-- 				end, { "i", "s" }),
-	-- 				["<S-Tab>"] = cmp.mapping(function(fallback)
-	-- 					if vim.snippet.active({ direction = -1 }) then
-	-- 						vim.snippet.jump(-1)
-	-- 					else
-	-- 						fallback()
-	-- 					end
-	-- 				end, { "i", "s" }),
-	-- 				["<C-k>"] = cmp.mapping.open_docs(),
-	-- 			}),
-	-- 			sources = cmp.config.sources({
-	-- 				{ name = "nvim_lsp" },
-	-- 				{ name = "path" },
-	-- 				{ name = "nvim_lsp_signature_help" },
-	-- 			}, {
-	-- 				{ name = "buffer" },
-	-- 			}),
-	-- 			-- matching = {
-	-- 			-- 	disallow_fuzzy_matching = true,
-	-- 			-- 	disallow_fullfuzzy_matching = true,
-	-- 			-- 	disallow_partial_fuzzy_matching = true,
-	-- 			-- 	disallow_partial_matching = true,
-	-- 			-- 	disallow_prefix_unmatching = true,
-	-- 			-- },
-	-- 		}
-	-- 	end,
-	-- },
-	-- {
-	-- 	"akinsho/toggleterm.nvim",
-	-- 	version = "*",
-	-- 	opts = {
-	-- 		open_mapping = "<C-\\>",
-	-- 	},
-	-- 	keys = {
-	-- 		"<C-\\>",
-	-- 		{
-	-- 			"<leader>tt",
-	-- 			[[<cmd>ToggleTerm<cr>]],
-	-- 		},
-	-- 		{
-	-- 			"<leader><tab>t",
-	-- 			"<cmd>ToggleTerm direction=tab<cr>",
-	-- 		},
-	-- 		{
-	-- 			"<leader>gl",
-	-- 			function()
-	-- 				toggleterms.lg:toggle()
-	-- 			end,
-	-- 		},
-	-- 		{
-	-- 			"<leader>st",
-	-- 			"<cmd>TermSelect<cr>",
-	-- 		},
-	-- 		{
-	-- 			"<leader>ca",
-	-- 			function()
-	-- 				if toggleterms[vim.g.last_compile_command] then
-	-- 					toggleterms[vim.g.last_compile_command]:toggle()
-	-- 					return
-	-- 				end
-	-- 				local args = vim.fn.input({
-	-- 					prompt = "Compile > ",
-	-- 					default = (vim.g.last_compile_command or ""),
-	-- 				})
-	-- 				vim.g.last_compile_command = args
-	-- 				toggleterms[vim.g.last_compile_command] = require("toggleterm.terminal").Terminal:new({
-	-- 					cmd = vim.g.last_compile_command,
-	-- 					hidden = true,
-	-- 					direction = "float",
-	-- 				})
-	-- 				toggleterms[vim.g.last_compile_command]:toggle()
-	-- 			end,
-	-- 		},
-	-- 		{
-	-- 			"<leader>cp",
-	-- 			function()
-	-- 				local args = vim.fn.input({
-	-- 					prompt = "Compile > ",
-	-- 					default = (vim.g.last_compile_command or ""),
-	-- 				})
-	-- 				vim.g.last_compile_command = args
-	-- 				toggleterms[vim.g.last_compile_command] = require("toggleterm.terminal").Terminal:new({
-	-- 					cmd = vim.g.last_compile_command,
-	-- 					hidden = true,
-	-- 					direction = "float",
-	-- 				})
-	-- 				toggleterms[vim.g.last_compile_command]:toggle()
-	-- 			end,
-	-- 		},
-	-- 	},
-	-- 	config = function(_, opts)
-	-- 		_G.toggleterms = {}
-	-- 		require("toggleterm").setup(opts)
-	-- 		local Terminal = require("toggleterm.terminal").Terminal
-	-- 		_G.toggleterms.lg = Terminal:new({ cmd = "lazygit", hidden = true, direction = "float" })
-	-- 	end,
-	-- },
 	{
 		"saghen/blink.cmp",
 		event = "InsertEnter",
@@ -434,11 +246,6 @@ return {
 	},
 	-- Generate NVChad colorschemes
 	{
-		"genchad",
-		dir = "~/projects/nvim/chadschemes/",
-		dev = true,
-	},
-	{
 		"cbochs/grapple.nvim",
 		opts = {
 			scope = "git_branch",
@@ -452,6 +259,92 @@ return {
 			{ "<c-e><c-j>", "<cmd>Grapple select index=2<cr>", desc = "Select second tag" },
 			{ "<c-e><c-k>", "<cmd>Grapple select index=3<cr>", desc = "Select third tag" },
 			{ "<c-e><c-l>", "<cmd>Grapple select index=4<cr>", desc = "Select fourth tag" },
+		},
+	},
+	{
+		"stevearc/quicker.nvim",
+		event = "FileType qf",
+		opts = {
+			keys = {
+				{
+					">",
+					function()
+						require("quicker").expand({ before = 2, after = 2, add_to_existing = true })
+					end,
+					desc = "Expand quickfix context",
+				},
+				{
+					"<",
+					function()
+						require("quicker").collapse()
+					end,
+					desc = "Collapse quickfix context",
+				},
+			},
+			highlight = {
+				-- Use treesitter highlighting
+				treesitter = true,
+				-- Use LSP semantic token highlighting
+				lsp = false,
+				-- Load the referenced buffers to apply more accurate highlights (may be slow)
+				load_buffers = true,
+			},
+		},
+		keys = {
+			{
+				"<leader>qq",
+				function()
+					require("quicker").toggle()
+				end,
+				desc = "Toggle Quickfix",
+			},
+			{
+				"<leader>ql",
+				function()
+					require("quicker").toggle({ loclist = true })
+				end,
+				desc = "Toggle Location list",
+			},
+		},
+	},
+	{
+		"folke/which-key.nvim",
+		opts = {
+			spec = {
+				{
+					mode = { "n", "v" },
+					{ "<leader><tab>", group = "tabs" },
+					{ "<leader>g", group = "git" },
+					{ "<leader>gh", group = "hunks" },
+					{ "<leader>gd", group = "diff" },
+					{ "<leader>l", group = "location list" },
+					{ "<leader>b", group = "buffer" },
+					{ "<leader>ba", group = "buffer all" },
+					{ "<leader>m", group = "make" },
+					{ "<leader>n", group = "nabla" },
+					{ "<leader>o", group = "old" },
+					{ "<leader>p", group = "find+" },
+					{ "<leader>q", group = "quickfix" },
+					{ "<leader>s", group = "signature" },
+					{ "<leader>u", group = "ui", icon = { icon = "󰙵 ", color = "cyan" } },
+					{ "<leader>v", group = "split" },
+					{ "<leader>x", group = "zen" },
+					-- { "<leader>s", group = "search" },
+					-- { "<leader>x", group = "diagnostics/quickfix", icon = { icon = "󱖫 ", color = "green" } },
+					{ "[", group = "prev" },
+					{ "]", group = "next" },
+					{ "g", group = "goto" },
+					{ "gs", group = "surround" },
+					{ "z", group = "fold" },
+					{ "<localleader>t", group = "terminal" },
+				},
+			},
+		},
+		keys = {
+			"<leader>",
+			"g",
+			"m",
+			"<localleader>",
 		},
 	},
 }

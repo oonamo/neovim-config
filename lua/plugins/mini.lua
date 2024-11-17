@@ -4,17 +4,6 @@ return {
 		lazy = true,
 	},
 	{
-		"mini.basics",
-		dev = true,
-		event = "VeryLazy",
-		opts = {
-			mappings = {
-				windows = true,
-			},
-			silent = true,
-		},
-	},
-	{
 		"mini.misc",
 		dev = true,
 		event = "VeryLazy",
@@ -62,7 +51,6 @@ return {
 						height = height,
 						width = width,
 						row = vim.o.lines,
-						-- col = math.floor(0.5 * (vim.o.columns - width)),
 					}
 				end,
 			},
@@ -74,50 +62,51 @@ return {
 			{
 				"<C-p>",
 				"<cmd>Pick files<cr>",
+        desc = "Find files",
+			},
+			{
+				"<leader>f",
+				"<cmd>Pick files<cr>",
+        desc = "Find files",
 			},
 			{
 				"<leader>,",
 				"<cmd>Pick buffers<cr>",
-				desc = "Switch Buffer",
-			},
-			{
-				"<C-P>",
-				"<cmd>Pick files<cr>",
-				desc = "find files",
+				desc = "Find Buffer",
 			},
 			{
 				"<C-F>",
 				"<cmd>Pick grep_live<cr>",
-				desc = "grep live",
+				desc = "Grep live",
 			},
 			{
-				"<leader>fh",
+				"<C-x>h",
 				"<cmd>Pick help<cr>",
-				desc = "help tags",
+				desc = "Help tags",
 			},
 			{
 				"<leader>gw",
 				"<cmd>Pick grep<cr>",
-				desc = "grep word",
+				desc = "Grep word",
 			},
 			{
 				"<leader>\\",
 				"<cmd>Pick buf_lines<cr>",
-				desc = "find from current buffer",
+				desc = "Find line",
 			},
 			{
-				"<leader>fi",
+				"<C-x>i",
 				function()
 					require("mini.extra").pickers.hl_groups()
 				end,
-				desc = "highlights",
+				desc = "Find highlights",
 			},
 			{
-				"<leader>fm",
+				"<C-x>m",
 				function()
 					require("mini.extra").pickers.marks()
 				end,
-				desc = "marks",
+				desc = "Find marks",
 			},
 			{
 				"<leader>of",
@@ -132,22 +121,13 @@ return {
 				desc = "File explorer",
 			},
 			{
-				"<leader>fn",
+				"<leader>pn",
 				function()
 					require("mini.extra").pickers.hipatterns({
 						highlighters = { "note", "fixme", "hack", "todo" },
 					})
 				end,
 				desc = "Find notes",
-			},
-			{
-				"<leader>ft",
-				function()
-					require("mini.extra").pickers.hipatterns({
-						highlighters = { "todo" },
-					})
-				end,
-				desc = "Find todos",
 			},
 			{
 				"z=",
@@ -233,12 +213,46 @@ return {
 		config = function()
 			require("mini.hipatterns").setup({
 				highlighters = {
-					fixme = { pattern = "FIXME", group = "MiniHipatternsFixme" },
-					hack = { pattern = "HACK", group = "MiniHipatternsHack" },
-					todo = { pattern = "TODO", group = "MiniHipatternsTodo" },
-					note = { pattern = "NOTE", group = "MiniHipatternsNote" },
+					-- fixme = { pattern = "%f[%w]()FIXME()%f[%W]", group = "MiniHipatternsFixme"},
+					-- hack = { pattern = "%f[%w]()HACK()%f[%W]", group = "MiniHipatternsHack"},
+					-- todo = { pattern = "%f[%w]()TODO()%f[%W]", group = "MiniHipatternsTodo"},
+					-- note = { pattern = "%f[%w]()NOTE()%f[%W]", group = "MiniHipatternsNote"},
+					fixme = { pattern = "() FIXME():", group = "MiniHipatternsFixme" },
+					hack = { pattern = "() HACK():", group = "MiniHipatternsHack" },
+					todo = { pattern = "() TODO():", group = "MiniHipatternsTodo" },
+					note = { pattern = "() NOTE():", group = "MiniHipatternsNote" },
+					fixme_colon = { pattern = " FIXME():()", group = "MiniHipatternsFixmeColon" },
+					hack_colon = { pattern = " HACK():()", group = "MiniHipatternsHackColon" },
+					todo_colon = { pattern = " TODO():()", group = "MiniHipatternsTodoColon" },
+					note_colon = { pattern = " NOTE():()", group = "MiniHipatternsNoteColon" },
+					fixme_body = { pattern = " FIXME:().*()", group = "MiniHipatternsFixmeBody" },
+					hack_body = { pattern = " HACK:().*()", group = "MiniHipatternsHackBody" },
+					todo_body = { pattern = " TODO:().*()", group = "MiniHipatternsTodoBody" },
+					note_body = { pattern = " NOTE:().*()", group = "MiniHipatternsNoteBody" },
+					-- fixme = { pattern = "FIXME", group = "MiniHipatternsFixme" },
+					-- hack = { pattern = "HACK", group = "MiniHipatternsHack" },
+					-- todo = { pattern = "TODO", group = "MiniHipatternsTodo" },
+					-- note = { pattern = "NOTE", group = "MiniHipatternsNote" },
 					hex_color = require("mini.hipatterns").gen_highlighter.hex_color(),
 				},
+			})
+			local function gen_colors()
+				for _, v in ipairs({ "Fixme", "Hack", "Todo", "Note" }) do
+					local basename = "MiniHipatterns" .. v
+					local hl = vim.api.nvim_get_hl(0, { name = basename })
+					if not hl.bg then
+						vim.api.nvim_set_hl(0, basename .. "Body", { link = basename })
+						vim.api.nvim_set_hl(0, basename .. "Colon", { link = basename })
+					else
+						vim.api.nvim_set_hl(0, basename .. "Colon", { fg = hl.bg, bg = hl.bg })
+						vim.api.nvim_set_hl(0, basename .. "Body", { fg = hl.bg })
+					end
+				end
+			end
+			gen_colors()
+
+			vim.api.nvim_create_autocmd("Colorscheme", {
+				callback = gen_colors,
 			})
 		end,
 	},
@@ -470,7 +484,9 @@ return {
 						return vim.api.nvim_get_current_win()
 					end)
 
-					MiniFiles.set_target_window(new_target)
+					vim.schedule(function()
+						MiniFiles.set_target_window(new_target)
+					end)
 				end
 
 				vim.keymap.set("n", lhs, rhs, { buffer = buf_id, desc = "Split " .. string.sub(direction, 12) })
@@ -547,6 +563,21 @@ return {
 		config = function(_, opts)
 			opts = opts or {}
 
+			local function make_ignore_case(word)
+				local parts = {}
+				for i = 1, word:len() do
+					local char = word:sub(i, i)
+					if char:find("^%a$") then
+						char = "[" .. char:lower() .. char:upper() .. "]"
+					else
+						char = vim.pesc(char)
+					end
+
+					table.insert(parts, char)
+				end
+				return table.concat(parts)
+			end
+
 			-- Produce `opts` which modifies spotter based on user input
 			local function user_input_opts(input_fun)
 				local res = {
@@ -564,7 +595,7 @@ return {
 								return {}
 							end
 						else
-							local pattern = vim.pesc(input)
+              local pattern = make_ignore_case(input)
 							res.spotter = MiniJump2d.gen_pattern_spotter(pattern)
 						end
 					end,
@@ -595,131 +626,6 @@ return {
 		keys = {
 			"<C-s>",
 			"s",
-		},
-	},
-	{
-		"mini.clue",
-		dev = true,
-		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
-		config = function()
-			local miniclue = require("mini.clue")
-			local opts = {
-				triggers = {
-					{ mode = "n", keys = "<Leader>" },
-					{ mode = "x", keys = "<Leader>" },
-
-					{ mode = "n", keys = "<localleader>" },
-					{ mode = "x", keys = "<localleader>" },
-
-					{ mode = "n", keys = "[" },
-					{ mode = "x", keys = "[" },
-					{ mode = "n", keys = "]" },
-					{ mode = "x", keys = "]" },
-
-					-- Built-in completion
-					{ mode = "i", keys = "<C-x>" },
-
-					-- `g` key
-					{ mode = "n", keys = "g" },
-					{ mode = "x", keys = "g" },
-
-					-- Marks
-					{ mode = "n", keys = "'" },
-					{ mode = "n", keys = "`" },
-					{ mode = "n", keys = '"' },
-					{ mode = "x", keys = "'" },
-					{ mode = "x", keys = "`" },
-
-					-- Registers
-					{ mode = "n", keys = '"' },
-					{ mode = "x", keys = '"' },
-					{ mode = "i", keys = "<C-r>" },
-					{ mode = "c", keys = "<C-r>" },
-
-					-- Window commands
-					{ mode = "n", keys = "<C-w>" },
-
-					-- `z` key
-					{ mode = "n", keys = "z" },
-					{ mode = "x", keys = "z" },
-
-					{ mode = "n", keys = "<C-e>" },
-				},
-
-				clues = { -- {{{
-					{ mode = "n", keys = "<Leader>b", desc = "+Buffers" },
-					{ mode = "n", keys = "<Leader>ba", desc = "+All" },
-					{ mode = "c", keys = "<leader>c", desc = "+Compile" },
-					{ mode = "n", keys = "<Leader>f", desc = "+Find" },
-					{ mode = "n", keys = "<Leader>g", desc = "+Git" },
-					{ mode = "n", keys = "<Leader>gd", desc = "+GitDiff" },
-					{ mode = "n", keys = "<leader>i", desc = "+Inlay" },
-					{ mode = "n", keys = "<leader>l", desc = "+Loclist" },
-					{ mode = "n", keys = "<leader>m", desc = "+Make" },
-					{ mode = "n", keys = "<leader>n", desc = "+Nabla" },
-					{ mode = "n", keys = "<leader>o", desc = "+Old/Obsidian" },
-					{ mode = "n", keys = "<Leader>p", desc = "+Place" },
-					{ mode = "n", keys = "<Leader>q", desc = "+Quickfix" },
-					{ mode = "n", keys = "<Leader>s", desc = "+Signature" },
-					{ mode = "n", keys = "<Leader>v", desc = "+Variable" },
-					{ mode = "n", keys = "<Leader>vr", desc = "+Ref/Rename" },
-					{ mode = "n", keys = "<leader><tab>", desc = "+Tab" },
-					{ mode = "n", keys = "<localleader>t", desc = "+Terminal" },
-					-- Enhance this by adding descriptions for <Leader> mapping groups
-					miniclue.gen_clues.builtin_completion(),
-					miniclue.gen_clues.g(),
-					miniclue.gen_clues.marks(),
-					miniclue.gen_clues.registers(),
-					miniclue.gen_clues.windows({
-						submode_move = true,
-						submode_navigate = false,
-						submode_resize = true,
-					}),
-					miniclue.gen_clues.z(),
-				}, -- }}}
-			}
-			miniclue.setup(opts)
-		end,
-	},
-	{
-		"mini.git",
-		dev = true,
-		cmd = "Git",
-		opts = {
-			command = {
-				split = "horizontal",
-			},
-		},
-		config = function(_, opts)
-			require("mini.git").setup(opts)
-			vim.api.nvim_create_autocmd("User", {
-				pattern = "MiniGitCommandSplit",
-				callback = function(data)
-					vim.keymap.set("n", "q", "<cmd>quit<cr>", { desc = "quit", buffer = data.buf })
-				end,
-			})
-		end,
-		keys = {
-			{
-				"<leader>gac",
-				mode = { "n", "x" },
-				function()
-					require("mini.git").show_at_cursor()
-				end,
-				desc = "Show at cursor",
-			},
-			{
-				"<leader>gaf",
-				mode = { "n", "x" },
-				"<cmd>Git add %<cr>",
-				desc = "Add current file",
-			},
-			{
-				"<leader>gap",
-				mode = { "n", "x" },
-				"<cmd>Git add .<cr>",
-				desc = "Add current project",
-			},
 		},
 	},
 	{
@@ -788,144 +694,65 @@ return {
 			},
 		},
 	},
-	-- {
-	-- 	"mini.pairs",
-	-- 	dev = true,
-	-- 	event = "InsertEnter",
-	-- 	opts = {
-	-- 		modes = { insert = true, command = true, terminal = false },
-	-- 		-- skip autopair when next character is one of these
-	-- 		skip_next = [=[[%w%%%'%[%"%.%`%$]]=],
-	-- 		-- skip autopair when the cursor is inside these treesitter nodes
-	-- 		skip_ts = { "string" },
-	-- 		-- skip autopair when next character is closing pair
-	-- 		-- and there are more closing pairs than opening pairs
-	-- 		skip_unbalanced = true,
-	-- 		-- better deal with markdown code blocks
-	-- 		markdown = true,
-	-- 	},
-	-- 	config = function(_, opts)
-	-- 		-- FROM: https://github.com/LazyVim/LazyVim/blob/f11890bf99477898f9c003502397786026ba4287/lua/lazyvim/util/mini.lua#L123-L168
-	-- 		local pairs = require("mini.pairs")
-	-- 		pairs.setup(opts)
-	-- 		local open = pairs.open
-	-- 		pairs.open = function(pair, neigh_pattern)
-	-- 			if vim.fn.getcmdline() ~= "" then
-	-- 				return open(pair, neigh_pattern)
-	-- 			end
-	-- 			local o, c = pair:sub(1, 1), pair:sub(2, 2)
-	-- 			local line = vim.api.nvim_get_current_line()
-	-- 			local cursor = vim.api.nvim_win_get_cursor(0)
-	-- 			local next = line:sub(cursor[2] + 1, cursor[2] + 1)
-	-- 			local before = line:sub(1, cursor[2])
-	-- 			if opts.markdown and o == "`" and vim.bo.filetype == "markdown" and before:match("^%s*``") then
-	-- 				return "`\n```" .. vim.api.nvim_replace_termcodes("<up>", true, true, true)
-	-- 			end
-	-- 			if opts.skip_next and next ~= "" and next:match(opts.skip_next) then
-	-- 				return o
-	-- 			end
-	-- 			if opts.skip_ts and #opts.skip_ts > 0 then
-	-- 				local ok, captures =
-	-- 					pcall(vim.treesitter.get_captures_at_pos, 0, cursor[1] - 1, math.max(cursor[2] - 1, 0))
-	-- 				for _, capture in ipairs(ok and captures or {}) do
-	-- 					if vim.tbl_contains(opts.skip_ts, capture.capture) then
-	-- 						return o
-	-- 					end
-	-- 				end
-	-- 			end
-	-- 			if opts.skip_unbalanced and next == c and c ~= o then
-	-- 				local _, count_open = line:gsub(vim.pesc(pair:sub(1, 1)), "")
-	-- 				local _, count_close = line:gsub(vim.pesc(pair:sub(2, 2)), "")
-	-- 				if count_close > count_open then
-	-- 					return o
-	-- 				end
-	-- 			end
-	-- 			return open(pair, neigh_pattern)
-	-- 		end
-	-- 	end,
-	-- },
 	{
-		"mini.starter",
-		event = "VimEnter",
+		"mini.pairs",
 		dev = true,
-		opts = function()
-			local logo = table.concat({
-				"            ██╗      █████╗ ███████╗██╗   ██╗██╗   ██╗██╗███╗   ███╗          Z",
-				"            ██║     ██╔══██╗╚══███╔╝╚██╗ ██╔╝██║   ██║██║████╗ ████║      Z    ",
-				"            ██║     ███████║  ███╔╝  ╚████╔╝ ██║   ██║██║██╔████╔██║   z       ",
-				"            ██║     ██╔══██║ ███╔╝    ╚██╔╝  ╚██╗ ██╔╝██║██║╚██╔╝██║ z         ",
-				"            ███████╗██║  ██║███████╗   ██║    ╚████╔╝ ██║██║ ╚═╝ ██║           ",
-				"            ╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝     ╚═══╝  ╚═╝╚═╝     ╚═╝           ",
-			}, "\n")
-			local pad = string.rep(" ", 22)
-			local new_section = function(name, action, section)
-				return { name = name, action = action, section = pad .. section }
-			end
-
-			local starter = require("mini.starter")
-			local config = {
-				evaluate_single = true,
-				header = logo,
-				items = {
-					new_section("Files", function()
-						require("mini.pick").registry.files()
-					end, "Mini"),
-					new_section("New file", "ene | startinsert", "Built-in"),
-					new_section("Recent files", function()
-						require("mini.pick").registry.oldfiles()
-					end, "Mini"),
-					new_section("Text", function()
-						require("mini.pick").registry.grep_live()
-					end, "Mini"),
-					new_section("Quit", "qa", "Built-in"),
-				},
-				content_hooks = {
-					starter.gen_hook.adding_bullet(pad .. "░ ", false),
-					starter.gen_hook.aligning("center", "center"),
-				},
-			}
-			return config
-		end,
+		event = "InsertEnter",
+		opts = {
+			modes = { insert = true, command = true, terminal = false },
+			-- skip autopair when next character is one of these
+			skip_next = [=[[%w%%%'%[%"%.%`%$]]=],
+			-- skip autopair when the cursor is inside these treesitter nodes
+			skip_ts = { "string" },
+			-- skip autopair when next character is closing pair
+			-- and there are more closing pairs than opening pairs
+			skip_unbalanced = true,
+			-- better deal with markdown code blocks
+			markdown = true,
+		},
 		config = function(_, opts)
-			if vim.o.filetype == "lazy" then
-				vim.cmd.close()
-				vim.api.nvim_create_autocmd("User", {
-					pattern = "MiniStarterOpened",
-					callback = function()
-						require("lazy").show()
-					end,
-				})
-			end
-
-			if vim.fn.argc() == 0 then
-				local starter = require("mini.starter")
-				starter.setup(opts)
-				vim.api.nvim_create_autocmd("User", {
-					pattern = "LazyVimStarted",
-					callback = function(ev)
-						local stats = require("lazy").stats()
-						local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
-						local pad_footer = string.rep(" ", 8)
-						starter.config.footer = pad_footer
-							.. "⚡ Neovim loaded "
-							.. stats.loaded
-							.. "/"
-							.. stats.count
-							.. " plugins in "
-							.. ms
-							.. "ms"
-						-- INFO: based on @echasnovski's recommendation (thanks a lot!!!)
-						if vim.bo[ev.buf].filetype == "ministarter" then
-							pcall(starter.refresh)
+			-- FROM: https://github.com/LazyVim/LazyVim/blob/f11890bf99477898f9c003502397786026ba4287/lua/lazyvim/util/mini.lua#L123-L168
+			local pairs = require("mini.pairs")
+			pairs.setup(opts)
+			local open = pairs.open
+			pairs.open = function(pair, neigh_pattern)
+				if vim.fn.getcmdline() ~= "" then
+					return open(pair, neigh_pattern)
+				end
+				local o, c = pair:sub(1, 1), pair:sub(2, 2)
+				local line = vim.api.nvim_get_current_line()
+				local cursor = vim.api.nvim_win_get_cursor(0)
+				local next = line:sub(cursor[2] + 1, cursor[2] + 1)
+				local before = line:sub(1, cursor[2])
+				if opts.markdown and o == "`" and vim.bo.filetype == "markdown" and before:match("^%s*``") then
+					return "`\n```" .. vim.api.nvim_replace_termcodes("<up>", true, true, true)
+				end
+				if opts.skip_next and next ~= "" and next:match(opts.skip_next) then
+					return o
+				end
+				if opts.skip_ts and #opts.skip_ts > 0 then
+					local ok, captures =
+						pcall(vim.treesitter.get_captures_at_pos, 0, cursor[1] - 1, math.max(cursor[2] - 1, 0))
+					for _, capture in ipairs(ok and captures or {}) do
+						if vim.tbl_contains(opts.skip_ts, capture.capture) then
+							return o
 						end
-					end,
-				})
+					end
+				end
+				if opts.skip_unbalanced and next == c and c ~= o then
+					local _, count_open = line:gsub(vim.pesc(pair:sub(1, 1)), "")
+					local _, count_close = line:gsub(vim.pesc(pair:sub(2, 2)), "")
+					if count_close > count_open then
+						return o
+					end
+				end
+				return open(pair, neigh_pattern)
 			end
 		end,
 	},
 	{
 		"mini.bracketed",
-    dev =  true,
+		dev = true,
 		opts = {
 			indent = { suffix = "" },
 		},

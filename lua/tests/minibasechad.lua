@@ -288,11 +288,11 @@ function M.getcmp(theme, base30)
 		BlimkCmpKindCodeium = { fg = base30.vibrant_green },
 		BlimkCmpKindTabNine = { fg = base30.baby_pink },
 		BlimkCmpKindSuperMaven = { fg = base30.yellow },
-		BlinkCmpDoc = { link = "CmpDoc"},
-		BlinkCmpDocBorder = { link = "CmpDocBorder"},
+		BlinkCmpDoc = { link = "CmpDoc" },
+		BlinkCmpDocBorder = { link = "CmpDocBorder" },
 		-- BlinkCmpDocCursorLine = {},
-		BlinkCmpSignatureHelp = {link = "CmpDoc"},
-		BlinkCmpSignatureHelpBorder = {link = "CmpDocBorder"},
+		BlinkCmpSignatureHelp = { link = "CmpDoc" },
+		BlinkCmpSignatureHelpBorder = { link = "CmpDocBorder" },
 		-- BlinkCmpSignatureHelpActiveParameter = {},
 	}
 end

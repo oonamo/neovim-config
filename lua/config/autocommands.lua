@@ -1,11 +1,21 @@
+local group = vim.api.nvim_create_augroup("config group", { clear = true })
+
+vim.api.nvim_create_autocmd("TextYankPost", {
+	pattern = "*",
+	group = group,
+	callback = function()
+		vim.highlight.on_yank()
+	end,
+})
+
 vim.api.nvim_create_autocmd("FileType", {
+	group = group,
 	pattern = {
 		"help",
 		"man",
 		"qf",
 		"query",
 		"scratch",
-		-- "spectre_panel",
 	},
 	callback = function(args)
 		vim.keymap.set("n", "q", "<cmd>quit<cr>", { buffer = args.buf })
@@ -19,29 +29,20 @@ vim.api.nvim_create_autocmd("FileType", {
 	desc = "Close with 'q'",
 })
 
-vim.api.nvim_create_autocmd({ "FileType" }, {
-	group = vim.api.nvim_create_augroup("bigfile", { clear = true }),
-	pattern = "bigfile",
-	callback = function(ev)
-		vim.b.minianimate_disable = true
-		vim.schedule(function()
-			vim.bo[ev.buf].syntax = vim.filetype.match({ buf = ev.buf }) or ""
-		end)
-	end,
-})
+-- vim.api.nvim_create_autocmd("CmdwinEnter", {
+--   group = group,
+-- 	callback = function()
+-- 		vim.cmd("startinsert")
+-- 	end,
+-- })
 
-vim.api.nvim_create_autocmd("CmdwinEnter", {
-	callback = function()
-		vim.cmd("startinsert")
-	end,
-})
-
-vim.api.nvim_create_autocmd("TermOpen", {
-	callback = function(event)
-		if event.buf then
-			vim.opt_local.number = false
-			vim.opt_local.relativenumber = false
-			vim.opt_local.scl = "no"
-		end
-	end,
-})
+-- vim.api.nvim_create_autocmd("TermOpen", {
+--   group = group,
+-- 	callback = function(event)
+-- 		if event.buf then
+-- 			vim.opt_local.number = false
+-- 			vim.opt_local.relativenumber = false
+-- 			vim.opt_local.scl = "no"
+-- 		end
+-- 	end,
+-- })

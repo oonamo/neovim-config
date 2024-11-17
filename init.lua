@@ -6,7 +6,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	if vim.v.shell_error ~= 0 then
 		vim.api.nvim_echo({
 			{ "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-      { out, "WarningMsg" },
+			{ out, "WarningMsg" },
 			{ "\nPress any key to exit..." },
 		}, true, {})
 		vim.fn.getchar()
@@ -46,13 +46,12 @@ vim.o.lazyredraw = true
 opt.nu = true
 opt.rnu = true
 
-
 -- set tab stop at 4
 opt.tabstop = 2
 opt.softtabstop = 2
 opt.expandtab = true
 
--- o.guicursor = ""
+o.guicursor = ""
 
 -- autoindent
 opt.smartindent = true
@@ -136,11 +135,11 @@ vim.api.nvim_create_autocmd("User", {
 			require("config.gui")
 		end
 		require("statusline")
-		-- vim.o.statuscolumn = [[%!v:lua.require'config.statuscolumn'.statuscolumn()]]
 	end,
 })
 
-vim.cmd.colorscheme("chadracula-evondev")
+-- vim.cmd.colorscheme("chadracula-evondev")
+vim.cmd.colorscheme("doomchad")
 -- vim.cmd.colorscheme("neovim_dark")
 -- vim.cmd.colorscheme("kanagawa")
 

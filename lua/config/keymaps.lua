@@ -7,9 +7,61 @@ local function opts(desc, silent, options)
 end
 
 local map = vim.keymap.set
+local function map_toggle(lhs, rhs, desc)
+	map("n", "\\" .. lhs, rhs, { desc = desc })
+end
+
+map_toggle("b", '<Cmd>lua vim.o.bg = vim.o.bg == "dark" and "light" or "dark"<CR>', "Toggle 'background'")
+map_toggle("c", "<Cmd>setlocal cursorline!<CR>", "Toggle 'cursorline'")
+map_toggle("C", "<Cmd>setlocal cursorcolumn!<CR>", "Toggle 'cursorcolumn'")
+
+map_toggle("d", function()
+	require("mini.basics").toggle_diagnostic()
+end, "Toggle diagnostic")
+
+map_toggle("h", "<Cmd>let v:hlsearch = 1 - v:hlsearch<CR>", "Toggle search highlight")
+map_toggle("i", "<Cmd>setlocal ignorecase!<CR>", "Toggle 'ignorecase'")
+map_toggle("l", "<Cmd>setlocal list!<CR>", "Toggle 'list'")
+map_toggle("n", "<Cmd>setlocal number!<CR>", "Toggle 'number'")
+map_toggle("r", "<Cmd>setlocal relativenumber!<CR>", "Toggle 'relativenumber'")
+map_toggle("s", "<Cmd>setlocal spell!<CR>", "Toggle 'spell'")
+map_toggle("w", "<Cmd>setlocal wrap!<CR>", "Toggle 'wrap'")
+
+map({ "x", "v" }, "<leader>pp", [["_dP]], { noremap = true })
+map({ "n", "x", "v" }, "<leader>d", [["_d]], { noremap = true })
+
+map("n", "<C-H>", "<C-w>h", { desc = "Focus on left window" })
+map("n", "<C-J>", "<C-w>j", { desc = "Focus on below window" })
+map("n", "<C-K>", "<C-w>k", { desc = "Focus on above window" })
+map("n", "<C-L>", "<C-w>l", { desc = "Focus on right window" })
+
 map("n", "<Esc>", "<cmd>nohlsearch<cr><Esc>")
 map("n", "<C-c>", "<cmd>nohlsearch<cr><C-c>", { silent = true })
 map("n", "J", "mzJ'z", opts("Join and keep position"))
+map(
+	"n",
+	"<C-Left>",
+	'"<Cmd>vertical resize -" . v:count1 . "<CR>"',
+	{ expr = true, replace_keycodes = false, desc = "Decrease window width" }
+)
+map(
+	"n",
+	"<C-Down>",
+	'"<Cmd>resize -"          . v:count1 . "<CR>"',
+	{ expr = true, replace_keycodes = false, desc = "Decrease window height" }
+)
+map(
+	"n",
+	"<C-Up>",
+	'"<Cmd>resize +"          . v:count1 . "<CR>"',
+	{ expr = true, replace_keycodes = false, desc = "Increase window height" }
+)
+map(
+	"n",
+	"<C-Right>",
+	'"<Cmd>vertical resize +" . v:count1 . "<CR>"',
+	{ expr = true, replace_keycodes = false, desc = "Increase window width" }
+)
 
 vim.api.nvim_set_keymap("i", "<C-c>", "<Esc>", opts("escape insert mode", true, { noremap = true }))
 
@@ -56,7 +108,7 @@ map("n", "<leader>bad", "<cmd>%bd|e#<cr>", { desc = "Delete all buffers" })
 
 map("n", "<leader>mp", function()
 	local args = vim.fn.input({
-		prompt = "Compile > " .. vim.o.makeprg .. " ",
+		prompt = "Compile> " .. vim.o.makeprg .. " ",
 		default = (vim.g.last_make_command or ""),
 	})
 	vim.g.last_make_command = args
@@ -66,7 +118,7 @@ end)
 map("n", "<leader>ma", function()
 	if not vim.g.last_make_command or vim.g.last_make_command == "" then
 		local args = vim.fn.input({
-			prompt = "Compile > " .. vim.o.makeprg .. " ",
+			prompt = "Compile> " .. vim.o.makeprg .. " ",
 			default = (vim.g.last_make_command or ""),
 		})
 		vim.g.last_make_command = args

@@ -15,17 +15,35 @@ local function get_hl(hl, v)
 		return M.hl[hl]
 	end
 	local new_hl = v
-	if v.fg and v.fg:sub(1, 1) ~= "#" then
-		local fg = vim.api.nvim_get_hl(0, {
-			name = v.fg,
-		})
-		new_hl.fg = fg.fg
+	if v.fg then
+		if type(v.fg) == "table" then
+			local key = v.fg.key
+      local hi = v.fg.hi
+			local tmp = vim.api.nvim_get_hl(0, {
+				name = hi,
+			})
+			new_hl.fg = tmp[key]
+		elseif v.fg:sub(1, 1) ~= "#" then
+			local fg = vim.api.nvim_get_hl(0, {
+				name = v.fg,
+			})
+			new_hl.fg = fg.fg
+		end
 	end
-	if v.bg and v.bg:sub(1, 1) ~= "#" then
-		local bg = vim.api.nvim_get_hl(0, {
-			name = v.bg,
-		})
-		new_hl.bg = bg.bg
+	if v.bg then
+		if type(v.bg) == "table" then
+			local key = v.bg.key
+      local hi = v.bg.hi
+			local tmp = vim.api.nvim_get_hl(0, {
+				name = hi,
+			})
+			new_hl.bg = tmp[key]
+		elseif v.bg:sub(1, 1) ~= "#" then
+			local bg = vim.api.nvim_get_hl(0, {
+				name = v.bg,
+			})
+			new_hl.bg = bg.bg
+		end
 	end
 	vim.api.nvim_set_hl(0, "status" .. hl, new_hl)
 	M.hl[hl] = "status" .. hl
@@ -149,18 +167,21 @@ function M.diff(data)
 		add_format = stl_format("add", "+" .. add, {
 			fg = "diffAdded",
 			bg = "StatusLine",
+      bold = true,
 		})
 	end
 	if delete and delete > 0 then
 		delete_format = stl_format("delete", "-" .. delete, {
 			fg = "diffRemoved",
 			bg = "StatusLine",
+      bold = true,
 		})
 	end
 	if change and change > 0 then
 		change_format = stl_format("change", "~" .. change, {
 			fg = "diffChanged",
 			bg = "StatusLine",
+      bold = true,
 		})
 	end
 	return add_format .. " " .. change_format .. " " .. delete_format .. " %#StatusLine# "
@@ -183,7 +204,15 @@ function M.file(data)
 	local file_icon_name = stl_format(icon_hl, file_icon, {
 		fg = icon_hl,
 		bg = "Statusline",
-	}, true) .. " " .. file_name
+	}, true) .. " " .. stl_format("statusfile_name", file_name, {
+		fg = {
+			hi = "Statusline",
+			key = "fg",
+		},
+		-- fg = "Normal",
+		bg = "Statusline",
+		bold = true,
+	})
 
 	if vim.bo.filetype == "help" then
 		-- return table.concat({ file_icon, file_icon_name })
@@ -192,7 +221,7 @@ function M.file(data)
 
 	local dir_path = vim.fn.fnamemodify(data.fname, ":h:~"):gsub("\\", "/") .. "/"
 	local win_width = vim.api.nvim_win_get_width(0)
-	local dir_threshold_width = 15
+	local dir_threshold_width = 10
 
 	dir_path = win_width >= dir_threshold_width + #dir_path + #file_icon_name and dir_path or ""
 	-- return stl_format("file", "╼ " .. dir_path, {
@@ -247,6 +276,9 @@ end
 function M.file_info(data)
 	if vim.v.hlsearch == 1 and not is_in_search() then
 		local sinfo = vim.fn.searchcount()
+		if vim.tbl_isempty(sinfo) then
+			return ""
+		end
 		local search_stat = sinfo.incomplete > 0 and "press enter"
 			or sinfo.total > 0 and ("%s/%s"):format(sinfo.current, sinfo.total)
 			or nil
@@ -295,14 +327,13 @@ end
 ---@param data status.Data
 local function build(data)
 	return {
-		-- M.mode(data),
 		-- "%=",
 		M.file(data),
 		"%=",
 		-- "%=%f%=",
 		M.diff(data),
 		M.diagnostic(data),
-    M.file_info(data),
+		M.file_info(data),
 		" %l|%c",
 	}
 end
@@ -342,7 +373,7 @@ end
 vim.api.nvim_create_autocmd("Colorscheme", {
 	group = vim.api.nvim_create_augroup("Statusline", { clear = true }),
 	callback = function()
-		M.hls = {}
+		M.hl = {}
 	end,
 })
 

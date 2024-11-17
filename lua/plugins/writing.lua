@@ -3,7 +3,7 @@ return {
 		"MeanderingProgrammer/render-markdown.nvim",
 		ft = "markdown",
 		opts = function()
-			local block = "█"
+			-- local block = "█"
 			return {
 				preset = "obsidian",
 				-- render_modes = { "n", "c" },
@@ -116,6 +116,7 @@ return {
 							-- signcolumn = "no", -- disable signcolumn
 							number = false, -- disable number column
 							relativenumber = false, -- disable relative numbers
+              laststatus = 0,
 							-- cursorline = false, -- disable cursorline
 							-- cursorcolumn = false, -- disable cursor column
 							-- foldcolumn = "0", -- disable fold column
