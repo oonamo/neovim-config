@@ -6,6 +6,7 @@ local function opts(desc, silent, options)
 	return options
 end
 
+
 local map = vim.keymap.set
 local function map_toggle(lhs, rhs, desc)
 	map("n", "\\" .. lhs, rhs, { desc = desc })
@@ -83,9 +84,13 @@ map("t", "<C-k>", "<cmd>wincmd k<cr>", { desc = "Go to Upper Window" })
 map("t", "<C-l>", "<cmd>wincmd l<cr>", { desc = "Go to Right Window" })
 map("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" })
 
+map("i", "<C-l>", "<End>", { noremap = true })
+map("i", "<C-h>", "<Home>", { noremap = true })
+map("i", "<C-e>", "<C-o>A", { noremap = true, nowait = true })
+
 -- COMMAND LINE BINDINGS
-map({ "c", "i" }, "<C-h>", "<Home>")
-map({ "c", "i" }, "<C-l>", "<End>")
+map({ "c", "i" }, "<C-a>", "<Home>")
+map("c", "<C-e>", "<End>")
 map("c", "<C-n>", "<Down>")
 map("c", "<C-p>", "<Up>")
 map("c", "<C-x>", "<C-f><Esc>?")

@@ -71,6 +71,7 @@ return {
 	},
 	{
 		"saghen/blink.cmp",
+    cond = true,
 		event = "InsertEnter",
 		-- lazy = false, -- lazy loading handled internally
 		-- optional: provides snippets for the snippet source
@@ -91,7 +92,22 @@ return {
 			-- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
 			-- see the "default configuration" section below for full documentation on how to define
 			-- your own keymap.
-			keymap = { preset = "default" },
+			keymap = {
+				-- preset = "default",
+				-- "default" keymap
+				["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
+				-- ['<C-e>'] = { 'hide' },
+				["<C-y>"] = { "select_and_accept" },
+
+				["<C-p>"] = { "select_prev", "fallback" },
+				["<C-n>"] = { "select_next", "fallback" },
+
+				["<C-b>"] = { "scroll_documentation_up", "fallback" },
+				["<C-f>"] = { "scroll_documentation_down", "fallback" },
+
+				["<Tab>"] = { "snippet_forward", "fallback" },
+				["<S-Tab>"] = { "snippet_backward", "fallback" },
+			},
 
 			highlight = {
 				-- sets the fallback highlight groups to nvim-cmp's highlight groups
@@ -347,6 +363,20 @@ return {
 			"g",
 			"m",
 			"<localleader>",
+		},
+	},
+	{
+		"HiPhish/rainbow-delimiters.nvim",
+		event = { "BufWritePre", "BufReadPost", "BufNewFile", "VeryLazy" },
+		config = function(_, opts)
+			require("rainbow-delimiters.setup").setup(opts)
+		end,
+	},
+	{
+		"monkoose/matchparen.nvim",
+		event = { "BufWritePre", "BufReadPost", "BufNewFile", "VeryLazy" },
+		opts = {
+			debounce_time = 200,
 		},
 	},
 }

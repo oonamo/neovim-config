@@ -37,14 +37,14 @@ o.background = "dark"
 o.title = true
 o.titlestring = "nvim"
 -- opt.completeopt = "menu,menuone,noselect"
-o.cmdheight = 1
+o.cmdheight = 0
 
 vim.g.bigfile_size = 1024 * 1024 * 1.5 -- 1.5 MB
 vim.o.lazyredraw = true
 
 -- Relative line numbers
 opt.nu = true
-opt.rnu = true
+opt.rnu = false
 
 -- set tab stop at 4
 opt.tabstop = 2
@@ -116,7 +116,7 @@ o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
 vim.g.netrw_banner = 0
 vim.g.netrw_mouse = 2
 
-o.cursorline = true
+o.cursorline = false
 o.winblend = 0
 o.pumblend = 0
 
@@ -139,7 +139,8 @@ vim.api.nvim_create_autocmd("User", {
 })
 
 -- vim.cmd.colorscheme("chadracula-evondev")
-vim.cmd.colorscheme("onedark")
+-- vim.cmd.colorscheme("onedark")
+vim.cmd.colorscheme("pinkcat")
 -- vim.cmd.colorscheme("neovim_dark")
 -- vim.cmd.colorscheme("kanagawa")
 
