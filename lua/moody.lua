@@ -76,10 +76,10 @@ local function stl_format(hl, value, hl_keys, reset)
 end
 
 local function trunc(str, max_val, trunc_chars)
-  if #str > max_val then
-    str = str:sub(1, -max_val) .. trunc_chars
-  end
-  return str
+	if #str > max_val then
+		str = str:sub(1, -max_val) .. trunc_chars
+	end
+	return str
 end
 
 function M.make_his(hl_list)
@@ -102,20 +102,24 @@ M.separators = {
 }
 
 -- HACK: precompile these components
-M.left = stl_format("left_sep", M.separators.left, {
-	fg = {
-		hi = "Statusline",
-		key = "bg",
-	},
-	bg = "Normal",
-})
-M.right = stl_format("right_sep", M.separators.right, {
-	fg = {
-		hi = "Statusline",
-		key = "bg",
-	},
-	bg = "Normal",
-}, true)
+local function build_seperators()
+	M.left = stl_format("left_sep", M.separators.left, {
+		fg = {
+			hi = "Statusline",
+			key = "bg",
+		},
+		bg = "Normal",
+	})
+
+	M.right = stl_format("right_sep", M.separators.right, {
+		fg = {
+			hi = "Statusline",
+			key = "bg",
+		},
+		bg = "Normal",
+	}, true)
+end
+build_seperators()
 
 local function padding(str, count, dir)
 	local new_str = ""
@@ -281,12 +285,12 @@ local function get_next_header(node, depth)
 end
 
 local function header_format(sep, node, data, depth, text_format_fn)
-  if depth > MAX_DEPTH then
-    vim.notify("Max recursion reached", vim.log.levels.WARN, {
-      title = "Statusline"
-    })
-    return ""
-  end
+	if depth > MAX_DEPTH then
+		vim.notify("Max recursion reached", vim.log.levels.WARN, {
+			title = "Statusline",
+		})
+		return ""
+	end
 	local header = get_next_header(node)
 	if not header then
 		return ""
@@ -344,20 +348,19 @@ local function heading_outline(data)
 		bg = "Normal",
 	})
 
-  local max_header_size = {
-    4,
-    4,
-    4,
-    4,
-    4,
-    4,
-    4,
-  }
-  local prev_header_size
+	local max_header_size = {
+		4,
+		4,
+		4,
+		4,
+		4,
+		4,
+		4,
+	}
+	local prev_header_size
 
 	local text_format_fn = function(text, prefix)
 		local header_level = #prefix
-    print(header_level)
 		return stl_format("header" .. header_level, trunc(text, max_header_size[header_level], "..."), {
 			fg = "RenderMarkdownH" .. header_level,
 			bg = "Normal",
@@ -367,9 +370,9 @@ local function heading_outline(data)
 
 	status = header_format(sep, vim.treesitter.get_node({}), data, 0, text_format_fn)
 
-  if status == "" then
-    return status
-  end
+	if status == "" then
+		return status
+	end
 
 	return M.left .. status .. M.right
 end
@@ -430,7 +433,7 @@ local function pos_info(data)
 end
 
 local function default_status(data)
-  local is_not_programming = non_programming_modes[vim.bo[data.buf].ft] ~= nil
+	local is_not_programming = non_programming_modes[vim.bo[data.buf].ft] ~= nil
 	return {
 		"  ",
 		M.fname(data),
@@ -467,6 +470,7 @@ vim.api.nvim_create_autocmd("Colorscheme", {
 	group = vim.api.nvim_create_augroup("Statusline", { clear = true }),
 	callback = function()
 		M.hl = {}
+    build_seperators()
 	end,
 })
 

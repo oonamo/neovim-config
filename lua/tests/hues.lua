@@ -132,10 +132,10 @@ local function ef_reverie()
 end
 
 -- purple()
-ef_reverie()
+-- ef_reverie()
 -- autummn()
 -- grey()
--- spring()
+spring()
 -- summer()
 -- winter()
 vim.cmd("doautocmd ColorScheme")
