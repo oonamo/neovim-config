@@ -14,8 +14,30 @@ vim.b.miniindentscope_disable = true
 vim.opt_local.sidescrolloff = 1000
 vim.opt_local.scrolloff = 10
 
--- local function current_word()
---   local cursor
---   vim.api.nvim_buf_get_lines(0, 
--- end
---
+local has_mini_ai, mini_ai = pcall(require, "mini.ai")
+if has_mini_ai then
+	vim.b.miniai_config = {
+		custom_textobjects = {
+			-- Bold
+			["*"] = mini_ai.gen_spec.pair("*", "*", { type = "greedy" }),
+			-- Strikethrough
+			["_"] = mini_ai.gen_spec.pair("_", "_", { type = "greedy" }),
+		},
+	}
+end
+
+local has_surround, mini_surround = pcall(require, "mini.surround")
+if has_surround then
+	vim.b.minisurround_config = {
+		custom_surroundings = {
+			E = { input = { "%*%*().-()%*%*" }, output = { left = "*", right = "*" } },
+			L = {
+				input = { "%[().-()%]%(.-%)" },
+				output = function()
+					local link = mini_surround.user_input("Link: ")
+					return { left = "[", right = "](" .. link .. ")" }
+				end,
+			},
+		},
+	}
+end

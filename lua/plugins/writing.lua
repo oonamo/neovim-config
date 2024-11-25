@@ -82,28 +82,6 @@ return {
 					},
 				},
 			},
-			{
-				"jbyuki/nabla.nvim",
-				keys = {
-					{
-						"<leader>np",
-						function()
-							require("nabla").popup()
-						end,
-						desc = "nabla popup",
-					},
-					{
-						"<leader>nv",
-						function()
-							require("nabla").toggle_virt({
-								autogen = true,
-								silent = true,
-							})
-						end,
-						desc = "toggle nabla virtual text",
-					},
-				},
-			},
 			"nvim-lua/plenary.nvim",
 			{
 				"folke/zen-mode.nvim",
@@ -135,7 +113,6 @@ return {
 				},
 			},
 		},
-		cmd = "GoToNotes",
 		config = function()
 			local daily_path = "100 dailies/"
 			local daily_folder = os.date("%b %Y")

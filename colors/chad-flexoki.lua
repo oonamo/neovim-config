@@ -1,7 +1,7 @@
 -- Made with 'mini.colors' module of https://github.com/echasnovski/mini.nvim
 
 if vim.g.colors_name ~= nil then vim.cmd('highlight clear') end
-vim.g.colors_name = "flexoki"
+vim.g.colors_name = "chad-flexoki"
 
 -- Highlight groups
 local hi = vim.api.nvim_set_hl
@@ -480,14 +480,11 @@ hi(0, "MiniPickBorderBusy", { bg = "#171616", ctermbg = 233, ctermfg = 178, fg =
 hi(0, "MiniPickBorderText", { bg = "#d14d41", ctermbg = 167, ctermfg = 233, fg = "#100f0f" })
 hi(0, "MiniPickCursor", { blend = 100, nocombine = true })
 hi(0, "MiniPickHeader", { bg = "#d14d41", ctermbg = 167, ctermfg = 233, fg = "#100f0f" })
-hi(0, "MiniPickIconDirectory", { link = "Directory" })
 hi(0, "MiniPickIconFile", { ctermfg = 252, fg = "#cecdc3" })
 hi(0, "MiniPickMatchCurrent", { bg = "#292626", ctermbg = 235 })
 hi(0, "MiniPickMatchMarked", { bg = "#393636", ctermbg = 237 })
-hi(0, "MiniPickMatchRanges", { link = "DiagnosticFloatingHint" })
 hi(0, "MiniPickNormal", { bg = "#171616", ctermbg = 233 })
 hi(0, "MiniPickPreviewLine", { bg = "#292626", ctermbg = 235 })
-hi(0, "MiniPickPreviewRegion", { link = "IncSearch" })
 hi(0, "MiniPickPrompt", { bg = "#1c1b1b", ctermbg = 234, ctermfg = 252, fg = "#cecdc3" })
 hi(0, "MiniStarterFooter", { ctermfg = 67, fg = "#4385be" })
 hi(0, "MiniStarterHeader", { ctermfg = 67, fg = "#4385be" })

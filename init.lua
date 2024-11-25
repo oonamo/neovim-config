@@ -11,7 +11,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 		}, true, {})
 		vim.fn.getchar()
 		os.exit(1)
-	end
+  end
 end
 
 vim.o.shell = "pwsh"
@@ -37,7 +37,7 @@ o.background = "dark"
 o.title = true
 o.titlestring = "nvim"
 -- opt.completeopt = "menu,menuone,noselect"
-o.cmdheight = 0
+o.cmdheight = 1
 
 vim.g.bigfile_size = 1024 * 1024 * 1.5 -- 1.5 MB
 vim.o.lazyredraw = true
@@ -51,8 +51,7 @@ opt.tabstop = 2
 opt.softtabstop = 2
 opt.expandtab = true
 
--- o.guicursor = ""
-
+o.guicursor = [[n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait175-blinkoff150-blinkon175]]
 -- autoindent
 opt.smartindent = true
 opt.shiftwidth = 2
@@ -131,18 +130,20 @@ vim.api.nvim_create_autocmd("User", {
 	callback = function()
 		require("config.autocommands")
 		require("config.keymaps")
-		if vim.g.neovide then
+    if vim.g.neovide or vim.g.goneovim then
 			require("config.gui")
 		end
-		require("statusline")
+    require("minimal_status")
+		-- require("statusline")
 	end,
 })
 
 -- vim.cmd.colorscheme("chadracula-evondev")
 -- vim.cmd.colorscheme("onedark")
-vim.cmd.colorscheme("pinkcat")
+-- vim.cmd.colorscheme("pinkcat")
 -- vim.cmd.colorscheme("neovim_dark")
--- vim.cmd.colorscheme("kanagawa")
+-- vim.cmd.colorscheme("onenord")
+vim.cmd.colorscheme("kanagawa")
 
 -- Setup lazy.nvim
 require("lazy").setup({

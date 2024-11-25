@@ -8,6 +8,7 @@ return {
 			vim.cmd("TSUpdate")
 		end,
 		init = function(plugin)
+			vim.cmd("syntax off")
 			require("lazy.core.loader").add_to_rtp(plugin)
 			require("nvim-treesitter.query_predicates")
 		end,
@@ -51,7 +52,7 @@ return {
 					end,
 				},
 				incremental_selection = {
-					enable = true,
+					enable = false,
 					disable = function(_, buf)
 						local max_filesize = 100 * 1024 -- 100 KB
 						local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
@@ -71,7 +72,7 @@ return {
 	},
 	{
 		"saghen/blink.cmp",
-    cond = true,
+		cond = true,
 		event = "InsertEnter",
 		-- lazy = false, -- lazy loading handled internally
 		-- optional: provides snippets for the snippet source
@@ -113,7 +114,7 @@ return {
 				-- sets the fallback highlight groups to nvim-cmp's highlight groups
 				-- useful for when your theme doesn't support blink.cmp
 				-- will be removed in a future release, assuming themes add support
-				use_nvim_cmp_as_default = true,
+				use_nvim_cmp_as_default = false,
 			},
 			-- set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
 			-- adjusts spacing to ensure icons are aligned
@@ -128,14 +129,13 @@ return {
 			windows = {
 				autocomplete = {
 					-- winhighlight = "Normal:CmpPmenu,CursorLine:CmpSel,Search:None,FloatBorder:CmpBorder",
-					border = "single",
-					draw = "reversed",
+					-- border = "single",
+					-- draw = "reversed",
 				},
 			},
 		},
 	},
 	{
-		-- TODO: Setup
 		"folke/snacks.nvim",
 		priority = 1000,
 		lazy = false,
@@ -146,6 +146,10 @@ return {
 					vim.b.minianimate_disable = true
 					vim.b.minicursorword_disable = true
 					vim.b.miniindentscope_disable = true
+					local ok, rainbow = pcall(require, "rainbow-delimiters")
+					if ok then
+						rainbow.disable()
+					end
 					vim.schedule(function()
 						vim.w.statusline = nil
 						vim.w.statuscolumn = nil
@@ -153,10 +157,12 @@ return {
 					end)
 				end,
 			},
-			words = { enabled = false },
 			notifier = {
 				enabled = true,
 				timeout = 3000,
+				style = "minimal",
+				top_down = false,
+				margin = { top = 0, right = 1, bottom = 1 },
 			},
 			quickfile = { enabled = true },
 			statuscolumn = {
@@ -230,7 +236,7 @@ return {
 				desc = "Rename File",
 			},
 			{
-				"<c-\\>",
+				vim.env.TERM_PROGRAM ~= "WezTerm" and "<c-\\>" or "F9",
 				mode = { "n", "t" },
 				function()
 					Snacks.terminal(nil, {
@@ -249,7 +255,7 @@ return {
 				pattern = "VeryLazy",
 				callback = function()
 					-- Setup some globals for debugging (lazy-loaded)
-					_G.dd = function(...)
+					_G.P = function(...)
 						Snacks.debug.inspect(...)
 					end
 					_G.bt = function()
@@ -261,22 +267,6 @@ return {
 		end,
 	},
 	-- Generate NVChad colorschemes
-	{
-		"cbochs/grapple.nvim",
-		opts = {
-			scope = "git_branch",
-			icons = true,
-			status = true,
-		},
-		keys = {
-			{ "<leader>a", "<cmd>Grapple toggle<cr>", desc = "Grapple Tag File" },
-			{ "<c-e><c-e>", "<cmd>Grapple toggle_tags<cr>", desc = "Toggle tags menu" },
-			{ "<c-e><c-h>", "<cmd>Grapple select index=1<cr>", desc = "Select first tag" },
-			{ "<c-e><c-j>", "<cmd>Grapple select index=2<cr>", desc = "Select second tag" },
-			{ "<c-e><c-k>", "<cmd>Grapple select index=3<cr>", desc = "Select third tag" },
-			{ "<c-e><c-l>", "<cmd>Grapple select index=4<cr>", desc = "Select fourth tag" },
-		},
-	},
 	{
 		"stevearc/quicker.nvim",
 		event = "FileType qf",
@@ -373,10 +363,136 @@ return {
 		end,
 	},
 	{
-		"monkoose/matchparen.nvim",
-		event = { "BufWritePre", "BufReadPost", "BufNewFile", "VeryLazy" },
-		opts = {
-			debounce_time = 200,
+		"cbochs/grapple.nvim",
+		opts = {},
+		keys = {
+			{ "<leader>a", "<cmd>Grapple toggle<cr>", desc = "Grapple toggle tag" },
+			{ "<leader>1", "<cmd>Grapple select index=1<cr>", desc = "Grapple select tag 1" },
+			{ "<leader>2", "<cmd>Grapple select index=2<cr>", desc = "Grapple select tag 2" },
+			{ "<leader>3", "<cmd>Grapple select index=3<cr>", desc = "Grapple select tag 3" },
+			{ "<leader>4", "<cmd>Grapple select index=4<cr>", desc = "Grapple select tag 4" },
+			{ "<leader>5", "<cmd>Grapple select index=5<cr>", desc = "Grapple select tag 5" },
+			{ "<leader>6", "<cmd>Grapple select index=6<cr>", desc = "Grapple select tag 6" },
+			{ "<leader>7", "<cmd>Grapple select index=7<cr>", desc = "Grapple select tag 7" },
+			{ "<leader>8", "<cmd>Grapple select index=8<cr>", desc = "Grapple select tag 8" },
+			{ "<leader>9", "<cmd>Grapple select index=9<cr>", desc = "Grapple select tag 9" },
+			{ "<C-e>", "<cmd>Grapple toggle_tags<cr>", desc = "Toggle tag menu" },
+		},
+	},
+	{
+		"jake-stewart/multicursor.nvim",
+		opts = {},
+		keys = {
+			{
+				"<leader>mcn",
+				function()
+					require("multicursor-nvim").matchAddCursor(1)
+				end,
+				desc = "Add cursor to next match",
+			},
+			{
+				"<leader>mcN",
+				function()
+					require("multicursor-nvim").matchAddCursor(-1)
+				end,
+				desc = "Add cursor to previous match",
+			},
+			{
+				"<leader>mck",
+				function()
+					require("multicursor-nvim").lineAddCursor(-1)
+				end,
+				desc = "Add cursor to previous line",
+			},
+			{
+				"<leader>mcj",
+				function()
+					require("multicursor-nvim").lineAddCursor(1)
+				end,
+				desc = "Add cursor below",
+			},
+			{
+				"<leader>mcsk",
+				function()
+					require("multicursor-nvim").LineSkipCursor(-1)
+				end,
+				desc = "Add cursor to next line",
+			},
+			{
+				"<leader>mcsj",
+				function()
+					require("multicursor-nvim").LineSkipCursor(1)
+				end,
+				desc = "Add cursor below, skipping the first line",
+			},
+			{
+				"<leader>mca",
+				function()
+					require("multicursor-nvim").matchAddAllCursors()
+				end,
+				desc = "Match all and add cursor",
+			},
+			{
+				"<leader>mcJ",
+				function()
+					require("multicursor-nvim").nextCursor()
+				end,
+				desc = "Change main cursor the next",
+			},
+			{
+				"<leader>mcK",
+				function()
+					require("multicursor-nvim").prevCursor()
+				end,
+				desc = "Change main cursor to previous",
+			},
+			{
+				"<leader>mcx",
+				function()
+					require("multicursor-nvim").deleteCursor()
+				end,
+				desc = "Delete current cursor",
+			},
+			{
+				"<leader>mcc",
+				function()
+					local mc = require("multicursor-nvim")
+					if not mc.cursorsEnabled() then
+						mc.enableCursors()
+					else
+						mc.clearCursors()
+					end
+				end,
+				desc = "Clear cursors",
+			},
+			{
+				"<leader>mcr",
+				function()
+					require("mutlicursor-nvim").restoreCursors()
+				end,
+				desc = "Restore cursors",
+			},
+      {
+        "<c-q>",
+        function()
+          require("multicursor-nvim").toggleCursor()
+        end,
+        desc = "Toggle current cursor",
+      },
+      {
+        "<leader>mc=",
+        function()
+          require("multicursor-nvim").alignCursors()
+        end,
+        desc = "Align cursors",
+      },
+      {
+        "<leader>mcs",
+        function()
+          require("multicursor-nvim").splitCursors()
+        end,
+        desc = "Split cursor by pattern",
+      }
 		},
 	},
 }

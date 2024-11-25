@@ -30,11 +30,10 @@ map_toggle("w", "<Cmd>setlocal wrap!<CR>", "Toggle 'wrap'")
 
 map({ "x", "v" }, "<leader>pp", [["_dP]], { noremap = true })
 map({ "n", "x", "v" }, "<leader>d", [["_d]], { noremap = true })
-
-map("n", "<C-H>", "<C-w>h", { desc = "Focus on left window" })
-map("n", "<C-J>", "<C-w>j", { desc = "Focus on below window" })
-map("n", "<C-K>", "<C-w>k", { desc = "Focus on above window" })
-map("n", "<C-L>", "<C-w>l", { desc = "Focus on right window" })
+-- map("n", "<C-H>", "<C-w>h", { desc = "Focus on left window" })
+-- map("n", "<C-J>", "<C-w>j", { desc = "Focus on below window" })
+-- map("n", "<C-K>", "<C-w>k", { desc = "Focus on above window" })
+-- map("n", "<C-L>", "<C-w>l", { desc = "Focus on right window" })
 
 map("n", "<Esc>", "<cmd>nohlsearch<cr><Esc>")
 map("n", "<C-c>", "<cmd>nohlsearch<cr><C-c>", { silent = true })
@@ -167,3 +166,8 @@ map("n", "<leader>cp", function()
 	})
 	Snacks.terminal.open(vim.g.last_compile_command)
 end, { desc = "Open Compilation Buffer (Float)" })
+
+
+
+-- TODO: Does this work
+require("config.utils").wezterm()

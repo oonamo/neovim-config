@@ -36,10 +36,7 @@ local function on_attach(client, buffer)
 		desc = "Go to lsp references",
 		buffer = buffer,
 	})
-	-- vim.keymap.set("n", "<leader>vrn", function()
-	--   -- return ":IncRename " .. vim.fn.expand("<cword>")
-	-- 	vim.lsp.buf.rename()
-	-- end, { desc = "Rename symbol", buffer = buffer, expr = true })
+	vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, { desc = "Rename symbol", buffer = buffer, expr = true })
 	vim.keymap.set("n", "<leader>vxx", function()
 		require("mini.extra").pickers.diagnostic()
 	end, { desc = "Find diagnostics", buffer = buffer })
@@ -59,21 +56,6 @@ local function on_attach(client, buffer)
 	vim.keymap.set("n", "<leader>ss", function()
 		require("config.lsp").request(true)
 	end)
-
-	vim.api.nvim_create_autocmd("LspProgress", {
-		---@param ev {data: {client_id: integer, params: lsp.ProgressParams}}
-		callback = function(ev)
-			local spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
-			vim.notify(vim.lsp.status(), "info", {
-				id = "lsp_progress",
-				title = "LSP Progress",
-				opts = function(notif)
-					notif.icon = ev.data.params.value == "end" and " "
-						or spinner[math.floor(vim.uv.hrtime() / (1e6 * 80)) % #spinner + 1]
-				end,
-			})
-		end,
-	})
 end
 local defaults = { on_attach = on_attach }
 
@@ -213,20 +195,5 @@ return {
 				},
 			})
 		end,
-	},
-	{
-		"smjonas/inc-rename.nvim",
-		cmd = "IncRename",
-		opts = {},
-		keys = {
-			{
-				"<leader>vrn",
-				function()
-					return ":IncRename " .. vim.fn.expand("<cword>")
-				end,
-				expr = true,
-				desc = "Rename (inc-rename.nvim)",
-			},
-		},
 	},
 }
