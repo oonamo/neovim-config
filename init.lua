@@ -133,7 +133,8 @@ vim.api.nvim_create_autocmd("User", {
     if vim.g.neovide or vim.g.goneovim then
 			require("config.gui")
 		end
-    require("minimal_status")
+    require("moody")
+    -- require("minimal_status")
 		-- require("statusline")
 	end,
 })

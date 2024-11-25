@@ -1,6 +1,8 @@
 local M = {}
 M.hl = {}
 
+local MAX_DEPTH = 1000
+
 local non_programming_modes = {
 	markdown = {},
 	org = {},
@@ -16,11 +18,6 @@ local function group_number(num, sep)
 		return tmp:reverse():gsub("(%d%d%d)", "%1" .. sep):reverse():gsub("^,", "")
 	end
 end
-
----@class status.Data
----@field buf number
----@field fname string
-
 ---@param hl string
 ---@param v table
 ---@return string
@@ -35,11 +32,13 @@ local function get_hl(hl, v)
 			local hi = v.fg.hi
 			local tmp = vim.api.nvim_get_hl(0, {
 				name = hi,
+				link = false,
 			})
 			new_hl.fg = tmp[key]
 		elseif v.fg:sub(1, 1) ~= "#" then
 			local fg = vim.api.nvim_get_hl(0, {
 				name = v.fg,
+				link = false,
 			})
 			new_hl.fg = fg.fg
 		end
@@ -50,11 +49,13 @@ local function get_hl(hl, v)
 			local hi = v.bg.hi
 			local tmp = vim.api.nvim_get_hl(0, {
 				name = hi,
+				link = false,
 			})
 			new_hl.bg = tmp[key]
 		elseif v.bg:sub(1, 1) ~= "#" then
 			local bg = vim.api.nvim_get_hl(0, {
 				name = v.bg,
+				link = false,
 			})
 			new_hl.bg = bg.bg
 		end
@@ -72,6 +73,13 @@ end
 local function stl_format(hl, value, hl_keys, reset)
 	local mod_hl = get_hl(hl, hl_keys)
 	return string.format("%%#%s#%s%s", mod_hl, value, reset and "%#Statusline#" or "")
+end
+
+local function trunc(str, max_val, trunc_chars)
+  if #str > max_val then
+    str = str:sub(1, -max_val) .. trunc_chars
+  end
+  return str
 end
 
 function M.make_his(hl_list)
@@ -93,6 +101,22 @@ M.separators = {
 	},
 }
 
+-- HACK: precompile these components
+M.left = stl_format("left_sep", M.separators.left, {
+	fg = {
+		hi = "Statusline",
+		key = "bg",
+	},
+	bg = "Normal",
+})
+M.right = stl_format("right_sep", M.separators.right, {
+	fg = {
+		hi = "Statusline",
+		key = "bg",
+	},
+	bg = "Normal",
+}, true)
+
 local function padding(str, count, dir)
 	local new_str = ""
 	local left_str = ""
@@ -111,20 +135,9 @@ local function padding(str, count, dir)
 end
 
 function M.fname(data)
-	local left = stl_format("left_sep", M.separators.left, {
-		fg = {
-			hi = "Statusline",
-			key = "bg",
-		},
-		bg = "Normal",
-	})
-	local right = stl_format("right_sep", M.separators.right, {
-		fg = {
-			hi = "Statusline",
-			key = "bg",
-		},
-		bg = "Normal",
-	}, true)
+	if vim.bo[data.buf].ft == "" then
+		return "[nofile]"
+	end
 	local filename = vim.fn.fnamemodify(data.fname, ":t")
 	local fname = stl_format("filename", filename, {
 		fg = "Normal",
@@ -132,7 +145,7 @@ function M.fname(data)
 		bold = true,
 	})
 
-	return left .. padding(fname, 3, { "left", "right" }) .. right
+	return M.left .. padding(fname, 3, { "left", "right" }) .. M.right
 end
 
 local function diff_info(data)
@@ -148,7 +161,11 @@ local function diff_info(data)
 	local delete_format = ""
 	local change_format = ""
 
+	local hasAdd = false
+	local hasDelete = false
+
 	if add and add > 0 then
+		hasAdd = true
 		add_format = stl_format("add", add, {
 			fg = "diffAdded",
 			bg = "StatusLine",
@@ -156,14 +173,15 @@ local function diff_info(data)
 		}, true)
 	end
 	if delete and delete > 0 then
-		delete_format = stl_format("delete", " " .. delete, {
+		hasDelete = true
+		delete_format = stl_format("delete", (hasAdd and " " or "") .. delete, {
 			fg = "diffRemoved",
 			bg = "StatusLine",
 			bold = true,
 		}, true)
 	end
 	if change and change > 0 then
-		change_format = stl_format("change", " " .. change, {
+		change_format = stl_format("change", (hasDelete and " " or "") .. change, {
 			fg = "diffChanged",
 			bg = "StatusLine",
 			bold = true,
@@ -182,9 +200,6 @@ local colors = {
 
 local function ft(data)
 	local filetype = vim.bo[data.buf].ft
-	if not filetype then
-		return ""
-	end
 	filetype = filetype:sub(1, 1):upper() .. filetype:sub(2)
 	return stl_format("ft", filetype, {
 		fg = "StatusLine",
@@ -230,8 +245,14 @@ local function vline_count()
 end
 
 ---@param node? TSNode
+---@param depth? number
 ---@return TSNode?
-local function get_next_header(node)
+local function get_next_header(node, depth)
+	-- HACK: prevent Infinite recursion in case of a bug
+	if depth and depth > MAX_DEPTH then
+		vim.notify("Infinite recursion reached!")
+		return nil
+	end
 	if not node then
 		return nil
 	end
@@ -239,15 +260,33 @@ local function get_next_header(node)
 		return node
 	end
 	if node:type() == "paragraph" then
-		return get_next_header(node:prev_named_sibling())
+		return get_next_header(node:prev_named_sibling(), depth and depth + 1 or 0)
 	end
 	if node:type() == "section" then
-		return get_next_header(node:child(0))
+		return get_next_header(node:child(0), depth and depth + 1 or 0)
 	end
-	return get_next_header(node:parent())
+	if node:type() == "document" then
+		return nil
+	end
+	-- HACK: Prevent calling parnet->child->parent->child ...
+	if node:parent():type() == "section" then
+		-- Parent -> child does not always point to itself
+		local child = node:parent():child(0)
+		if child and child:type() == "atx_heading" then
+			return child
+		end
+		return nil
+	end
+	return get_next_header(node:parent(), depth and depth + 1 or 0)
 end
 
-local function header_format(status, sep, node, data, depth)
+local function header_format(sep, node, data, depth, text_format_fn)
+  if depth > MAX_DEPTH then
+    vim.notify("Max recursion reached", vim.log.levels.WARN, {
+      title = "Statusline"
+    })
+    return ""
+  end
 	local header = get_next_header(node)
 	if not header then
 		return ""
@@ -267,26 +306,72 @@ local function header_format(status, sep, node, data, depth)
 	else
 		text = fallback
 	end
+	if text_format_fn and type(text_format_fn) == "function" then
+		text = text_format_fn(text, fallback)
+	end
 	if depth ~= 0 then
 		text = text .. sep
 	end
 
-	return header_format(status, sep, header:parent():parent(), data, depth + 1) .. text
+	if depth > MAX_DEPTH then
+		return ""
+	end
+
+	return header_format(sep, header:parent():parent(), data, depth + 1, text_format_fn) .. text
 end
 
 function M.debug_r()
-	local status = header_format("", "->", vim.treesitter.get_node({}), { buf = 0 }, 0)
+	local status = header_format("->", vim.treesitter.get_node({}), M.data, 0)
+
+	local header = get_next_header(vim.treesitter.get_node({}))
 	print(status)
+	if header then
+		print(header:type())
+	end
 end
 
 local function heading_outline(data)
-	if not vim.bo[data.buf].ft == "markdown" then
+	if vim.bo[data.buf].ft == "" or vim.bo[data.buf].ft ~= "markdown" then
 		return
 	end
 	local status = ""
-	local sep = "->"
-	status = header_format(status, sep, vim.treesitter.get_node({}), data, 0)
-	return status
+
+	local sep = stl_format("header_sep", " ", {
+		fg = {
+			hi = "Search",
+			key = "bg",
+		},
+		bg = "Normal",
+	})
+
+  local max_header_size = {
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+  }
+  local prev_header_size
+
+	local text_format_fn = function(text, prefix)
+		local header_level = #prefix
+    print(header_level)
+		return stl_format("header" .. header_level, trunc(text, max_header_size[header_level], "..."), {
+			fg = "RenderMarkdownH" .. header_level,
+			bg = "Normal",
+			bold = true,
+		})
+	end
+
+	status = header_format(sep, vim.treesitter.get_node({}), data, 0, text_format_fn)
+
+  if status == "" then
+    return status
+  end
+
+	return M.left .. status .. M.right
 end
 
 local function non_prog_mode(data)
@@ -345,6 +430,7 @@ local function pos_info(data)
 end
 
 local function default_status(data)
+  local is_not_programming = non_programming_modes[vim.bo[data.buf].ft] ~= nil
 	return {
 		"  ",
 		M.fname(data),
@@ -353,12 +439,11 @@ local function default_status(data)
 		"%=",
 		pos_info(data),
 		" ",
-		ft(data),
+		is_not_programming and heading_outline(data) or ft(data),
 		"%=",
 		diagnostics(data),
-		non_programming_modes[vim.bo[data.buf].ft] and non_prog_mode(data) or nil,
-		heading_outline(data),
-		-- "L%l",
+		is_not_programming and non_prog_mode(data) or nil,
+		-- heading_outline(data),
 	}
 end
 
@@ -368,6 +453,7 @@ function M.build()
 	}
 	data.buf = vim.api.nvim_win_get_buf(data.win)
 	data.fname = vim.api.nvim_buf_get_name(data.buf)
+	M.data = data
 	local components = default_status(data)
 	local statusline = ""
 	for _, component in ipairs(components) do
