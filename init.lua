@@ -1,18 +1,188 @@
--- Bootstrap lazy.nvim
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-	local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
-	if vim.v.shell_error ~= 0 then
-		vim.api.nvim_echo({
-			{ "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-			{ out, "WarningMsg" },
-			{ "\nPress any key to exit..." },
-		}, true, {})
-		vim.fn.getchar()
-		os.exit(1)
+vim.opt.rtp:prepend("C:/Users/onam7/projects/nvim/use-package/")
+
+vim.g.mapleader = " "
+vim.cmd.source("~/plugin/fzf.vim")
+vim.keymap.set("n", "<leader>f", "<cmd>FZF<CR>")
+
+local function on_attach(client, buffer)
+  vim.bo[buffer].omnifunc = "v:lua.MiniCompletion.completefunc_lsp"
+	vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, {
+		desc = "Preview code actions",
+		buffer = buffer,
+	})
+	-- end
+
+	vim.keymap.set("n", "gd", vim.lsp.buf.definition, {
+		desc = "go to buffer definition",
+		buffer = buffer,
+	})
+
+	vim.keymap.set("n", "gD", function()
+		require("mini.extra").pickers.lsp({ scope = "definition" })
+	end, { desc = "go to multiple definition", buffer = buffer })
+	vim.keymap.set("n", "<leader>vws", function()
+		require("mini.extra").pickers.lsp({ scope = "workspace_symbol" })
+	end, { desc = "Find workspace_symbol", buffer = buffer })
+	vim.keymap.set("n", "<leader>vd", function()
+		vim.diagnostic.open_float()
+	end, {
+		desc = "Open float menu",
+		buffer = buffer,
+	})
+	vim.keymap.set("n", "[d", vim.diagnostic.goto_next, {
+		desc = "Got to next diagnostic",
+		buffer = buffer,
+	})
+	vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, {
+		desc = "Go to previous diagnostic",
+		buffer = buffer,
+	})
+	vim.keymap.set("n", "<leader>vrr", vim.lsp.buf.references, {
+		desc = "Go to lsp references",
+		buffer = buffer,
+	})
+	vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, { desc = "Rename symbol", buffer = buffer, expr = true })
+	vim.keymap.set("n", "<leader>vxx", function()
+		require("mini.extra").pickers.diagnostic()
+	end, { desc = "Find diagnostics", buffer = buffer })
+	vim.keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, {
+		desc = "Signature help",
+		buffer = buffer,
+	})
+	if client.supports_method("textDocument/inlayHint") then
+		vim.keymap.set("n", "<leader>ih", function()
+			vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+		end, { desc = "Inlay Hint" })
 	end
+	vim.keymap.set("n", "<leader>qf", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })
+	vim.keymap.set("n", "<leader>ld", vim.diagnostic.setloclist, { desc = "Quickfix [L]ist [D]iagnostics" })
+	-- vim.keymap.set("n", "<C-]>", "<C-w><C-]>")
+
+	vim.keymap.set("n", "<leader>ss", function()
+		require("config.lsp").request(true)
+	end)
 end
+
+vim.api.nvim_create_autocmd({ "BufReadPost" }, {
+  pattern = "*.lua",
+  callback = function()
+    vim.lsp.start({
+      name = "luals",
+      cmd = { "lua-language-server" },
+      root_dir = vim.fs.root(0, { ".git", ".luarc.json" }),
+				settings = {
+					Lua = {
+						runtime = { version = "LuaJIT" },
+						diagnostics = {
+							globals = { "vim", "bit" },
+							workspaceDelay = -1,
+						},
+						telemetry = {
+							enable = false,
+						},
+						workspace = {
+							library = {
+								[vim.fn.expand("$VIMRUNTIME/lua")] = true,
+								[vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
+								[vim.fn.stdpath("config") .. "/lua"] = true,
+							},
+							ignoreSubmodules = true,
+						},
+						hint = {
+							enable = true,
+							setType = false,
+							paramType = true,
+							paramName = true,
+							semicolon = "Disable",
+							arrayIndex = "Disable",
+						},
+					},
+				},
+    })
+  end,
+})
+
+vim.api.nvim_create_autocmd({ "LspAttach" }, {
+  callback = function(args)
+    local buffer = args.buf
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    on_attach(client, buffer)
+  end
+})
+
+local loader = require("use-package.plugin")
+local use_package = loader.use_package
+
+use_package("echasnovski/mini.nvim"):config(function()
+  require("mini.completion").setup()
+end):load()
+
+use_package("nvim-treesitter/nvim-treesitter"):events({ "BufWritePre", "BufReadPost", "BufNewFile", }):config(function()
+      vim.notify("loaded treesitter")
+			require("nvim-treesitter.query_predicates")
+			local config = require("nvim-treesitter.configs")
+			config.setup({
+				ensure_installed = {
+					"lua",
+					"javascript",
+					"c",
+					"norg",
+					"rust",
+					"vim",
+					"vimdoc",
+					"markdown",
+					"markdown_inline",
+					"latex",
+					"org",
+				},
+				auto_install = true,
+				highlight = {
+					enable = true,
+					additional_vim_regex_highlighting = false,
+					disable = function(_, buf)
+						local max_filesize = 100 * 1024 -- 100 KB
+						local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+						if ok and stats and stats.size > max_filesize then
+							return true
+						end
+					end,
+				},
+				indent = {
+					enable = false,
+					disable = function(_, buf)
+						local max_filesize = 100 * 1024 -- 100 KB
+						local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+						if ok and stats and stats.size > max_filesize then
+							return true
+						end
+					end,
+				},
+				incremental_selection = {
+					enable = false,
+					disable = function(_, buf)
+						local max_filesize = 100 * 1024 -- 100 KB
+						local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+						if ok and stats and stats.size > max_filesize then
+							return true
+						end
+					end,
+					keymaps = {
+						init_selection = "<C-i>",
+						node_incremental = "<CR>",
+						scope_incremental = false,
+						node_decremental = "<BS>",
+					},
+				},
+        textobjects = {
+          enabled = false,
+        }
+			})
+end)
+
+require("config.autocommands")
+require("config.keymaps")
+require("config.gui")
+require("moody")
 
 if vim.fn.has("win32") then
 	_G.platform_specific = { lineending = "\r\n" }
@@ -28,7 +198,6 @@ vim.o.shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode"
 vim.o.shellquote = ""
 vim.o.shellxquote = ""
 
-vim.opt.rtp:prepend(lazypath)
 -- Make sure to setup `mapleader` and `maplocalleader` before
 -- loading lazy.nvim so that mappings are correct.
 -- This is also a good place to setup other settings (vim.opt)
@@ -136,72 +305,9 @@ vim.g.loaded_python3_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
 
-vim.api.nvim_create_autocmd("User", {
-	group = vim.api.nvim_create_augroup("Config", { clear = true }),
-	pattern = "VeryLazy",
-	callback = function()
-		require("config.autocommands")
-		require("config.keymaps")
-		if vim.g.neovide or vim.g.goneovim then
-			require("config.gui")
-		end
-		require("moody")
-	end,
-})
-
--- Setup lazy.nvim
-require("lazy").setup({
-	-- Configure any other settings here. See the documentation for more details.
-	-- colorscheme that will be used when installing plugins.
-	install = { colorscheme = { "zenner" } },
-	spec = { import = "plugins" },
-	-- automatically check for plugin updates
-	checker = { notify = false },
-	defaults = {
-		lazy = true,
-	},
-	change_detection = {
-		notify = false,
-	},
-	git = {
-		timeout = 1000,
-	},
-	performance = {
-		rtp = {
-			disabled_plugins = {
-				"2html_plugin",
-				"getscript",
-				"getscriptPlugin",
-				"gzip",
-				"logipat",
-				-- "matchit",
-				"man",
-				-- "matchparen",
-				"tar",
-				"tarPlugin",
-				"rrhelper",
-				"vimball",
-				"netrw",
-				"netrwPlugin",
-				"netrwSettings",
-				"netrwFileHandlers",
-				"health",
-				"shada",
-				"spellfile",
-				"tohtml",
-				"tutor",
-				"vimballPlugin",
-				"zip",
-				"zipPlugin",
-				"rplugin",
-			},
-		},
-	},
-})
-
 if not vim.g.colors_name or vim.g.colors_name == "" then
-	vim.cmd.colorscheme("minispring")
-	-- vim.cmd.colorscheme("tokyonight")
+	-- vim.cmd.colorscheme("minispring")
+	vim.cmd.colorscheme("tokyonight")
 	-- vim.cmd.colorscheme("solarized_osaka")
 	-- vim.cmd.colorscheme("chadracula-evondev")
 	-- vim.cmd.colorscheme("chadracula")
