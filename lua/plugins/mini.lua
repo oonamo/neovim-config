@@ -4,19 +4,7 @@ return {
 		lazy = true,
 	},
 	{
-		"mini.misc",
-		dev = true,
-		event = "VeryLazy",
-		config = function()
-			require("mini.misc").setup()
-			MiniMisc.setup_auto_root({
-				".git",
-				"Makefile",
-				"justfile",
-			})
-		end,
-	},
-	{
+		-- TODO: Fix live grep thing
 		"mini.pick",
 		dev = true,
 		init = function()
@@ -57,6 +45,54 @@ return {
 		},
 		config = function(_, opts)
 			require("mini.pick").setup(opts)
+			local grep = MiniPick.builtin.grep_live
+			local default = MiniPick.default_show
+
+			local function modded_grep(local_opts, _opts)
+				_opts = _opts or {}
+				_opts.source = _opts.source or {}
+				if _opts.source and not _opts.source.show then
+					--- HACK: Remove all carriage returns
+					_opts.source.show = function(buf_id, items, query, __opts)
+						for i, v in ipairs(items) do
+							if v:sub(-1) == "\r" then
+								items[i] = v:sub(1, -2)
+							end
+							default(buf_id, items, query, __opts)
+						end
+					end
+
+					_opts.source.choose = function(item)
+						if item:sub(-1) == "\r" then
+							item = item:sub(1, -2)
+						end
+						MiniPick.default_choose(item)
+					end
+
+					_opts.source.choose_marked = function(items, __opts)
+						for i, v in ipairs(items) do
+							if v:sub(-1) == "\r" then
+								items[i] = v:sub(1, -2)
+							end
+						end
+						MiniPick.default_choose_marked(items, __opts)
+					end
+				end
+				grep(local_opts, _opts)
+			end
+
+			MiniPick.builtin.grep_live = modded_grep
+			MiniPick.registry.grep_live = modded_grep
+
+			MiniPick.registry.projects = function()
+				local cwd = vim.fn.expand("~/projects")
+				local choose = function(item)
+					vim.schedule(function()
+						MiniPick.builtin.files(nil, { source = { cwd = item.path } })
+					end)
+				end
+				return require("mini.extra").pickers.explorer({ cwd = cwd }, { source = { choose = choose } })
+			end
 		end,
 		keys = {
 			{
@@ -76,6 +112,7 @@ return {
 			},
 			{
 				"<C-F>",
+				-- function() end,
 				"<cmd>Pick grep_live<cr>",
 				desc = "Grep live",
 			},
@@ -112,6 +149,11 @@ return {
 				"<leader>of",
 				"<cmd>Pick oldfiles<cr>",
 				desc = "Old files (cwd)",
+			},
+			{
+				"<C-x>b",
+				"<cmd>Pick buffers<cr>",
+				desc = "Buffers",
 			},
 			{
 				"<C-x><C-f>",
@@ -202,11 +244,25 @@ return {
 		dev = true,
 		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
 		config = function()
+			local ai = require("mini.ai")
 			require("mini.ai").setup({
 				custom_textobjects = {
 					B = require("mini.extra").gen_ai_spec.buffer(),
 					i = require("mini.extra").gen_ai_spec.indent(),
-					F = require("mini.ai").gen_spec.argument({ brackets = { "%b()" } }),
+					F = ai.gen_spec.argument({ brackets = { "%b()" } }),
+					t = { "<([%p%w]-)%f[^<%w][^<>]->.-</%1>", "^<.->().*()</[^/]->$" }, -- tags
+					d = { "%f[%d]%d+" }, -- digits
+					e = { -- Word with case
+						{
+							"%u[%l%d]+%f[^%l%d]",
+							"%f[%S][%l%d]+%f[^%l%d]",
+							"%f[%P][%l%d]+%f[^%l%d]",
+							"^[%l%d]+%f[^%l%d]",
+						},
+						"^().*()$",
+					},
+					u = ai.gen_spec.function_call(), -- u for Usage
+					U = ai.gen_spec.function_call({ name_pattern = "[%w_" }), -- without dot
 				},
 			})
 		end,
@@ -248,6 +304,7 @@ return {
 	},
 	{
 		"mini.jump",
+		cond = false,
 		dev = true,
 		config = true,
 		keys = {
@@ -357,7 +414,7 @@ return {
 	},
 	{
 		"mini.completion",
-		cond = false,
+		cond = true,
 		dev = true,
 		event = "InsertEnter",
 		config = function()
@@ -369,6 +426,18 @@ return {
 
 			require("mini.completion").setup({
 				delay = { completion = 100, info = 100, signature = 50 },
+				lsp_completion = {
+					source_func = "omnifunc",
+					auto_setup = false,
+				},
+				mappings = {
+					force_twostep = "<C-v>",
+				},
+				set_vim_settings = true,
+				window = {
+					info = { border = "double" },
+					signature = { border = "double" },
+				},
 			})
 		end,
 	},
@@ -464,9 +533,11 @@ return {
 			end
 
 			require("mini.files").setup(opts)
+			local minifiles_augroup = vim.api.nvim_create_augroup("minifiles_group", { clear = true })
 
 			vim.api.nvim_create_autocmd("User", {
 				desc = "Add minifiles split keymaps and options",
+				group = minifiles_augroup,
 				pattern = "MiniFilesBufferCreate",
 				callback = function(args)
 					local buf_id = args.data.buf_id
@@ -476,7 +547,17 @@ return {
 			})
 
 			vim.api.nvim_create_autocmd("User", {
+				group = minifiles_augroup,
+				pattern = "MiniFilesExplorerOpen",
+				callback = function()
+					MiniFiles.set_bookmark("c", vim.fn.stdpath("config"), { desc = "Config" })
+					MiniFiles.set_bookmark("w", vim.fn.getcwd, { desc = "Working directory" })
+				end,
+			})
+
+			vim.api.nvim_create_autocmd("User", {
 				desc = "Add minifiles split keymaps and options",
+				group = minifiles_augroup,
 				pattern = "MiniFilesWindowOpen",
 				callback = function(args)
 					local win_id = args.data.win_id
@@ -521,16 +602,12 @@ return {
 	{
 		"mini.icons",
 		dev = true,
-		lazy = true,
 		init = function()
 			package.preload["nvim-web-devicons"] = function()
 				require("mini.icons").mock_nvim_web_devicons()
 				return package.loaded["nvim-web-devicons"]
 			end
 		end,
-		opts = {
-			style = "ascii",
-		},
 	},
 	{
 		"mini.align",
@@ -629,6 +706,156 @@ return {
 		"mini.tabline",
 		dev = true,
 		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
+		opts = {
+			-- format = function(buf_id, label)
+			-- 	local suffix = vim.bo[buf_id].modified and "+ " or ""
+			-- 	-- return "%#statusleft_sep#" .. MiniTabline.default_format(buf_id, label) .. suffix .. "%#statusright_sep#"
+			-- end,
+		},
+	},
+	{
+		"mini.visits",
+		dev = true,
 		opts = {},
+		keys = {
+			{
+				"<leader>ma",
+				function()
+					require("mini.visits").add_label()
+				end,
+				desc = "Add Label",
+			},
+			{
+				"<leader>mr",
+				function()
+					require("mini.visits").remove_label()
+				end,
+				desc = "Delete Label",
+			},
+			{
+				"<leader>ml",
+				function()
+					require("mini.visits").select_label("", nil)
+				end,
+				desc = "Select Label (cwd)",
+			},
+			{
+				"<leader>mL",
+				function()
+					require("mini.visits").select_label("", "")
+				end,
+				desc = "Select Label (all)",
+			},
+			{
+				"<leader>mp",
+				function()
+					require("mini.visits").select_path()
+				end,
+				desc = "Visited Path (cwd)",
+			},
+			{
+				"<leader>mP",
+				function()
+					require("mini.visits").select_path("")
+				end,
+				desc = "Visited Path (all)",
+			},
+		},
+	},
+	{
+		"mini.clue",
+		dev = true,
+		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
+		opts = function(_, opts)
+			local miniclue = require("mini.clue")
+			opts = {
+				triggers = {
+					{ mode = "n", keys = "<Leader>" },
+					{ mode = "x", keys = "<Leader>" },
+
+					{ mode = "n", keys = "<localleader>" },
+					{ mode = "x", keys = "<localleader>" },
+
+					{ mode = "n", keys = "<C-x>" },
+					{ mode = "x", keys = "<C-x>" },
+
+					{ mode = "n", keys = "[" },
+					{ mode = "x", keys = "[" },
+					{ mode = "n", keys = "]" },
+					{ mode = "x", keys = "]" },
+
+					-- Built-in completion
+					{ mode = "i", keys = "<C-x>" },
+
+					-- `g` key
+					{ mode = "n", keys = "g" },
+					{ mode = "x", keys = "g" },
+
+					-- Marks
+					{ mode = "n", keys = "'" },
+					{ mode = "n", keys = "`" },
+					{ mode = "n", keys = '"' },
+					{ mode = "x", keys = "'" },
+					{ mode = "x", keys = "`" },
+
+					-- Registers
+					{ mode = "n", keys = '"' },
+					{ mode = "x", keys = '"' },
+					{ mode = "i", keys = "<C-r>" },
+					{ mode = "c", keys = "<C-r>" },
+
+					-- Window commands
+					{ mode = "n", keys = "<C-w>" },
+
+					-- `z` key
+					{ mode = "n", keys = "z" },
+					{ mode = "x", keys = "z" },
+				},
+
+				clues = { -- {{{
+					{ mode = "n", keys = "<Leader>b", desc = "+Buffers" },
+					{ mode = "n", keys = "<Leader>ba", desc = "+All" },
+					{ mode = "n", keys = "<leader>c", desc = "+Compile" },
+					{ mode = "n", keys = "<Leader>f", desc = "+Find" },
+					{ mode = "n", keys = "<Leader>g", desc = "+Git" },
+					{ mode = "n", keys = "<Leader>gd", desc = "+GitDiff" },
+					{ mode = "n", keys = "<leader>i", desc = "+Inlay" },
+					{ mode = "n", keys = "<leader>l", desc = "+Loclist" },
+					{ mode = "n", keys = "<leader>m", desc = "+Marks" },
+					{ mode = "n", keys = "<leader>n", desc = "+No" },
+					{ mode = "n", keys = "<leader>o", desc = "+Old/Obsidian" },
+					{ mode = "n", keys = "<Leader>p", desc = "+Places" },
+					{ mode = "n", keys = "<Leader>q", desc = "+Quickfix" },
+					{ mode = "n", keys = "<Leader>s", desc = "+Search" },
+					{ mode = "n", keys = "<Leader>v", desc = "+Variable" },
+					{ mode = "n", keys = "<Leader>vc", desc = "+Code" },
+					{ mode = "n", keys = "<Leader>vw", desc = "+Workspace" },
+					{ mode = "n", keys = "<Leader>vx", desc = "+Diagnostic" },
+					{ mode = "n", keys = "<Leader>vr", desc = "+Ref/Rename" },
+					{ mode = "n", keys = "<leader>x", desc = "+Zen" },
+					{ mode = "n", keys = "<leader><tab>", desc = "+Tab" },
+					{ mode = "n", keys = "<localleader>t", desc = "+Terminal" },
+					{ mode = "n", keys = "]b", postkeys = "]" },
+					{ mode = "n", keys = "]w", postkeys = "]" },
+					{ mode = "n", keys = "]q", postkeys = "]" },
+
+					{ mode = "n", keys = "[b", postkeys = "[" },
+					{ mode = "n", keys = "[w", postkeys = "[" },
+					{ mode = "n", keys = "[q", postkeys = "[" },
+					-- Enhance this by adding descriptions for <Leader> mapping groups
+					miniclue.gen_clues.builtin_completion(),
+					miniclue.gen_clues.g(),
+					miniclue.gen_clues.marks(),
+					miniclue.gen_clues.registers(),
+					miniclue.gen_clues.windows({
+						submode_move = true,
+						submode_navigate = false,
+						submode_resize = true,
+					}),
+					miniclue.gen_clues.z(),
+				}, -- }}}
+			}
+			return opts
+		end,
 	},
 }

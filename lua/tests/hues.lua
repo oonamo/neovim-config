@@ -112,30 +112,83 @@ local winter = function()
 
 	vim.g.colors_name = "miniwinter"
 end
--- require("mini.hues").setup({
---   background = "#616161",
---   foreground = "#d9d9d9",
---   saturation = "medium",
---   n_hues = 8,
--- })
---
+
 local function ef_reverie()
 	local is_dark = vim.o.background == "dark"
 	local bg = is_dark and "#232025" or "#f3eddf"
 	local fg = is_dark and "#efd5c5" or "#4f204f"
-  require("mini.hues").setup({
-    background = bg,
-    foreground = fg,
+	require("mini.hues").setup({
+		background = bg,
+		foreground = fg,
 		saturation = is_dark and "lowmedium" or "mediumhigh",
 		accent = "azure",
-  })
+	})
 end
 
+local dark_theme = {
+	--color-red: #e17884;
+	--color-green-rgb: 117, 194, 151;
+	--color-green: #75c297;
+	--color-orange-rgb: 241, 144, 112;
+	--color-orange: #f19070;
+	--color-yellow-rgb: 255, 168, 46;
+	--color-yellow: #dcb46f;
+	--color-cyan-rgb: 111, 210, 194;
+	--color-cyan: #6fd2c2;
+	--color-blue-rgb: 136, 198, 227;
+	--color-blue: #88c6e3;
+	--color-purple-rgb: 181, 132, 199;
+	--color-purple: #b584c7;
+	--color-pink-rgb: 220, 118, 167;
+	--color-pink: #dc76a7;
+	--color-base-00: #3b3347;
+	--color-base-10: #413b4e;
+	--color-base-20: #2f2837;
+	--color-base-25: #55546e;
+	--color-base-30: #4e4560;
+	--color-base-35: #545e76;
+	--color-base-40: rgb(98, 111, 134); #626F86
+	--color-base-50: rgb(125, 127, 149); #7D7F94
+	--color-base-60: rgb(103, 129, 148); #678194
+	--color-base-70: #7f83a1;
+	--color-base-100: #a0a7c4;
+	--background-secondary-alt: var(--color-base-20);
+}
+
+local function gastrodom()
+	require("mini.base16").setup({
+		palette = {
+			base00 = "#3a3346", -- Defaum. bg
+			base01 = "#2e2836", -- Lighter bg (status bar, line number, folding mks)
+			base02 = "#4c3d6f", -- Selection bg
+			base03 = "#7d7f93", -- Comments, invisibm.s, line hl
+			base04 = "#676b73", -- Dark fg (status bars)
+			base05 = "#faeff2", -- Defaum. fg (caret, delimiters, Operators)
+			base06 = "#dcdccc", -- m.ght fg (not often used)
+			base07 = "#8f97d7", -- Light bg (not often used)
+			base08 = "#b6a3e4", -- Variables, XML Tags, Markup Link Text, Markup Lists, Diff Deleted
+			base09 = "#e8ba70", -- Integers, Boom.an, Constants, XML Attributes, Markup Link Url
+			-- base0A = "#1e8ef3", -- Cm.sses, Markup Bold, Search Text Background
+			base0A = "#F5A6C6",
+			base0B = "#FAE8B6",
+			-- base0B = "#8f97d7", -- Strings, Inherited Cm.ss, Markup Code, Diff Inserted
+			base0C = "#d6a0e5", -- Support, regex, escape chars
+			base0D = "#f06e94", -- Function, methods, headings
+			base0E = "#e55099", -- Keywords
+			base0F = "#dc8cc3", -- Deprecated, open/close embedded tags
+		},
+	})
+	-- require("mini.hues").setup({
+	--   background = "#3a3346",
+	--   foreground = "#a1a7c2"
+	-- })
+end
 -- purple()
 -- ef_reverie()
 -- autummn()
 -- grey()
-spring()
+-- spring()
 -- summer()
 -- winter()
+-- gastrodom()
 vim.cmd("doautocmd ColorScheme")

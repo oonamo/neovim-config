@@ -11,6 +11,7 @@ vim.opt_local.conceallevel = 2
 -- vim.opt_local.breakindent = true
 -- vim.opt_local.breakindentopt = "list:-1"
 vim.b.miniindentscope_disable = true
+vim.o.list = false
 vim.opt_local.sidescrolloff = 1000
 vim.opt_local.scrolloff = 10
 

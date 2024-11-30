@@ -185,7 +185,7 @@ local function diff_info(data)
 		}, true)
 	end
 	if change and change > 0 then
-		change_format = stl_format("change", (hasDelete and " " or "") .. change, {
+		change_format = stl_format("change", ((hasDelete or hasAdd) and " " or "") .. change, {
 			fg = "diffChanged",
 			bg = "StatusLine",
 			bold = true,
@@ -212,7 +212,7 @@ local function ft(data)
 	})
 end
 
-local function file_status(data)
+local function scrollbar(data)
 	local lines = vim.api.nvim_buf_line_count(0)
 	local cur_line = vim.api.nvim_win_get_cursor(data.win)[1]
 	local i = math.floor((cur_line - 1) / lines * 8) + 1
@@ -438,7 +438,7 @@ local function default_status(data)
 		"  ",
 		M.fname(data),
 		diff_info(data),
-		file_status(data),
+		-- scrollbar(data),
 		"%=",
 		pos_info(data),
 		" ",

@@ -6,7 +6,6 @@ local function opts(desc, silent, options)
 	return options
 end
 
-
 local map = vim.keymap.set
 local function map_toggle(lhs, rhs, desc)
 	map("n", "\\" .. lhs, rhs, { desc = desc })
@@ -85,7 +84,7 @@ map("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" })
 
 map("i", "<C-l>", "<End>", { noremap = true })
 map("i", "<C-h>", "<Home>", { noremap = true })
-map("i", "<C-e>", "<C-o>A", { noremap = true, nowait = true })
+map("i", "<C-e>", "<End>", { noremap = true, nowait = true })
 
 -- COMMAND LINE BINDINGS
 map({ "c", "i" }, "<C-a>", "<Home>")
@@ -110,25 +109,25 @@ map("n", "<leader><tab>d", "<cmd>tabclose<cr>", { desc = "Close Tab" })
 map("n", "<leader><tab>[", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
 map("n", "<leader>bad", "<cmd>%bd|e#<cr>", { desc = "Delete all buffers" })
 
-map("n", "<leader>mp", function()
-	local args = vim.fn.input({
-		prompt = "Compile> " .. vim.o.makeprg .. " ",
-		default = (vim.g.last_make_command or ""),
-	})
-	vim.g.last_make_command = args
-	vim.cmd("make " .. (vim.g.last_make_command or ""))
-end)
+-- map("n", "<leader>mp", function()
+-- 	local args = vim.fn.input({
+-- 		prompt = "Compile> " .. vim.o.makeprg .. " ",
+-- 		default = (vim.g.last_make_command or ""),
+-- 	})
+-- 	vim.g.last_make_command = args
+-- 	vim.cmd("make " .. (vim.g.last_make_command or ""))
+-- end)
 
-map("n", "<leader>ma", function()
-	if not vim.g.last_make_command or vim.g.last_make_command == "" then
-		local args = vim.fn.input({
-			prompt = "Compile> " .. vim.o.makeprg .. " ",
-			default = (vim.g.last_make_command or ""),
-		})
-		vim.g.last_make_command = args
-	end
-	vim.cmd("make " .. (vim.g.last_make_command or ""))
-end)
+-- map("n", "<leader>ma", function()
+-- 	if not vim.g.last_make_command or vim.g.last_make_command == "" then
+-- 		local args = vim.fn.input({
+-- 			prompt = "Compile> " .. vim.o.makeprg .. " ",
+-- 			default = (vim.g.last_make_command or ""),
+-- 		})
+-- 		vim.g.last_make_command = args
+-- 	end
+-- 	vim.cmd("make " .. (vim.g.last_make_command or ""))
+-- end)
 
 vim.keymap.set("n", "<C-n>", "<cmd>cnext<cr>")
 vim.keymap.set("n", "<C-y>", "<cmd>cprev<cr>")
@@ -167,7 +166,46 @@ map("n", "<leader>cp", function()
 	Snacks.terminal.open(vim.g.last_compile_command)
 end, { desc = "Open Compilation Buffer (Float)" })
 
+local function async_grep(args)
+	local cmd, num_subs = vim.o.grepprg:gsub("%$%*", args)
+	if num_subs == 0 then
+		cmd = cmd .. " " .. args
+	end
+	local expanded_cmd = vim.fn.expandcmd(cmd)
+	local sys_cmd = vim.iter(vim.split(expanded_cmd, " ", { trimempty = true }))
+		:filter(function(item)
+			return item:len() ~= 0
+		end)
+		:totable()
 
+  vim.fn.setqflist({})
 
--- TODO: Does this work
+	vim.system(sys_cmd, {
+		stdout = vim.schedule_wrap(function(err, data)
+			if err then
+				vim.notify("Error grepping: '" .. vim.inspect(err) .. "'", vim.log.levels.ERROR, { title = "Grep" })
+			end
+			if data ~= nil then
+				vim.fn.setqflist({}, "a", {
+					lines = vim.split(data, platform_specific.lineending, { trimempty = true }),
+					efm = vim.o.grepformat,
+				})
+      end
+			vim.cmd.redraw()
+		end),
+		text = true,
+	})
+
+	vim.cmd.copen()
+end
+
+vim.api.nvim_create_user_command("Grep", function(c)
+	async_grep(c.args)
+end, { nargs = "*", bang = true, complete = "file" })
+
+map("n", "<C-g>", ":Grep ", { desc = "Start grep" })
+map("n", "<leader>sw", "<cmd>Grep <cword><cr>", { desc = "Start grep" })
+map("n", "<leader>sff", ":Grep %<left><left><space>", { desc = "Grep current file" })
+map("n", "<leader>sfw", "<cmd>Grep <cword> % <cr>", { desc = "Grep current file" })
+
 require("config.utils").wezterm()

@@ -11,7 +11,13 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 		}, true, {})
 		vim.fn.getchar()
 		os.exit(1)
-  end
+	end
+end
+
+if vim.fn.has("win32") then
+	_G.platform_specific = { lineending = "\r\n" }
+else
+	_G.platform_specific = { lineending = "\n" }
 end
 
 vim.o.shell = "pwsh"
@@ -51,7 +57,8 @@ opt.tabstop = 2
 opt.softtabstop = 2
 opt.expandtab = true
 
-o.guicursor = [[n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait175-blinkoff150-blinkon175]]
+o.guicursor =
+	[[n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait175-blinkoff150-blinkon175]]
 -- autoindent
 opt.smartindent = true
 opt.shiftwidth = 2
@@ -100,22 +107,27 @@ o.foldmethod = "expr"
 o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 o.foldtext = ""
 o.list = true
-opt.listchars = "trail:∘,nbsp:‼,tab:  ,multispace: "
+o.listchars = table.concat({ "extends:…", "nbsp:␣", "precedes:…", "tab:> " }, ",")
+-- opt.listchars = "trail:∘,nbsp:‼,tab:  ,multispace: "
 o.fillchars = [[eob: ,vert:▕,vertleft:🭿,vertright:▕,verthoriz:🭿,horiz:▁,horizdown:▁,horizup:▔]]
 o.virtualedit = "block"
 o.shortmess = "tacstFOSWCo"
 o.formatoptions = "rqnl1j"
 o.cmdwinheight = 4
+opt.iskeyword:append('-')
+opt.complete:append("kspell")
+o.spelloptions = "camel"
 -- credit: https://github.com/nicknisi/dotfiles/blob/1360edda1bbb39168637d0dff13dd12c2a23d095/config/nvim/init.lua#L73
 -- if ripgrep installed, use that as a grepper
 -- o.grepprg = "rg --vimgrep --color=never --with-filename --line-number --no-heading --smart-case --"
-o.grepprg = [[rg --glob "!.git" --no-heading --with-filename --line-number --vimgrep --follow $*]]
+o.grepprg = [[rg --glob !.git --no-heading --with-filename --line-number --vimgrep --follow $*]]
 o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
 
 vim.g.netrw_banner = 0
 vim.g.netrw_mouse = 2
 
 o.cursorline = false
+o.cursorlineopt = "screenline,number"
 o.winblend = 0
 o.pumblend = 0
 
@@ -130,21 +142,12 @@ vim.api.nvim_create_autocmd("User", {
 	callback = function()
 		require("config.autocommands")
 		require("config.keymaps")
-    if vim.g.neovide or vim.g.goneovim then
+		if vim.g.neovide or vim.g.goneovim then
 			require("config.gui")
 		end
-    require("moody")
-    -- require("minimal_status")
-		-- require("statusline")
+		require("moody")
 	end,
 })
-
--- vim.cmd.colorscheme("chadracula-evondev")
--- vim.cmd.colorscheme("onedark")
--- vim.cmd.colorscheme("pinkcat")
--- vim.cmd.colorscheme("neovim_dark")
--- vim.cmd.colorscheme("onenord")
-vim.cmd.colorscheme("kanagawa")
 
 -- Setup lazy.nvim
 require("lazy").setup({
@@ -171,9 +174,9 @@ require("lazy").setup({
 				"getscriptPlugin",
 				"gzip",
 				"logipat",
-				"matchit",
+				-- "matchit",
 				"man",
-				"matchparen",
+				-- "matchparen",
 				"tar",
 				"tarPlugin",
 				"rrhelper",
@@ -195,3 +198,17 @@ require("lazy").setup({
 		},
 	},
 })
+
+if not vim.g.colors_name or vim.g.colors_name == "" then
+	vim.cmd.colorscheme("minispring")
+	-- vim.cmd.colorscheme("tokyonight")
+	-- vim.cmd.colorscheme("solarized_osaka")
+	-- vim.cmd.colorscheme("chadracula-evondev")
+	-- vim.cmd.colorscheme("chadracula")
+	-- vim.cmd.colorscheme("chad-gruvbox")
+	-- vim.cmd.colorscheme("gruvbox")
+	-- vim.cmd.colorscheme("pinkcat")
+	-- vim.cmd.colorscheme("neovim_dark")
+	-- vim.cmd.colorscheme("onenord")
+	-- vim.cmd.colorscheme("kanagawa")
+end

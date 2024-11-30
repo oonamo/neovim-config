@@ -47,7 +47,7 @@ return {
 					alignment_indicator = "┅",
 				},
 				latex = {
-					enabled = true,
+					enabled = false,
           top_pad = 1,
           bottom_pad = 1,
 					-- converter = {

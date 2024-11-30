@@ -1,6 +1,7 @@
 ---@param client vim.lsp.Client
 ---@param buffer number
 local function on_attach(client, buffer)
+  vim.bo[buffer].omnifunc = "v:lua.MiniCompletion.completefunc_lsp"
 	vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, {
 		desc = "Preview code actions",
 		buffer = buffer,
@@ -51,7 +52,7 @@ local function on_attach(client, buffer)
 	end
 	vim.keymap.set("n", "<leader>qf", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })
 	vim.keymap.set("n", "<leader>ld", vim.diagnostic.setloclist, { desc = "Quickfix [L]ist [D]iagnostics" })
-	vim.keymap.set("n", "<C-]>", "<C-w><C-]>")
+	-- vim.keymap.set("n", "<C-]>", "<C-w><C-]>")
 
 	vim.keymap.set("n", "<leader>ss", function()
 		require("config.lsp").request(true)
@@ -63,6 +64,7 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
+		dependencies = "netmute/ctags-lsp.nvim",
 		opts = {
 			lua_ls = {
 				on_attach = function(client, bufnr)
@@ -130,28 +132,56 @@ return {
 			markdown_oxide = {
 				on_attach = on_attach,
 			},
+			-- ctags_lsp = {
+			-- 	on_attach = on_attach,
+			-- 	-- FROM: https://github.com/netmute/ctags-lsp.nvim/blob/main/lua/lspconfig/configs/ctags_lsplua
+			-- 	cmd = { "C:/Users/onam7/projects/go/ctags-lsp/ctags-lsp.exe" },
+			-- 	filetypes = { "c" },
+			-- },
+			-- custom = {
+			-- 	ctags_lsp = {
+			-- 		default_config = {
+			-- 			cmd = { "C:/Users/onam7/projects/go/ctags-lsp/ctags-lsp.exe" },
+			-- 			filetypes = nil,
+			-- 			-- root_dir = "find_git_ancestor",
+			-- 			root_dir = { ".git" },
+			-- 		},
+			-- 		docs = {
+			-- 			description = [[
+			-- https://github.com/netmute/ctags-lsp
+			--
+			-- CTags Language Server
+			-- 		]],
+			-- 		},
+			-- 	},
+			-- },
 		},
 		config = function(_, opts)
 			local lspconfig = require("lspconfig")
-			local capabilities = (function()
-				return {
-					workspace = {},
-				}
-			end)()
-			capabilities.workspace = {
-				didChangeWatchedFiles = {
-					dynamicRegistration = true,
-				},
-			}
+			local utils = require("lspconfig.util")
+			local has_blink, blink = pcall(require, "blink.cmp")
+			local capabilities = vim.tbl_deep_extend(
+				"force",
+				{},
+				vim.lsp.protocol.make_client_capabilities(),
+				has_blink and blink.get_lsp_capabilities() or {}
+				-- require("blink.cmp").get_lsp_capabilities() or {}
+			)
+
 			for server, settings in pairs(opts) do
-				-- local server_opts = vim.tbl_deep_extend("force", {
-				-- 	capabilities =
-				-- }, settings or {})
-				settings.capabilities = require("blink.cmp").get_lsp_capabilities(settings.capabilities)
+				settings.capabilities =
+					vim.tbl_deep_extend("force", vim.deepcopy(capabilities), settings.capabilities or {})
+				-- settings.capabilities = require("blink.cmp").get_lsp_capabilities(settings.capabilities)
 				if settings.root_dir then
-					settings.root_dir = lspconfig.util.root_pattern(unpack(settings.root_dir))
+					if type(settings.root_dir) == "string" and utils[settings.root_dir] then
+						settings.root_dir = utils[settings.root_dir]
+					else
+						settings.root_dir = lspconfig.util.root_pattern(unpack(settings.root_dir))
+					end
 				end
-				lspconfig[server].setup(settings)
+				if server ~= "custom" then
+					lspconfig[server].setup(settings)
+				end
 			end
 			local sign_define = vim.fn.sign_define
 			sign_define("DiagnosticSignError", { text = "󰅙 ", texthl = "DiagnosticSignError" })

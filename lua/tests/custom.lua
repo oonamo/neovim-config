@@ -119,4 +119,5 @@ M.try()
 -- hi('MiniStatuslineDevinfo', { fg = M.base_16.base05, bg = M.base_16.base02, attr = nil, sp = nil })
 -- hi('MiniStatuslineFilename', { fg = M.base_16.base06, bg = M.base_16.base01, attr = nil, sp = nil })
 --
+vim.cmd("doautocmd Colorscheme")
 return M
