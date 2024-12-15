@@ -3,7 +3,7 @@ local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
 	local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
-	if vim.v.shell_error ~= 0 then
+	if vim.v.shell_error ~= -1 then
 		vim.api.nvim_echo({
 			{ "Failed to clone lazy.nvim:\n", "ErrorMsg" },
 			{ out, "WarningMsg" },
@@ -39,10 +39,10 @@ vim.o.shada = "'100,<50,s10,:1000,/100,@100,h"
 
 o.background = "dark"
 
--- Allows for easy telling if pane is a nvim proccess
 o.title = true
 o.titlestring = "nvim"
--- opt.completeopt = "menu,menuone,noselect"
+o.completeopt = "menu,menuone,noselect,popup"
+o.completeslash = "slash"
 o.cmdheight = 1
 
 vim.g.bigfile_size = 1024 * 1024 * 1.5 -- 1.5 MB
@@ -57,8 +57,6 @@ opt.tabstop = 2
 opt.softtabstop = 2
 opt.expandtab = true
 
-o.guicursor =
-	[[n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait175-blinkoff150-blinkon175]]
 -- autoindent
 opt.smartindent = true
 opt.shiftwidth = 2
@@ -92,7 +90,7 @@ o.emoji = true
 -- Editor
 o.showmode = false
 opt.scrolloff = 8
--- o.updatetime = 300
+o.updatetime = 1000
 o.timeoutlen = 500
 o.ttimeoutlen = 10
 opt.swapfile = false
@@ -106,15 +104,14 @@ opt.foldlevel = 99
 o.foldmethod = "expr"
 o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 o.foldtext = ""
-o.list = true
-o.listchars = table.concat({ "extends:…", "nbsp:␣", "precedes:…", "tab:> " }, ",")
--- opt.listchars = "trail:∘,nbsp:‼,tab:  ,multispace: "
+o.list = false
+-- o.listchars = table.concat({ "extends:…", "nbsp:␣", "precedes:…", "tab:> " }, ",")
 o.fillchars = [[eob: ,vert:▕,vertleft:🭿,vertright:▕,verthoriz:🭿,horiz:▁,horizdown:▁,horizup:▔]]
 o.virtualedit = "block"
 o.shortmess = "tacstFOSWCo"
 o.formatoptions = "rqnl1j"
 o.cmdwinheight = 4
-opt.iskeyword:append('-')
+opt.iskeyword:append("-")
 opt.complete:append("kspell")
 o.spelloptions = "camel"
 -- credit: https://github.com/nicknisi/dotfiles/blob/1360edda1bbb39168637d0dff13dd12c2a23d095/config/nvim/init.lua#L73
@@ -126,10 +123,11 @@ o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
 vim.g.netrw_banner = 0
 vim.g.netrw_mouse = 2
 
-o.cursorline = false
+o.cursorline = true
 o.cursorlineopt = "screenline,number"
 o.winblend = 0
 o.pumblend = 0
+o.jumpoptions = "stack,clean"
 
 vim.g.loaded_node_provider = 0
 vim.g.loaded_python3_provider = 0
@@ -141,11 +139,14 @@ vim.api.nvim_create_autocmd("User", {
 	pattern = "VeryLazy",
 	callback = function()
 		require("config.autocommands")
+    require("config.statuscolumn")
 		require("config.keymaps")
+		require("moody")
+    vim.o.statuscolumn = "%!v:lua.require('config.statuscolumn').statuscolumn()"
+		_G.Compile_mode = require("tests.compile_mode")
 		if vim.g.neovide or vim.g.goneovim then
 			require("config.gui")
 		end
-		require("moody")
 	end,
 })
 
@@ -153,7 +154,7 @@ vim.api.nvim_create_autocmd("User", {
 require("lazy").setup({
 	-- Configure any other settings here. See the documentation for more details.
 	-- colorscheme that will be used when installing plugins.
-	install = { colorscheme = { "zenner" } },
+	install = { colorscheme = { "catppuccin" } },
 	spec = { import = "plugins" },
 	-- automatically check for plugin updates
 	checker = { notify = false },
@@ -200,7 +201,19 @@ require("lazy").setup({
 })
 
 if not vim.g.colors_name or vim.g.colors_name == "" then
-	vim.cmd.colorscheme("minispring")
+	-- vim.cmd.colorscheme("ef-arbutus")
+	-- vim.cmd.colorscheme("ef-winter")
+	-- vim.cmd.colorscheme("ef-dream")
+	if vim.o.bg == "light" then
+		vim.cmd.colorscheme("ef-spring")
+	else
+		vim.cmd.colorscheme("catppuccin")
+		-- vim.cmd.colorscheme("ef-dream")
+	end
+	-- vim.cmd.colorscheme("metal")
+	-- vim.cmd.colorscheme("oxocarbon")
+	-- vim.cmd.colorscheme("tokyonight-moon")
+	-- vim.cmd.colorscheme("minispring")
 	-- vim.cmd.colorscheme("tokyonight")
 	-- vim.cmd.colorscheme("solarized_osaka")
 	-- vim.cmd.colorscheme("chadracula-evondev")

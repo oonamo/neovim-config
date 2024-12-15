@@ -37,10 +37,12 @@ return {
 					-- border = "thick",
 				},
 				heading = {
-          border = false,
+					border = false,
 					border_virtual = true,
-          border_prefix = true,
-          sign = false,
+					border_prefix = true,
+					sign = false,
+					icons = { " " },
+          position = "inline"
 				},
 				pipe_table = {
 					preset = "round",
@@ -48,16 +50,16 @@ return {
 				},
 				latex = {
 					enabled = false,
-          top_pad = 1,
-          bottom_pad = 1,
+					top_pad = 1,
+					bottom_pad = 1,
 					-- converter = {
 					-- 	"latex2text",
 					-- 	"--code",
 					-- },
 				},
-        signs = {
-          enabled = false,
-        },
+				signs = {
+					enabled = false,
+				},
 			}
 		end,
 	},
@@ -68,7 +70,6 @@ return {
 			"BufNewFile C:/Users/onam7/Desktop/DB/DB/**.md",
 		},
 		dependencies = {
-      { "mini.pick", dev = true },
 			"MeanderingProgrammer/render-markdown.nvim",
 			{
 				"jmbuhr/otter.nvim",
@@ -94,7 +95,7 @@ return {
 							-- signcolumn = "no", -- disable signcolumn
 							number = false, -- disable number column
 							relativenumber = false, -- disable relative numbers
-              laststatus = 0,
+							laststatus = 0,
 							-- cursorline = false, -- disable cursorline
 							-- cursorcolumn = false, -- disable cursor column
 							-- foldcolumn = "0", -- disable fold column

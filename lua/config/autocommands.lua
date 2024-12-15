@@ -28,21 +28,3 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 	desc = "Close with 'q'",
 })
-
--- vim.api.nvim_create_autocmd("CmdwinEnter", {
---   group = group,
--- 	callback = function()
--- 		vim.cmd("startinsert")
--- 	end,
--- })
-
--- vim.api.nvim_create_autocmd("TermOpen", {
---   group = group,
--- 	callback = function(event)
--- 		if event.buf then
--- 			vim.opt_local.number = false
--- 			vim.opt_local.relativenumber = false
--- 			vim.opt_local.scl = "no"
--- 		end
--- 	end,
--- })

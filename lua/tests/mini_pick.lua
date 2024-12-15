@@ -4,6 +4,10 @@ local noterpath = "C:/Users/onam7/projects/go/movefile/move.exe"
 
 local M = {}
 
+if not MiniPick then
+  return
+end
+
 MiniPick.registry.goodnotes = function()
 	require("mini.pick").builtin.cli({
 		command = {

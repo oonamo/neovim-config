@@ -75,82 +75,58 @@ return {
 						node_decremental = "<BS>",
 					},
 				},
-        textobjects = {
-          enabled = false,
-        }
+				textobjects = {
+					enabled = false,
+				},
 			})
 		end,
-	},
-	{
-		"saghen/blink.cmp",
-		cond = false,
-		event = "InsertEnter",
-		-- lazy = false, -- lazy loading handled internally
-		-- optional: provides snippets for the snippet source
-		dependencies = "rafamadriz/friendly-snippets",
-
-		-- use a release tag to download pre-built binaries
-		version = "v0.*",
-		-- OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
-		-- build = 'cargo build --release',
-		-- If you use nix, you can build from source using latest nightly rust with:
-		-- build = 'nix run .#build-plugin',
-
-		---@module 'blink.cmp'
-		---@type blink.cmp.Config
-		opts = {
-			-- 'default' for mappings similar to built-in completion
-			-- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)
-			-- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
-			-- see the "default configuration" section below for full documentation on how to define
-			-- your own keymap.
-			keymap = {
-				-- preset = "default",
-				-- "default" keymap
-				["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
-				-- ['<C-e>'] = { 'hide' },
-				["<C-y>"] = { "select_and_accept" },
-
-				["<C-p>"] = { "select_prev", "fallback" },
-				["<C-n>"] = { "select_next", "fallback" },
-
-				["<C-b>"] = { "scroll_documentation_up", "fallback" },
-				["<C-f>"] = { "scroll_documentation_down", "fallback" },
-
-				["<Tab>"] = { "snippet_forward", "fallback" },
-				["<S-Tab>"] = { "snippet_backward", "fallback" },
-			},
-
-			highlight = {
-				-- sets the fallback highlight groups to nvim-cmp's highlight groups
-				-- useful for when your theme doesn't support blink.cmp
-				-- will be removed in a future release, assuming themes add support
-				use_nvim_cmp_as_default = false,
-			},
-			-- set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
-			-- adjusts spacing to ensure icons are aligned
-			nerd_font_variant = "mono",
-
-			-- experimental auto-brackets support
-			-- accept = { auto_brackets = { enabled = true } }
-
-			-- experimental signature help support
-			trigger = { signature_help = { enabled = true } },
-
-			windows = {
-				autocomplete = {
-					-- winhighlight = "Normal:CmpPmenu,CursorLine:CmpSel,Search:None,FloatBorder:CmpBorder",
-					-- border = "single",
-					-- draw = "reversed",
-				},
-			},
-		},
 	},
 	{
 		"folke/snacks.nvim",
 		priority = 1000,
 		lazy = false,
 		opts = {
+			input = {},
+			dim = {},
+			zen = {
+				win = {
+					style = {
+						-- blend = 100,
+						backdrop = {
+							transparent = false,
+							blend = 100,
+						},
+					},
+				},
+			},
+			dashboard = {
+				sections = {
+					{ section = "header" },
+					{
+						pane = 2,
+						icon = " ",
+						title = "Recent Files",
+						section = "recent_files",
+						indent = 2,
+						padding = 1,
+					},
+					{
+						pane = 2,
+						icon = " ",
+						title = "Git Status",
+						section = "terminal",
+						enabled = function()
+							return Snacks.git.get_root() ~= nil
+						end,
+						cmd = "git status --short --branch --renames",
+						height = 5,
+						padding = 1,
+						ttl = 5 * 60,
+						indent = 3,
+					},
+					{ section = "startup" },
+				},
+			},
 			bigfile = {
 				enabled = true,
 				setup = function(ctx)
@@ -171,9 +147,14 @@ return {
 			notifier = {
 				enabled = true,
 				timeout = 3000,
-				style = "minimal",
-				top_down = false,
-				margin = { top = 0, right = 1, bottom = 1 },
+				-- style = "minimal",
+				-- top_down = false,
+				-- margin = { top = 0, right = 1, bottom = 1 },
+				history = {
+					wo = {
+						wrap = true,
+					},
+				},
 			},
 			terminal = {
 				win = {
@@ -186,13 +167,13 @@ return {
 				},
 			},
 			quickfile = { enabled = true },
-			statuscolumn = {
-				enabled = true,
-				git = {
-					-- patterns to match Git signs
-					patterns = { "MiniDiffSign" },
-				},
-			},
+			-- statuscolumn = {
+			-- 	enabled = true,
+			-- 	git = {
+			-- 		-- patterns to match Git signs
+			-- 		patterns = { "MiniDiffSign" },
+			-- 	},
+			-- },
 			styles = {
 				notification = {
 					wo = { wrap = true }, -- Wrap notifications
@@ -201,11 +182,40 @@ return {
 		},
 		keys = {
 			{
+				"<leader>uz",
+				function()
+					Snacks.zen()
+				end,
+			},
+			{
+				"<C-x>1",
+				function()
+					Snacks.zen.zoom()
+				end,
+			},
+			{
+				"<leader>uh",
+				function()
+					Snacks.notifier.show_history()
+				end,
+				desc = "Show notification history",
+			},
+			{
 				"<leader>un",
 				function()
 					Snacks.notifier.hide()
 				end,
 				desc = "Dismiss All Notifications",
+			},
+			{
+				"<leader>ud",
+				function()
+					if Snacks.dim.enabled then
+						Snacks.dim.disable()
+					else
+						Snacks.dim.enable()
+					end
+				end,
 			},
 			{
 				"<leader>bd",
@@ -289,7 +299,6 @@ return {
 	},
 	{
 		"stevearc/quicker.nvim",
-    cond = false,
 		event = "FileType qf",
 		opts = {
 			keys = {
@@ -335,57 +344,138 @@ return {
 		},
 	},
 	{
-		"HiPhish/rainbow-delimiters.nvim",
-		event = { "BufWritePre", "BufReadPost", "BufNewFile", "VeryLazy" },
-		config = function(_, opts)
-			require("rainbow-delimiters.setup").setup(opts)
-		end,
+		"mikavilpas/yazi.nvim",
+		keys = {
+			{
+				"-",
+				"<cmd>Yazi<cr>",
+				desc = "Open yazi at the current file",
+			},
+			{
+				"<leader>e",
+				"<cmd>Yazi cwd<cr>",
+				desc = "Open the file manager in nvim's working directory",
+			},
+		},
+		opts = {
+			integrations = {
+				--- What should be done when the user wants to grep in a directory
+				grep_in_directory = function(directory)
+					require("mini.pick").registry.grep_live({
+						globs = { directory },
+					})
+					-- require("mini.pick").registry.grep_live(nil, {
+					-- 	source = {
+					-- 		cwd = directory,
+					-- 	},
+					-- })
+					-- the default implementation uses telescope if available, otherwise nothing
+				end,
+				grep_in_selected_files = function(selected_files)
+					-- similar to grep_in_directory, but for selected files
+				end,
+				-- --- Similarly, search and replace in the files in the directory
+				-- replace_in_directory = function(directory)
+				-- 	-- default: grug-far.nvim
+				-- end,
+				-- replace_in_selected_files = function(selected_files)
+				-- 	-- default: grug-far.nvim
+				-- end,
+			},
+		},
 	},
 	{
-		"folke/flash.nvim",
-		event = "VeryLazy",
+		"MagicDuck/grug-far.nvim",
 		opts = {},
 		keys = {
 			{
-				"<C-s>",
-				mode = { "n", "x", "o" },
+				"<leader>rw",
 				function()
-					require("flash").jump()
+					require("grug-far").open({ prefills = { search = vim.fn.expand("<cword>") } })
 				end,
-				desc = "Flash",
+				desc = "Replace <cword>",
 			},
 			{
-				"S",
-				mode = { "n", "x", "o" },
+				"<leader>rf",
 				function()
-					require("flash").treesitter()
+					require("grug-far").open({ prefills = { paths = vim.fn.expand("%") } })
 				end,
-				desc = "Flash Treesitter",
-			},
-			{
-				"r",
-				mode = "o",
-				function()
-					require("flash").remote()
-				end,
-				desc = "Remote Flash",
-			},
-			{
-				"R",
-				mode = { "o", "x" },
-				function()
-					require("flash").treesitter_search()
-				end,
-				desc = "Treesitter Search",
-			},
-			{
-				"<c-s>",
-				mode = { "c" },
-				function()
-					require("flash").toggle()
-				end,
-				desc = "Toggle Flash Search",
+				desc = "Replace current file",
 			},
 		},
+	},
+	{
+		"folke/trouble.nvim",
+		cmd = { "Trouble" },
+		opts = {
+			modes = {
+				lsp = {
+					win = { position = "right" },
+				},
+			},
+		},
+		keys = {
+			{ "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
+			{
+				"<leader>xX",
+				"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+				desc = "Buffer Diagnostics (Trouble)",
+			},
+			{ "<leader>cs", "<cmd>Trouble symbols toggle<cr>", desc = "Symbols (Trouble)" },
+			{ "<leader>cS", "<cmd>Trouble lsp toggle<cr>", desc = "LSP references/definitions/... (Trouble)" },
+			{ "<leader>xL", "<cmd>Trouble loclist toggle<cr>", desc = "Location List (Trouble)" },
+			{ "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
+			{
+				"[q",
+				function()
+					if require("trouble").is_open() then
+						require("trouble").prev({ skip_groups = true, jump = true })
+					else
+						local ok, err = pcall(vim.cmd.cprev)
+						if not ok then
+							vim.notify(err, vim.log.levels.ERROR)
+						end
+					end
+				end,
+				desc = "Previous Trouble/Quickfix Item",
+			},
+			{
+				"]q",
+				function()
+					if require("trouble").is_open() then
+						require("trouble").next({ skip_groups = true, jump = true })
+					else
+						local ok, err = pcall(vim.cmd.cnext)
+						if not ok then
+							vim.notify(err, vim.log.levels.ERROR)
+						end
+					end
+				end,
+				desc = "Next Trouble/Quickfix Item",
+			},
+		},
+	},
+	{
+		"ibhagwan/fzf-lua",
+		opts = {
+			files = {
+				formatter = "path.filename_first",
+				git_icons = false,
+				prompt = "Files:",
+				no_header = true,
+				cwd_header = false,
+				cwd_prompt = false,
+			},
+			winopts = {
+				border = "none",
+				split = "botright new",
+			},
+			keymap = {
+				fzf = {
+					["ctrl-q"] = "select-all+accept",
+				},
+			},
+		},
+		cmd = "FzfLua",
 	},
 }

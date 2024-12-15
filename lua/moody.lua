@@ -1,6 +1,8 @@
 local M = {}
 M.hl = {}
 
+local bg = "Statusline"
+
 local MAX_DEPTH = 1000
 
 local non_programming_modes = {
@@ -18,6 +20,7 @@ local function group_number(num, sep)
 		return tmp:reverse():gsub("(%d%d%d)", "%1" .. sep):reverse():gsub("^,", "")
 	end
 end
+
 ---@param hl string
 ---@param v table
 ---@return string
@@ -72,7 +75,7 @@ end
 ---@return string
 local function stl_format(hl, value, hl_keys, reset)
 	local mod_hl = get_hl(hl, hl_keys)
-	return string.format("%%#%s#%s%s", mod_hl, value, reset and "%#Statusline#" or "")
+	return string.format("%%#%s#%s%s", mod_hl, value, reset and "%#" .. bg .. "#" or "")
 end
 
 local function trunc(str, max_val, trunc_chars)
@@ -105,7 +108,7 @@ M.separators = {
 local function build_seperators()
 	M.left = stl_format("left_sep", M.separators.left, {
 		fg = {
-			hi = "Statusline",
+			hi = bg,
 			key = "bg",
 		},
 		bg = "Normal",
@@ -113,7 +116,7 @@ local function build_seperators()
 
 	M.right = stl_format("right_sep", M.separators.right, {
 		fg = {
-			hi = "Statusline",
+			hi = bg,
 			key = "bg",
 		},
 		bg = "Normal",
@@ -220,11 +223,10 @@ local function scrollbar(data)
 
 	local advbar = ""
 	for index = 1, color do
-		advbar = advbar
-			.. stl_format("sbar_part_" .. index, " ", {
-				fg = colors[index],
-				bg = "Statusline",
-			}, true)
+		advbar = advbar .. stl_format("sbar_part_" .. index, " ", {
+			fg = colors[index],
+			bg = bg,
+		}, true)
 	end
 
 	-- Make the scrollbar constant length
@@ -391,12 +393,12 @@ local function non_prog_mode(data)
 		end
 		return stl_format("fileinfo", "≡", {
 			fg = "DiagnosticInfo",
-			bg = "Statusline",
+			bg = bg,
 		}, true) .. " " .. lines .. " lines  " .. raw_word_count .. " words "
 	else
 		return stl_format("fileinfo", "‹›", {
 			fg = "DiagnosticInfo",
-			bg = "Statusline",
+			bg = bg,
 		}, true) .. " " .. vline_count() .. " lines  ",
 			group_number(wc_table.visual_words, ",") .. " words  ",
 			group_number(wc_table.visual_chars, ",") .. " chars"
@@ -425,9 +427,9 @@ local function diagnostics(data)
 end
 
 local function pos_info(data)
-	return stl_format("line", "L%l", {
-		fg = "Statusline",
-		bg = "Statusline",
+	return stl_format("line", "L%l,%c", {
+		fg = bg,
+		bg = bg,
 		bold = true,
 	})
 end
@@ -470,7 +472,7 @@ vim.api.nvim_create_autocmd("Colorscheme", {
 	group = vim.api.nvim_create_augroup("Statusline", { clear = true }),
 	callback = function()
 		M.hl = {}
-    build_seperators()
+		build_seperators()
 	end,
 })
 

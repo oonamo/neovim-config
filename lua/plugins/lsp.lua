@@ -1,7 +1,7 @@
 ---@param client vim.lsp.Client
 ---@param buffer number
 local function on_attach(client, buffer)
-  vim.bo[buffer].omnifunc = "v:lua.MiniCompletion.completefunc_lsp"
+	-- vim.bo[buffer].omnifunc = "v:lua.MiniCompletion.completefunc_lsp"
 	vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, {
 		desc = "Preview code actions",
 		buffer = buffer,
@@ -53,10 +53,17 @@ local function on_attach(client, buffer)
 	vim.keymap.set("n", "<leader>qf", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })
 	vim.keymap.set("n", "<leader>ld", vim.diagnostic.setloclist, { desc = "Quickfix [L]ist [D]iagnostics" })
 	-- vim.keymap.set("n", "<C-]>", "<C-w><C-]>")
+	--
+	vim.keymap.set({ "i", "n" }, "<C-s>", vim.lsp.buf.signature_help, { desc = "Signature" })
 
 	vim.keymap.set("n", "<leader>ss", function()
 		require("config.lsp").request(true)
 	end)
+
+	vim.keymap.set("n", "<leader>se", function()
+		require("config.lsp").echo_area_sig()
+	end)
+
 end
 local defaults = { on_attach = on_attach }
 
@@ -64,7 +71,6 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		event = { "BufWritePre", "BufReadPost", "BufNewFile" },
-		dependencies = "netmute/ctags-lsp.nvim",
 		opts = {
 			lua_ls = {
 				on_attach = function(client, bufnr)
@@ -169,9 +175,9 @@ return {
 			)
 
 			for server, settings in pairs(opts) do
-				settings.capabilities =
-					vim.tbl_deep_extend("force", vim.deepcopy(capabilities), settings.capabilities or {})
-				-- settings.capabilities = require("blink.cmp").get_lsp_capabilities(settings.capabilities)
+				-- settings.capabilities =
+				-- 	vim.tbl_deep_extend("force", vim.deepcopy(capabilities), settings.capabilities or {})
+				settings.capabilities = require("blink.cmp").get_lsp_capabilities(settings.capabilities)
 				if settings.root_dir then
 					if type(settings.root_dir) == "string" and utils[settings.root_dir] then
 						settings.root_dir = utils[settings.root_dir]
@@ -188,19 +194,20 @@ return {
 			sign_define("DiagnosticSignWarn", { text = " ", texthl = "DiagnosticSignWarn" })
 			sign_define("DiagnosticSignHint", { text = " ", texthl = "DiagnosticSignHint" })
 			sign_define("DiagnosticSignInfo", { text = " ", texthl = "DiagnosticSignInfo" })
-			local diagnostics_symbols = {
-				[vim.diagnostic.severity.ERROR] = "x",
-				[vim.diagnostic.severity.WARN] = "!",
-				[vim.diagnostic.severity.HINT] = "?",
-				[vim.diagnostic.severity.INFO] = "i",
-			}
+			-- local diagnostics_symbols = {
+			-- 	[vim.diagnostic.severity.ERROR] = "x",
+			-- 	[vim.diagnostic.severity.WARN] = "!",
+			-- 	[vim.diagnostic.severity.HINT] = "?",
+			-- 	[vim.diagnostic.severity.INFO] = "i",
+			-- }
 			vim.diagnostic.config({
 				underline = true,
 				severity_sort = true,
+				-- virtual_text = false, -- For tiny-inline-diagnostic
 				virtual_text = {
-					prefix = function(diag)
-						return diagnostics_symbols[diag.severity]
-					end,
+					-- prefix = function(diag)
+					-- 	return diagnostics_symbols[diag.severity]
+					-- end,
 				},
 				float = {
 					header = " ",

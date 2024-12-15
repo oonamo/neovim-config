@@ -112,7 +112,8 @@ vim.keymap.set("n", "<C-x><C-x>", pick, { desc = "pick font?" })
 -- })
 
 -- o.guifont = "GoMono Nerd Font:h15"
-o.guifont = "SpaceMono Nerd Font:h16"
+-- o.guifont = "SpaceMono Nerd Font:h16"
+o.guifont = "Iosevka:h20"
 vim.keymap.set("n", "<leader>nt", function()
 	if g.neovide_transparency ~= 1.0 then
 		g.neovide_transparency = 1.0

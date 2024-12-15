@@ -98,7 +98,8 @@ map({ "c", "i" }, "<C-s>", "<C-left>")
 map("n", "<localleader>n", "<cmd>tabnext<cr>", { desc = "Next tab" })
 map("n", "<localleader>b", "<cmd>tabprev<cr>", { desc = "Previous tab" })
 
-map("n", "gb", "<cmd>ls<cr>:b ", { desc = "select buffer" })
+-- Use snipe.nvim
+-- map("n", "gb", "<cmd>ls<cr>:b ", { desc = "select buffer" })
 
 map("n", "<leader><tab>l", "<cmd>tablast<cr>", { desc = "Last Tab" })
 map("n", "<leader><tab>o", "<cmd>tabonly<cr>", { desc = "Close Other Tabs" })
@@ -178,19 +179,20 @@ local function async_grep(args)
 		end)
 		:totable()
 
-  vim.fn.setqflist({})
+	vim.fn.setqflist({})
 
 	vim.system(sys_cmd, {
 		stdout = vim.schedule_wrap(function(err, data)
 			if err then
 				vim.notify("Error grepping: '" .. vim.inspect(err) .. "'", vim.log.levels.ERROR, { title = "Grep" })
+        return
 			end
 			if data ~= nil then
 				vim.fn.setqflist({}, "a", {
 					lines = vim.split(data, platform_specific.lineending, { trimempty = true }),
 					efm = vim.o.grepformat,
 				})
-      end
+			end
 			vim.cmd.redraw()
 		end),
 		text = true,
@@ -203,9 +205,56 @@ vim.api.nvim_create_user_command("Grep", function(c)
 	async_grep(c.args)
 end, { nargs = "*", bang = true, complete = "file" })
 
+local function async_make(args)
+	local sep = package.config:sub(1, 1)
+	local make_prg = vim.opt.makeprg:get()
+	local expanded_cmd = vim.fn.expandcmd(make_prg)
+
+	for _, arg in ipairs(args.fargs) do
+		if arg == "~" then
+			arg = vim.uv.os_homedir()
+		end
+		expanded_cmd = expanded_cmd .. " " .. arg
+	end
+
+	if sep == "\\" then
+		expanded_cmd = expanded_cmd:gsub("/", "\\")
+	end
+
+	local make_cmd = { "cmd.exe", "/c", expanded_cmd }
+
+	vim.fn.setqflist({})
+
+	local output_handler = vim.schedule_wrap(function(err, data)
+		if data ~= nil then
+			vim.fn.setqflist({}, "a", {
+				lines = vim.split(data, platform_specific.lineending, { trimempty = true }),
+				efm = vim.opt.errorformat:get(),
+			})
+		end
+		vim.cmd.redraw()
+	end)
+
+	vim.print(make_cmd)
+	vim.system(make_cmd, {
+		stdout = output_handler,
+		stderr = output_handler,
+	})
+
+	vim.cmd.copen()
+end
+
+map("n", "<leader>!", ":Shell ", { desc = "Start Make" })
 map("n", "<C-g>", ":Grep ", { desc = "Start grep" })
-map("n", "<leader>sw", "<cmd>Grep <cword><cr>", { desc = "Start grep" })
 map("n", "<leader>sff", ":Grep %<left><left><space>", { desc = "Grep current file" })
 map("n", "<leader>sfw", "<cmd>Grep <cword> % <cr>", { desc = "Grep current file" })
+map("n", "<leader>sw", "<cmd>Grep <cword><cr>", { desc = "Start grep" })
+
+map("n", "<C-p>", function()
+	local pos = vim.api.nvim_win_get_cursor(0)
+	vim.cmd("norm yyp")
+	pos[1] = pos[1] + 1
+	vim.api.nvim_win_set_cursor(0, pos)
+end)
 
 require("config.utils").wezterm()

@@ -24,11 +24,13 @@ function M.preview_windows()
 	local tab = vim.api.nvim_get_current_tabpage()
 	local wins = vim.api.nvim_tabpage_list_wins(tab)
 	local previewwindows = {}
-	previewwindows = vim.iter(wins):filter(function(win)
-		return vim.api.nvim_get_option_value("previewwindow", {
-			win = win,
-		})
-	end):totable()
+	previewwindows = vim.iter(wins)
+		:filter(function(win)
+			return vim.api.nvim_get_option_value("previewwindow", {
+				win = win,
+			})
+		end)
+		:totable()
 	return previewwindows
 end
 
@@ -172,5 +174,74 @@ function M.request(restore_pos)
 	local params = vim.lsp.util.make_position_params()
 	vim.lsp.buf_request(0, "textDocument/hover", params, hover_handler)
 end
+
+function M.request_sig(restore_pos)
+	M.height = vim.api.nvim_get_option_value("previewheight", {})
+	M.width = vim.o.columns
+	M.win = vim.api.nvim_get_current_win()
+	M.restore_pos = restore_pos
+	local params = vim.lsp.util.make_position_params()
+	vim.lsp.buf_request(0, "textDocument/signatureHelp", params, signature_handler)
+end
+
+---@param result lsp.SignatureHelp
+---@param ctx lsp.HandlerContext
+local function echo_handler(_, result, ctx)
+	if vim.api.nvim_get_current_buf() ~= ctx.bufnr then
+		return
+	end
+
+	if result == nil or result.signatures == nil or result.signatures[1] == nil then
+		return
+	end
+
+	local activeSignature = result.activeSignature or 0
+	activeSignature = activeSignature + 1
+	if activeSignature > #result.signatures then
+		-- this is a upstream bug of metals
+		activeSignature = #result.signatures
+	end
+	local actSig = result.signatures[activeSignature]
+	if actSig == nil then
+		return
+	end
+
+	if actSig.activeParameter ~= nil then
+		actSig.activeParameter = actSig.activeParameter ~= 0 and actSig.activeParameter + 1 or 1
+	end
+
+	vim.print(actSig)
+	actSig.label = string.gsub(actSig.label or "", "[\n\r\t]", " ")
+
+	if actSig.label ~= "" then
+		local label = vim.iter(ipairs(actSig.parameters))
+			:map(function(i, parameter)
+				local hl = "Normal"
+				if actSig.activeParameter and i == actSig.activeParameter then
+					hl = "Special"
+				end
+				return { actSig.label:sub(parameter.label[1], parameter.label[2] + 1), hl }
+			end)
+			:totable()
+
+		M.message(label)
+	end
+	return actSig
+end
+
+function M.inlay_hint_handle(_, result, ctx) end
+
+function M.echo_area_sig()
+	local params = vim.lsp.util.make_position_params()
+	vim.lsp.buf_request(0, "textDocument/signatureHelp", params, echo_handler)
+end
+
+function M.inlay_hint_sig()
+	local params = vim.lsp.util.make_position_params()
+	vim.lsp.buf_request(0, "textDocument/inlayHint", params, echo_handler)
+end
+M.echo_area_sig()
+
+function M.setup_popup() end
 
 return M

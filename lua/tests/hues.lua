@@ -5,10 +5,24 @@
 --   accent = "purple",
 -- })
 --
+--
+local function hi(...)
+	vim.api.nvim_set_hl(0, ...)
+end
+
+local function apply_palette(opts)
+	local palette = require("mini.hues").make_palette(opts)
+	require("mini.hues").setup(opts)
+	hi("DiagnosticError", { fg = palette.red, bg = palette.red_bg })
+	hi("DiagnosticHint", { fg = palette.blue, bg = palette.blue_bg })
+	hi("DiagnosticInfo", { fg = palette.green, bg = palette.green_bg })
+	hi("DiagnosticWarn", { fg = palette.yellow, bg = palette.yellow_bg })
+end
 local purple = function()
-	require("mini.hues").setup({
+	apply_palette({
 		background = "#29193d",
 		foreground = "#ba85fa",
+		saturation = "high",
 		accent = "purple",
 	})
 end
@@ -18,7 +32,7 @@ local autummn = function()
 	local bg = is_dark and "#211017" or "#f4dbe4"
 	local fg = is_dark and "#ccc4c7" or "#332c2e"
 
-	require("mini.hues").setup({
+	apply_palette({
 		background = bg,
 		foreground = fg,
 		saturation = is_dark and "medium" or "high",
@@ -72,7 +86,7 @@ local spring = function()
 	local bg = is_dark and "#122722" or "#cfeae1"
 	local fg = is_dark and "#ced7d4" or "#29302e"
 
-	require("mini.hues").setup({
+	apply_palette({
 		background = bg,
 		foreground = fg,
 		saturation = is_dark and "medium" or "high",
@@ -87,7 +101,7 @@ local summer = function()
 	local bg = is_dark and "#352d1d" or "#ece2cd"
 	local fg = is_dark and "#e6e2db" or "#302e29"
 
-	require("mini.hues").setup({
+	apply_palette({
 		background = bg,
 		foreground = fg,
 		saturation = is_dark and "medium" or "high",
@@ -102,7 +116,7 @@ local winter = function()
 	local bg = is_dark and "#101624" or "#cbd5e9"
 	local fg = is_dark and "#c3c7ce" or "#202227"
 
-	require("mini.hues").setup({
+	apply_palette({
 		background = bg,
 		foreground = fg,
 		-- Make it "gloomy"
@@ -117,7 +131,7 @@ local function ef_reverie()
 	local is_dark = vim.o.background == "dark"
 	local bg = is_dark and "#232025" or "#f3eddf"
 	local fg = is_dark and "#efd5c5" or "#4f204f"
-	require("mini.hues").setup({
+	apply_palette({
 		background = bg,
 		foreground = fg,
 		saturation = is_dark and "lowmedium" or "mediumhigh",
@@ -183,6 +197,42 @@ local function gastrodom()
 	--   foreground = "#a1a7c2"
 	-- })
 end
+
+local function ef_hues()
+	local is_dark = vim.o.background == "dark"
+	local bg = is_dark and "#0f0b15" or "#ffead8"
+	local fg = is_dark and "#b8c6d5" or "#393330"
+	apply_palette({
+		background = bg,
+		foreground = fg,
+		saturation = is_dark and "medium" or "high",
+		-- saturation = is_dark and "lowmedium" or "mediumhigh",
+		accent = "purple",
+	})
+end
+
+local function ef_dream()
+	local is_dark = vim.o.background == "dark"
+	local bg = is_dark and "#232025" or "#ffead8"
+	local fg = is_dark and "#efd5c5" or "#393330"
+	local palette = require("mini.hues").make_palette({
+		background = bg,
+		foreground = fg,
+		saturation = is_dark and "medium" or "high",
+		-- saturation = is_dark and "lowmedium" or "mediumhigh",
+		accent = "purple",
+	})
+	palette.accent_bg = "#675072"
+
+	require("mini.hues").apply_palette(palette)
+	hi("DiagnosticError", { fg = palette.red, bg = palette.red_bg })
+	hi("DiagnosticHint", { fg = palette.blue, bg = palette.blue_bg })
+	hi("DiagnosticInfo", { fg = palette.green, bg = palette.green_bg })
+	hi("DiagnosticWarn", { fg = palette.yellow, bg = palette.yellow_bg })
+end
+
+-- ef_hues()
+-- ef_dream()
 -- purple()
 -- ef_reverie()
 -- autummn()
