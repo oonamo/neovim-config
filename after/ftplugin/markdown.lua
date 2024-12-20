@@ -32,13 +32,40 @@ if has_surround then
 	vim.b.minisurround_config = {
 		custom_surroundings = {
 			E = { input = { "%*%*().-()%*%*" }, output = { left = "*", right = "*" } },
+			I = { input = { "~~().-()~~" }, output = { left = "~", right = "~" } },
+			M = {
+				input = { "%[%[().-()%]%]" },
+				output = { left = "[[", right = "]]" },
+			},
 			L = {
-				input = { "%[().-()%]%(.-%)" },
+				input = { "%[%[.*|().-()%]%]" },
 				output = function()
 					local link = mini_surround.user_input("Link: ")
-					return { left = "[", right = "](" .. link .. ")" }
+					return { left = "[[" .. link .. "|", right = "]]" }
 				end,
 			},
 		},
 	}
+end
+
+local has_pairs, pairs = pcall(require, "mini.pairs")
+
+if has_pairs then
+	pairs.map_buf(0, "i", "*", {
+		action = "open",
+		pair = "**",
+		neigh_pattern = "[^\\].",
+		register = { cr = false },
+	})
+	pairs.map_buf(0, "i", "~", {
+		action = "open",
+		pair = "~~",
+		neigh_pattern = "[^\\].",
+		register = { cr = false },
+	})
+	pairs.map_buf(0, "i", "$", {
+		action = "closeopen",
+		pair = "$$",
+		register = { cr = true },
+	})
 end

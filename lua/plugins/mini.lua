@@ -8,6 +8,7 @@ return {
 				require("mini.icons").mock_nvim_web_devicons()
 				return package.loaded["nvim-web-devicons"]
 			end
+      require("mini.animate").setup()
 			vim.ui.select = require("mini.pick").ui_select
 			require("mini.pick").setup({
 				mappings = {
@@ -40,19 +41,6 @@ return {
 			require("mini.splitjoin").setup()
 			require("mini.bracketed").setup()
 			require("mini.align").setup()
-			-- require("mini.files").setup({
-			-- 	go_in_plus = "<cr>",
-			-- 	go_out_plus = "<tab>",
-			-- 	close = "q",
-			-- 	go_in = "L",
-			-- 	go_out = "H",
-			-- 	reset = "<BS>",
-			-- 	reveal_cwd = "@",
-			-- 	show_help = "g?",
-			-- 	synchronize = "=",
-			-- 	trim_left = "<",
-			-- 	trim_right = ">",
-			-- })
 			require("mini.surround").setup({
 				highlight_duration = 500,
 				mappings = {
@@ -105,7 +93,7 @@ return {
 			vim.api.nvim_create_autocmd("Colorscheme", {
 				callback = gen_colors,
 			})
-
+			require("mini.git").setup()
 			require("mini.align").setup()
 			require("mini.jump").setup()
 			require("mini.diff").setup({
@@ -138,7 +126,11 @@ return {
 			})
 
 			local pairs = require("mini.pairs")
-			pairs.setup()
+			pairs.setup({
+				mappings = {
+					['"'] = { action = "closeopen", pair = '""', neigh_pattern = "[^\\].", register = { cr = true } },
+				},
+			})
 			local open = pairs.open
 			pairs.open = function(pair, neigh_pattern)
 				if vim.fn.getcmdline() ~= "" then
@@ -153,6 +145,8 @@ return {
 					return "`\n```" .. vim.api.nvim_replace_termcodes("<up>", true, true, true)
 				end
 				if next ~= "" and next:match([=[[%w%%%'%[%"%.%`%$]]=]) then
+					print("Found next!")
+					print(next)
 					return o
 				end
 				local ok, captures =
@@ -173,4 +167,121 @@ return {
 			end
 		end,
 	},
+	{
+		"mini.clue",
+		virtual = true,
+		event = "VeryLazy",
+		opts = {},
+		config = function(_, opts)
+			local clue = require("mini.clue")
+			require("mini.clue").setup({
+				triggers = {
+					-- Leader triggers
+					{ mode = "n", keys = "<Leader>" },
+					{ mode = "x", keys = "<Leader>" },
+
+					-- Built-in completion
+					{ mode = "i", keys = "<C-x>" },
+
+					-- `g` key
+					{ mode = "n", keys = "g" },
+					{ mode = "x", keys = "g" },
+
+					-- Marks
+					{ mode = "n", keys = "'" },
+					{ mode = "n", keys = "`" },
+					{ mode = "x", keys = "'" },
+					{ mode = "x", keys = "`" },
+
+					-- Registers
+					{ mode = "n", keys = '"' },
+					{ mode = "x", keys = '"' },
+					{ mode = "i", keys = "<C-r>" },
+					{ mode = "c", keys = "<C-r>" },
+
+					-- Window commands
+					{ mode = "n", keys = "<C-w>" },
+
+					-- `z` key
+					{ mode = "n", keys = "z" },
+					{ mode = "x", keys = "z" },
+
+					{ mode = "n", keys = "<C-x>" },
+					{ mode = "x", keys = "<C-x>" },
+				},
+				clues = {
+					clue.gen_clues.builtin_completion(),
+					clue.gen_clues.g(),
+					clue.gen_clues.marks(),
+					clue.gen_clues.registers(),
+					clue.gen_clues.windows(),
+					clue.gen_clues.z(),
+					{ mode = "n", keys = "<Leader>b", desc = "+Buffer" },
+					{ mode = "n", keys = "<Leader>g", desc = "+Git" },
+					{ mode = "n", keys = "<Leader>l", desc = "+LSP" },
+					{ mode = "n", keys = "<Leader>L", desc = "+Lua" },
+					{ mode = "n", keys = "<Leader>o", desc = "+Other" },
+					{ mode = "n", keys = "<Leader>t", desc = "+Terminal" },
+					{ mode = "n", keys = "<Leader>v", desc = "+Visits" },
+
+					{ mode = "x", keys = "<Leader>l", desc = "+LSP" },
+				},
+			})
+		end,
+	},
+	{
+		"mini.statusline",
+		event = "VeryLazy",
+		virtual = true,
+		config = function(_, opts)
+			require("mini.statusline").setup(opts)
+		end,
+	},
+	{
+		"mini.files",
+		virtual = true,
+		opts = {},
+		config = function(_, opts)
+			require("mini.files").setup(opts)
+			local show_dotfiles = false
+
+			local filter_show = function(fs_entry)
+				return true
+			end
+
+			local filter_hide = function(fs_entry)
+				return not vim.startswith(fs_entry.name, ".")
+			end
+
+			local toggle_dotfiles = function()
+				show_dotfiles = not show_dotfiles
+				local new_filter = show_dotfiles and filter_show or filter_hide
+				MiniFiles.refresh({ content = { filter = new_filter } })
+			end
+
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "MiniFilesBufferCreate",
+				callback = function(args)
+					local buf_id = args.data.buf_id
+					-- Tweak left-hand side of mapping to your liking
+					vim.keymap.set("n", "g.", toggle_dotfiles, { buffer = buf_id })
+				end,
+			})
+		end,
+		keys = {
+			{
+				"<leader>e",
+				function()
+					require("mini.files").open()
+				end,
+			},
+			{
+				"-",
+				function()
+					require("mini.files").open(vim.api.nvim_buf_get_name(0))
+				end,
+			},
+		},
+	},
 }
+-- tyep

@@ -1,7 +1,7 @@
 local M = {}
 M.hl = {}
 
-local bg = "Statusline"
+local status_bg = "Statusline"
 
 local MAX_DEPTH = 1000
 
@@ -75,7 +75,7 @@ end
 ---@return string
 local function stl_format(hl, value, hl_keys, reset)
 	local mod_hl = get_hl(hl, hl_keys)
-	return string.format("%%#%s#%s%s", mod_hl, value, reset and "%#" .. bg .. "#" or "")
+	return string.format("%%#%s#%s%s", mod_hl, value, reset and "%#" .. status_bg .. "#" or "")
 end
 
 local function trunc(str, max_val, trunc_chars)
@@ -108,7 +108,7 @@ M.separators = {
 local function build_seperators()
 	M.left = stl_format("left_sep", M.separators.left, {
 		fg = {
-			hi = bg,
+			hi = status_bg,
 			key = "bg",
 		},
 		bg = "Normal",
@@ -116,7 +116,7 @@ local function build_seperators()
 
 	M.right = stl_format("right_sep", M.separators.right, {
 		fg = {
-			hi = bg,
+			hi = status_bg,
 			key = "bg",
 		},
 		bg = "Normal",
@@ -223,10 +223,11 @@ local function scrollbar(data)
 
 	local advbar = ""
 	for index = 1, color do
-		advbar = advbar .. stl_format("sbar_part_" .. index, " ", {
-			fg = colors[index],
-			bg = bg,
-		}, true)
+		advbar = advbar
+			.. stl_format("sbar_part_" .. index, " ", {
+				fg = colors[index],
+				bg = status_bg,
+			}, true)
 	end
 
 	-- Make the scrollbar constant length
@@ -251,14 +252,9 @@ local function vline_count()
 end
 
 ---@param node? TSNode
----@param depth? number
 ---@return TSNode?
-local function get_next_header(node, depth)
+local function get_next_header(node)
 	-- HACK: prevent Infinite recursion in case of a bug
-	if depth and depth > MAX_DEPTH then
-		vim.notify("Infinite recursion reached!")
-		return nil
-	end
 	if not node then
 		return nil
 	end
@@ -266,10 +262,10 @@ local function get_next_header(node, depth)
 		return node
 	end
 	if node:type() == "paragraph" then
-		return get_next_header(node:prev_named_sibling(), depth and depth + 1 or 0)
+		return get_next_header(node:prev_named_sibling())
 	end
 	if node:type() == "section" then
-		return get_next_header(node:child(0), depth and depth + 1 or 0)
+		return get_next_header(node:child(0))
 	end
 	if node:type() == "document" then
 		return nil
@@ -283,7 +279,7 @@ local function get_next_header(node, depth)
 		end
 		return nil
 	end
-	return get_next_header(node:parent(), depth and depth + 1 or 0)
+	return get_next_header(node:parent())
 end
 
 local function header_format(sep, node, data, depth, text_format_fn)
@@ -326,15 +322,19 @@ local function header_format(sep, node, data, depth, text_format_fn)
 	return header_format(sep, header:parent():parent(), data, depth + 1, text_format_fn) .. text
 end
 
-function M.debug_r()
-	local status = header_format("->", vim.treesitter.get_node({}), M.data, 0)
+local header_distribution = {
+	active = 0.8,
+	inactive = 0.2,
+}
 
-	local header = get_next_header(vim.treesitter.get_node({}))
-	print(status)
-	if header then
-		print(header:type())
-	end
-end
+local icons = {
+	"󰉫",
+	"󰉬",
+	"󰉭",
+	"󰉮",
+	"󰉯",
+	"󰉰",
+}
 
 local function heading_outline(data)
 	if vim.bo[data.buf].ft == "" or vim.bo[data.buf].ft ~= "markdown" then
@@ -359,15 +359,36 @@ local function heading_outline(data)
 		4,
 		4,
 	}
-	local prev_header_size
+	local has_high = false
 
+	-- Highest level is the first
 	local text_format_fn = function(text, prefix)
 		local header_level = #prefix
-		return stl_format("header" .. header_level, trunc(text, max_header_size[header_level], "..."), {
+		if not has_high then
+			has_high = true
+			return stl_format("header" .. header_level, text, {
+				fg = "RenderMarkdownHH" .. header_level,
+				bg = "Normal",
+				bold = true,
+			})
+			-- return stl_format("header" .. header_level, #trunc(text, floor(header_distribution.active , "..."), {
+			-- 	fg = "RenderMarkdownH" .. header_level,
+			-- 	-- bg = "RenderMarkdownH" .. header_level .. "Bg",
+			-- 	bg = "Normal",
+			-- 	bold = true,
+			-- })
+		end
+		-- return icons[header_level]
+		return stl_format("header" .. header_level, prefix .. " " .. text, {
 			fg = "RenderMarkdownH" .. header_level,
 			bg = "Normal",
 			bold = true,
 		})
+		-- return stl_format("header" .. header_level, trunc(prefix .. " " .. text, 3, ""), {
+		-- 	fg = "RenderMarkdownH" .. header_level,
+		-- 	bg = "Normal",
+		-- 	bold = true,
+		-- })
 	end
 
 	status = header_format(sep, vim.treesitter.get_node({}), data, 0, text_format_fn)
@@ -393,12 +414,12 @@ local function non_prog_mode(data)
 		end
 		return stl_format("fileinfo", "≡", {
 			fg = "DiagnosticInfo",
-			bg = bg,
+			bg = status_bg,
 		}, true) .. " " .. lines .. " lines  " .. raw_word_count .. " words "
 	else
 		return stl_format("fileinfo", "‹›", {
 			fg = "DiagnosticInfo",
-			bg = bg,
+			bg = status_bg,
 		}, true) .. " " .. vline_count() .. " lines  ",
 			group_number(wc_table.visual_words, ",") .. " words  ",
 			group_number(wc_table.visual_chars, ",") .. " chars"
@@ -428,8 +449,8 @@ end
 
 local function pos_info(data)
 	return stl_format("line", "L%l,%c", {
-		fg = bg,
-		bg = bg,
+		fg = status_bg,
+		bg = status_bg,
 		bold = true,
 	})
 end

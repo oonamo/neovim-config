@@ -149,24 +149,6 @@ map("n", "<localleader>tp", function()
 	vim.cmd.term(vim.o.shell)
 end, { desc = "Open pwsh (split)" })
 
-map("n", "<leader>ca", function()
-	if not vim.g.last_compile_command then
-		vim.g.last_compile_command = vim.fn.input({
-			prompt = "Compile> ",
-			default = "",
-		})
-	end
-	Snacks.terminal.open(vim.g.last_compile_command)
-end, { desc = "Open Compilation Buffer (Float)" })
-
-map("n", "<leader>cp", function()
-	vim.g.last_compile_command = vim.fn.input({
-		prompt = "Compile> ",
-		default = "",
-	})
-	Snacks.terminal.open(vim.g.last_compile_command)
-end, { desc = "Open Compilation Buffer (Float)" })
-
 local function async_grep(args)
 	local cmd, num_subs = vim.o.grepprg:gsub("%$%*", args)
 	if num_subs == 0 then

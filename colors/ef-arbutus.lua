@@ -135,10 +135,9 @@ hi("PmenuSel", { bg = "#f3c4c4" })
 hi("MiniPickMatchCurrent", { bg = "#f3c4c4" })
 hi("MiniPickMatchRanges", { fg = "#007000", bold = true })
 hi("StatusLine", { bg = "#e9a0a0", fg = "#000000" })
+hi("BlinkCmpGhostText", { link = "Comment" })
 
 hi("BlinkCmpLabelMatch", { fg = "#007000" })
-
-
 
 normalize(c)
 

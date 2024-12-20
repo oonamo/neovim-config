@@ -14,19 +14,21 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	end
 end
 
+local function hello() end
+
 if vim.fn.has("win32") then
-	_G.platform_specific = { lineending = "\r\n" }
+  _G.platform_specific = { lineending = "\r\n" }
 else
 	_G.platform_specific = { lineending = "\n" }
 end
 
-vim.o.shell = "pwsh"
-vim.o.shellcmdflag =
-	"-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8; $PSStyle.OutputRendering = [System.Management.Automation.OutputRendering]::PlainText;"
-vim.o.shellredir = "-RedirectStandardOutput %s -NoNewWindow -Wait"
-vim.o.shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode"
-vim.o.shellquote = ""
-vim.o.shellxquote = ""
+-- vim.o.shell = "pwsh"
+-- vim.o.shellcmdflag =
+-- 	"-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8; $PSStyle.OutputRendering = [System.Management.Automation.OutputRendering]::PlainText;"
+-- vim.o.shellredir = "-RedirectStandardOutput %s -NoNewWindow -Wait"
+-- vim.o.shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode"
+-- vim.o.shellquote = ""
+-- vim.o.shellxquote = ""
 
 vim.opt.rtp:prepend(lazypath)
 -- Make sure to setup `mapleader` and `maplocalleader` before
@@ -38,6 +40,7 @@ local o, opt = vim.o, vim.opt
 vim.o.shada = "'100,<50,s10,:1000,/100,@100,h"
 
 o.background = "dark"
+o.guicursor = ""
 
 o.title = true
 o.titlestring = "nvim"
@@ -99,7 +102,7 @@ opt.undofile = true
 opt.wildoptions = "tagfile"
 opt.wildmenu = true
 o.makeprg = "just"
-opt.laststatus = 3 -- Or 3 for global statusline
+opt.laststatus = 2 -- Or 3 for global statusline
 opt.foldlevel = 99
 o.foldmethod = "expr"
 o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
@@ -139,10 +142,10 @@ vim.api.nvim_create_autocmd("User", {
 	pattern = "VeryLazy",
 	callback = function()
 		require("config.autocommands")
-    require("config.statuscolumn")
+		require("config.statuscolumn")
 		require("config.keymaps")
-		require("moody")
-    vim.o.statuscolumn = "%!v:lua.require('config.statuscolumn').statuscolumn()"
+		-- require("moody")
+		vim.o.statuscolumn = "%!v:lua.require('config.statuscolumn').statuscolumn()"
 		_G.Compile_mode = require("tests.compile_mode")
 		if vim.g.neovide or vim.g.goneovim then
 			require("config.gui")
@@ -203,11 +206,11 @@ require("lazy").setup({
 if not vim.g.colors_name or vim.g.colors_name == "" then
 	-- vim.cmd.colorscheme("ef-arbutus")
 	-- vim.cmd.colorscheme("ef-winter")
-	-- vim.cmd.colorscheme("ef-dream")
+	vim.cmd.colorscheme("ef-dream")
 	if vim.o.bg == "light" then
 		vim.cmd.colorscheme("ef-spring")
 	else
-		vim.cmd.colorscheme("catppuccin")
+		-- vim.cmd.colorscheme("catppuccin")
 		-- vim.cmd.colorscheme("ef-dream")
 	end
 	-- vim.cmd.colorscheme("metal")

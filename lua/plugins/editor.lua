@@ -260,13 +260,6 @@ return {
 				desc = "Lazygit Log (cwd)",
 			},
 			{
-				"<leader>cR",
-				function()
-					Snacks.rename()
-				end,
-				desc = "Rename File",
-			},
-			{
 				vim.env.TERM_PROGRAM ~= "WezTerm" and "<c-\\>" or "F9",
 				mode = { "n", "t" },
 				function()
@@ -343,47 +336,47 @@ return {
 			},
 		},
 	},
-	{
-		"mikavilpas/yazi.nvim",
-		keys = {
-			{
-				"-",
-				"<cmd>Yazi<cr>",
-				desc = "Open yazi at the current file",
-			},
-			{
-				"<leader>e",
-				"<cmd>Yazi cwd<cr>",
-				desc = "Open the file manager in nvim's working directory",
-			},
-		},
-		opts = {
-			integrations = {
-				--- What should be done when the user wants to grep in a directory
-				grep_in_directory = function(directory)
-					require("mini.pick").registry.grep_live({
-						globs = { directory },
-					})
-					-- require("mini.pick").registry.grep_live(nil, {
-					-- 	source = {
-					-- 		cwd = directory,
-					-- 	},
-					-- })
-					-- the default implementation uses telescope if available, otherwise nothing
-				end,
-				grep_in_selected_files = function(selected_files)
-					-- similar to grep_in_directory, but for selected files
-				end,
-				-- --- Similarly, search and replace in the files in the directory
-				-- replace_in_directory = function(directory)
-				-- 	-- default: grug-far.nvim
-				-- end,
-				-- replace_in_selected_files = function(selected_files)
-				-- 	-- default: grug-far.nvim
-				-- end,
-			},
-		},
-	},
+	-- {
+	-- 	"mikavilpas/yazi.nvim",
+	-- 	keys = {
+	-- 		{
+	-- 			"-",
+	-- 			"<cmd>Yazi<cr>",
+	-- 			desc = "Open yazi at the current file",
+	-- 		},
+	-- 		{
+	-- 			"<leader>e",
+	-- 			"<cmd>Yazi cwd<cr>",
+	-- 			desc = "Open the file manager in nvim's working directory",
+	-- 		},
+	-- 	},
+	-- 	opts = {
+	-- 		integrations = {
+	-- 			--- What should be done when the user wants to grep in a directory
+	-- 			grep_in_directory = function(directory)
+	-- 				require("mini.pick").registry.grep_live({
+	-- 					globs = { directory },
+	-- 				})
+	-- 				-- require("mini.pick").registry.grep_live(nil, {
+	-- 				-- 	source = {
+	-- 				-- 		cwd = directory,
+	-- 				-- 	},
+	-- 				-- })
+	-- 				-- the default implementation uses telescope if available, otherwise nothing
+	-- 			end,
+	-- 			grep_in_selected_files = function(selected_files)
+	-- 				-- similar to grep_in_directory, but for selected files
+	-- 			end,
+	-- 			-- --- Similarly, search and replace in the files in the directory
+	-- 			-- replace_in_directory = function(directory)
+	-- 			-- 	-- default: grug-far.nvim
+	-- 			-- end,
+	-- 			-- replace_in_selected_files = function(selected_files)
+	-- 			-- 	-- default: grug-far.nvim
+	-- 			-- end,
+	-- 		},
+	-- 	},
+	-- },
 	{
 		"MagicDuck/grug-far.nvim",
 		opts = {},
@@ -405,71 +398,25 @@ return {
 		},
 	},
 	{
-		"folke/trouble.nvim",
-		cmd = { "Trouble" },
-		opts = {
-			modes = {
-				lsp = {
-					win = { position = "right" },
-				},
-			},
-		},
-		keys = {
-			{ "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
-			{
-				"<leader>xX",
-				"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-				desc = "Buffer Diagnostics (Trouble)",
-			},
-			{ "<leader>cs", "<cmd>Trouble symbols toggle<cr>", desc = "Symbols (Trouble)" },
-			{ "<leader>cS", "<cmd>Trouble lsp toggle<cr>", desc = "LSP references/definitions/... (Trouble)" },
-			{ "<leader>xL", "<cmd>Trouble loclist toggle<cr>", desc = "Location List (Trouble)" },
-			{ "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
-			{
-				"[q",
-				function()
-					if require("trouble").is_open() then
-						require("trouble").prev({ skip_groups = true, jump = true })
-					else
-						local ok, err = pcall(vim.cmd.cprev)
-						if not ok then
-							vim.notify(err, vim.log.levels.ERROR)
-						end
-					end
-				end,
-				desc = "Previous Trouble/Quickfix Item",
-			},
-			{
-				"]q",
-				function()
-					if require("trouble").is_open() then
-						require("trouble").next({ skip_groups = true, jump = true })
-					else
-						local ok, err = pcall(vim.cmd.cnext)
-						if not ok then
-							vim.notify(err, vim.log.levels.ERROR)
-						end
-					end
-				end,
-				desc = "Next Trouble/Quickfix Item",
-			},
-		},
-	},
-	{
 		"ibhagwan/fzf-lua",
 		opts = {
 			files = {
-				formatter = "path.filename_first",
 				git_icons = false,
-				prompt = "Files:",
 				no_header = true,
 				cwd_header = false,
 				cwd_prompt = false,
+				file_icons = false,
 			},
-			winopts = {
-				border = "none",
-				split = "botright new",
-			},
+			lsp = { code_actions = { previewer = "codeaction_native" } },
+			tags = { previewer = "bat" },
+			btags = { previewer = "bat" },
+			-- winopts = {
+			-- 	border = "none",
+			-- 	split = "botright new",
+			-- 	preview = {
+			-- 		default = "bat",
+			-- 	},
+			-- },
 			keymap = {
 				fzf = {
 					["ctrl-q"] = "select-all+accept",
@@ -477,5 +424,22 @@ return {
 			},
 		},
 		cmd = "FzfLua",
+		keys = { { "<leader>pl", "<cmd>FzfLua files<cr>" } },
+	},
+	{
+		"nvim-telescope/telescope.nvim",
+		cmd = "Telescope",
+		opts = function(opts)
+			local defaults = require("telescope.themes").get_ivy({
+				path_display = { "filename_first" },
+				layout_config = { height = 0.5 },
+				border = true,
+			})
+			opts.defaults = defaults
+			return opts
+		end,
+		keys = {
+			{ "<leader>pf", "<cmd>Telescope find_files<cr>" },
+		},
 	},
 }

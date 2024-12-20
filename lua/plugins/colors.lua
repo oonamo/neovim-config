@@ -85,7 +85,7 @@ return {
 	{
 		"EdenEast/nightfox.nvim",
 		priority = 1000,
-		lazy = false,
+		-- lazy = false,
 		opts = {
 			options = {
 				terminal_colors = true,
@@ -99,6 +99,7 @@ return {
 			groups = {
 				all = {
 					BlinkCmpGhostText = { link = "Comment" },
+					MiniStatuslineModeInsert = { bg = "palette.pink", fg = "palette.bg0" },
 				},
 			},
 			specs = {

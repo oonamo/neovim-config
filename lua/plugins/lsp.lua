@@ -64,6 +64,8 @@ local function on_attach(client, buffer)
 		require("config.lsp").echo_area_sig()
 	end)
 
+	vim.keymap.set("n", "grn", vim.lsp.buf.rename)
+	vim.keymap.set("n", "grr", vim.lsp.buf.references)
 end
 local defaults = { on_attach = on_attach }
 

@@ -22,13 +22,14 @@ return {
 			-- 	end,
 			-- },
 			{
-				"<localleader>f",
+				"<leader>lf",
 				function()
 					require("conform").format({
 						timeout_ms = 500,
 						lsp_fallback = true,
 					})
 				end,
+				desc = "Format",
 			},
 			{
 				"gf",
