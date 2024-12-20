@@ -6,10 +6,9 @@ local function nmap_leader(suffix, rhs, desc, opts)
 	opts.desc = desc
 	vim.keymap.set("n", "<leader>" .. suffix, rhs, opts)
 end
-
-map("n", "<leader>f", "<cmd>Pick files<cr>", { desc = "Files" })
-map("n", "<leader>,", "<cmd>Pick buffers<cr>", { desc = "Buffers" })
-map("n", "<C-F>", "<cmd>Pick grep_live<cr>", { desc = "Live Grep" })
+nmap_leader("ff", "<cmd>Pick files<cr>", "Files")
+nmap_leader( ",", "<cmd>Pick buffers<cr>", "Buffers")
+map("n", "<C-f>", "<cmd>Pick grep_live<cr>", { desc = "Live Grep" })
 map("n", "<C-x>h", "<cmd>Pick help<cr>", { desc = "Help" })
 map("n", "<leader>\\", "<cmd>Pick buf_lines<cr>", { desc = "Find line" })
 
@@ -188,7 +187,7 @@ nmap_leader('gc', '<Cmd>Git commit<CR>',                          'Commit')
 nmap_leader('gC', '<Cmd>Git commit --amend<CR>',                  'Commit amend')
 nmap_leader('gd', '<Cmd>Git diff<CR>',                            'Diff')
 nmap_leader('gD', '<Cmd>Git diff -- %<CR>',                       'Diff buffer')
--- nmap_leader('gg', '<Cmd>lua Config.open_lazygit()<CR>',           'Git tab')
+nmap_leader('gg', '<Cmd>lua Config.open_lazygit()<CR>',           'Git tab')
 nmap_leader('gl', '<Cmd>' .. git_log_cmd .. '<CR>',               'Log')
 nmap_leader('gL', '<Cmd>' .. git_log_cmd .. ' --follow -- %<CR>', 'Log buffer')
 nmap_leader('gs', '<Cmd>lua MiniGit.show_at_cursor()<CR>',        'Show at cursor')

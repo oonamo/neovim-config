@@ -84,6 +84,7 @@ return {
 	{
 		"folke/snacks.nvim",
 		priority = 1000,
+    cond = false,
 		lazy = false,
 		opts = {
 			input = {},
