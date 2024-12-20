@@ -14,7 +14,8 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	end
 end
 
-local function hello() end
+if vim.fn.exists('syntax_on') ~= 1 then vim.cmd('syntax enable') end
+require("functions")
 
 if vim.fn.has("win32") then
   _G.platform_specific = { lineending = "\r\n" }
