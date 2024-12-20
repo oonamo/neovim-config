@@ -1,5 +1,3 @@
-_G.Config = {}
-
 function Config.open_lazygit()
 	vim.cmd("tabedit")
 	vim.cmd("setlocal nonumber signcolumn=no cmdheight=0")

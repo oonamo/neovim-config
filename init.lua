@@ -1,231 +1,222 @@
--- Bootstrap lazy.nvim
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-	local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
-	if vim.v.shell_error ~= -1 then
-		vim.api.nvim_echo({
-			{ "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-			{ out, "WarningMsg" },
-			{ "\nPress any key to exit..." },
-		}, true, {})
-		vim.fn.getchar()
-		os.exit(1)
-	end
+-- Clone 'mini.nvim' manually in a way that it gets managed by 'mini.deps'
+local path_package = vim.fn.stdpath('data') .. '/site/'
+local mini_path = path_package .. 'pack/deps/start/mini.nvim'
+
+_G.Config = {
+  path_source = vim.fn.stdpath("config") .. "/lua/"
+}
+
+if not vim.loop.fs_stat(mini_path) then
+  vim.cmd('echo "Installing `mini.nvim`" | redraw')
+  local clone_cmd = {
+    'git', 'clone', '--filter=blob:none',
+    'https://github.com/echasnovski/mini.nvim', mini_path
+  }
+  vim.fn.system(clone_cmd)
+  vim.cmd('packadd mini.nvim | helptags ALL')
+  vim.cmd('echo "Installed `mini.nvim`" | redraw')
 end
 
-if vim.fn.exists('syntax_on') ~= 1 then vim.cmd('syntax enable') end
-require("functions")
+require('mini.deps').setup({ path = { package = path_package } })
 
-if vim.fn.has("win32") then
-  _G.platform_specific = { lineending = "\r\n" }
-else
-	_G.platform_specific = { lineending = "\n" }
+local now, add, later = MiniDeps.now, MiniDeps.add, MiniDeps.later
+local source = function(path) dofile(Config.path_source .. path) end
+
+--================== Settings ====================
+now(function() source("settings.lua") end)
+now(function() source("config/keymaps.lua") end)
+now(function() source("plugins/mini/keymaps.lua") end)
+now(function() source("functions.lua") end)
+now(function() source("tests/compile_mode.lua") end)
+now(function()
+  source("config/statuscolumn.lua")
+  vim.o.statuscolumn = "%!v:lua.require('config.statuscolumn').statuscolumn()"
+end)
+
+later(function() require('mini.cursorword').setup() end)
+
+now(function() vim.cmd.colorscheme("catppuccin") end)
+
+if vim.g.neovide or vim.g.goneovim then
+  now(function() source("config/gui.lua") end)
 end
 
--- vim.o.shell = "pwsh"
--- vim.o.shellcmdflag =
--- 	"-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8; $PSStyle.OutputRendering = [System.Management.Automation.OutputRendering]::PlainText;"
--- vim.o.shellredir = "-RedirectStandardOutput %s -NoNewWindow -Wait"
--- vim.o.shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode"
--- vim.o.shellquote = ""
--- vim.o.shellxquote = ""
+--================== UI Plugins ====================
+now(function() require("mini.notify").setup() end)
+now(function() require("mini.icons").setup() end)
+now(function() require("mini.statusline").setup() end)
 
-vim.opt.rtp:prepend(lazypath)
--- Make sure to setup `mapleader` and `maplocalleader` before
--- loading lazy.nvim so that mappings are correct.
--- This is also a good place to setup other settings (vim.opt)
-vim.g.mapleader = " "
-vim.g.maplocalleader = ";"
-local o, opt = vim.o, vim.opt
-vim.o.shada = "'100,<50,s10,:1000,/100,@100,h"
+--================== Mini Plugins ====================
+later(function() require("mini.pairs").setup() end)
+later(function() require("mini.files").setup() end)
+later(function() require("mini.extra").setup() end)
+later(function() require("mini.indentscope").setup() end)
+later(function()
+  require("mini.misc").setup({
+    make_global = { "put", "put_text" }
+  })
+  MiniMisc.setup_auto_root()
+end)
+later(function()
+  local hipatterns = require('mini.hipatterns')
+  local hi_words = MiniExtra.gen_highlighter.words
+  hipatterns.setup({
+    highlighters = {
+      fixme = hi_words({ 'FIXME', 'Fixme', 'fixme' }, 'MiniHipatternsFixme'),
+      hack = hi_words({ 'HACK', 'Hack', 'hack' }, 'MiniHipatternsHack'),
+      todo = hi_words({ 'TODO', 'Todo', 'todo' }, 'MiniHipatternsTodo'),
+      note = hi_words({ 'NOTE', 'Note', 'note' }, 'MiniHipatternsNote'),
 
-o.background = "dark"
-o.guicursor = ""
+      hex_color = hipatterns.gen_highlighter.hex_color(),
+    },
+  })
+end)
+later(function()
+  require("mini.pick").setup({
+    window = {
+      config = function()
+        return {
+          width = vim.o.columns,
+          height = math.floor(vim.o.lines * 0.3),
+          border = "none",
+        }
+      end,
+    },
+  })
+end)
+later(function()
+  local clue = require("mini.clue")
+  clue.setup({
+    triggers = {
+      -- Leader triggers
+      { mode = "n", keys = "<Leader>" },
+      { mode = "x", keys = "<Leader>" },
 
-o.title = true
-o.titlestring = "nvim"
-o.completeopt = "menu,menuone,noselect,popup"
-o.completeslash = "slash"
-o.cmdheight = 1
+      -- Built-in completion
+      { mode = "i", keys = "<C-x>" },
 
-vim.g.bigfile_size = 1024 * 1024 * 1.5 -- 1.5 MB
-vim.o.lazyredraw = true
+      -- `g` key
+      { mode = "n", keys = "g" },
+      { mode = "x", keys = "g" },
 
--- Relative line numbers
-opt.nu = true
-opt.rnu = false
+      -- Marks
+      { mode = "n", keys = "'" },
+      { mode = "n", keys = "`" },
+      { mode = "x", keys = "'" },
+      { mode = "x", keys = "`" },
 
--- set tab stop at 4
-opt.tabstop = 2
-opt.softtabstop = 2
-opt.expandtab = true
+      -- Registers
+      { mode = "n", keys = '"' },
+      { mode = "x", keys = '"' },
+      { mode = "i", keys = "<C-r>" },
+      { mode = "c", keys = "<C-r>" },
 
--- autoindent
-opt.smartindent = true
-opt.shiftwidth = 2
+      -- Window commands
+      { mode = "n", keys = "<C-w>" },
 
--- smarter breaking
--- o.breakindent = true
+      -- `z` key
+      { mode = "n", keys = "z" },
+      { mode = "x", keys = "z" },
 
--- better searching
-o.inccommand = "split"
-o.incsearch = true
-o.hlsearch = true
-o.ignorecase = true
-o.smartcase = true
+      { mode = "n", keys = "<C-x>" },
+      { mode = "x", keys = "<C-x>" },
+    },
+    clues = {
+      clue.gen_clues.builtin_completion(),
+      clue.gen_clues.g(),
+      clue.gen_clues.marks(),
+      clue.gen_clues.registers(),
+      clue.gen_clues.windows(),
+      clue.gen_clues.z(),
+      { mode = "n", keys = "<Leader>b", desc = "+Buffer" },
+      { mode = "n", keys = "<Leader>g", desc = "+Git" },
+      { mode = "n", keys = "<Leader>l", desc = "+LSP" },
+      { mode = "n", keys = "<Leader>L", desc = "+Lua" },
+      { mode = "n", keys = "<Leader>o", desc = "+Other" },
+      { mode = "n", keys = "<Leader>t", desc = "+Terminal" },
+      { mode = "n", keys = "<Leader>v", desc = "+Visits" },
+      { mode = "f", keys = "<Leader>f", desc = "+Find" },
 
--- disable wrap
-opt.wrap = false
+      { mode = "x", keys = "<Leader>l", desc = "+LSP" },
+    },
+  })
+end)
+later(function()
+  require("mini.surround").setup(
+    {
+      highlight_duration = 500,
+      mappings = {
+        add = "gsa",      -- Add surrounding in Normal and Visual modes
+        delete = "gsd",   -- Delete surrounding
+        find = "gsn",     -- Find surrounding (to the right)
+        find_left = "gsN", -- Find surrounding (to the left)
+        highlight = "gsh", -- Highlight surrounding
+        replace = "gsr",  -- Replace surrounding
+        update_n_lines = "", -- Update `n_lines`
 
--- better splitting
-o.splitkeep = "screen"
-o.splitbelow = true
-o.splitright = true
+        suffix_last = "l", -- Suffix to search with "prev" method
+        suffix_next = "n", -- Suffix to search with "next" method
+      },
+      search_method = "cover_or_next",
+    }
+  )
+end)
+later(function() require("mini.ai").setup() end)
+later(function() require("mini.operators").setup() end)
+later(function() require("mini.git").setup() end)
+later(function()
+  require("mini.diff").setup({
+    view = {
+      style = "sign",
+      signs = { add = "┃", change = "┃", delete = "┃" },
+      -- signs = { add = "▍ ", change = "▍ ", delete = " " },
+    },
+  })
+end)
+later(function() require("mini.splitjoin").setup() end)
+later(function() require("mini.bracketed").setup() end)
+later(function() require("mini.jump").setup() end)
+later(function() require("mini.jump2d").setup() end)
+later(function()
+  require("mini.move").setup({
+    mappings = {
+      left = "H",
+      right = "L",
+      line_left = "H",
+      down = "J",
+      up = "K",
+    },
+  })
+end)
+--================== Plugins ====================
+later(function()
+  add({
+    source = "nvim-treesitter/nvim-treesitter",
+    checkout = "master",
+    monitor = "main",
+    hooks = {
+      post_checkout = function()
+        vim.cmd("TsUpdate")
+      end
+    }
+  })
+  source("plugins/nvim-treesitter.lua")
+end)
 
--- set completion options
--- opt.completeopt = { "menu", "menuone", "noselect" }
+later(function()
+  add({
+    source = "saghen/blink.cmp",
+    checkout = "main",
+    hooks = {
+      post_checkout = function()
+        vim.cmd("cargo build --release")
+      end,
+    }
+  })
+  source("plugins/blink-cmp.lua")
+end)
 
--- set signcolumn
-opt.signcolumn = "yes"
-
-o.emoji = true
-
--- Editor
-o.showmode = false
-opt.scrolloff = 8
-o.updatetime = 1000
-o.timeoutlen = 500
-o.ttimeoutlen = 10
-opt.swapfile = false
-opt.backup = false
-opt.undofile = true
-opt.wildoptions = "tagfile"
-opt.wildmenu = true
-o.makeprg = "just"
-opt.laststatus = 2 -- Or 3 for global statusline
-opt.foldlevel = 99
-o.foldmethod = "expr"
-o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-o.foldtext = ""
-o.list = false
--- o.listchars = table.concat({ "extends:…", "nbsp:␣", "precedes:…", "tab:> " }, ",")
-o.fillchars = [[eob: ,vert:▕,vertleft:🭿,vertright:▕,verthoriz:🭿,horiz:▁,horizdown:▁,horizup:▔]]
-o.virtualedit = "block"
-o.shortmess = "tacstFOSWCo"
-o.formatoptions = "rqnl1j"
-o.cmdwinheight = 4
-opt.iskeyword:append("-")
-opt.complete:append("kspell")
-o.spelloptions = "camel"
--- credit: https://github.com/nicknisi/dotfiles/blob/1360edda1bbb39168637d0dff13dd12c2a23d095/config/nvim/init.lua#L73
--- if ripgrep installed, use that as a grepper
--- o.grepprg = "rg --vimgrep --color=never --with-filename --line-number --no-heading --smart-case --"
-o.grepprg = [[rg --glob !.git --no-heading --with-filename --line-number --vimgrep --follow $*]]
-o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
-
-vim.g.netrw_banner = 0
-vim.g.netrw_mouse = 2
-
-o.cursorline = true
-o.cursorlineopt = "screenline,number"
-o.winblend = 0
-o.pumblend = 0
-o.jumpoptions = "stack,clean"
-
-vim.g.loaded_node_provider = 0
-vim.g.loaded_python3_provider = 0
-vim.g.loaded_perl_provider = 0
-vim.g.loaded_ruby_provider = 0
-
-vim.api.nvim_create_autocmd("User", {
-	group = vim.api.nvim_create_augroup("Config", { clear = true }),
-	pattern = "VeryLazy",
-	callback = function()
-		require("config.autocommands")
-		require("config.statuscolumn")
-		require("config.keymaps")
-		-- require("moody")
-		vim.o.statuscolumn = "%!v:lua.require('config.statuscolumn').statuscolumn()"
-		_G.Compile_mode = require("tests.compile_mode")
-		if vim.g.neovide or vim.g.goneovim then
-			require("config.gui")
-		end
-	end,
-})
-
--- Setup lazy.nvim
-require("lazy").setup({
-	-- Configure any other settings here. See the documentation for more details.
-	-- colorscheme that will be used when installing plugins.
-	install = { colorscheme = { "catppuccin" } },
-	spec = { import = "plugins" },
-	-- automatically check for plugin updates
-	checker = { notify = false },
-	defaults = {
-		lazy = true,
-	},
-	change_detection = {
-		notify = false,
-	},
-	git = {
-		timeout = 1000,
-	},
-	performance = {
-		rtp = {
-			disabled_plugins = {
-				"2html_plugin",
-				"getscript",
-				"getscriptPlugin",
-				"gzip",
-				"logipat",
-				-- "matchit",
-				"man",
-				-- "matchparen",
-				"tar",
-				"tarPlugin",
-				"rrhelper",
-				"vimball",
-				"netrw",
-				"netrwPlugin",
-				"netrwSettings",
-				"netrwFileHandlers",
-				"health",
-				"shada",
-				"spellfile",
-				"tohtml",
-				"tutor",
-				"vimballPlugin",
-				"zip",
-				"zipPlugin",
-				"rplugin",
-			},
-		},
-	},
-})
-
-if not vim.g.colors_name or vim.g.colors_name == "" then
-	-- vim.cmd.colorscheme("ef-arbutus")
-	-- vim.cmd.colorscheme("ef-winter")
-	vim.cmd.colorscheme("ef-dream")
-	if vim.o.bg == "light" then
-		vim.cmd.colorscheme("ef-spring")
-	else
-		-- vim.cmd.colorscheme("catppuccin")
-		-- vim.cmd.colorscheme("ef-dream")
-	end
-	-- vim.cmd.colorscheme("metal")
-	-- vim.cmd.colorscheme("oxocarbon")
-	-- vim.cmd.colorscheme("tokyonight-moon")
-	-- vim.cmd.colorscheme("minispring")
-	-- vim.cmd.colorscheme("tokyonight")
-	-- vim.cmd.colorscheme("solarized_osaka")
-	-- vim.cmd.colorscheme("chadracula-evondev")
-	-- vim.cmd.colorscheme("chadracula")
-	-- vim.cmd.colorscheme("chad-gruvbox")
-	-- vim.cmd.colorscheme("gruvbox")
-	-- vim.cmd.colorscheme("pinkcat")
-	-- vim.cmd.colorscheme("neovim_dark")
-	-- vim.cmd.colorscheme("onenord")
-	-- vim.cmd.colorscheme("kanagawa")
-end
+later(function()
+  add({ source = "neovim/nvim-lspconfig" })
+  source("plugins/nvim-lspconfig.lua")
+end)

@@ -240,3 +240,4 @@ map("n", "<C-p>", function()
 end)
 
 require("config.utils").wezterm()
+

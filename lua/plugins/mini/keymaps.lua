@@ -6,6 +6,9 @@ local function nmap_leader(suffix, rhs, desc, opts)
 	opts.desc = desc
 	vim.keymap.set("n", "<leader>" .. suffix, rhs, opts)
 end
+
+
+--================== Mini Pick ====================
 nmap_leader("ff", "<cmd>Pick files<cr>", "Files")
 nmap_leader( ",", "<cmd>Pick buffers<cr>", "Buffers")
 map("n", "<C-f>", "<cmd>Pick grep_live<cr>", { desc = "Live Grep" })
@@ -169,6 +172,7 @@ end, { desc = "Change Directory" })
 --   end
 -- end)
 
+--================== Mini Diff ====================
 map("n", "<leader>go", function()
 	MiniDiff.toggle_overlay()
 end, { desc = "Toggle Overlay" })
@@ -177,9 +181,10 @@ map("n", "<leader>gq", function()
 	vim.fn.setqflist(MiniDiff.export("qf"))
 end, { desc = "Export Quickfix" })
 
+--================== Mini Operators ====================
 map("n", "<leader>oh", "<cmd>normal gxiagxina<cr>", { desc = "Swap Args" })
 
--- MiniGit
+--================== Mini Git ====================
 local git_log_cmd = [[Git log --pretty=format:\%h\ \%as\ │\ \%s --topo-order]]
 nmap_leader('ga', '<Cmd>Git diff --cached<CR>',                   'Added diff')
 nmap_leader('gA', '<Cmd>Git diff --cached -- %<CR>',              'Added diff buffer')
@@ -191,3 +196,13 @@ nmap_leader('gg', '<Cmd>lua Config.open_lazygit()<CR>',           'Git tab')
 nmap_leader('gl', '<Cmd>' .. git_log_cmd .. '<CR>',               'Log')
 nmap_leader('gL', '<Cmd>' .. git_log_cmd .. ' --follow -- %<CR>', 'Log buffer')
 nmap_leader('gs', '<Cmd>lua MiniGit.show_at_cursor()<CR>',        'Show at cursor')
+
+
+--================== Mini Files ====================
+nmap_leader("e", function()
+  require("mini.files").open(vim.api.nvim_buf_get_name(0))
+end, "File directory")
+
+map("n", "-", function()
+  require("mini.files").open()
+end, { desc =  "File directory" })
