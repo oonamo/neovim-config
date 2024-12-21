@@ -11,6 +11,8 @@ local function map_toggle(lhs, rhs, desc)
 	map("n", "\\" .. lhs, rhs, { desc = desc })
 end
 
+local function nmap_leader(lhs, rhs, desc) end
+
 map_toggle("b", '<Cmd>lua vim.o.bg = vim.o.bg == "dark" and "light" or "dark"<CR>', "Toggle 'background'")
 map_toggle("c", "<Cmd>setlocal cursorline!<CR>", "Toggle 'cursorline'")
 map_toggle("C", "<Cmd>setlocal cursorcolumn!<CR>", "Toggle 'cursorcolumn'")
@@ -167,7 +169,7 @@ local function async_grep(args)
 		stdout = vim.schedule_wrap(function(err, data)
 			if err then
 				vim.notify("Error grepping: '" .. vim.inspect(err) .. "'", vim.log.levels.ERROR, { title = "Grep" })
-        return
+				return
 			end
 			if data ~= nil then
 				vim.fn.setqflist({}, "a", {
@@ -226,7 +228,7 @@ local function async_make(args)
 	vim.cmd.copen()
 end
 
-map("n", "<leader>!", ":Shell ", { desc = "Start Make" })
+map("n", "<leader>!", ":Shell ", { desc = "Start Make", silent = false })
 map("n", "<C-g>", ":Grep ", { desc = "Start grep" })
 map("n", "<leader>sff", ":Grep %<left><left><space>", { desc = "Grep current file" })
 map("n", "<leader>sfw", "<cmd>Grep <cword> % <cr>", { desc = "Grep current file" })
@@ -240,4 +242,3 @@ map("n", "<C-p>", function()
 end)
 
 require("config.utils").wezterm()
-

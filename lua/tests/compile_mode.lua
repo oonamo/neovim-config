@@ -1,6 +1,10 @@
 local M = {}
 local attr = "previewwindow"
+vim.g.compile_mode_has_hi = false
 
+
+if not vim.g.compile_mode_has_hi then
+  vim.g.compile_mode_has_hi = true
 vim.cmd([[
 highlight default CompileModeMessage guifg=NONE gui=underline
 highlight default CompileModeMessageRow guifg=Magenta
@@ -18,6 +22,7 @@ highlight default CompileModeCheckTarget guifg=#ff9966
 
 highlight link CompileModeErrorLocus Visual
 ]])
+end
 
 ---Gets all active preview windows
 ---@return number[]
@@ -122,9 +127,9 @@ M.exit_codes = {
 	SIGTERM = 143, -- 128 + signal number 15
 }
 
-function M.init_compile_mode()
+function M.init_compile_mode(opts)
 	M.height = vim.api.nvim_get_option_value("previewheight", {})
-	local cwd = vim.uv.cwd():gsub("^" .. vim.env.HOME, "~")
+	local cwd = opts.cwd:gsub("^" .. vim.env.HOME, "~")
 	local start = {
 		"vim: filetype=compilation:path+=" .. cwd,
 		"Compilation started at " .. vim.fn.strftime("%a %b %e %H:%M:%S"),
@@ -154,8 +159,13 @@ local function do_co(co) end
 
 -- TODO: Coroutines
 -- TODO: Chunk the output handler to handle just ~50 lines at a time
-function M.shell_cmd(cmd, shell)
-	local buf, win = M.init_compile_mode()
+---@param cmd table
+---@param shell string
+---@param opts table?
+function M.shell_cmd(cmd, shell, opts)
+  opts = opts or {}
+  opts.cwd = opts.cwd or vim.uv.cwd()
+	local buf, win = M.init_compile_mode(opts)
 	local sep = package.config:sub(1, 1)
 	local expanded_cmd = ""
 	for _, arg in ipairs(cmd) do
@@ -205,6 +215,8 @@ function M.shell_cmd(cmd, shell)
 
 	vim.system(shell_cmd, {
 		text = true,
+    cwd = opts.cwd,
+    env = opts.env,
 		stdout = output_handler,
 		stderr = output_handler,
 	}, on_exit)
@@ -217,3 +229,5 @@ vim.api.nvim_create_user_command("Shell", function(c)
 	end
 	M.shell_cmd(c.fargs, shell)
 end, { nargs = "*", bang = true, complete = "file" })
+
+return M
