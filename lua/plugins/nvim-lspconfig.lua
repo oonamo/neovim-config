@@ -1,72 +1,83 @@
 ---@param client vim.lsp.Client
 ---@param buffer number
 local function on_attach(client, buffer)
-	-- vim.bo[buffer].omnifunc = "v:lua.MiniCompletion.completefunc_lsp"
-	vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, {
-		desc = "Preview code actions",
-		buffer = buffer,
-	})
-	-- end
+  -- vim.bo[buffer].omnifunc = "v:lua.MiniCompletion.completefunc_lsp"
+  vim.keymap.set("n", "<leader>la", vim.lsp.buf.code_action, {
+    desc = "Preview code actions",
+    buffer = buffer,
+  })
+  -- end
 
-	vim.keymap.set("n", "gd", vim.lsp.buf.definition, {
-		desc = "go to buffer definition",
-		buffer = buffer,
-	})
+  vim.keymap.set("n", "gd", vim.lsp.buf.definition, {
+    desc = "go to buffer definition",
+    buffer = buffer,
+  })
 
-	vim.keymap.set("n", "gD", function()
-		require("mini.extra").pickers.lsp({ scope = "definition" })
-	end, { desc = "go to multiple definition", buffer = buffer })
-	vim.keymap.set("n", "<leader>vws", function()
-		require("mini.extra").pickers.lsp({ scope = "workspace_symbol" })
-	end, { desc = "Find workspace_symbol", buffer = buffer })
-	vim.keymap.set("n", "<leader>vd", function()
-		vim.diagnostic.open_float()
-	end, {
-		desc = "Open float menu",
-		buffer = buffer,
-	})
-	vim.keymap.set("n", "[d", vim.diagnostic.goto_next, {
-		desc = "Got to next diagnostic",
-		buffer = buffer,
-	})
-	vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, {
-		desc = "Go to previous diagnostic",
-		buffer = buffer,
-	})
-	vim.keymap.set("n", "<leader>vrr", vim.lsp.buf.references, {
-		desc = "Go to lsp references",
-		buffer = buffer,
-	})
-	vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, { desc = "Rename symbol", buffer = buffer, expr = true })
-	vim.keymap.set("n", "<leader>vxx", function()
-		require("mini.extra").pickers.diagnostic()
-	end, { desc = "Find diagnostics", buffer = buffer })
-	vim.keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, {
-		desc = "Signature help",
-		buffer = buffer,
-	})
-	if client.supports_method("textDocument/inlayHint") then
-		vim.keymap.set("n", "<leader>ih", function()
-			vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
-		end, { desc = "Inlay Hint" })
-	end
-	vim.keymap.set("n", "<leader>qf", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })
-	vim.keymap.set("n", "<leader>ld", vim.diagnostic.setloclist, { desc = "Quickfix [L]ist [D]iagnostics" })
-	-- vim.keymap.set("n", "<C-]>", "<C-w><C-]>")
-	--
-	vim.keymap.set({ "i", "n" }, "<C-s>", vim.lsp.buf.signature_help, { desc = "Signature" })
+  vim.keymap.set(
+    "n",
+    "gD",
+    function() require("mini.extra").pickers.lsp({ scope = "definition" }) end,
+    { desc = "go to multiple definition", buffer = buffer }
+  )
 
-	vim.keymap.set("n", "<leader>ss", function()
-		require("config.lsp").request(true)
-	end)
+  vim.keymap.set("n", "<leader>ld", function() vim.diagnostic.open_float() end, {
+    desc = "Open float menu",
+    buffer = buffer,
+  })
 
-	vim.keymap.set("n", "<leader>se", function()
-		require("config.lsp").echo_area_sig()
-	end)
+  vim.keymap.set("n", "[d", vim.diagnostic.goto_next, {
+    desc = "Got to next diagnostic",
+    buffer = buffer,
+  })
 
-	vim.keymap.set("n", "grn", vim.lsp.buf.rename)
-	vim.keymap.set("n", "grr", vim.lsp.buf.references)
+  vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, {
+    desc = "Go to previous diagnostic",
+    buffer = buffer,
+  })
+
+  vim.keymap.set("n", "<leader>lr", vim.lsp.buf.references, {
+    desc = "Go to lsp references",
+    buffer = buffer,
+  })
+
+  vim.keymap.set("n", "<leader>ln", vim.lsp.buf.rename, { desc = "Rename symbol", buffer = buffer, expr = true })
+  vim.keymap.set(
+    "n",
+    "<leader>vxx",
+    function() require("mini.extra").pickers.diagnostic() end,
+    { desc = "Find diagnostics", buffer = buffer }
+  )
+  vim.keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, {
+    desc = "Signature help",
+    buffer = buffer,
+  })
+
+  if client.supports_method("textDocument/inlayHint") then
+    vim.keymap.set(
+      "n",
+      "<leader>lh",
+      function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end,
+      { desc = "Inlay Hint" }
+    )
+  end
+
+  vim.keymap.set("n", "<leader>lq", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })
+  vim.keymap.set("n", "<leader>ld", vim.diagnostic.setloclist, { desc = "Quickfix [L]ist [D]iagnostics" })
+  --
+  vim.keymap.set({ "i", "n" }, "<C-s>", vim.lsp.buf.signature_help, { desc = "Signature" })
+
+  vim.keymap.set("n", "<leader>ls", function() require("config.lsp").request(true) end, {
+    desc = "Request Signature",
+  })
+
+  vim.keymap.set("n", "<leader>le", function() require("config.lsp").echo_area_sig() end, {
+    desc = "Request Signature (Echo Area)",
+  })
+
+  vim.keymap.set("n", "grn", vim.lsp.buf.rename)
+  vim.keymap.set("n", "grr", vim.lsp.buf.references)
 end
+
 local defaults = { on_attach = on_attach }
 local servers = {
   lua_ls = {
@@ -77,9 +88,7 @@ local servers = {
     end,
     handlers = {
       ["textDocument/definition"] = function(err, result, ctx, config)
-        if type(result) == "table" then
-          result = { result[1] }
-        end
+        if type(result) == "table" then result = { result[1] } end
         vim.lsp.handlers["textDocument/definition"](err, result, ctx, config)
       end,
     },
@@ -135,7 +144,7 @@ local servers = {
   markdown_oxide = {
     on_attach = on_attach,
   },
-  }
+}
 local lspconfig = require("lspconfig")
 local utils = require("lspconfig.util")
 local has_blink, blink = pcall(require, "blink.cmp")
@@ -148,8 +157,7 @@ local capabilities = vim.tbl_deep_extend(
 )
 
 for server, settings in pairs(servers) do
-  settings.capabilities =
-  	vim.tbl_deep_extend("force", vim.deepcopy(capabilities), settings.capabilities or {})
+  settings.capabilities = vim.tbl_deep_extend("force", vim.deepcopy(capabilities), settings.capabilities or {})
   -- settings.capabilities = require("blink.cmp").get_lsp_capabilities(settings.capabilities)
   if settings.root_dir then
     if type(settings.root_dir) == "string" and utils[settings.root_dir] then
@@ -158,26 +166,15 @@ for server, settings in pairs(servers) do
       settings.root_dir = lspconfig.util.root_pattern(unpack(settings.root_dir))
     end
   end
-  if server ~= "custom" then
-    lspconfig[server].setup(settings)
-  end
+  if server ~= "custom" then lspconfig[server].setup(settings) end
 end
-local sign_define = vim.fn.sign_define
-sign_define("DiagnosticSignError", { text = "󰅙 ", texthl = "DiagnosticSignError" })
-sign_define("DiagnosticSignWarn", { text = " ", texthl = "DiagnosticSignWarn" })
-sign_define("DiagnosticSignHint", { text = " ", texthl = "DiagnosticSignHint" })
-sign_define("DiagnosticSignInfo", { text = " ", texthl = "DiagnosticSignInfo" })
--- local diagnostics_symbols = {
--- 	[vim.diagnostic.severity.ERROR] = "x",
--- 	[vim.diagnostic.severity.WARN] = "!",
--- 	[vim.diagnostic.severity.HINT] = "?",
--- 	[vim.diagnostic.severity.INFO] = "i",
--- }
 vim.diagnostic.config({
   underline = true,
   severity_sort = true,
   -- virtual_text = false, -- For tiny-inline-diagnostic
   virtual_text = {
+    spacing = 4,
+    prefix = vim.trim("< "),
     -- prefix = function(diag)
     -- 	return diagnostics_symbols[diag.severity]
     -- end,
@@ -189,18 +186,17 @@ vim.diagnostic.config({
     title = { { " 󰌶 Diagnostics ", "FloatTitle" } },
   },
   signs = {
-    -- text = {
-    -- 	[vim.diagnostic.severity.ERROR] = " ",
-    -- 	[vim.diagnostic.severity.WARN] = " ",
-    -- 	[vim.diagnostic.severity.HINT] = " ",
-    -- 	[vim.diagnostic.severity.INFO] = " ",
-    -- },
-    -- text = signs,
-    linehl = {
-      [vim.diagnostic.severity.ERROR] = "ErrorMsg",
-    },
     numhl = {
-      [vim.diagnostic.severity.WARN] = "WarningMsg",
+      [vim.diagnostic.severity.ERROR] = "DiagnosticSignError",
+      [vim.diagnostic.severity.WARN] = "DiagnosticSignWarn",
+      [vim.diagnostic.severity.INFO] = "DiagnosticSignInfo",
+      [vim.diagnostic.severity.HINT] = "DiagnosticSignHint",
+    },
+    text = {
+      [vim.diagnostic.severity.ERROR] = "󰅚 ",
+      [vim.diagnostic.severity.WARN] = "󰀪 ",
+      [vim.diagnostic.severity.INFO] = "󰋽 ",
+      [vim.diagnostic.severity.HINT] = "󰌶 ",
     },
   },
 })

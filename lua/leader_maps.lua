@@ -1,22 +1,20 @@
 local function map_leader(modes, suffix, rhs, desc, opts)
-	opts = opts or {}
-	opts.desc = desc
-	vim.keymap.set(modes, "<leader>" .. suffix, rhs, opts)
+  opts = opts or {}
+  opts.desc = desc
+  vim.keymap.set(modes, "<leader>" .. suffix, rhs, opts)
 end
 
 Config.leader_groups = {
-	{ mode = "n", keys = "<Leader>b", desc = "+Buffer" },
-	{ mode = "n", keys = "<Leader>e", desc = "+Explore" },
-	{ mode = "n", keys = "<Leader>f", desc = "+Find" },
-	{ mode = "n", keys = "<Leader>g", desc = "+Git" },
-	{ mode = "n", keys = "<Leader>l", desc = "+LSP" },
-	{ mode = "n", keys = "<Leader>L", desc = "+Lua" },
-	{ mode = "n", keys = "<Leader>o", desc = "+Other" },
-	{ mode = "n", keys = "<Leader>t", desc = "+Terminal/Minitest" },
-	-- { mode = 'n', keys = '<Leader>T', desc = '+Test' },
-	{ mode = "n", keys = "<Leader>v", desc = "+Visits" },
-	{ mode = "x", keys = "<Leader>l", desc = "+LSP" },
-	-- { mode = 'x', keys = '<Leader>r', desc = '+R' },
+  { mode = "n", keys = "<Leader>b", desc = "+Buffer" },
+  { mode = "n", keys = "<Leader>e", desc = "+Explore" },
+  { mode = "n", keys = "<Leader>f", desc = "+Find" },
+  { mode = "n", keys = "<Leader>g", desc = "+Git" },
+  { mode = "n", keys = "<Leader>l", desc = "+LSP" },
+  { mode = "n", keys = "<Leader>L", desc = "+Lua" },
+  { mode = "n", keys = "<Leader>o", desc = "+Other" },
+  { mode = "n", keys = "<Leader>t", desc = "+Terminal" },
+  { mode = "n", keys = "<Leader>p", desc = "+Paste" },
+  { mode = "x", keys = "<Leader>l", desc = "+LSP" },
 }
 
 --================== Y (yank) ====================
@@ -84,9 +82,7 @@ map_leader("n", "fv", '<Cmd>Pick visit_paths cwd="" preserve_order=true<CR>', "V
 map_leader("n", "fV", "<Cmd>Pick visit_paths preserve_order=true<CR>", "Visit paths (cwd)")
 
 --================== LSP (l) ====================
-map_leader("n", "lf", function()
-	require("conform").format({ lsp_fallback = true })
-end, "Format Buffer")
+map_leader("n", "lf", function() require("conform").format({ lsp_fallback = true }) end, "Format Buffer")
 
 --================== Git (g) ====================
 local git_log_cmd = [[Git log --pretty=format:\%h\ \%as\ │\ \%s --topo-order]]
@@ -105,20 +101,31 @@ map_leader("n", "gs", "<Cmd>lua MiniGit.show_at_cursor()<CR>", "Show at cursor")
 map_leader("x", "gs", "<Cmd>lua MiniGit.show_at_cursor()<CR>", "Show at selection")
 
 local function cx_leader(modes, suffix, rhs, desc, opts)
-	opts = opts or {}
-	opts.desc = desc
-	vim.keymap.set(modes, "<C-x>" .. suffix, rhs, opts)
+  opts = opts or {}
+  opts.desc = desc
+  vim.keymap.set(modes, "<C-x>" .. suffix, rhs, opts)
 end
 
 --================== C-x (emacs) ====================
-cx_leader("n", "<C-f>", function()
-	Config.explorer()
-end, "File Explorer")
+cx_leader("n", "<C-f>", function() Config.explorer() end, "File Explorer")
 cx_leader("n", "b", "<cmd>Pick buffers<cr>", "Pick Buffers")
-cx_leader("n", "1", function()
-	require("mini.misc").zoom()
-end, "Only Buffer")
+cx_leader("n", "h", "<cmd>Pick help<cr>", "Pick help")
+cx_leader("n", "1", function() require("mini.misc").zoom() end, "Only Buffer")
 
-map_leader("n", "e", function()
-	require("mini.files").open(vim.api.nvim_buf_get_name(0))
-end, "File directory")
+map_leader("n", "e", function() require("mini.files").open(vim.api.nvim_buf_get_name(0)) end, "File directory")
+
+--================== Terminal ====================
+map_leader("n", "tc", function()
+  vim.cmd.vnew()
+  vim.cmd.term()
+  vim.cmd.wincmd("J")
+  vim.cmd("setlocal nonumber norelativenumber laststatus=0")
+  vim.api.nvim_win_set_height(0, 5)
+end, "cmd terminal")
+map_leader("n", "tp", function()
+  vim.cmd.vnew()
+  vim.cmd.term("pwsh.exe")
+  vim.cmd.wincmd("J")
+  vim.cmd("setlocal nonumber norelativenumber laststatus=0")
+  vim.api.nvim_win_set_height(0, 5)
+end, "cmd terminal")

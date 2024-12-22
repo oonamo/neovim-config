@@ -20,16 +20,34 @@ end
 vim.g.mapleader = " "
 vim.g.maplocalleader = ";"
 local o, opt = vim.o, vim.opt
-vim.o.shada = "'100,<50,s10,:1000,/100,@100,h"
 
-o.background = "dark"
-o.guicursor = ""
+vim.opt.colorcolumn = "+1"
+vim.opt.cursorline = true
+vim.opt.helpheight = 10
+vim.opt.showmode = false
+vim.opt.ruler = true
+vim.opt.scrolloff = 4
+vim.opt.sidescrolloff = 8
+vim.opt.signcolumn = 'yes:1'
+vim.opt.splitright = true
+vim.opt.splitbelow = true
+vim.opt.swapfile = false
+vim.opt.undofile = true
+vim.opt.linebreak = true
+vim.opt.breakindent = true
+vim.opt.smoothscroll = true
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+vim.opt.completeopt = 'menuone'
+vim.opt.jumpoptions = 'stack,view,clean'
+vim.opt.title = true
+vim.opt.titlestring = "nvim"
+vim.opt.background = "dark"
+vim.o.guicursor = ""
+vim.opt.cmdheight = 1
 
-o.title = true
-o.titlestring = "nvim"
-o.completeopt = "menu,menuone,noselect,popup"
-o.completeslash = "slash"
-o.cmdheight = 1
+-- o.completeopt = "menu,menuone,noselect,popup"
+-- o.completeslash = "slash"
 
 vim.g.bigfile_size = 1024 * 1024 * 1.5 -- 1.5 MB
 vim.o.lazyredraw = true
@@ -95,11 +113,12 @@ o.list = false
 o.fillchars = [[eob: ,vert:▕,vertleft:🭿,vertright:▕,verthoriz:🭿,horiz:▁,horizdown:▁,horizup:▔]]
 o.virtualedit = "block"
 o.shortmess = "tacstFOSWCo"
-o.formatoptions = "rqnl1j"
+vim.opt.formatoptions:append("n")
 o.cmdwinheight = 4
 opt.iskeyword:append("-")
 opt.complete:append("kspell")
 o.spelloptions = "camel"
+
 -- credit: https://github.com/nicknisi/dotfiles/blob/1360edda1bbb39168637d0dff13dd12c2a23d095/config/nvim/init.lua#L73
 -- if ripgrep installed, use that as a grepper
 -- o.grepprg = "rg --vimgrep --color=never --with-filename --line-number --no-heading --smart-case --"
@@ -113,9 +132,34 @@ o.cursorline = true
 o.cursorlineopt = "screenline,number"
 o.winblend = 0
 o.pumblend = 0
-o.jumpoptions = "stack,clean"
 
 vim.g.loaded_node_provider = 0
 vim.g.loaded_python3_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
+
+-- Defer shada reading
+local shada_read ---@boolean?
+
+---Restore 'shada' option and read from shada once
+---@return true
+local function rshada()
+  if shada_read then
+    return true
+  end
+  shada_read = true
+
+  vim.cmd.set('shada&')
+  pcall(vim.cmd.rshada)
+  return true
+end
+
+vim.opt.shada = ''
+vim.api.nvim_create_autocmd('BufReadPre', { once = true, callback = rshada })
+vim.api.nvim_create_autocmd('UIEnter', {
+  once = true,
+  callback = function()
+    vim.schedule(rshada)
+    return true
+  end,
+})
