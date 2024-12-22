@@ -148,7 +148,11 @@ later(function()
       clue.gen_clues.z(),
       { mode = "n", keys = "<Leader>b", desc = "+Buffer" },
       { mode = "n", keys = "<Leader>g", desc = "+Git" },
+      { mode = "n", keys = "<Leader>s", desc = "+Search" },
       { mode = "n", keys = "<Leader>l", desc = "+LSP" },
+      { mode = "n", keys = "<Leader>w", desc = "+Window" },
+      { mode = "n", keys = "<Leader><tab>", desc = "+Tabs" },
+      { mode = "n", keys = "<Leader>!", desc = "+Shell" },
       { mode = "n", keys = "<Leader>L", desc = "+Lua" },
       { mode = "n", keys = "<Leader>o", desc = "+Other" },
       { mode = "n", keys = "<Leader>t", desc = "+Terminal" },
@@ -187,7 +191,8 @@ later(function()
   require("mini.diff").setup({
     view = {
       style = "sign",
-      signs = { add = "┃", change = "┃", delete = "┃" },
+      signs = { add = "+", change = "~", delete = "-"}
+      -- signs = { add = "┃", change = "┃", delete = "┃" },
       -- signs = { add = "▍ ", change = "▍ ", delete = " " },
     },
   })
