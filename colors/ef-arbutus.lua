@@ -1,8 +1,7 @@
 if vim.g.colors_name ~= nil then
 	vim.cmd("highlight clear")
 end
-vim.g.colors_name = "ef-arbutus"
-vim.o.background = "light"
+
 
 local function hi(name, hl)
 	vim.api.nvim_set_hl(0, name, hl)
@@ -139,6 +138,6 @@ hi("BlinkCmpGhostText", { link = "Comment" })
 
 hi("BlinkCmpLabelMatch", { fg = "#007000" })
 
+vim.g.colors_name = "ef-arbutus"
+vim.o.background = "light"
 normalize(c)
-
-vim.cmd("doautocmd Colorscheme")

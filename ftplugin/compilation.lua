@@ -1,4 +1,5 @@
 local matchadd = vim.fn.matchadd
+-- Compilation finished
 matchadd("CompileModeInfo", "^Compilation \\zsfinished\\ze.*")
 matchadd(
 	"CompileModeError",

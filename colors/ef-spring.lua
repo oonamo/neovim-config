@@ -1,5 +1,4 @@
 if vim.g.colors_name ~= nil then vim.cmd('highlight clear') end
-vim.o.bg = "light"
 local is_dark = vim.o.bg == "light"
 local bg = "#f6fff9"
 local fg = "#34494a"
@@ -83,7 +82,11 @@ hi("Pmenu", { bg = "#f0f8f4", fg = "#34494a" })
 hi("PmenuSel", { bg = "#ccedff" })
 hi("BlinkCmpLabelMatch", { fg = "#1a870f" })
 
+vim.o.bg = "light"
+vim.g.colors_name = "ef-spring"
 
+-- hi("MiniDiffSignAdd", { fg = 0})
+-- hi("MiniDiffSignChange")
+-- hi("MiniDiffSignDelete")
 -- require("mini.base16").setup({ palette = spring })
--- hi("StatusLine", { bg = "#90e8b0", fg = "#000000" })
-vim.cmd("doautocmd ColorScheme")
+hi("StatusLine", { bg = "#90e8b0", fg = "#243228" })

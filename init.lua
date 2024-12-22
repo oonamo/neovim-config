@@ -47,9 +47,20 @@ end)
 if vim.g.neovide or vim.g.goneovim then now(function() source("config/gui.lua") end) end
 
 --================== UI Plugins ====================
-now(function() require("mini.notify").setup() end)
+now(function()
+  local filterout_lua_diagnosing = function(notif_arr)
+    local not_diagnosing = function(notif) return not vim.startswith(notif.msg, "lua_ls: Diagnosing") end
+    notif_arr = vim.tbl_filter(not_diagnosing, notif_arr)
+    return MiniNotify.default_sort(notif_arr)
+  end
+  require("mini.notify").setup({
+    content = { sort = filterout_lua_diagnosing },
+    window = { config = { border = "solid" } },
+    lsp_progress = { enable = false },
+  })
+  vim.notify = MiniNotify.make_notify()
+end)
 now(function() require("mini.icons").setup() end)
--- now(function() require("mini.statusline").setup() end)
 
 --================== Mini Plugins ====================
 later(function() require("mini.pairs").setup() end)
@@ -187,7 +198,28 @@ end)
 
 later(function() require("mini.ai").setup() end)
 later(function() require("mini.operators").setup() end)
-later(function() require("mini.git").setup() end)
+later(function()
+  require("mini.git").setup({
+    command = {
+      split = "horizontal",
+    },
+  })
+  vim.api.nvim_create_autocmd("User", {
+    pattern = "MiniGitCommandDone",
+    callback = function(ev)
+      if ev.data.git_subcommand:match("status") then
+        vim.api.nvim_create_autocmd("User", {
+          nested = true,
+          once = true,
+          callback = function(data)
+            vim.bo[data.buf].filetype = "ministatus"
+            return true
+          end,
+        })
+      end
+    end,
+  })
+end)
 
 later(function()
   require("mini.diff").setup({
@@ -237,7 +269,7 @@ later(function()
     checkout = "master",
     monitor = "main",
     hooks = {
-      post_checkout = function() vim.cmd("TsUpdate") end,
+      post_checkout = function() vim.cmd("TSUpdate") end,
     },
   })
   source("plugins/nvim-treesitter.lua")

@@ -56,12 +56,12 @@ map_leader("n", "sw", "<cmd>Grep <cword><cr>", "Grep current word")
 
 --================== Find ====================
 map_leader("n", ":", '<Cmd>Pick history scope=":"<CR>', "Find commands")
-map_leader("n", ",", '<Cmd>Pick buffers<CR>', "Find buffers")
-map_leader("n", ".", '<Cmd>Pick files<CR>', "Find files")
-map_leader("n", "?", '<Cmd>Pick help<CR>', "Find help")
+map_leader("n", ",", "<Cmd>Pick buffers<CR>", "Find buffers")
+map_leader("n", ".", "<Cmd>Pick files<CR>", "Find files")
+map_leader("n", "?", "<Cmd>Pick help<CR>", "Find help")
 map_leader("n", "=", '<Cmd>Pick buf_lines scope="all"<CR>', "Find lines across buffers")
 map_leader("n", "-", '<Cmd>Pick buf_lines scope="current"<CR>', "Find lines in buffer")
-map_leader("n", "o", '<Cmd>Pick oldfiles<CR>', "Find oldfiles")
+map_leader("n", "o", "<Cmd>Pick oldfiles<CR>", "Find oldfiles")
 map_leader("n", "fa", '<Cmd>Pick git_hunks scope="staged"<CR>', "Added hunks (all)")
 map_leader("n", "fA", '<Cmd>Pick git_hunks path="%" scope="staged"<CR>', "Added hunks (current)")
 map_leader("n", "fb", "<Cmd>Pick buffers<CR>", "Buffers")
@@ -92,19 +92,24 @@ map_leader("n", "lf", function() require("conform").format({ lsp_fallback = true
 --================== Git (g) ====================
 local git_log_cmd = [[Git log --pretty=format:\%h\ \%as\ │\ \%s --topo-order]]
 map_leader("n", "ga", "<Cmd>Git diff --cached<CR>", "Added diff")
+map_leader("n", "gb", function()
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  local line = cursor[1]
+  local file = vim.api.nvim_buf_get_name(0)
+  vim.cmd("Git log -n 5 -u -L " .. line .. ",+1:" .. file)
+end, "Blame")
 
 map_leader("n", "gA", "<Cmd>Git diff --cached -- %<CR>", "Added diff buffer")
 map_leader("n", "gc", "<Cmd>Git commit<CR>", "Commit")
 map_leader("n", "gC", "<Cmd>Git commit --amend<CR>", "Commit amend")
+map_leader("n", "gG", "<Cmd>Git status<CR>", "Status")
 map_leader("n", "gd", "<Cmd>Git diff<CR>", "Diff")
 map_leader("n", "gD", "<Cmd>Git diff -- %<CR>", "Diff buffer")
 map_leader("n", "gg", "<Cmd>lua Config.open_lazygit()<CR>", "Git tab")
 map_leader("n", "gl", "<cmd>Git log --oneline --follow -- %<cr>", "Log line")
--- map_leader("n", "gl", "<Cmd>" .. git_log_cmd .. "<CR>", "Log")
 map_leader("n", "gL", "<Cmd>" .. git_log_cmd .. " --follow -- %<CR>", "Log buffer")
 map_leader("n", "go", "<Cmd>lua MiniDiff.toggle_overlay()<CR>", "Toggle overlay")
 map_leader("n", "gs", "<Cmd>lua MiniGit.show_at_cursor()<CR>", "Show at cursor")
-
 map_leader("x", "gs", "<Cmd>lua MiniGit.show_at_cursor()<CR>", "Show at selection")
 
 local function cx_leader(modes, suffix, rhs, desc, opts)

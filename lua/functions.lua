@@ -2,8 +2,9 @@ Config._cache = {
   term = {
     buf = -1,
     win = -1,
-  }
+  },
 }
+Config.opts = {}
 
 function Config.open_lazygit()
   vim.cmd("tabedit")
@@ -56,8 +57,180 @@ vim.api.nvim_create_user_command(
   { nargs = "*", bang = true, complete = "file" }
 )
 
+---@param exe_modifier false|string
+---@param num integer
+---@return string
+local function perm_to_str(exe_modifier, num)
+  local str = (bit.band(num, 4) ~= 0 and "r" or "-") .. (bit.band(num, 2) ~= 0 and "w" or "-")
+  if exe_modifier then
+    if bit.band(num, 1) ~= 0 then
+      return str .. exe_modifier
+    else
+      return str .. exe_modifier:upper()
+    end
+  else
+    return str .. (bit.band(num, 1) ~= 0 and "x" or "-")
+  end
+end
+
+---@param mode integer
+---@return string
+Config.mode_to_str = function(mode)
+  local extra = bit.rshift(mode, 9)
+  return perm_to_str(bit.band(extra, 4) ~= 0 and "s", bit.rshift(mode, 6))
+    .. perm_to_str(bit.band(extra, 2) ~= 0 and "s", bit.rshift(mode, 3))
+    .. perm_to_str(bit.band(extra, 1) ~= 0 and "t", mode)
+end
+
+function Config.ensure_length(str, length)
+  local ret = str
+  local len = #str
+  if len < length then
+    for i = 0, length - len do
+      ret = ret .. " "
+    end
+  elseif str > length then
+    ret = str:sub(0, length)
+  end
+  return ret
+end
+
+function Config.pad_str(str, len)
+  if str and #str > len then return str:sub(0, len - 2) .. "..." end
+  str = str or ""
+  for _ = 0, (len - #str) do
+    str = str .. " "
+  end
+  return str
+end
+
+Config.opts.minipick = {
+  ivy = true,
+  explorer = {
+    items = {
+      { width = 0.3 },
+      { width = 10 },
+      { width = 5 },
+      { width = 10, remaining = true },
+    },
+  },
+}
+
+-- local _, minipick = pcall(require, "mini.pick")
+function Config._compile_widths(opts)
+  local width = 0
+  if Config.opts.minipick.ivy then
+    width = vim.o.columns
+  else
+    width = MiniPick.config.window.width or math.floor(vim.o.columns * 0.618)
+  end
+  local total = 0
+  local compiled_width = {}
+  for i, v in ipairs(opts.items) do
+    if v.width < 1 then
+      local result = math.floor(v.width * width)
+      total = total + result
+      compiled_width[i] = result
+    else
+      local result = math.floor(v.width)
+      total = total + result
+      compiled_width[i] = result
+    end
+  end
+  if opts.items[#opts.items].remaining then compiled_width[#compiled_width] = (width or vim.o.columns) - total end
+  return compiled_width
+end
+
+local current_year
+-- Make sure we run this import-time effect in the main loop (mostly for tests)
+vim.schedule(function() current_year = vim.fn.strftime("%y") end)
+Config.time_str = function(time)
+  local ret
+  local year = vim.fn.strftime("%y", time.sec)
+  if year ~= current_year then
+    ret = vim.fn.strftime("%b %d %y", time.sec)
+  else
+    ret = vim.fn.strftime("%b %d %H:%M", time.sec)
+  end
+
+  return ret
+end
+
+function Config.size_str(size)
+  -- if stat.size == 0 then return "D" end
+  if size >= 1e9 then
+    return string.format("%.1fG", size / 1e9)
+  elseif size >= 1e6 then
+    return string.format("%.1fM", size / 1e6)
+  elseif size >= 1e3 then
+    return string.format("%.1fk", size / 1e3)
+  else
+    return string.format("%d", size)
+  end
+end
+
+local ns_id = vim.api.nvim_create_namespace("FS_stat")
+vim.api.nvim_set_hl(0, "MiniPickReadPermission", {
+  link = "Special",
+  default = true,
+})
+vim.api.nvim_set_hl(0, "MiniPickWritePermission", {
+  link = "Number",
+  default = true,
+})
+
 function Config.explorer()
   require("mini.extra").pickers.explorer({}, {
+    source = {
+      show = function(buf_id, items, query)
+        local widths = Config._compile_widths(Config.opts.minipick.explorer)
+        local lines = vim.tbl_map(function(x)
+          local stat = vim.uv.fs_stat(x.path)
+          local comp_str = ""
+          local entry = {
+            x.text,
+            Config.mode_to_str(stat.mode),
+            Config.size_str(stat.size),
+            Config.time_str(stat.mtime),
+          }
+          for i, v in ipairs(widths) do
+            if entry[i] then comp_str = comp_str .. Config.pad_str(entry[i], v) .. " " end
+          end
+
+          return comp_str
+        end, items)
+
+        vim.api.nvim_buf_set_lines(buf_id, 0, -1, false, lines)
+
+        for line, content in ipairs(lines) do
+          local mhl_start = widths[1]
+          local start = mhl_start + 3
+          local stop = start + 1
+          --====== Permission string =========-
+          for _ = 1, 3 do
+            local read = content:sub(start, start)
+            local write = content:sub(stop, stop)
+            print("read: " .. read, "write: " .. write)
+            if read == "r" then
+              vim.api.nvim_buf_set_extmark(buf_id, ns_id, line - 1, start - 1, {
+                hl_group = "MiniPickReadPermission",
+                end_col = stop - 1,
+              })
+            end
+            if write == "w" then
+              vim.api.nvim_buf_set_extmark(buf_id, ns_id, line - 1, stop - 1, {
+                hl_group = "MiniPickWritePermission",
+                end_col = stop,
+              })
+            end
+            start = start + 3
+            stop = start + 1
+          end
+          --====== Size string =========-
+          start = widths[1]
+        end
+      end,
+    },
     mappings = {
       toggle_preview = "",
       go_up_level = {

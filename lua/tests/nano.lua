@@ -1,5 +1,4 @@
 local statusline = {}
-local utils = require("utils")
 local groupid = vim.api.nvim_create_augroup("StatusLine", {})
 
 local M = {}
@@ -153,7 +152,6 @@ end
 function statusline.gitdiff()
   -- Integration with gitsigns.nvim
   ---@diagnostic disable-next-line: undefined-field
-  -- local diff = vim.b.gitsigns_status_dict or utils.git.diffstat()
   local diff = vim.b.minidiff_summary
   if not diff then diff = {
     added = 0,
@@ -240,7 +238,6 @@ function statusline.fname()
     -- show local cwd (often project root) after the file name
     local fname = vim.fs.basename(bname)
     return fname
-    -- return utils.stl.escape(fname)
   end
 
   -- Terminal buffer, show terminal command and id
@@ -325,8 +322,10 @@ local spinner_timer = vim.uv.new_timer()
 local spinner_icons ---@type string[]
 local spinner_icon_done ---@type string
 
+vim.g.has_nf = true
+
 if vim.g.has_nf then
-  spinner_icon_done = vim.trim(utils.static.icons.Ok)
+  spinner_icon_done = vim.trim("󰄬 ")
   spinner_icons = {
     "⣷",
     "⣯",
@@ -470,7 +469,7 @@ function statusline.get() return vim.g.statusline_winid == vim.api.nvim_get_curr
 
 vim.api.nvim_create_autocmd("ColorScheme", {
   group = groupid,
-  callback = function() M.hls = {} end,
+  callback = function() M.hl = {} end,
 })
 
 vim.o.statusline = [[%!v:lua.require'tests.nano'.get()]]
