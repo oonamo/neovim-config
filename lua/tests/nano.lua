@@ -131,15 +131,19 @@ function statusline.mode()
   local mode_str = (mode == "n" and (vim.bo.ro or not vim.bo.ma)) and "RO" or modes[mode]
   if vim.bo.mod then
     return stl_format("modified", string.format(" %s ", mode_str), {
-      fg = "Special",
-      bg = status_bg,
-      reverse = true,
+      bg = {
+        hi = "Special",
+        key = "fg",
+      },
+      fg = "Normal"
     }, true)
   else
     return stl_format("mode", string.format(" %s ", mode_str), {
-      fg = "TabLine",
-      bg = status_bg,
-      reverse = true,
+      bg = { hi = "TabLine", key = "fg" },
+      fg = "Normal",
+      -- fg = {
+      --   fg = "Normal"
+      -- },
     }, true)
   end
 end

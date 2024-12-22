@@ -1,12 +1,10 @@
 ---@param client vim.lsp.Client
 ---@param buffer number
 local function on_attach(client, buffer)
-  -- vim.bo[buffer].omnifunc = "v:lua.MiniCompletion.completefunc_lsp"
   vim.keymap.set("n", "<leader>la", vim.lsp.buf.code_action, {
     desc = "Preview code actions",
     buffer = buffer,
   })
-  -- end
 
   vim.keymap.set("n", "gd", vim.lsp.buf.definition, {
     desc = "go to buffer definition",
@@ -63,8 +61,6 @@ local function on_attach(client, buffer)
 
   vim.keymap.set("n", "<leader>lq", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })
   vim.keymap.set("n", "<leader>ld", vim.diagnostic.setloclist, { desc = "Quickfix [L]ist [D]iagnostics" })
-  --
-  vim.keymap.set({ "i", "n" }, "<C-s>", vim.lsp.buf.signature_help, { desc = "Signature" })
 
   vim.keymap.set("n", "<leader>ls", function() require("config.lsp").request(true) end, {
     desc = "Request Signature",

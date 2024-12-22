@@ -242,3 +242,4 @@ map("n", "<C-p>", function()
 end)
 
 require("config.utils").wezterm()
+map("n", "<leader>:", "<cmd>Pick history scope='/'<cr>", { desc = "Find commands"})

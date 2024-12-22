@@ -53,9 +53,7 @@ now(function() require("mini.icons").setup() end)
 
 --================== Mini Plugins ====================
 later(function() require("mini.pairs").setup() end)
-later(function()
-  source("plugins/mini-files.lua")
-end)
+later(function() source("plugins/mini-files.lua") end)
 later(function() require("mini.extra").setup() end)
 later(function() require("mini.bufremove").setup() end)
 later(function() require("mini.indentscope").setup() end)
@@ -136,6 +134,10 @@ later(function()
       delay = 0,
       config = {
         border = "solid",
+        footer = {
+          { "Mappings:", "MiniClueDescGroup" },
+          { "<C-d>/<C-u>", "MiniClueTitle" },
+        },
       },
     },
     clues = {
@@ -191,7 +193,7 @@ later(function()
   require("mini.diff").setup({
     view = {
       style = "sign",
-      signs = { add = "+", change = "~", delete = "-"}
+      signs = { add = "+", change = "~", delete = "-" },
       -- signs = { add = "┃", change = "┃", delete = "┃" },
       -- signs = { add = "▍ ", change = "▍ ", delete = " " },
     },
