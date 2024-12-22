@@ -92,6 +92,7 @@ map_leader("n", "lf", function() require("conform").format({ lsp_fallback = true
 --================== Git (g) ====================
 local git_log_cmd = [[Git log --pretty=format:\%h\ \%as\ │\ \%s --topo-order]]
 map_leader("n", "ga", "<Cmd>Git diff --cached<CR>", "Added diff")
+
 map_leader("n", "gA", "<Cmd>Git diff --cached -- %<CR>", "Added diff buffer")
 map_leader("n", "gc", "<Cmd>Git commit<CR>", "Commit")
 map_leader("n", "gC", "<Cmd>Git commit --amend<CR>", "Commit amend")
