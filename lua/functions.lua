@@ -82,6 +82,49 @@ Config.mode_to_str = function(mode)
     .. perm_to_str(bit.band(extra, 1) ~= 0 and "t", mode)
 end
 
+---@param exe_modifier false|string
+---@param num integer
+local function perm_to_table_str(exe_modifier, num, tbl)
+  table.insert(tbl, (bit.band(num, 4) ~= 0 and { "r", "ReadBit" } or { "-", "SepBit" }))
+  table.insert(tbl, (bit.band(num, 2) ~= 0 and { "w", "WriteBit" } or { "-", "SepBit" }))
+  if exe_modifier then
+    if bit.band(num, 1) ~= 0 then
+      table.insert(tbl, { exe_modifier, "ExeMod" })
+    else
+      table.insert(tbl, { exe_modifier:upper(), "ExeMod" })
+    end
+  else
+    table.insert(tbl, (bit.band(num, 1) ~= 0 and { "x", "ExeBit" } or { "-", "SepBit" }))
+  end
+end
+
+local hi = function(...) vim.api.nvim_set_hl(0, ...) end
+
+---@param tbl table
+---@return table
+function Config.flatten(tbl)
+  local flattened = {}
+  for _, v in pairs(tbl) do
+    if type(v) == "table" then
+      for inner_k, inner_v in pairs(v) do
+        flattened[inner_k] = inner_v
+      end
+    else
+      table.insert(flattened, v)
+    end
+  end
+  return flattened
+end
+
+Config.mode_to_table_str = function(mode)
+  local extra = bit.rshift(mode, 9)
+  local tbl = {}
+  perm_to_table_str(bit.band(extra, 4) ~= 0 and "s", bit.rshift(mode, 6), tbl)
+  perm_to_table_str(bit.band(extra, 2) ~= 0 and "s", bit.rshift(mode, 3), tbl)
+  perm_to_table_str(bit.band(extra, 1) ~= 0 and "t", mode, tbl)
+  return tbl
+end
+
 function Config.ensure_length(str, length)
   local ret = str
   local len = #str
@@ -157,7 +200,7 @@ Config.time_str = function(time)
 end
 
 function Config.size_str(size)
-  -- if stat.size == 0 then return "D" end
+  if size == 0 then return "D" end
   if size >= 1e9 then
     return string.format("%.1fG", size / 1e9)
   elseif size >= 1e6 then
@@ -169,7 +212,11 @@ function Config.size_str(size)
   end
 end
 
-local ns_id = vim.api.nvim_create_namespace("FS_stat")
+local ids = {
+  perm = vim.api.nvim_create_namespace("FS_stat"),
+  size = vim.api.nvim_create_namespace("FS_size"),
+  date = vim.api.nvim_create_namespace("FS_date"),
+}
 vim.api.nvim_set_hl(0, "MiniPickReadPermission", {
   link = "Special",
   default = true,
@@ -179,62 +226,79 @@ vim.api.nvim_set_hl(0, "MiniPickWritePermission", {
   default = true,
 })
 
+hi("ReadBit", { link = "Special", default = true })
+hi("ExeMod", { link = "WarningMsg", default = true })
+hi("WriteBit", { link = "ErrorMsg", default = true })
+hi("MiniPickExplorerSize", { link = "Constant", default = true })
+hi("MiniPickExplorerDate", { link = "Constant", default = true })
+
+Config._cache.explorer_widths = Config._compile_widths(Config.opts.minipick.explorer)
+
+vim.api.nvim_create_autocmd("VimResized", {
+  group = vim.api.nvim_create_augroup("ExplorerWidthsHandler", { clear = true }),
+  callback = function() Config._cache.explorer_widths = Config._compile_widths(Config.opts.minipick.explorer) end,
+})
+
 function Config.explorer()
   require("mini.extra").pickers.explorer({}, {
     source = {
       show = function(buf_id, items, query)
-        local widths = Config._compile_widths(Config.opts.minipick.explorer)
-        local lines = vim.tbl_map(function(x)
-          local stat = vim.uv.fs_stat(x.path)
-          local comp_str = ""
-          local entry = {
-            x.text,
-            Config.mode_to_str(stat.mode),
-            Config.size_str(stat.size),
-            Config.time_str(stat.mtime),
-          }
-          for i, v in ipairs(widths) do
-            if entry[i] then comp_str = comp_str .. Config.pad_str(entry[i], v) .. " " end
+        local widths = Config._cache.explorer_widths
+        vim.api.nvim_buf_clear_namespace(buf_id, ids.perm, 0, -1)
+        vim.api.nvim_buf_clear_namespace(buf_id, ids.date, 0, -1)
+        vim.api.nvim_buf_clear_namespace(buf_id, ids.size, 0, -1)
+        require("mini.pick").default_show(buf_id, items, query)
+
+        for line, item in ipairs(items) do
+          local ns_id = ids.perm
+          local stat = vim.uv.fs_stat(item.path)
+
+          if stat and stat.mode then
+            vim.api.nvim_buf_set_extmark(buf_id, ns_id, line - 0, 0, {
+              virt_text = Config.mode_to_table_str(stat.mode),
+              virt_text_win_col = widths[1],
+              hl_mode = "combine",
+            })
           end
 
-          return comp_str
-        end, items)
-
-        vim.api.nvim_buf_set_lines(buf_id, 0, -1, false, lines)
-
-        for line, content in ipairs(lines) do
-          local mhl_start = widths[1]
-          local start = mhl_start + 3
-          local stop = start + 1
-          --====== Permission string =========-
-          for _ = 1, 3 do
-            local read = content:sub(start, start)
-            local write = content:sub(stop, stop)
-            print("read: " .. read, "write: " .. write)
-            if read == "r" then
-              vim.api.nvim_buf_set_extmark(buf_id, ns_id, line - 1, start - 1, {
-                hl_group = "MiniPickReadPermission",
-                end_col = stop - 1,
-              })
-            end
-            if write == "w" then
-              vim.api.nvim_buf_set_extmark(buf_id, ns_id, line - 1, stop - 1, {
-                hl_group = "MiniPickWritePermission",
-                end_col = stop,
-              })
-            end
-            start = start + 3
-            stop = start + 1
+          if stat and stat.size then
+            ns_id = ids.size
+            local pos = widths[1] + widths[2]
+            vim.api.nvim_buf_set_extmark(buf_id, ns_id, line - 1, 0, {
+              virt_text = { { Config.size_str(stat.size), "MiniPickExplorerSize" } },
+              virt_text_win_col = pos,
+              hl_mode = "combine",
+            })
           end
-          --====== Size string =========-
-          start = widths[1]
+
+          if stat and stat.mtime then
+            ns_id = ids.date
+            local pos = widths[1] + widths[2] + widths[3]
+            vim.api.nvim_buf_set_extmark(buf_id, ns_id, line - 1, 0, {
+              virt_text = { { Config.time_str(stat.mtime), "MiniPickExplorerDate" } },
+              virt_text_win_col = pos,
+              hl_mode = "combine",
+            })
+          end
+        end
+
+        if not items[1] then return end
+
+        -- HACK: Prevent first item from not having a mode string
+        local first = vim.uv.fs_stat(items[1].path)
+        if first.mode then
+          vim.api.nvim_buf_set_extmark(buf_id, ids.perm, 0, 0, {
+            virt_text = Config.mode_to_table_str(first.mode),
+            virt_text_win_col = widths[1],
+            hl_mode = "combine",
+          })
         end
       end,
     },
     mappings = {
       toggle_preview = "",
       go_up_level = {
-        char = "<C-BS>", -- Same as C BKSP, emacs lol
+        char = "<C-BS>",
         func = function()
           local query = MiniPick.get_picker_query()
           if not query[1] or query[1] == "" then
@@ -245,7 +309,7 @@ function Config.explorer()
         end,
       },
       go_up_level_neovide = {
-        char = "<C-BS>", -- Same as C BKSP, emacs lol
+        char = "<C-h>", -- Same as C BKSP, emacs lol
         func = function()
           local query = MiniPick.get_picker_query()
           if not query[1] or query[1] == "" then
