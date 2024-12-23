@@ -98,8 +98,6 @@ local function perm_to_table_str(exe_modifier, num, tbl)
   end
 end
 
-local hi = function(...) vim.api.nvim_set_hl(0, ...) end
-
 ---@param tbl table
 ---@return table
 function Config.flatten(tbl)
@@ -148,18 +146,6 @@ function Config.pad_str(str, len)
   end
   return str
 end
-
-Config.opts.minipick = {
-  ivy = true,
-  explorer = {
-    items = {
-      { width = 0.2 }, -- 20% is dedicated to file names
-      { width = 10 }, -- Length of permssion string is 9
-      { width = 7 }, -- 7 is dedicated to size
-      { width = 10, remaining = true },
-    },
-  },
-}
 
 function Config._compile_widths(opts)
   local width = 0
@@ -213,91 +199,9 @@ function Config.size_str(size)
   end
 end
 
-local ids = {
-  perm = vim.api.nvim_create_namespace("FS_stat"),
-  size = vim.api.nvim_create_namespace("FS_size"),
-  date = vim.api.nvim_create_namespace("FS_date"),
-}
-vim.api.nvim_set_hl(0, "MiniPickReadPermission", {
-  link = "Special",
-  default = true,
-})
-vim.api.nvim_set_hl(0, "MiniPickWritePermission", {
-  link = "Number",
-  default = true,
-})
-
-hi("ReadBit", { link = "MiniIconsYellow", default = true })
-hi("ExeMod", { link = "DiagnosticError", default = true })
-hi("WriteBit", { link = "DiagnosticInfo", default = true })
-hi("SepBit", { link = "NonText", default = true })
-hi("MiniPickExplorerSize", { link = "Constant", default = true })
-hi("MiniPickExplorerDate", { link = "Character", default = true })
-
-Config._cache.explorer_widths = Config._compile_widths(Config.opts.minipick.explorer)
-
-vim.api.nvim_create_autocmd("VimResized", {
-  group = vim.api.nvim_create_augroup("ExplorerWidthsHandler", { clear = true }),
-  callback = function() Config._cache.explorer_widths = Config._compile_widths(Config.opts.minipick.explorer) end,
-})
-
 function Config.explorer()
   Config._cache.explorer_parent = nil
-  require("mini.extra").pickers.explorer({}, {
-    source = {
-      show = function(buf_id, items, query)
-        local widths = Config._cache.explorer_widths
-        vim.api.nvim_buf_clear_namespace(buf_id, ids.perm, 0, -1)
-        vim.api.nvim_buf_clear_namespace(buf_id, ids.date, 0, -1)
-        vim.api.nvim_buf_clear_namespace(buf_id, ids.size, 0, -1)
-        require("mini.pick").default_show(buf_id, items, query)
-
-        for line, item in ipairs(items) do
-          local ns_id = ids.perm
-          local stat = vim.uv.fs_stat(item.path)
-
-          if stat and stat.mode then
-            vim.api.nvim_buf_set_extmark(buf_id, ns_id, line - 1, 0, {
-              virt_text = Config.mode_to_table_str(stat),
-              virt_text_win_col = widths[1],
-              hl_mode = "combine",
-            })
-          end
-
-          if stat and stat.size then
-            ns_id = ids.size
-            local pos = widths[1] + widths[2]
-            vim.api.nvim_buf_set_extmark(buf_id, ns_id, line - 1, 0, {
-              virt_text = { { Config.size_str(stat.size), "MiniPickExplorerSize" } },
-              virt_text_win_col = pos,
-              hl_mode = "combine",
-            })
-          end
-
-          if stat and stat.mtime then
-            ns_id = ids.date
-            local pos = widths[1] + widths[2] + widths[3]
-            vim.api.nvim_buf_set_extmark(buf_id, ns_id, line - 1, 0, {
-              virt_text = { { Config.time_str(stat.mtime), "MiniPickExplorerDate" } },
-              virt_text_win_col = pos,
-              hl_mode = "combine",
-            })
-          end
-        end
-
-        if not items[1] then return end
-
-        -- HACK: Prevent first item from not having a mode string
-        local stat = vim.uv.fs_stat(items[1].path)
-        if stat.mode then
-          vim.api.nvim_buf_set_extmark(buf_id, ids.perm, 0, 0, {
-            virt_text = Config.mode_to_table_str(stat),
-            virt_text_win_col = widths[1],
-            hl_mode = "combine",
-          })
-        end
-      end,
-    },
+  require("custom.explorer").explorer({
     mappings = {
       scroll_left = "", -- HACK: Prevent it from stealing <c-h>
       go_up_level = {
