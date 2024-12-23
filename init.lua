@@ -62,11 +62,21 @@ later(function() source("plugins/mini-files.lua") end)
 later(function() require("mini.extra").setup() end)
 later(function() require("mini.bufremove").setup() end)
 later(function() require("mini.indentscope").setup() end)
+later(function() require("mini.indentscope").setup() end)
 later(function()
   require("mini.misc").setup({
     make_global = { "put", "put_text" },
   })
   MiniMisc.setup_auto_root()
+end)
+later(function()
+  local snippets = require("mini.snippets")
+  -- TODO: setup lang snippets
+  snippets.setup({
+    snippets = {
+      snippets.gen_loader.from_lang(),
+    },
+  })
 end)
 
 later(function()
@@ -101,6 +111,7 @@ later(function()
       choose_marked = "<C-q>",
     },
   })
+  require("custom.explorer").setup()
   vim.ui.select = MiniPick.ui_select
   vim.keymap.set("n", ",", [[<Cmd>Pick buf_lines scope='current' preserve_order=true<CR>]], { nowait = true })
 end)
@@ -293,7 +304,7 @@ later(function()
     source = "saghen/blink.cmp",
     checkout = "main",
     hooks = {
-      post_install = function()
+      post_install = function(path, source, name)
         vim.notify("Installing blink.cmp binary...")
         require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
           cwd = Config.path_package .. "blink.cmp",
@@ -306,7 +317,7 @@ end)
 
 later(function()
   add({ source = "neovim/nvim-lspconfig" })
-  source("plugins/nvim-lspconfig.lua")
+  require("plugins.nvim-lspconfig")
 end)
 
 later(function()

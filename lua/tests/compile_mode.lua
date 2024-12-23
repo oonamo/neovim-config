@@ -173,6 +173,7 @@ function M.shell_cmd(cmd, shell, opts)
         .iter(vim.split(data, "\n", { trimempty = false }))
         :map(function(l)
           if l:sub(-1) == "\r" then return l:sub(1, -2) end
+          if l:sub(-1) == "\n" then return l:sub(1, -2) end
           return l
         end)
         :totable()
@@ -197,13 +198,16 @@ function M.shell_cmd(cmd, shell, opts)
     vim.notify(exit_message)
   end)
 
-  vim.system(shell_cmd, {
-    text = true,
-    cwd = opts.cwd,
-    env = opts.env,
-    stdout = output_handler,
-    stderr = output_handler,
-  }, on_exit)
+  local ok, ret = pcall(
+    vim.system,
+    shell_cmd,
+    { text = true, cwd = opts.cwd, env = opts.env, stdout = output_handler, stderr = output_handler },
+    on_exit
+  )
+
+  if not ok then
+    vim.notify("There was an error running " .. table.concat(shell_cmd) .. ":\n" .. ret, vim.log.levels.ERROR)
+  end
 end
 
 vim.api.nvim_create_user_command("Shell", function(c)
