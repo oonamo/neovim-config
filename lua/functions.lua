@@ -116,12 +116,14 @@ function Config.flatten(tbl)
   return flattened
 end
 
-Config.mode_to_table_str = function(mode)
-  local extra = bit.rshift(mode, 9)
+-- TODO: Can't get file attributes from libuv for windows
+-- https://learn.microsoft.com/en-us/windows/win32/fileio/file-attribute-constants
+Config.mode_to_table_str = function(stat)
+  local extra = bit.rshift(stat.mode, 9)
   local tbl = {}
-  perm_to_table_str(bit.band(extra, 4) ~= 0 and "s", bit.rshift(mode, 6), tbl)
-  perm_to_table_str(bit.band(extra, 2) ~= 0 and "s", bit.rshift(mode, 3), tbl)
-  perm_to_table_str(bit.band(extra, 1) ~= 0 and "t", mode, tbl)
+  perm_to_table_str(bit.band(extra, 4) ~= 0 and "s", bit.rshift(stat.mode, 6), tbl)
+  perm_to_table_str(bit.band(extra, 2) ~= 0 and "s", bit.rshift(stat.mode, 3), tbl)
+  perm_to_table_str(bit.band(extra, 1) ~= 0 and "t", stat.mode, tbl)
   return tbl
 end
 
@@ -129,7 +131,7 @@ function Config.ensure_length(str, length)
   local ret = str
   local len = #str
   if len < length then
-    for i = 0, length - len do
+    for _ = 0, length - len do
       ret = ret .. " "
     end
   elseif str > length then
@@ -151,7 +153,7 @@ Config.opts.minipick = {
   ivy = true,
   explorer = {
     items = {
-      { width = 0.3 },
+      { width = 0.2 },
       { width = 10 },
       { width = 5 },
       { width = 10, remaining = true },
@@ -229,6 +231,7 @@ vim.api.nvim_set_hl(0, "MiniPickWritePermission", {
 hi("ReadBit", { link = "Special", default = true })
 hi("ExeMod", { link = "WarningMsg", default = true })
 hi("WriteBit", { link = "ErrorMsg", default = true })
+hi("ReadOnlyBit", { link = "ErrorMsg", default = true })
 hi("MiniPickExplorerSize", { link = "Constant", default = true })
 hi("MiniPickExplorerDate", { link = "Constant", default = true })
 
@@ -240,6 +243,7 @@ vim.api.nvim_create_autocmd("VimResized", {
 })
 
 function Config.explorer()
+  Config._cache.explorer_parent = nil
   require("mini.extra").pickers.explorer({}, {
     source = {
       show = function(buf_id, items, query)
@@ -255,7 +259,7 @@ function Config.explorer()
 
           if stat and stat.mode then
             vim.api.nvim_buf_set_extmark(buf_id, ns_id, line - 0, 0, {
-              virt_text = Config.mode_to_table_str(stat.mode),
+              virt_text = Config.mode_to_table_str(stat),
               virt_text_win_col = widths[1],
               hl_mode = "combine",
             })
@@ -285,10 +289,10 @@ function Config.explorer()
         if not items[1] then return end
 
         -- HACK: Prevent first item from not having a mode string
-        local first = vim.uv.fs_stat(items[1].path)
-        if first.mode then
+        local stat = vim.uv.fs_stat(items[1].path)
+        if stat.mode then
           vim.api.nvim_buf_set_extmark(buf_id, ids.perm, 0, 0, {
-            virt_text = Config.mode_to_table_str(first.mode),
+            virt_text = Config.mode_to_table_str(stat),
             virt_text_win_col = widths[1],
             hl_mode = "combine",
           })
@@ -296,7 +300,7 @@ function Config.explorer()
       end,
     },
     mappings = {
-      toggle_preview = "",
+      scroll_left = "", -- HACK: Prevent it from stealing <c-h>
       go_up_level = {
         char = "<C-BS>",
         func = function()
@@ -309,7 +313,7 @@ function Config.explorer()
         end,
       },
       go_up_level_neovide = {
-        char = "<C-h>", -- Same as C BKSP, emacs lol
+        char = "<c-h>", -- Same as C BKSP, emacs lol
         func = function()
           local query = MiniPick.get_picker_query()
           if not query[1] or query[1] == "" then
@@ -341,22 +345,6 @@ function Config.explorer()
 
           vim.schedule(function() require("mini.files").open(current.path) end)
           return true
-        end,
-      },
-      smart_tab = {
-        char = "<Tab>",
-        func = function()
-          local current = MiniPick.get_picker_matches().current
-          if not current then return end
-          local state = MiniPick.get_picker_state()
-          local opts = MiniPick.get_picker_opts()
-
-          if current.fs_type == "directory" then
-            opts.source.choose(current)
-            return
-          end
-
-          opts.source.show(state.buffers.main, current, MiniPick.get_picker_query())
         end,
       },
     },

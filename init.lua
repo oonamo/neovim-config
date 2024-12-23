@@ -48,13 +48,7 @@ if vim.g.neovide or vim.g.goneovim then now(function() source("config/gui.lua") 
 
 --================== UI Plugins ====================
 now(function()
-  local filterout_lua_diagnosing = function(notif_arr)
-    local not_diagnosing = function(notif) return not vim.startswith(notif.msg, "lua_ls: Diagnosing") end
-    notif_arr = vim.tbl_filter(not_diagnosing, notif_arr)
-    return MiniNotify.default_sort(notif_arr)
-  end
   require("mini.notify").setup({
-    content = { sort = filterout_lua_diagnosing },
     window = { config = { border = "solid" } },
     lsp_progress = { enable = false },
   })
@@ -74,6 +68,7 @@ later(function()
   })
   MiniMisc.setup_auto_root()
 end)
+
 later(function()
   local hipatterns = require("mini.hipatterns")
   local hi_words = MiniExtra.gen_highlighter.words
@@ -98,6 +93,12 @@ later(function()
           border = "solid",
         }
       end,
+    },
+    mappings = {
+      refine = "<C-r>",
+      paste = "<C-y>",
+      refine_marked = "<F1>",
+      choose_marked = "<C-q>",
     },
   })
   vim.ui.select = MiniPick.ui_select
@@ -196,7 +197,19 @@ later(function()
   })
 end)
 
-later(function() require("mini.ai").setup() end)
+later(function()
+  local ai = require("mini.ai")
+  ai.setup({
+    custom_textobjects = {
+
+      t = { "<([%p%w]-)%f[^<%w][^<>]->.-</%1>", "^<.->().*()</[^/]->$" }, -- tags
+      B = require("mini.extra").gen_ai_spec.buffer(),
+      i = require("mini.extra").gen_ai_spec.indent(),
+      u = ai.gen_spec.function_call(), -- u for Usage
+      U = ai.gen_spec.function_call({ name_pattern = "[%w_" }), -- without dot
+    },
+  })
+end)
 later(function() require("mini.operators").setup() end)
 later(function()
   require("mini.git").setup({
@@ -322,3 +335,6 @@ later(function()
   })
   source("plugins/obsidian.lua")
 end)
+
+--================== Dev Plugins ====================
+-- later(function() add({ source = "~/projects/nvim/chadschemes/", hooks = {} }) end)
