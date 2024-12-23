@@ -58,7 +58,48 @@ local defaults = {
     "size",
     "time",
   },
+  prompt_prefix = function(cwd) return ("Find Files: " .. cwd .. M._seperator):gsub("\\", "/") end,
 }
+
+-- Taken from mini.extra
+-- https://github.com/echasnovski/mini.nvim/blob/2011aff270bcd3e1f3ad088253ace2d574967bed/lua/mini/extra.lua#L1965-L1975
+M.explorer_make_items = function(path, filter, sort)
+  if vim.fn.isdirectory(path) == 0 then return {} end
+  local res = { { fs_type = "directory", path = vim.fn.fnamemodify(path, ":h"), text = ".." } }
+  for _, basename in ipairs(vim.fn.readdir(path)) do
+    local subpath = string.format("%s/%s", path, basename)
+    local fs_type = vim.fn.isdirectory(subpath) == 1 and "directory" or "file"
+    table.insert(res, { fs_type = fs_type, path = subpath, text = basename .. (fs_type == "directory" and "/" or "") })
+  end
+
+  return sort(vim.tbl_filter(filter, res))
+end
+
+-- Taken from mini.extra
+-- https://github.com/echasnovski/mini.nvim/blob/2011aff270bcd3e1f3ad088253ace2d574967bed/lua/mini/extra.lua#L1977-L1985
+M.explorer_default_sort = function(items)
+  -- Sort ignoring case
+  local res = vim.tbl_map(function(x)
+      --stylua: ignore
+      return {
+        fs_type = x.fs_type, path = x.path, text = x.text,
+        is_dir = x.fs_type == 'directory', lower_name = x.text:lower(),
+      }
+  end, items)
+
+  local compare = function(a, b)
+    -- Put directory first
+    if a.is_dir and not b.is_dir then return true end
+    if not a.is_dir and b.is_dir then return false end
+
+    -- Otherwise order alphabetically ignoring case
+    return a.lower_name < b.lower_name
+  end
+
+  table.sort(res, compare)
+
+  return vim.tbl_map(function(x) return { fs_type = x.fs_type, path = x.path, text = x.text } end, res)
+end
 
 function M._compile_widths(opts)
   if not opts then error("opts cannot be non nil to compile width") end
@@ -91,6 +132,7 @@ end
 
 function M.setup(opts)
   M.opts = vim.tbl_deep_extend("force", defaults, opts or {})
+  M._seperator = package.config:sub(1, 1)
   for i, v in ipairs(M.opts.order) do
     if v == "text" then
       M.text_place = i
@@ -200,7 +242,6 @@ function M.time(buf_id, items, query, stat, pos, line, i)
 end
 
 function M.explorer_show(buf_id, items, query)
-  local widths = M._cache.compiled_width
   vim.api.nvim_buf_clear_namespace(buf_id, M.ids.perm, 0, -1)
   vim.api.nvim_buf_clear_namespace(buf_id, M.ids.date, 0, -1)
   vim.api.nvim_buf_clear_namespace(buf_id, M.ids.size, 0, -1)
@@ -208,7 +249,6 @@ function M.explorer_show(buf_id, items, query)
 
   for line, item in ipairs(items) do
     local stat = vim.uv.fs_stat(item.path)
-    -- local width = M._cache.compiled_width[1]
     local width = 0
     for i = 1, #M.opts.items do
       width = width + (M._cache.compiled_width[i - 1] or 0)
@@ -231,13 +271,50 @@ local ivy_opts = {
   },
 }
 
+-- Mostly from:
+-- https://github.com/echasnovski/mini.nvim/blob/2011aff270bcd3e1f3ad088253ace2d574967bed/lua/mini/extra.lua#L517
 function M.explorer(local_opts)
-  local opts = { source = { show = M.explorer_show } }
+  local_opts = vim.tbl_deep_extend("force", { cwd = nil, filter = nil, sort = nil }, local_opts or {})
+
+  local filter = local_opts.filter or function() return true end
+  local sort = local_opts.sort or M.explorer_default_sort
+
+  local cwd = local_opts.cwd or vim.fn.getcwd()
+
+  local choose = function(item)
+    local path = item.path
+    if vim.fn.filereadable(path) == 1 then return MiniPick.default_choose(path) end
+    if vim.fn.isdirectory(path) == 0 then return false end
+
+    MiniPick.set_picker_items(M.explorer_make_items(path, filter, sort))
+    MiniPick.set_picker_opts({
+      source = { cwd = path },
+      window = {
+        prompt_prefix = M.opts.prompt_prefix(path)
+      },
+    })
+    MiniPick.set_picker_query({})
+    return true
+  end
+
+  local opts = { source = { show = M.explorer_show, choose = choose } }
   opts = vim.tbl_deep_extend("force", opts, local_opts or {})
+
   local picker_opts = {}
   if M.opts.ivy and M.opts.ivy.enable then picker_opts = ivy_opts end
   opts.window = picker_opts.window
-  require("mini.extra").pickers.explorer(picker_opts, opts)
+  local show = MiniPick.config.source.show
+  local items = M.explorer_make_items(cwd, filter, sort)
+  local source = { items = items, name = "File explorer", cwd = cwd, show = show, choose = choose }
+
+  opts = vim.tbl_deep_extend("force", {
+    source = source,
+    window = {
+      prompt_prefix = M.opts.prompt_prefix(cwd)
+    },
+  }, opts or {})
+
+  return MiniPick.start(opts)
 end
 
 return M
