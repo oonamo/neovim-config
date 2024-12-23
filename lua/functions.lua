@@ -153,15 +153,14 @@ Config.opts.minipick = {
   ivy = true,
   explorer = {
     items = {
-      { width = 0.2 },
-      { width = 10 },
-      { width = 5 },
+      { width = 0.2 }, -- 20% is dedicated to file names
+      { width = 10 }, -- Length of permssion string is 9
+      { width = 7 }, -- 7 is dedicated to size
       { width = 10, remaining = true },
     },
   },
 }
 
--- local _, minipick = pcall(require, "mini.pick")
 function Config._compile_widths(opts)
   local width = 0
   if Config.opts.minipick.ivy then
@@ -228,12 +227,12 @@ vim.api.nvim_set_hl(0, "MiniPickWritePermission", {
   default = true,
 })
 
-hi("ReadBit", { link = "Special", default = true })
-hi("ExeMod", { link = "WarningMsg", default = true })
-hi("WriteBit", { link = "ErrorMsg", default = true })
-hi("ReadOnlyBit", { link = "ErrorMsg", default = true })
+hi("ReadBit", { link = "MiniIconsYellow", default = true })
+hi("ExeMod", { link = "DiagnosticError", default = true })
+hi("WriteBit", { link = "DiagnosticInfo", default = true })
+hi("SepBit", { link = "NonText", default = true })
 hi("MiniPickExplorerSize", { link = "Constant", default = true })
-hi("MiniPickExplorerDate", { link = "Constant", default = true })
+hi("MiniPickExplorerDate", { link = "Character", default = true })
 
 Config._cache.explorer_widths = Config._compile_widths(Config.opts.minipick.explorer)
 
@@ -258,7 +257,7 @@ function Config.explorer()
           local stat = vim.uv.fs_stat(item.path)
 
           if stat and stat.mode then
-            vim.api.nvim_buf_set_extmark(buf_id, ns_id, line - 0, 0, {
+            vim.api.nvim_buf_set_extmark(buf_id, ns_id, line - 1, 0, {
               virt_text = Config.mode_to_table_str(stat),
               virt_text_win_col = widths[1],
               hl_mode = "combine",
@@ -302,7 +301,7 @@ function Config.explorer()
     mappings = {
       scroll_left = "", -- HACK: Prevent it from stealing <c-h>
       go_up_level = {
-        char = "<C-BS>",
+        char = "<C-h>",
         func = function()
           local query = MiniPick.get_picker_query()
           if not query[1] or query[1] == "" then
@@ -313,7 +312,7 @@ function Config.explorer()
         end,
       },
       go_up_level_neovide = {
-        char = "<c-h>", -- Same as C BKSP, emacs lol
+        char = "<c-bs>", -- Same as C BKSP, emacs lol
         func = function()
           local query = MiniPick.get_picker_query()
           if not query[1] or query[1] == "" then

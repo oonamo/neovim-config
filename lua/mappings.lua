@@ -1,22 +1,22 @@
-vim.api.nvim_set_keymap("i", "<C-c>", "<Esc>", { desc ="escape insert mode", noremap = true })
+vim.api.nvim_set_keymap("i", "<C-c>", "<Esc>", { desc = "escape insert mode", noremap = true })
 
 local function map(mode, key, rhs, opts)
   opts = opts or {}
-  if opts.silent == nil then opts.silent = true end
+  if opts.silent == nil then
+    if not (type(mode) == "string" and mode == "c" or type(mode) == "table" and vim.tbl_contains(mode, "c")) then
+      opts.silent = true
+    end
+  end
   vim.keymap.set(mode, key, rhs, opts)
 end
 
-local function map_toggle(lhs, rhs, desc)
-	map("n", "\\" .. lhs, rhs, { desc = desc })
-end
+local function map_toggle(lhs, rhs, desc) map("n", "\\" .. lhs, rhs, { desc = desc }) end
 
 --================== Toggles ====================
 map_toggle("b", '<Cmd>lua vim.o.bg = vim.o.bg == "dark" and "light" or "dark"<CR>', "Toggle 'background'")
 map_toggle("c", "<Cmd>setlocal cursorline!<CR>", "Toggle 'cursorline'")
 map_toggle("C", "<Cmd>setlocal cursorcolumn!<CR>", "Toggle 'cursorcolumn'")
-map_toggle("d", function()
-	require("mini.basics").toggle_diagnostic()
-end, "Toggle diagnostic")
+map_toggle("d", function() require("mini.basics").toggle_diagnostic() end, "Toggle diagnostic")
 map_toggle("h", "<Cmd>let v:hlsearch = 1 - v:hlsearch<CR>", "Toggle search highlight")
 map_toggle("i", "<Cmd>setlocal ignorecase!<CR>", "Toggle 'ignorecase'")
 map_toggle("l", "<Cmd>setlocal list!<CR>", "Toggle 'list'")
@@ -55,30 +55,32 @@ map({ "c", "i" }, "<C-a>", "<Home>")
 map("c", "<C-e>", "<End>")
 map("c", "<C-n>", "<Down>")
 map("c", "<C-p>", "<Up>")
+-- map("c", "<Tab>", [[pumvisible() == 1 ? "\<C-n>" : "\<Tab>"]], { expr = true })
 map("c", "<C-x>", "<C-f><Esc>?")
+map("c", ":", "lua ")
 map({ "c", "i" }, "<C-d>", "<C-right>")
 map({ "c", "i" }, "<C-s>", "<C-left>")
 
 --================== Quickfix Navigation ====================
-vim.keymap.set("n", "<C-n>", "<cmd>cnext<cr>", { desc = "Quickfix Next"})
-vim.keymap.set("n", "<C-y>", "<cmd>cprev<cr>", { desc = "Quickfix Last"})
+vim.keymap.set("n", "<C-n>", "<cmd>cnext<cr>", { desc = "Quickfix Next" })
+vim.keymap.set("n", "<C-y>", "<cmd>cprev<cr>", { desc = "Quickfix Last" })
 
 --================== Grep ====================
 map("n", "<C-g>", ":Grep ", { desc = "Start grep", silent = false })
 
 --================== Paste ====================
 map("n", "<C-p>", function()
-	local pos = vim.api.nvim_win_get_cursor(0)
-	vim.cmd("norm yyp")
-	pos[1] = pos[1] + 1
-	vim.api.nvim_win_set_cursor(0, pos)
+  local pos = vim.api.nvim_win_get_cursor(0)
+  vim.cmd("norm yyp")
+  pos[1] = pos[1] + 1
+  vim.api.nvim_win_set_cursor(0, pos)
 end)
 
+map("n", "-", function() require("mini.files").open() end, { desc = "File directory" })
 
-map("n", "-", function()
-  require("mini.files").open()
-end, { desc =  "File directory" })
-
-map({ "x", "v"}, "gf", function()
-  require("comform").format({ lsp_fallback = false, })
-end, { desc = "Format current selection"})
+map(
+  { "x", "v" },
+  "gf",
+  function() require("comform").format({ lsp_fallback = false }) end,
+  { desc = "Format current selection" }
+)
