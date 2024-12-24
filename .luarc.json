@@ -17,7 +17,8 @@
         "MiniMap",
         "MiniBufremove",
         "MiniTabline",
-        "Snacks"
+        "Snacks",
+        "MiniSnippets"
     ],
     "completion.autoRequire": true,
 }

@@ -69,12 +69,20 @@ later(function()
   })
   MiniMisc.setup_auto_root()
 end)
+later(function() add("rafamadriz/friendly-snippets") end)
 later(function()
   local snippets = require("mini.snippets")
   -- TODO: setup lang snippets
   snippets.setup({
     snippets = {
+      snippets.gen_loader.from_file(vim.fn.stdpath("config") .. "/snippets/global.json"),
       snippets.gen_loader.from_lang(),
+    },
+    expand = {
+      select = function(...)
+        require("blink.cmp").hide()
+        MiniSnippets.default_select(...)
+      end,
     },
   })
 end)
