@@ -13,10 +13,10 @@ end
 local function apply_palette(opts)
 	local palette = require("mini.hues").make_palette(opts)
 	require("mini.hues").setup(opts)
-	hi("DiagnosticError", { fg = palette.red, bg = palette.red_bg })
-	hi("DiagnosticHint", { fg = palette.blue, bg = palette.blue_bg })
-	hi("DiagnosticInfo", { fg = palette.green, bg = palette.green_bg })
-	hi("DiagnosticWarn", { fg = palette.yellow, bg = palette.yellow_bg })
+	hi("DiagnosticVirtualTextError", { fg = palette.red, bg = palette.red_bg })
+	hi("DiagnosticVirtualTextHint", { fg = palette.blue, bg = palette.blue_bg })
+	hi("DiagnosticVirtualTextInfo", { fg = palette.green, bg = palette.green_bg })
+	hi("DiagnosticVirtualTextWarn", { fg = palette.yellow, bg = palette.yellow_bg })
 end
 local purple = function()
 	apply_palette({
@@ -239,6 +239,6 @@ end
 -- grey()
 -- spring()
 -- summer()
--- winter()
+winter()
 -- gastrodom()
-vim.cmd("doautocmd ColorScheme")
+-- vim.cmd("doautocmd ColorScheme")

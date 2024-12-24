@@ -32,15 +32,16 @@ M.mappings.go_up_level_neovide = {
   end,
 }
 
-local PERM_SIZE = 9
+local PERM_SIZE = 10
 
 local hi = function(...) vim.api.nvim_set_hl(0, ...) end
 hi("ReadBit", { link = "MiniIconsYellow", default = true })
-hi("ExeMod", { link = "DiagnosticError", default = true })
-hi("WriteBit", { link = "DiagnosticInfo", default = true })
+hi("ExeMod", { link = "MiniIconsRed", default = true })
+hi("WriteBit", { link = "MiniIconsAzure", default = true })
 hi("SepBit", { link = "NonText", default = true })
 hi("MiniPickExplorerSize", { link = "Constant", default = true })
 hi("MiniPickExplorerDate", { link = "Character", default = true })
+hi("MiniPickExplorerDirectory", { link = "MiniPickExplorerDate", default = true })
 
 local defaults = {
   ivy = {
@@ -48,7 +49,7 @@ local defaults = {
   },
   items = {
     { width = 0.2 }, -- 20% is dedicated to file names
-    { width = 10 }, -- Length of permssion string is 9
+    { width = PERM_SIZE + 1 }, -- Length of permssion string is 9
     { width = 7 }, -- 7 is dedicated to size
     { width = 10, remaining = true },
   },
@@ -57,6 +58,12 @@ local defaults = {
     "permissions",
     "size",
     "time",
+  },
+  time = {
+    max_hours = 24,
+    max_secs = 60,
+    max_mins = 60,
+    max_days = 30,
   },
   prompt_prefix = function(cwd) return ("Find Files: " .. cwd .. M._seperator):gsub("\\", "/") end,
 }
@@ -178,7 +185,25 @@ function M.time_str(time)
   vim.schedule(function() current_year = vim.fn.strftime("%y") end)
   local ret
   local year = vim.fn.strftime("%y", time.sec)
-  if year ~= current_year then
+  local diff_secs = os.difftime(os.time(), time.sec)
+
+  local diff_mins = diff_secs / 60
+  local diff_hours = diff_mins / 60
+  local diff_days = diff_hours / 24
+
+  if diff_secs <= M.opts.time.max_secs then
+    local val = math.floor(diff_secs + 0.5)
+    ret = val .. " second" .. (val ~= 1 and "s" or "") .. " ago"
+  elseif diff_mins <= M.opts.time.max_secs then
+    local val = math.floor(diff_mins + 0.5)
+    ret = val .. " minute" .. (val ~= 1 and "s" or "") .. " ago"
+  elseif diff_hours <= M.opts.time.max_hours then
+    local val = math.floor(diff_hours + 0.5)
+    ret = val .. " hour" .. (val ~= 1 and "s" or "") .. " ago"
+  elseif diff_days <= M.opts.time.max_days then
+    local val = math.floor(diff_days + 0.5)
+    ret = val .. " day" .. (val ~= 1 and "s" or "") .. " ago"
+  elseif year ~= current_year then
     ret = vim.fn.strftime("%b %d %y", time.sec)
   else
     ret = vim.fn.strftime("%b %d %H:%M", time.sec)
@@ -188,7 +213,7 @@ function M.time_str(time)
 end
 
 function M.size_str(size)
-  if size == 0 then return "D" end
+  if size == 0 then return "" end
   if size >= 1e9 then
     return string.format("%.1fG", size / 1e9)
   elseif size >= 1e6 then
@@ -203,6 +228,13 @@ end
 function M.permissions(buf_id, items, query, stat, pos, line, i)
   if stat and stat.mode then
     local tbl = M.permssion_tuple_array(stat.mode)
+    if items and items[line] then
+      table.insert(
+        tbl,
+        1,
+        vim.fn.isdirectory(items[line].path) == 1 and { "d", "MiniPickExplorerDirectory" } or { "-", "SepBit" }
+      )
+    end
     if i < M.text_place then table.insert(tbl, { string.rep(" ", M._cache.compiled_width[i] - PERM_SIZE), "None" }) end
     vim.api.nvim_buf_set_extmark(buf_id, M.ids.perm, line - 1, 0, {
       virt_text = tbl,
@@ -290,7 +322,7 @@ function M.explorer(local_opts)
     MiniPick.set_picker_opts({
       source = { cwd = path },
       window = {
-        prompt_prefix = M.opts.prompt_prefix(path)
+        prompt_prefix = M.opts.prompt_prefix(path),
       },
     })
     MiniPick.set_picker_query({})
@@ -310,7 +342,7 @@ function M.explorer(local_opts)
   opts = vim.tbl_deep_extend("force", {
     source = source,
     window = {
-      prompt_prefix = M.opts.prompt_prefix(cwd)
+      prompt_prefix = M.opts.prompt_prefix(cwd),
     },
   }, opts or {})
 

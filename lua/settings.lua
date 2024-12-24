@@ -45,6 +45,7 @@ vim.opt.titlestring = "nvim"
 vim.opt.background = "dark"
 vim.o.guicursor = ""
 vim.opt.cmdheight = 1
+vim.opt.quickfixtextfunc = [[v:lua.Config.qftf]]
 
 -- o.completeopt = "menu,menuone,noselect,popup"
 -- o.completeslash = "slash"
