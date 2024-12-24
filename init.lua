@@ -119,9 +119,10 @@ later(function()
       choose_marked = "<C-q>",
     },
   })
+  source("custom/buf_lines.lua")
   require("custom.explorer").setup()
   vim.ui.select = MiniPick.ui_select
-  vim.keymap.set("n", ",", [[<Cmd>Pick buf_lines scope='current' preserve_order=true<CR>]], { nowait = true })
+  vim.keymap.set("n", ",", [[<Cmd>Pick buffer_lines_current<CR>]], { nowait = true })
 end)
 
 later(function()

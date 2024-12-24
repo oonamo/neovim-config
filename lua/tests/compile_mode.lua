@@ -122,6 +122,7 @@ function M.init_compile_mode(opts)
   M.height = vim.api.nvim_get_option_value("previewheight", {})
   local cwd = opts.cwd:gsub("^" .. vim.env.HOME, "~")
   local start = {
+    "cwd: " .. cwd,
     -- "vim: filetype=compilation:path+=" .. cwd,
     "Compilation started at " .. vim.fn.strftime("%a %b %e %H:%M:%S"),
     "",
@@ -172,7 +173,7 @@ function M.shell_cmd(cmd, shell, opts)
       local lines = vim
         .iter(vim.split(data, "\n", { trimempty = false }))
         :map(function(l)
-          if l:sub(-1) == "\r" then return l:sub(1, -2) end
+          if l:sub(-1) == "\r" then l = l:sub(1, -2) end
           if l:sub(-1) == "\n" then return l:sub(1, -2) end
           return l
         end)
