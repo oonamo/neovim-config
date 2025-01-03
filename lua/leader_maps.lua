@@ -14,8 +14,12 @@ Config.leader_groups = {
   { mode = "n", keys = "<Leader>o", desc = "+Other" },
   { mode = "n", keys = "<Leader>t", desc = "+Terminal" },
   { mode = "n", keys = "<Leader>p", desc = "+Paste" },
+  { mode = "n", keys = "<Leader>u", desc = "+UI" },
   { mode = "x", keys = "<Leader>l", desc = "+LSP" },
 }
+
+--================== U (ui) ====================
+map_leader("n", "uh", function() MiniNotify.show_history() end, "Show Notification History")
 
 --================== Y (yank) ====================
 map_leader({ "n", "v" }, "y", '"+y', "Copy motion to Clipboard")
@@ -26,7 +30,7 @@ map_leader({ "n", "v" }, "ps", '"+p', "Paste from clipboard")
 map_leader({ "n", "v" }, "P", '"+P', "Paste from clipboard")
 
 --================== w (window) ====================
-map_leader("n", "ws", "<cmd>vsplit<cr>", "Vertical Split")
+map_leader("n", "wv", "<cmd>vsplit<cr>", "Vertical Split")
 map_leader("n", "wh", "<cmd>split<cr>", "horizontal Split")
 
 --================== <tab> (Tabs) ====================
@@ -59,6 +63,7 @@ map_leader("n", ":", '<Cmd>Pick history scope=":"<CR>', "Find commands")
 map_leader("n", ",", "<Cmd>Pick buffers<CR>", "Find buffers")
 map_leader("n", ".", "<Cmd>Pick files<CR>", "Find files")
 map_leader("n", "?", "<Cmd>Pick help<CR>", "Find help")
+map_leader("n", "/", "<Cmd>Pick grep_live<CR>", "Find help")
 map_leader("n", "=", '<Cmd>Pick buf_lines scope="all"<CR>', "Find lines across buffers")
 map_leader("n", "-", '<Cmd>Pick buf_lines scope="current"<CR>', "Find lines in buffer")
 map_leader("n", "o", "<Cmd>Pick oldfiles<CR>", "Find oldfiles")

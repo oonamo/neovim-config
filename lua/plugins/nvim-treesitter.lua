@@ -1,4 +1,4 @@
-require("nvim-treesitter.query_predicates")
+-- require("nvim-treesitter.query_predicates")
 local config = require("nvim-treesitter.configs")
 config.setup({
   ensure_installed = {

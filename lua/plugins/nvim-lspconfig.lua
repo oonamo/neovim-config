@@ -72,6 +72,8 @@ local function on_attach(client, buffer)
 
   vim.keymap.set("n", "grn", vim.lsp.buf.rename)
   vim.keymap.set("n", "grr", vim.lsp.buf.references)
+  vim.keymap.set("n", "gra", vim.lsp.buf.code_action)
+  vim.keymap.set("n", "gO", vim.lsp.buf.document_highlight)
 end
 
 local defaults = { on_attach = on_attach }
@@ -139,11 +141,20 @@ local servers = {
   rust_analyzer = defaults,
   markdown_oxide = {
     on_attach = on_attach,
+    capabilities = {
+      workspace = {
+        didChangeWatchedFiles = {
+          dynamicRegistration = true,
+        },
+      },
+    },
   },
 }
+
 local lspconfig = require("lspconfig")
 local utils = require("lspconfig.util")
 local has_blink, blink = pcall(require, "blink.cmp")
+
 local capabilities = vim.tbl_deep_extend(
   "force",
   {},
@@ -164,6 +175,7 @@ for server, settings in pairs(servers) do
   end
   if server ~= "custom" then lspconfig[server].setup(settings) end
 end
+
 vim.diagnostic.config({
   underline = true,
   severity_sort = true,

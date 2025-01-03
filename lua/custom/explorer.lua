@@ -32,6 +32,20 @@ M.mappings.go_up_level_neovide = {
   end,
 }
 
+M.mappings.explorer = {
+  char = "<C-d>",
+  func = function()
+    local current = MiniPick.get_picker_matches().current
+    if not current or current == "" then
+      vim.notify("No file or Directory is selected")
+      return
+    end
+
+    vim.schedule(function() require("mini.files").open(current.path) end)
+    return true
+  end,
+}
+
 local PERM_SIZE = 10
 
 local hi = function(...) vim.api.nvim_set_hl(0, ...) end

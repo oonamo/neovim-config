@@ -28,6 +28,14 @@ require("mini.deps").setup({ path = { package = path_package } })
 local now, add, later = MiniDeps.now, MiniDeps.add, MiniDeps.later
 local source = function(path) dofile(Config.path_source .. path) end
 
+--================== Colors ====================
+now(function() add({ source = "folke/tokyonight.nvim" }) end)
+now(function() add({ source = "EdenEast/nightfox.nvim" }) end)
+now(function() add({ source = "rebelot/kanagawa.nvim" }) end)
+now(function() add({ source = "sainnhe/everforest" }) end)
+now(function() add({ source = "rose-pine/neovim" }) end)
+now(function() add({ source = "catppuccin/nvim" }) end)
+
 --================== Settings ====================
 now(function() source("settings.lua") end)
 now(function() source("mappings.lua") end)
@@ -55,6 +63,17 @@ now(function()
   vim.notify = MiniNotify.make_notify()
 end)
 now(function() require("mini.icons").setup() end)
+now(function()
+  require("mini.tabline").setup({
+    show_icons = false,
+    tabpage_section = "right",
+  })
+end)
+now(function() source("plugins/mini-starter.lua") end)
+
+if vim.fn.has("gui_running") == 0 then
+  now(function() require("mini.animate").setup({ scroll = { enable = false } }) end)
+end
 
 --================== Mini Plugins ====================
 later(function() require("mini.pairs").setup() end)
@@ -68,11 +87,11 @@ later(function()
     make_global = { "put", "put_text" },
   })
   MiniMisc.setup_auto_root()
+  MiniMisc.setup_restore_cursor()
 end)
 later(function() add("rafamadriz/friendly-snippets") end)
 later(function()
   local snippets = require("mini.snippets")
-  -- TODO: setup lang snippets
   snippets.setup({
     snippets = {
       snippets.gen_loader.from_file(vim.fn.stdpath("config") .. "/snippets/global.json"),
@@ -80,7 +99,13 @@ later(function()
     },
     expand = {
       select = function(...)
-        require("blink.cmp").hide()
+        local ok, b = pcall(require, "blink.cmp")
+        if ok then
+          pcall(b, "hide")
+          pcall(vim.api.nvim_buf_clear_namespace, 0, vim.api.nvim_get_namespaces()["blink_cmp"], 0, -1)
+          pcall(vim.api.nvim_buf_clear_namespace, 0, vim.api.nvim_get_namespaces()["blink_cmp_renderer"], 0, -1)
+        end
+
         MiniSnippets.default_select(...)
       end,
     },
@@ -165,6 +190,7 @@ later(function()
     window = {
       delay = 0,
       config = {
+        -- border = { "  ", "  ", "  ", "  ", "  ", "  ", "  ", "  ", },
         border = "solid",
         footer = {
           { "Mappings:", "MiniClueDescGroup" },
@@ -192,12 +218,11 @@ later(function()
       { mode = "n", keys = "<Leader>t", desc = "+Terminal" },
       { mode = "n", keys = "<Leader>v", desc = "+Visits" },
       { mode = "f", keys = "<Leader>f", desc = "+Find" },
-
-      { mode = "x", keys = "<Leader>l", desc = "+LSP" },
     },
   })
 end)
 
+later(function() require("mini.visits").setup() end)
 later(function()
   require("mini.surround").setup({
     highlight_duration = 500,
@@ -207,6 +232,7 @@ later(function()
       find = "gsn", -- Find surrounding (to the right)
       find_left = "gsN", -- Find surrounding (to the left)
       highlight = "gsh", -- Highlight surrounding
+      indentscope_color = "",
       replace = "gsr", -- Replace surrounding
       update_n_lines = "", -- Update `n_lines`
 
@@ -220,13 +246,57 @@ end)
 later(function()
   local ai = require("mini.ai")
   ai.setup({
+    mappings = {
+      goto_left = "g[",
+      goto_right = "g]",
+    },
     custom_textobjects = {
-
-      t = { "<([%p%w]-)%f[^<%w][^<>]->.-</%1>", "^<.->().*()</[^/]->$" }, -- tags
       B = require("mini.extra").gen_ai_spec.buffer(),
+      t = { "<([%p%w]-)%f[^<%w][^<>]->.-</%1>", "^<.->().*()</[^/]->$" }, -- tags
+      o = ai.gen_spec.treesitter({ -- code block
+        a = { "@block.outer", "@conditional.outer", "@loop.outer" },
+        i = { "@block.inner", "@conditional.inner", "@loop.inner" },
+      }),
+      f = ai.gen_spec.treesitter({ a = "@function.outer", i = "@function.inner" }), -- function DEFINITION
       i = require("mini.extra").gen_ai_spec.indent(),
       u = ai.gen_spec.function_call(), -- u for Usage
-      U = ai.gen_spec.function_call({ name_pattern = "[%w_" }), -- without dot
+      U = ai.gen_spec.function_call({ name_pattern = "[%w_]" }), -- without dot
+      e = { -- snake_case, camelCase, PascalCase, etc; all capitalizations
+        -- Lua 5.1 character classes and the undocumented frontier pattern:
+        -- https://www.lua.org/manual/5.1/manual.html#5.4.1
+        -- http://lua-users.org/wiki/FrontierPattern
+        {
+          -- Matches a single uppercase letter followed by 1+ lowercase
+          -- letters. This covers:
+          -- - PascalCaseWords (or the latter part of camelCaseWords)
+          "%u[%l%d]+%f[^%l%d]", -- An uppercase letter, 1+ lowercase letters, to end of lowercase letters
+
+          -- Matches lowercase letters up until not lowercase letter.
+          -- This covers:
+          -- - start of camelCaseWords (just the `camel`)
+          -- - snake_case_words in lowercase
+          -- - regular lowercase words
+          "%f[^%s%p][%l%d]+%f[^%l%d]", -- after whitespace/punctuation, 1+ lowercase letters, to end of lowercase letters
+          "^[%l%d]+%f[^%l%d]", -- after beginning of line, 1+ lowercase letters, to end of lowercase letters
+
+          -- Matches uppercase or lowercase letters up until not letters.
+          -- This covers:
+          -- - SNAKE_CASE_WORDS in uppercase
+          -- - Snake_Case_Words in titlecase
+          -- - regular UPPERCASE words
+          -- (it must be both uppercase and lowercase otherwise it will
+          -- match just the first letter of PascalCaseWords)
+          "%f[^%s%p][%a%d]+%f[^%a%d]", -- after whitespace/punctuation, 1+ letters, to end of letters
+          "^[%a%d]+%f[^%a%d]", -- after beginning of line, 1+ letters, to end of letters
+        },
+        -- { -- original version from mini.ai help file:
+        --   '%u[%l%d]+%f[^%l%d]',
+        --   '%f[%S][%l%d]+%f[^%l%d]',
+        --   '%f[%P][%l%d]+%f[^%l%d]',
+        --   '^[%l%d]+%f[^%l%d]',
+        -- },
+        "^().*()$",
+      },
     },
   })
 end)
@@ -298,11 +368,15 @@ later(
 --================== Plugins ====================
 later(function()
   add({
-    source = "nvim-treesitter/nvim-treesitter",
-    checkout = "master",
-    monitor = "main",
-    hooks = {
-      post_checkout = function() vim.cmd("TSUpdate") end,
+    source = "nvim-treesitter/nvim-treesitter-textobjects",
+    depends = {
+      {
+        source = "nvim-treesitter/nvim-treesitter",
+        checkout = "master",
+        hooks = {
+          post_checkout = function() vim.cmd("TSUpdate") end,
+        },
+      },
     },
   })
   source("plugins/nvim-treesitter.lua")
@@ -338,10 +412,6 @@ later(function()
   add({ source = "stevearc/quicker.nvim" })
   source("plugins/quicker.lua")
 end)
-
-later(function() add({ source = "EdenEast/nightfox.nvim" }) end)
-later(function() add({ source = "rebelot/kanagawa.nvim" }) end)
-later(function() add({ source = "sainnhe/everforest" }) end)
 
 later(function()
   add({ source = "MeanderingProgrammer/render-markdown.nvim" })

@@ -1,3 +1,14 @@
+local create_norm_bg = function()
+  local norm = vim.api.nvim_get_hl(0, { name = "Normal" })
+  vim.api.nvim_set_hl(0, "NormalBG", { bg = norm.bg })
+end
+
+create_norm_bg()
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = create_norm_bg,
+})
+
 require("render-markdown").setup({
   preset = "obsidian",
   -- render_modes = { "n", "c" },
@@ -23,11 +34,32 @@ require("render-markdown").setup({
     border = "thick",
   },
   heading = {
-    border = false,
+    enabled = true,
+    icons = { "◈  ", "◇  ", "◆  ", "⋄  ", "❖  ", "⟡  " },
+
+    backgrounds = {
+      "NormalBG",
+      "NormalBG",
+      "NormalBG",
+      "NormalBG",
+      "NormalBG",
+      "NormalBG",
+    },
+
+    -- foregrounds = {
+    --   "@markup.heading.1.markdown",
+    --   "@markup.heading.2.markdown",
+    --   "@markup.heading.3.markdown",
+    --   "@markup.heading.4.markdown",
+    --   "@markup.heading.5.markdown",
+    --   "@markup.heading.6.markdown",
+    -- },
+
+    border = true,
     border_virtual = true,
     border_prefix = true,
     sign = false,
-    icons = { " " },
+    -- icons = { " " },
     position = "inline",
   },
   pipe_table = {

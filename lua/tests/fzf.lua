@@ -11,14 +11,22 @@ local find_files = {
   "!.git",
 }
 
+local current = {}
+local prev = {}
+
 vim.fn.termopen("fzf", {
   pty = true,
   env = {
-    ["FZF_DEFAULT_COMMAND"] = table.concat(find_files, " ")
+    ["FZF_DEFAULT_COMMAND"] = table.concat(find_files, " "),
   },
   on_exit = function(...)
     vim.print(...)
-  end
+    vim.cmd("bw!")
+  end,
+  on_stdout = function(_, data, _)
+    prev = current
+    current = data
+  end,
 })
 
 vim.cmd.startinsert()

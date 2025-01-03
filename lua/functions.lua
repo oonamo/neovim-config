@@ -7,17 +7,18 @@ Config._cache = {
 Config.opts = {}
 
 function Config.open_lazygit()
-  vim.cmd("tabedit")
-  vim.cmd("setlocal nonumber signcolumn=no cmdheight=0")
+  Config.toggle_term("lazygit")
+  -- vim.cmd("tabedit")
+  -- vim.cmd("setlocal nonumber signcolumn=no cmdheight=0")
 
-  vim.fn.termopen("lazygit", {
-    on_exit = function()
-      vim.cmd("silent! :checktime")
-      vim.cmd("silent! :bw")
-    end,
-  })
-  vim.cmd("startinsert")
-  vim.b.minipairs_disable = true
+  -- vim.fn.termopen("lazygit", {
+  --   on_exit = function()
+  --     vim.cmd("silent! :checktime")
+  --     vim.cmd("silent! :bw")
+  --   end,
+  -- })
+  -- vim.cmd("startinsert")
+  -- vim.b.minipairs_disable = true
 end
 
 function Config.async_grep(args)
@@ -287,7 +288,13 @@ function Config.toggle_term(cmd)
   if Config._cache.term ~= nil and not vim.api.nvim_win_is_valid(Config._cache.term.buf) then
     Config._cache.term = Config.create_win({ buf = Config._cache.term.buf })
     if vim.bo[Config._cache.term.buf].buftype ~= "terminal" then
-      vim.cmd.terminal(cmd)
+      -- vim.cmd.terminal(cmd)
+      vim.fn.termopen(cmd, {
+        on_exit = function()
+          vim.cmd("silent! :checktime")
+          vim.cmd("silent! :bw")
+        end,
+      })
       vim.cmd.startinsert()
     end
   else

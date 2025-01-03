@@ -126,7 +126,6 @@ local function setup()
   vim.keymap.set("n", "<leader>ol", function() vim.cmd("ObsidianLink") end, { desc = "[O]bsidian [L]ink" })
   vim.keymap.set("n", "<leader>od", function()
     local day_of_week = os.date("%A")
-    print(day_of_week)
     assert(type(day_of_week) == "string")
     local offset_start
     require("onam.fn").switch(day_of_week, {
@@ -168,9 +167,11 @@ if vim.fn.argc() >= 1 then
   local file = cwd .. package.config:sub(1, 1) .. vim.fn.argv()[1]
   if file:match(base_bath) then
     vim.api.nvim_exec_autocmds("FileType", {
-      group = require("render-markdown.manager").group,
+      -- group = require("render-markdown.manager").group,
       data = {
-        buf = 0,
+        buf = vim.api.nvim_get_current_buf(),
+        event = "FileType",
+        match = "base.md",
       },
     })
     setup()
@@ -182,7 +183,6 @@ if vim.fn.argc() >= 1 then
           match = vim.api.nvim_buf_get_name(0),
         },
       })
-      print("here, and loaded obsidian!")
     end)
     vim.g.obsidian_loaded = true
     return

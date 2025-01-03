@@ -96,3 +96,7 @@ hi("SepBit", { fg = "#777294" })
 hi("MiniPickExplorerSize", { fg = "#1f6fbf" })
 hi("MiniPickExplorerDate", { fg = "#1f6fbf" })
 hi("MiniPickExplorerDirectory", { fg = "#34494a" })
+
+hi("MiniTablineCurrent", { bg = bg, fg = colors.fg_edge2, underline = true })
+hi("MiniTablineVisible", { bg = bg, fg = colors.bg_mid })
+hi("MiniTablineHidden", { bg = bg, fg = colors.bg_mid })

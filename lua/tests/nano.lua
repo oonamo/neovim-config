@@ -138,7 +138,7 @@ function statusline.mode()
     }, true)
   else
     return stl_format("mode", string.format(" %s ", mode_str), {
-      bg = { hi = "TabLine", key = "fg" },
+      bg = { hi = "Folded", key = "bg" },
       fg = "Normal",
       -- fg = {
       --   fg = "Normal"
@@ -423,6 +423,39 @@ function statusline.lsp_progress()
     vim.b.spinner_icon
   )
 end
+
+---@param node? TSNode
+---@return TSNode?
+local function get_next_header(node)
+	-- HACK: prevent Infinite recursion in case of a bug
+	if not node then
+		return nil
+	end
+	if node:type() == "atx_heading" then
+		return node
+	end
+	if node:type() == "paragraph" then
+		return get_next_header(node:prev_named_sibling())
+	end
+	if node:type() == "section" then
+		return get_next_header(node:child(0))
+	end
+	if node:type() == "document" then
+		return nil
+	end
+	-- HACK: Prevent calling parnet->child->parent->child ...
+	if node:parent():type() == "section" then
+		-- Parent -> child does not always point to itself
+		local child = node:parent():child(0)
+		if child and child:type() == "atx_heading" then
+			return child
+		end
+		return nil
+	end
+	return get_next_header(node:parent())
+end
+
+
 
 -- stylua: ignore start
 ---Statusline components

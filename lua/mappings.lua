@@ -12,6 +12,15 @@ end
 
 local function map_toggle(lhs, rhs, desc) map("n", "\\" .. lhs, rhs, { desc = desc }) end
 
+local function cmap(trig, command)
+  vim.keymap.set(
+    "c",
+    trig,
+    function() return vim.fn.getcmdcompltype() == "command" and command or trig end,
+    { expr = true }
+  )
+end
+
 --================== Toggles ====================
 map_toggle("b", '<Cmd>lua vim.o.bg = vim.o.bg == "dark" and "light" or "dark"<CR>', "Toggle 'background'")
 map_toggle("c", "<Cmd>setlocal cursorline!<CR>", "Toggle 'cursorline'")
@@ -57,7 +66,7 @@ map("c", "<C-n>", "<Down>")
 map("c", "<C-p>", "<Up>")
 -- map("c", "<Tab>", [[pumvisible() == 1 ? "\<C-n>" : "\<Tab>"]], { expr = true })
 map("c", "<C-x>", "<C-f><Esc>?")
-map("c", ":", "lua ")
+cmap(":", "lua ")
 map({ "c", "i" }, "<C-d>", "<C-right>")
 map({ "c", "i" }, "<C-s>", "<C-left>")
 
@@ -84,3 +93,22 @@ map(
   function() require("comform").format({ lsp_fallback = false }) end,
   { desc = "Format current selection" }
 )
+
+--================== Visits ====================
+local map_vis = function(keys, call, desc)
+  local rhs = "<Cmd>lua MiniVisits." .. call .. "<CR>"
+  vim.keymap.set("n", "<Leader>" .. keys, rhs, { desc = desc })
+end
+
+local map_cwd = function(keys, action, desc)
+  local rhs = function()
+    local cwd = (vim.uv or vim.loop).cwd()
+    require("mini.visits")[action](cwd)
+  end
+  vim.keymap.set("n", "<Leader>" .. keys, rhs, { desc = desc })
+end
+
+map_vis("vv", 'add_label("core")', "Add to core")
+map_vis("vV", 'remove_label("core")', "Remove from core")
+map_vis("vc", 'select_path("", { filter = "core" })', "Select core (all)")
+map_vis("vC", 'select_path(nil, { filter = "core" })', "Select core (cwd)")

@@ -239,6 +239,6 @@ end
 -- grey()
 -- spring()
 -- summer()
-winter()
+-- winter()
 -- gastrodom()
 -- vim.cmd("doautocmd ColorScheme")

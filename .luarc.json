@@ -18,7 +18,8 @@
         "MiniBufremove",
         "MiniTabline",
         "Snacks",
-        "MiniSnippets"
+        "MiniSnippets",
+        "MiniStarter"
     ],
     "completion.autoRequire": true,
 }

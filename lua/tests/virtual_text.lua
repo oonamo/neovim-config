@@ -14,8 +14,9 @@ vim.api.nvim_buf_set_extmark(0, ns, 11 - 1, 0, {
   -- end_col = widths[1] + 14,
   hl_mode = "combine",
 })
+
 vim.api.nvim_buf_set_extmark(0, ns, 11 - 1, 0, {
-  virt_text = {Config.size_str(stat.size), "Normal" }
+  virt_text = {Config.size_str(stat.size), "Normal" },
   virt_text_win_col = 40,
   -- end_col = widths[1] + 14,
   hl_mode = "combine",
