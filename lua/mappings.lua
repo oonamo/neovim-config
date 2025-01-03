@@ -93,22 +93,3 @@ map(
   function() require("comform").format({ lsp_fallback = false }) end,
   { desc = "Format current selection" }
 )
-
---================== Visits ====================
-local map_vis = function(keys, call, desc)
-  local rhs = "<Cmd>lua MiniVisits." .. call .. "<CR>"
-  vim.keymap.set("n", "<Leader>" .. keys, rhs, { desc = desc })
-end
-
-local map_cwd = function(keys, action, desc)
-  local rhs = function()
-    local cwd = (vim.uv or vim.loop).cwd()
-    require("mini.visits")[action](cwd)
-  end
-  vim.keymap.set("n", "<Leader>" .. keys, rhs, { desc = desc })
-end
-
-map_vis("vv", 'add_label("core")', "Add to core")
-map_vis("vV", 'remove_label("core")', "Remove from core")
-map_vis("vc", 'select_path("", { filter = "core" })', "Select core (all)")
-map_vis("vC", 'select_path(nil, { filter = "core" })', "Select core (cwd)")

@@ -1,4 +1,5 @@
 vim.loader.enable()
+vim.g.maplocalleader = ";"
 
 -- Clone 'mini.nvim' manually in a way that it gets managed by 'mini.deps'
 local path_package = vim.fn.stdpath("data") .. "/site/"
@@ -28,13 +29,6 @@ require("mini.deps").setup({ path = { package = path_package } })
 local now, add, later = MiniDeps.now, MiniDeps.add, MiniDeps.later
 local source = function(path) dofile(Config.path_source .. path) end
 
---================== Colors ====================
-now(function() add({ source = "folke/tokyonight.nvim" }) end)
-now(function() add({ source = "EdenEast/nightfox.nvim" }) end)
-now(function() add({ source = "rebelot/kanagawa.nvim" }) end)
-now(function() add({ source = "sainnhe/everforest" }) end)
-now(function() add({ source = "rose-pine/neovim" }) end)
-now(function() add({ source = "catppuccin/nvim" }) end)
 
 --================== Settings ====================
 now(function() source("settings.lua") end)
@@ -55,6 +49,13 @@ end)
 if vim.g.neovide or vim.g.goneovim then now(function() source("config/gui.lua") end) end
 
 --================== UI Plugins ====================
+--================== Colors ====================
+now(function() add({ source = "folke/tokyonight.nvim" }) end)
+now(function() add({ source = "EdenEast/nightfox.nvim" }) end)
+now(function() add({ source = "rebelot/kanagawa.nvim" }) end)
+now(function() add({ source = "sainnhe/everforest" }) end)
+now(function() add({ source = "rose-pine/neovim" }) end)
+now(function() add({ source = "catppuccin/nvim" }) end)
 now(function()
   require("mini.notify").setup({
     window = { config = { border = "solid" } },
@@ -157,6 +158,8 @@ later(function()
       -- Leader triggers
       { mode = "n", keys = "<Leader>" },
       { mode = "x", keys = "<Leader>" },
+      { mode = "n", keys = "<localleader>" },
+      { mode = "x", keys = "<localleader>" },
 
       -- Built-in completion
       { mode = "i", keys = "<C-x>" },

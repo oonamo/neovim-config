@@ -63,7 +63,7 @@ map_leader("n", ":", '<Cmd>Pick history scope=":"<CR>', "Find commands")
 map_leader("n", ",", "<Cmd>Pick buffers<CR>", "Find buffers")
 map_leader("n", ".", "<Cmd>Pick files<CR>", "Find files")
 map_leader("n", "?", "<Cmd>Pick help<CR>", "Find help")
-map_leader("n", "/", "<Cmd>Pick grep_live<CR>", "Find help")
+map_leader("n", "/", "<Cmd>Pick grep_live<CR>", "Grep live")
 map_leader("n", "=", '<Cmd>Pick buf_lines scope="all"<CR>', "Find lines across buffers")
 map_leader("n", "-", '<Cmd>Pick buf_lines scope="current"<CR>', "Find lines in buffer")
 map_leader("n", "o", "<Cmd>Pick oldfiles<CR>", "Find oldfiles")
@@ -146,3 +146,27 @@ map_leader("n", "tp", function()
   vim.cmd("setlocal nonumber norelativenumber laststatus=0")
   vim.api.nvim_win_set_height(0, 5)
 end, "cmd terminal")
+
+--================== Visits ====================
+local map_vis = function(keys, call, desc)
+  local rhs = "<Cmd>lua MiniVisits." .. call .. "<CR>"
+  vim.keymap.set("n", "<Leader>" .. keys, rhs, { desc = desc })
+end
+
+map_vis("vv", 'add_label("core")', "Add to core")
+map_vis("vV", 'remove_label("core")', "Remove from core")
+map_vis("vc", 'select_path("", { filter = "core" })', "Select core (all)")
+map_vis("vC", 'select_path(nil, { filter = "core" })', "Select core (cwd)")
+
+local map_branch = function(keys, action, desc)
+  local rhs = function()
+    local branch = vim.fn.system("git rev-parse --abbrev-ref HEAD")
+    if vim.v.shell_error ~= 0 then return vim.notify("") end
+    branch = vim.trim(branch)
+    require("mini.visits")[action](branch)
+  end
+  vim.keymap.set("n", "<Leader>" .. keys, rhs, { desc = desc })
+end
+
+map_branch("vb", "add_label", "Add branch label")
+map_branch("vB", "remove_label", "Remove branch label")

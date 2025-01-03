@@ -39,12 +39,6 @@ local function on_attach(client, buffer)
   })
 
   vim.keymap.set("n", "<leader>ln", vim.lsp.buf.rename, { desc = "Rename symbol", buffer = buffer, expr = true })
-  vim.keymap.set(
-    "n",
-    "<leader>vxx",
-    function() require("mini.extra").pickers.diagnostic() end,
-    { desc = "Find diagnostics", buffer = buffer }
-  )
   vim.keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, {
     desc = "Signature help",
     buffer = buffer,
@@ -73,7 +67,7 @@ local function on_attach(client, buffer)
   vim.keymap.set("n", "grn", vim.lsp.buf.rename)
   vim.keymap.set("n", "grr", vim.lsp.buf.references)
   vim.keymap.set("n", "gra", vim.lsp.buf.code_action)
-  vim.keymap.set("n", "gO", vim.lsp.buf.document_highlight)
+  vim.keymap.set("n", "gO", vim.lsp.buf.document_symbol)
 end
 
 local defaults = { on_attach = on_attach }
