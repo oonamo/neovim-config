@@ -58,6 +58,7 @@ hi("MiniPickExplorerDate", { link = "Character", default = true })
 hi("MiniPickExplorerDirectory", { link = "MiniPickExplorerDate", default = true })
 
 local defaults = {
+  show_icons = true,
   ivy = {
     enable = true,
   },
@@ -291,7 +292,7 @@ function M.explorer_show(buf_id, items, query)
   vim.api.nvim_buf_clear_namespace(buf_id, M.ids.perm, 0, -1)
   vim.api.nvim_buf_clear_namespace(buf_id, M.ids.date, 0, -1)
   vim.api.nvim_buf_clear_namespace(buf_id, M.ids.size, 0, -1)
-  require("mini.pick").default_show(buf_id, items, query)
+  require("mini.pick").default_show(buf_id, items, query, { show_icons = true })
 
   for line, item in ipairs(items) do
     local stat = vim.uv.fs_stat(item.path)
