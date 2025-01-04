@@ -82,34 +82,34 @@ vim.api.nvim_create_autocmd("ColorScheme", {
   end,
 })
 
-vim.api.nvim_create_autocmd("UIEnter", {
-  group = group,
-  once = true,
-  desc = "Restore colorscheme + background",
-  callback = function()
-    local file = fs.read(colors_file)
-    if file == "" then return end
-
-    local ok, saved = pcall(vim.json.decode, file)
-    if not ok then return end
-
-    if saved.bg then vim.go.bg = saved.bg end
-    if saved.colors_name and saved.colors_name ~= vim.g.colors_name then
-      ok, _ = pcall(vim.cmd.colorscheme, saved.colors_name)
-      if not ok then
-        MiniDeps.later(function()
-          local err
-          ok, err = require("custom.colors").select(saved.colors_name)
-          if not ok then
-            vim.notify(
-              "Could not load colorscheme '"
-                .. saved.colors_name
-                .. "':\n"
-                .. ((err and type(err) == "string") and err or "")
-            )
-          end
-        end)
-      end
-    end
-  end,
-})
+-- vim.api.nvim_create_autocmd("UIEnter", {
+--   group = group,
+--   once = true,
+--   desc = "Restore colorscheme + background",
+--   callback = function()
+--     local file = fs.read(colors_file)
+--     if file == "" then return end
+--
+--     local ok, saved = pcall(vim.json.decode, file)
+--     if not ok then return end
+--
+--     if saved.bg then vim.go.bg = saved.bg end
+--     if saved.colors_name and saved.colors_name ~= vim.g.colors_name then
+--       ok, _ = pcall(vim.cmd.colorscheme, saved.colors_name)
+--       if not ok then
+--         MiniDeps.later(function()
+--           local err
+--           ok, err = require("custom.colors").select(saved.colors_name)
+--           if not ok then
+--             vim.notify(
+--               "Could not load colorscheme '"
+--                 .. saved.colors_name
+--                 .. "':\n"
+--                 .. ((err and type(err) == "string") and err or "")
+--             )
+--           end
+--         end)
+--       end
+--     end
+--   end,
+-- })

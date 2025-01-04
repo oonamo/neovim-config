@@ -7,7 +7,6 @@ vim.opt_local.nu = false
 vim.opt_local.rnu = false
 vim.opt_local.spell = true
 vim.opt_local.conceallevel = 2
-vim.opt_local.cmdheight = 0
 vim.b.miniindentscope_disable = true
 vim.opt_local.list = false
 vim.opt_local.sidescrolloff = 1000

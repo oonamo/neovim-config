@@ -181,7 +181,6 @@ function M.diff(data)
 		change_format = stl_format("change", "~" .. change, {
 			fg = "diffChanged",
 			bg = "StatusLine",
-      bold = true,
 		})
 	end
 	return add_format .. " " .. change_format .. " " .. delete_format .. " %#StatusLine# "

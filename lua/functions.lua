@@ -6,20 +6,7 @@ Config._cache = {
 }
 Config.opts = {}
 
-function Config.open_lazygit()
-  Config.toggle_term("lazygit")
-  -- vim.cmd("tabedit")
-  -- vim.cmd("setlocal nonumber signcolumn=no cmdheight=0")
-
-  -- vim.fn.termopen("lazygit", {
-  --   on_exit = function()
-  --     vim.cmd("silent! :checktime")
-  --     vim.cmd("silent! :bw")
-  --   end,
-  -- })
-  -- vim.cmd("startinsert")
-  -- vim.b.minipairs_disable = true
-end
+function Config.open_lazygit() Config.toggle_term("lazygit") end
 
 function Config.async_grep(args)
   local cmd, num_subs = vim.o.grepprg:gsub("%$%*", args)
@@ -443,4 +430,33 @@ function Config.qftf(info)
   end
 
   return lines
+end
+
+Config.load_colorscheme = function()
+  local fs = require("utils.fs")
+  local colors_file = vim.fs.joinpath(vim.fn.stdpath("state") --[[@as string]], "colors.json")
+  local file = fs.read(colors_file)
+  if file == "" then return end
+
+  local ok, saved = pcall(vim.json.decode, file)
+  if not ok then return end
+
+  if saved.bg then vim.go.bg = saved.bg end
+  if saved.colors_name and saved.colors_name ~= vim.g.colors_name then
+    ok, _ = pcall(vim.cmd.colorscheme, saved.colors_name)
+    if not ok then
+      MiniDeps.later(function()
+        local err
+        ok, err = require("custom.colors").select(saved.colors_name)
+        if not ok then
+          vim.notify(
+            "Could not load colorscheme '"
+              .. saved.colors_name
+              .. "':\n"
+              .. ((err and type(err) == "string") and err or "")
+          )
+        end
+      end)
+    end
+  end
 end

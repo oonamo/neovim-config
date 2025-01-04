@@ -29,7 +29,6 @@ require("mini.deps").setup({ path = { package = path_package } })
 local now, add, later = MiniDeps.now, MiniDeps.add, MiniDeps.later
 local source = function(path) dofile(Config.path_source .. path) end
 
-
 --================== Settings ====================
 now(function() source("settings.lua") end)
 now(function() source("mappings.lua") end)
@@ -51,11 +50,86 @@ if vim.g.neovide or vim.g.goneovim then now(function() source("config/gui.lua") 
 --================== UI Plugins ====================
 --================== Colors ====================
 now(function() add({ source = "folke/tokyonight.nvim" }) end)
-now(function() add({ source = "EdenEast/nightfox.nvim" }) end)
+now(function()
+  add({ source = "EdenEast/nightfox.nvim" })
+  local S = require("nightfox.lib.shade")
+  local C = require("nightfox.lib.color")
+  local bg0 = C.new("#192330")
+  local black = C.new("#000000")
+  local nightfox = {
+    bg0 = bg0:blend(black, 0.75):to_hex(),
+    bg1 = "#192330",
+    comment = "#526175",
+    black = S.new("#393b44", "#475072", "#32343b"),
+    red = S.new("#c94f6d", "#d6616b", "#ad425c"),
+    green = S.new("#81b29a", "#58cd8b", "#689c83"),
+    yellow = S.new("#dbc074", "#ffe37e", "#c7a957"),
+    blue = S.new("#719cd6", "#84cee4", "#5483c1"),
+    magenta = S.new("#9d79d6", "#b8a1e3", "#835dc1"),
+    cyan = S.new("#63cdcf", "#59f0ff", "#4ab8ba"),
+    white = S.new("#dfdfe0", "#f2f2f2", "#bdbdc0"),
+    orange = S.new("#f4a261", "#f6a878", "#e28940"),
+    pink = S.new("#d67ad2", "#df97db", "#c15dbc"),
+  }
+  local nightfox_spec = {
+    git = {
+      add = "#70a288",
+      change = "#a58155",
+      delete = "#904a6a",
+      conflict = "#c07a6d",
+    },
+  }
+  require("nightfox").setup({
+    palettes = {
+      dayfox = {
+        black = S.new("#1d344f", "#24476f", "#1c2f44", true),
+        red = S.new("#b95d76", "#c76882", "#ac5169", true),
+        green = S.new("#618774", "#629f81", "#597668", true),
+        yellow = S.new("#ba793e", "#ca884a", "#a36f3e", true),
+        blue = S.new("#4d688e", "#4e75aa", "#485e7d", true),
+        magenta = S.new("#8e6f98", "#9f75ac", "#806589", true),
+        cyan = S.new("#6ca7bd", "#74b2c9", "#5a99b0", true),
+        white = S.new("#cdd1d5", "#cfd6dd", "#b6bcc2", true),
+        orange = S.new("#e3786c", "#e8857a", "#d76558", true),
+        pink = S.new("#d685af", "#de8db7", "#c9709e", true),
+
+        comment = "#7f848e",
+
+        bg0 = "#dbdbdb", -- Dark bg (status line and float)
+        bg1 = "#eaeaea", -- Default bg
+        bg2 = "#dbcece", -- Lighter bg (colorcolm folds)
+        bg3 = "#ced6db", -- Lighter bg (cursor line)
+        bg4 = "#bebebe", -- Conceal, border fg
+
+        fg0 = "#182a40", -- Lighter fg
+        fg1 = "#1d344f", -- Default fg
+        fg2 = "#233f5e", -- Darker fg (status line)
+        fg3 = "#2e537d", -- Darker fg (line numbers, fold colums)
+
+        sel0 = "#e7d2be", -- Popup bg, visual selection bg
+        sel1 = "#a4c1c2", -- Popup sel bg, search bg
+      },
+      nightfox = nightfox,
+    },
+    specs = {
+      nightfox = nightfox_spec,
+    },
+  })
+end)
 now(function() add({ source = "rebelot/kanagawa.nvim" }) end)
-now(function() add({ source = "sainnhe/everforest" }) end)
+now(function()
+  add({ source = "sainnhe/everforest" })
+  vim.g.everforest_background = "medium"
+  vim.g.everforest_diagnostic_text_highlight = true
+  vim.g.everforest_diagnostic_line_highlight = true
+  vim.g.everforest_diagnostic_virtual_text = true
+end)
+
 now(function() add({ source = "rose-pine/neovim" }) end)
 now(function() add({ source = "catppuccin/nvim" }) end)
+now(function() add({ source = "cocopon/iceberg.vim" }) end)
+later(Config.load_colorscheme)
+
 now(function()
   require("mini.notify").setup({
     window = { config = { border = "solid" } },
@@ -118,10 +192,16 @@ later(function()
   local hi_words = MiniExtra.gen_highlighter.words
   hipatterns.setup({
     highlighters = {
-      fixme = hi_words({ "FIXME", "Fixme", "fixme" }, "MiniHipatternsFixme"),
-      hack = hi_words({ "HACK", "Hack", "hack" }, "MiniHipatternsHack"),
-      todo = hi_words({ "TODO", "Todo", "todo" }, "MiniHipatternsTodo"),
-      note = hi_words({ "NOTE", "Note", "note" }, "MiniHipatternsNote"),
+      fixme = { pattern = "%f[%w]()FIXME()%f[%W]", group = "MiniHipatternsFixme" },
+      fix = { pattern = "%f[%w]()FIX()%f[%W]", group = "MiniHipatternsFixme" },
+      hack = { pattern = "%f[%w]()HACK()%f[%W]", group = "MiniHipatternsHack" },
+      perf = { pattern = "%f[%w]()PERF()%f[%W]", group = "MiniHipatternsHack" },
+      todo = { pattern = "%f[%w]()TODO()%f[%W]", group = "MiniHipatternsTodo" },
+      note = { pattern = "%f[%w]()NOTE()%f[%W]", group = "MiniHipatternsNote" },
+      -- fixme = hi_words({ "FIXME", "Fixme", "fixme" }, "MiniHipatternsFixme"),
+      -- hack = hi_words({ "HACK", "Hack", "hack" }, "MiniHipatternsHack"),
+      -- todo = hi_words({ "TODO", "Todo", "todo" }, "MiniHipatternsTodo"),
+      -- note = hi_words({ "NOTE", "Note", "note" }, "MiniHipatternsNote"),
 
       hex_color = hipatterns.gen_highlighter.hex_color(),
     },
