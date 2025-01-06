@@ -364,6 +364,7 @@ later(function()
     pattern = "MiniGitCommandDone",
     callback = function(ev)
       vim.notify("command done!")
+      vim.print(ev)
       if ev.data.git_subcommand:match("status") then
         Config._cache.git = vim.b.minigit_summary
         vim.api.nvim_create_autocmd("User", {
