@@ -1,6 +1,5 @@
 local M = {}
 vim.opt_local.conceallevel = 2
-vim.notify("here!")
 
 local ids = {
   add = vim.api.nvim_create_namespace("minigitstatusadd"),
