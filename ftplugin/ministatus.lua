@@ -219,7 +219,6 @@ local toggle_stage_status = function()
   end
 end
 
-vim.keymap.set("n", "<CR>", toggle_stage_status, { buffer = true })
-vim.keymap.set("n", "<CR>", toggle_stage_status, { buffer = true })
+vim.keymap.set("n", "<CR>", toggle_stage_status, { buffer = true, desc = "Toggle Git Status" })
 vim.keymap.set("n", "q", function() vim.cmd("close") end, { buffer = true })
 vim.keymap.set("n", "<esc>", function() vim.cmd("close") end, { buffer = true })

@@ -146,6 +146,16 @@ MiniPick.registry.git_status = function()
   if selection then vim.cmd.edit(vim.trim(selection):match("%s+(.+)")) end
 end
 
+MiniPick.registry.projects = function()
+  local cwd = vim.fn.expand("~/projects"):gsub("\\", "/")
+  local choose = function(item)
+    vim.schedule(function() MiniPick.builtin.files(nil, { source = { cwd = item.path } }) end)
+  end
+  return Config.explorer(cwd, { source = { choose = choose } })
+  -- return MiniExtra.pickers.explorer({ cwd = cwd }, { source = { choose = choose, cwd = cwd } })
+  -- return MiniPick.builtin.files(nil, { source = { choose = choose, cwd = cwd } })
+end
+
 require("custom.buf_lines")
 require("custom.explorer").setup()
 vim.ui.select = MiniPick.ui_select

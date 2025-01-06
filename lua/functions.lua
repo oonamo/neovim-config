@@ -187,9 +187,9 @@ function Config.size_str(size)
   end
 end
 
-function Config.explorer(cwd)
+function Config.explorer(cwd, opts)
   Config._cache.explorer_parent = nil
-  require("custom.explorer").explorer({
+  local default_opts = {
     cwd = cwd,
     mappings = {
       scroll_left = "", -- HACK: Prevent it from stealing <c-h>
@@ -240,7 +240,9 @@ function Config.explorer(cwd)
         end,
       },
     },
-  })
+  }
+  local _opts = vim.tbl_deep_extend("force", default_opts, opts or {})
+  require("custom.explorer").explorer(_opts)
 end
 
 function Config.create_win(opts)

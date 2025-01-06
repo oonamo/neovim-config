@@ -74,4 +74,4 @@ hi("statusdiagnosticInfo", { fg = "#7fdfff" })
 
 hi("MiniJump2dSpot", { fg = "#e09a0f", bold = true, underline = true })
 hi("MiniJump2dSpotUnique", { fg = "#ff778f", bold = true, underline = true })
-hi("MiniJump2dSpotAhead", { fg = "#b7a07f", bold = true })
+hi("MiniJump2dSpotAhead", { fg = "#d38faf" })
