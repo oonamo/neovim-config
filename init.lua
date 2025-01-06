@@ -369,6 +369,7 @@ later(function()
         end
         Config._cache.git = vim.b.minigit_summary
         vim.api.nvim_create_autocmd("User", {
+          pattern = "MiniGitCommandSplit",
           nested = true,
           once = true,
           callback = function(data)
