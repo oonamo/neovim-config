@@ -1,5 +1,6 @@
 local M = {}
 vim.opt_local.conceallevel = 2
+vim.notify("here!")
 
 local ids = {
   add = vim.api.nvim_create_namespace("minigitstatusadd"),
@@ -12,6 +13,7 @@ local git = Config._cache.git
 local contents = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
 if not contents or #contents == 0 then
+  vim.print(contents)
   return
 end
 
