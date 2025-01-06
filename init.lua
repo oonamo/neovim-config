@@ -363,8 +363,10 @@ later(function()
   vim.api.nvim_create_autocmd("User", {
     pattern = "MiniGitCommandDone",
     callback = function(ev)
-      if ev.data.git_subcommand:match("status") and ev.data.stdout ~= "" then
-        if ev.data.stdout == "" then vim.notify("Nothing in status!", vim.log.levels.INFO, { title = "Git Status" }) end
+      if ev.data.git_subcommand:match("status") then
+        if ev.data.stdout == "" then
+          return vim.notify("Nothing in status!", vim.log.levels.INFO, { title = "Git Status" })
+        end
         Config._cache.git = vim.b.minigit_summary
         vim.api.nvim_create_autocmd("User", {
           nested = true,
