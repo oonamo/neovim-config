@@ -11,6 +11,10 @@ local ids = {
 local git = Config._cache.git
 local contents = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
+if not contents or #contents == 0 then
+  return
+end
+
 M.modified = {}
 M.deleted = {}
 M.untracked = {}
