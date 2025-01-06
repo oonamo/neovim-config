@@ -1,0 +1,121 @@
+--- Startup times for process: Primary/TUI ---
+
+times in msec
+ clock   self+sourced   self:  sourced script
+ clock   elapsed:              other lines
+
+000.007  000.007: --- NVIM STARTING ---
+000.070  000.062: event init
+000.200  000.130: early init
+014.726  014.526: locale set
+014.788  000.062: init first window
+015.482  000.694: inits 1
+015.633  000.151: window checked
+015.645  000.012: parsing arguments
+016.814  000.355  000.355: require('vim.shared')
+017.408  000.183  000.183: require('vim.inspect')
+017.728  000.303  000.303: require('vim._options')
+017.733  000.910  000.424: require('vim._editor')
+017.736  001.391  000.126: require('vim._init_packages')
+017.746  000.710: init lua interpreter
+022.451  004.705: --- NVIM STARTED ---
+
+--- Startup times for process: Embedded ---
+
+times in msec
+ clock   self+sourced   self:  sourced script
+ clock   elapsed:              other lines
+
+000.004  000.004: --- NVIM STARTING ---
+000.048  000.044: event init
+000.175  000.127: early init
+011.045  010.870: locale set
+011.088  000.044: init first window
+011.525  000.436: inits 1
+011.571  000.046: window checked
+011.579  000.008: parsing arguments
+012.653  000.322  000.322: require('vim.shared')
+013.201  000.173  000.173: require('vim.inspect')
+013.509  000.292  000.292: require('vim._options')
+013.514  000.852  000.387: require('vim._editor')
+013.518  001.305  000.131: require('vim._init_packages')
+013.527  000.643: init lua interpreter
+013.744  000.217: expanding arguments
+013.766  000.022: inits 2
+014.327  000.561: init highlight
+014.330  000.003: waiting for UI
+014.481  000.151: done waiting for UI
+014.487  000.006: clear screen
+014.814  000.039  000.039: require('vim.keymap')
+021.091  006.600  006.561: require('vim._defaults')
+021.098  000.011: init default mappings & autocommands
+022.695  000.108  000.108: sourcing C:\Users\onam7\scoop\apps\neovim\current\share\nvim\runtime\ftplugin.vim
+023.037  000.061  000.061: sourcing C:\Users\onam7\scoop\apps\neovim\current\share\nvim\runtime\indent.vim
+024.272  000.266  000.266: require('vim.fs')
+024.673  000.365  000.365: require('vim.uri')
+024.709  000.936  000.305: require('vim.loader')
+025.786  000.968  000.968: require('mini.deps')
+026.029  000.024  000.024: require('vim.F')
+028.513  000.143  000.143: sourcing C:\Users\onam7\scoop\apps\neovim\current\share\nvim\runtime\syntax\synload.vim
+029.134  000.312  000.312: sourcing C:\Users\onam7\scoop\apps\neovim\current\share\nvim\runtime\filetype.lua
+031.047  001.544  001.544: require('vim.filetype')
+031.961  000.424  000.424: require('vim.filetype.detect')
+032.102  005.405  002.982: sourcing C:\Users\onam7\scoop\apps\neovim\current\share/nvim/runtime/syntax/syntax.vim
+034.286  000.141  000.141: require('utils.fs')
+034.834  000.178  000.178: require('config.utils')
+038.069  000.055  000.055: sourcing C:\Users\onam7\AppData\Local\nvim-data\site\pack\deps\opt\nightfox.nvim\plugin\nightfox.vim
+038.611  000.033  000.033: sourcing C:\Users\onam7\AppData\Local\nvim-data\site\pack\deps\opt\nightfox.nvim\plugin\nightfox.vim
+041.223  000.346  000.346: require('nightfox.util')
+041.239  000.584  000.238: require('nightfox.lib.color')
+041.244  002.427  001.843: require('nightfox.lib.shade')
+041.859  000.194  000.194: require('nightfox.lib.collect')
+041.919  000.425  000.231: require('nightfox.config')
+041.925  000.624  000.199: require('nightfox')
+042.192  000.202  000.202: require('nightfox.override')
+042.566  000.207  000.207: require('nightfox.lib.hash')
+048.986  000.357  000.357: require('mini.notify')
+050.347  001.203  001.203: require('mini.icons')
+050.664  000.235  000.235: require('mini.tabline')
+051.563  000.177  000.177: require('vim.treesitter.language')
+051.728  000.157  000.157: require('vim.func')
+051.872  000.137  000.137: require('vim.func._memoize')
+051.889  000.681  000.210: require('vim.treesitter.query')
+052.031  000.138  000.138: require('vim.treesitter._range')
+052.064  001.056  000.238: require('vim.treesitter.languagetree')
+052.071  001.345  000.288: require('vim.treesitter')
+052.245  000.170  000.170: require('vim.treesitter._fold')
+052.619  000.216  000.216: require('mini.starter')
+053.010  000.314  000.314: require('mini.animate')
+053.206  029.856  014.816: sourcing C:\Users\onam7\AppData\Local\nvim\init.lua
+053.248  002.124: sourcing vimrc file(s)
+056.018  000.029  000.029: sourcing C:\Users\onam7\AppData\Local\nvim-data\site\pack\deps\opt\nightfox.nvim\plugin\nightfox.vim
+059.413  000.041  000.041: sourcing C:\Users\onam7\scoop\apps\neovim\current\share\nvim\runtime\plugin\gzip.vim
+059.608  000.040  000.040: sourcing C:\Users\onam7\scoop\apps\neovim\current\share\nvim\runtime\plugin\matchit.vim
+060.004  000.232  000.232: sourcing C:\Users\onam7\scoop\apps\neovim\current\share\nvim\runtime\plugin\matchparen.vim
+060.686  000.519  000.519: sourcing C:\Users\onam7\scoop\apps\neovim\current\share\nvim\runtime\plugin\netrwPlugin.vim
+061.281  000.031  000.031: sourcing C:\Users\onam7\AppData\Local\nvim-data/rplugin.vim
+061.301  000.421  000.390: sourcing C:\Users\onam7\scoop\apps\neovim\current\share\nvim\runtime\plugin\rplugin.vim
+061.557  000.094  000.094: sourcing C:\Users\onam7\scoop\apps\neovim\current\share\nvim\runtime\plugin\shada.vim
+061.761  000.032  000.032: sourcing C:\Users\onam7\scoop\apps\neovim\current\share\nvim\runtime\plugin\spellfile.vim
+061.954  000.033  000.033: sourcing C:\Users\onam7\scoop\apps\neovim\current\share\nvim\runtime\plugin\tarPlugin.vim
+062.145  000.029  000.029: sourcing C:\Users\onam7\scoop\apps\neovim\current\share\nvim\runtime\plugin\tutor.vim
+062.352  000.046  000.046: sourcing C:\Users\onam7\scoop\apps\neovim\current\share\nvim\runtime\plugin\zipPlugin.vim
+062.671  000.153  000.153: sourcing C:\Users\onam7\scoop\apps\neovim\current\share\nvim\runtime\plugin\editorconfig.lua
+062.991  000.146  000.146: sourcing C:\Users\onam7\scoop\apps\neovim\current\share\nvim\runtime\plugin\man.lua
+063.337  000.177  000.177: sourcing C:\Users\onam7\scoop\apps\neovim\current\share\nvim\runtime\plugin\osc52.lua
+063.703  000.194  000.194: sourcing C:\Users\onam7\scoop\apps\neovim\current\share\nvim\runtime\plugin\tohtml.lua
+063.774  008.342: loading rtp plugins
+064.514  000.740: loading packages
+066.358  001.844: loading after plugins
+066.365  000.007: inits 3
+066.480  000.115: opening buffers
+066.544  000.064: BufEnter autocommands
+066.550  000.006: editing files in windows
+077.440  010.890: VimEnter autocommands
+077.510  000.070: UIEnter autocommands
+078.633  001.123: before starting main loop
+079.492  000.319  000.319: require('config.statuscolumn')
+080.394  000.319  000.319: require('tests.nano')
+080.528  001.258: first screen update
+080.533  000.004: --- NVIM STARTED ---
+

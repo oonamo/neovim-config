@@ -19,7 +19,8 @@
         "MiniTabline",
         "Snacks",
         "MiniSnippets",
-        "MiniStarter"
+        "MiniStarter",
+        "MiniVisits"
     ],
     "completion.autoRequire": true,
 }

@@ -107,7 +107,7 @@ end, "Blame")
 map_leader("n", "gA", "<Cmd>Git diff --cached -- %<CR>", "Added diff buffer")
 map_leader("n", "gc", "<Cmd>Git commit<CR>", "Commit")
 map_leader("n", "gC", "<Cmd>Git commit --amend<CR>", "Commit amend")
-map_leader("n", "gG", "<Cmd>Git status<CR>", "Status")
+map_leader("n", "gG", "<Cmd>Git status -s<CR>", "Status")
 map_leader("n", "gd", "<Cmd>Git diff<CR>", "Diff")
 map_leader("n", "gD", "<Cmd>Git diff -- %<CR>", "Diff buffer")
 map_leader("n", "gg", "<Cmd>lua Config.open_lazygit()<CR>", "Git tab")
@@ -124,7 +124,12 @@ local function cx_leader(modes, suffix, rhs, desc, opts)
 end
 
 --================== C-x (emacs) ====================
-cx_leader("n", "<C-f>", function() Config.explorer() end, "File Explorer")
+cx_leader("n", "<C-f>", function()
+  local bufname = vim.api.nvim_buf_get_name(0)
+  local buf_cwd = vim.fn.fnamemodify(bufname, ":p:h")
+  Config.explorer(buf_cwd)
+end, "File Explorer (working directory)")
+cx_leader("n", "f", function() Config.explorer() end, "File Explorer (cwd)")
 cx_leader("n", "b", "<cmd>Pick buffers<cr>", "Pick Buffers")
 cx_leader("n", "h", "<cmd>Pick help<cr>", "Pick help")
 cx_leader("n", "1", function() require("mini.misc").zoom() end, "Only Buffer")
@@ -144,6 +149,7 @@ map_leader("n", "tp", function()
   vim.cmd.term("pwsh.exe")
   vim.cmd.wincmd("J")
   vim.cmd("setlocal nonumber norelativenumber laststatus=0")
+  vim.cmd("startinsert")
   vim.api.nvim_win_set_height(0, 5)
 end, "cmd terminal")
 
@@ -155,18 +161,5 @@ end
 
 map_vis("vv", 'add_label("core")', "Add to core")
 map_vis("vV", 'remove_label("core")', "Remove from core")
-map_vis("vc", 'select_path("", { filter = "core" })', "Select core (all)")
-map_vis("vC", 'select_path(nil, { filter = "core" })', "Select core (cwd)")
-
-local map_branch = function(keys, action, desc)
-  local rhs = function()
-    local branch = vim.fn.system("git rev-parse --abbrev-ref HEAD")
-    if vim.v.shell_error ~= 0 then return vim.notify("") end
-    branch = vim.trim(branch)
-    require("mini.visits")[action](branch)
-  end
-  vim.keymap.set("n", "<Leader>" .. keys, rhs, { desc = desc })
-end
-
-map_branch("vb", "add_label", "Add branch label")
-map_branch("vB", "remove_label", "Remove branch label")
+map_leader("n", "vc", "<cmd>Pick visit_paths filter='core'<CR>", "Select core (all)")
+map_leader("n", "vC", "<cmd>Pick visit_paths cwd='' filter='core'<CR>", "Select core (all)")

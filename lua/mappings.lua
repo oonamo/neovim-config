@@ -93,3 +93,4 @@ map(
   function() require("comform").format({ lsp_fallback = false }) end,
   { desc = "Format current selection" }
 )
+

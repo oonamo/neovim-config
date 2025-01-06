@@ -119,10 +119,14 @@ end)
 now(function() add({ source = "rebelot/kanagawa.nvim" }) end)
 now(function()
   add({ source = "sainnhe/everforest" })
-  vim.g.everforest_background = "medium"
+  vim.g.everforest_background = "soft"
   vim.g.everforest_diagnostic_text_highlight = true
   vim.g.everforest_diagnostic_line_highlight = true
   vim.g.everforest_diagnostic_virtual_text = true
+end)
+now(function()
+  add({ source = "sainnhe/gruvbox-material" })
+  vim.g.gruvbox_material_background = "medium"
 end)
 
 now(function() add({ source = "rose-pine/neovim" }) end)
@@ -130,6 +134,7 @@ now(function() add({ source = "catppuccin/nvim" }) end)
 now(function() add({ source = "cocopon/iceberg.vim" }) end)
 later(Config.load_colorscheme)
 
+--================== Mini Plugins ====================
 now(function()
   require("mini.notify").setup({
     window = { config = { border = "solid" } },
@@ -138,29 +143,15 @@ now(function()
   vim.notify = MiniNotify.make_notify()
 end)
 now(function() require("mini.icons").setup() end)
-now(function()
-  require("mini.tabline").setup({
-    show_icons = false,
-    tabpage_section = "right",
-  })
-end)
+now(function() require("mini.tabline").setup({ show_icons = false, tabpage_section = "right" }) end)
 now(function() source("plugins/mini-starter.lua") end)
-
-if vim.fn.has("gui_running") == 0 then
-  now(function() require("mini.animate").setup({ scroll = { enable = false } }) end)
-end
-
---================== Mini Plugins ====================
 later(function() require("mini.pairs").setup() end)
 later(function() source("plugins/mini-files.lua") end)
 later(function() require("mini.extra").setup() end)
 later(function() require("mini.bufremove").setup() end)
 later(function() require("mini.indentscope").setup() end)
-later(function() require("mini.indentscope").setup() end)
 later(function()
-  require("mini.misc").setup({
-    make_global = { "put", "put_text" },
-  })
+  require("mini.misc").setup({ make_global = { "put", "put_text" } })
   MiniMisc.setup_auto_root()
   MiniMisc.setup_restore_cursor()
 end)
@@ -176,7 +167,7 @@ later(function()
       select = function(...)
         local ok, b = pcall(require, "blink.cmp")
         if ok then
-          pcall(b, "hide")
+          pcall(b.hide)
           pcall(vim.api.nvim_buf_clear_namespace, 0, vim.api.nvim_get_namespaces()["blink_cmp"], 0, -1)
           pcall(vim.api.nvim_buf_clear_namespace, 0, vim.api.nvim_get_namespaces()["blink_cmp_renderer"], 0, -1)
         end
@@ -207,30 +198,9 @@ later(function()
     },
   })
 end)
-later(function()
-  require("mini.pick").setup({
-    window = {
-      config = function()
-        return {
-          width = vim.o.columns,
-          height = math.floor(vim.o.lines * 0.3),
-          border = "solid",
-        }
-      end,
-    },
-    mappings = {
-      refine = "<C-r>",
-      paste = "<C-y>",
-      refine_marked = "<F1>",
-      choose_marked = "<C-q>",
-    },
-  })
-  source("custom/buf_lines.lua")
-  require("custom.explorer").setup()
-  vim.ui.select = MiniPick.ui_select
-  vim.keymap.set("n", ",", [[<Cmd>Pick buffer_lines_current<CR>]], { nowait = true })
-end)
 
+later(function() source("plugins/mini-pick.lua") end)
+later(function() require("mini.align").setup() end)
 later(function()
   local clue = require("mini.clue")
   clue.setup({
@@ -394,6 +364,7 @@ later(function()
     pattern = "MiniGitCommandDone",
     callback = function(ev)
       if ev.data.git_subcommand:match("status") then
+        Config._cache.git = vim.b.minigit_summary
         vim.api.nvim_create_autocmd("User", {
           nested = true,
           once = true,
@@ -511,3 +482,8 @@ end)
 
 --================== Dev Plugins ====================
 -- later(function() add({ source = "~/projects/nvim/chadschemes/", hooks = {} }) end)
+later(function()
+  vim.opt.rtp:append("C:\\Users\\onam7\\projects\\command_pal")
+  -- add({ source = "C:/Users/onam7/projects/command_pal", checkout = "refactor_mini_pick" })
+  source("plugins/command_pal.lua")
+end)

@@ -187,9 +187,10 @@ function Config.size_str(size)
   end
 end
 
-function Config.explorer()
+function Config.explorer(cwd)
   Config._cache.explorer_parent = nil
   require("custom.explorer").explorer({
+    cwd = cwd,
     mappings = {
       scroll_left = "", -- HACK: Prevent it from stealing <c-h>
       go_up_level = {
