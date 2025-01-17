@@ -67,4 +67,5 @@ if has_pairs then
   })
 end
 
+
 vim.b.minihipatterns_disable = true
