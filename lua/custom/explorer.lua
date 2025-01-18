@@ -318,6 +318,8 @@ local ivy_opts = {
   },
 }
 
+function M.get_items(item) return M.explorer_make_items(item.path, filter, sort) end
+
 -- Mostly from:
 -- https://github.com/echasnovski/mini.nvim/blob/2011aff270bcd3e1f3ad088253ace2d574967bed/lua/mini/extra.lua#L517
 function M.explorer(local_opts)
@@ -349,7 +351,7 @@ function M.explorer(local_opts)
 
   local picker_opts = {}
   if M.opts.ivy and M.opts.ivy.enable then picker_opts = ivy_opts end
-  opts.window = picker_opts.window
+  opts.window = opts.window or picker_opts.window
   local show = MiniPick.config.source.show
   local items = M.explorer_make_items(cwd, filter, sort)
   local source = { items = items, name = "File explorer", cwd = cwd, show = show, choose = choose }

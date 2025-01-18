@@ -83,68 +83,74 @@ local function get_diag_sign_text(severity)
     or (diag_signs_default_text[severity] or diag_signs_default_text[diag_severity_map[severity]])
 end
 
--- stylua: ignore start
-local modes = {
-  ['n']      = 'NO',
-  ['no']     = 'OP',
-  ['nov']    = 'OC',
-  ['noV']    = 'OL',
-  ['no\x16'] = 'OB',
-  ['\x16']   = 'VB',
-  ['niI']    = 'IN',
-  ['niR']    = 'RE',
-  ['niV']    = 'RV',
-  ['nt']     = 'NT',
-  ['ntT']    = 'TM',
-  ['v']      = 'VI',
-  ['vs']     = 'VI',
-  ['V']      = 'VL',
-  ['Vs']     = 'VL',
-  ['\x16s']  = 'VB',
-  ['s']      = 'SE',
-  ['S']      = 'SL',
-  ['\x13']   = 'SB',
-  ['i']      = 'IN',
-  ['ic']     = 'IC',
-  ['ix']     = 'IX',
-  ['R']      = 'RE',
-  ['Rc']     = 'RC',
-  ['Rx']     = 'RX',
-  ['Rv']     = 'RV',
-  ['Rvc']    = 'RC',
-  ['Rvx']    = 'RX',
-  ['c']      = 'CO',
-  ['cv']     = 'CV',
-  ['r']      = 'PR',
-  ['rm']     = 'PM',
-  ['r?']     = 'P?',
-  ['!']      = 'SH',
-  ['t']      = 'TE',
-}
+-- stylua: ignore start 
+local modes  = setmetatable({
+  ["n"]      = { "NO", "MiniStatuslineModeNormal" },
+  ["no"]     = { "OP", "MiniStatuslineModeOther" },
+  ["nov"]    = { "OC", "MiniStatuslineModeOther" },
+  ["noV"]    = { "OL", "MiniStatuslineModeOther" },
+  ["no\x16"] = { "OB", "MiniStatuslineModeOther" },
+  ["\x16"]   = { "VB", "MiniStatuslineModeVisual" },
+  ["niI"]    = { "IN", "MiniStatuslineModeInsert" },
+  ["niR"]    = { "RE", "MiniStatuslineModeReplace" },
+  ["niV"]    = { "RV", "MiniStatuslineModeVisual" },
+  ["nt"]     = { "NT", "MiniStatuslineModeNormal" },
+  ["ntT"]    = { "TM", "MiniStatuslineModeNormal" },
+  ["v"]      = { "VI", "MiniStatuslineModeVisual" },
+  ["vs"]     = { "VI", "MiniStatuslineModeVisual" },
+  ["V"]      = { "VL", "MiniStatuslineModeVisual" },
+  ["Vs"]     = { "VL", "MiniStatuslineModeVisual" },
+  ["\x16s"]  = { "VB", "MiniStatuslineModeVisual" },
+  ["s"]      = { "SE", "MiniStatuslineModeVisual" },
+  ["S"]      = { "SL", "MiniStatuslineModeVisual" },
+  ["\x13"]   = { "SB", "MiniStatuslineModeVisual" },
+  ["i"]      = { "IN", "MiniStatuslineModeInsert" },
+  ["ic"]     = { "IC", "MiniStatuslineModeInsert" },
+  ["ix"]     = { "IX", "MiniStatuslineModeInsert" },
+  ["R"]      = { "RE", "MiniStatuslineModeReplace" },
+  ["Rc"]     = { "RC", "MiniStatuslineModeReplace" },
+  ["Rx"]     = { "RX", "MiniStatuslineModeReplace" },
+  ["Rv"]     = { "RV", "MiniStatuslineModeReplace" },
+  ["Rvc"]    = { "RC", "MiniStatuslineModeReplace" },
+  ["Rvx"]    = { "RX", "MiniStatuslineModeReplace" },
+  ["c"]      = { "CO", "MiniStatuslineModeReplace" },
+  ["cv"]     = { "CV", "MiniStatuslineModeReplace" },
+  ["r"]      = { "PR", "MiniStatuslineModeReplace" },
+  ["rm"]     = { "PM", "MiniStatuslineModeReplace" },
+  ["r?"]     = { "P?", "MiniStatuslineModeReplace" },
+  ["!"]      = { "SH", "MiniStatuslineModeReplace" },
+  ["t"]      = { "TE", "MiniStatuslineModeReplace" },
+}, {
+  __index    = function() return { "UNKNOWN", "MiniStatuslineModeOther" } end,
+})
 -- stylua: ignore end
 
 ---Get string representation of the current mode
 ---@return string
 function statusline.mode()
   local mode = vim.fn.mode()
-  local mode_str = (mode == "n" and (vim.bo.ro or not vim.bo.ma)) and "RO" or modes[mode]
-  if vim.bo.mod then
-    return stl_format("modified", string.format(" %s ", mode_str), {
-      bg = {
-        hi = "Special",
-        key = "fg",
-      },
-      fg = "Normal"
-    }, true)
-  else
-    return stl_format("mode", string.format(" %s ", mode_str), {
-      bg = { hi = "Folded", key = "bg" },
-      fg = "Normal",
-      -- fg = {
-      --   fg = "Normal"
-      -- },
-    }, true)
-  end
+  local mode_pair = (mode == "n" and (vim.bo.ro or not vim.bo.ma)) and { "RO", "MiniStatuslineModeOther" }
+    or modes[mode]
+  local mode_str, mode_hl = mode_pair and mode_pair[1], mode_pair and mode_pair[2]
+  -- if vim.bo.mod then
+  --   return stl_format("modified", string.format(" %s ", mode_str), {
+  --     bg = {
+  --       hi = "Special",
+  --       key = "fg",
+  --     },
+  --     fg = "Normal",
+  --   }, true)
+  -- else
+  return stl_format("mode" .. mode_str, string.format(" %s ", mode_str), {
+    fg = mode_pair[2],
+    bg = mode_pair[2],
+    -- bg = { hi = "Folded", key = "bg" },
+    -- fg = "Normal",
+    -- fg = {
+    --   fg = "Normal"
+    -- },
+  }, true)
+  -- end
 end
 
 ---Get diff stats for current buffer
@@ -427,32 +433,20 @@ end
 ---@param node? TSNode
 ---@return TSNode?
 local function get_next_header(node)
-	-- HACK: prevent Infinite recursion in case of a bug
-	if not node then
-		return nil
-	end
-	if node:type() == "atx_heading" then
-		return node
-	end
-	if node:type() == "paragraph" then
-		return get_next_header(node:prev_named_sibling())
-	end
-	if node:type() == "section" then
-		return get_next_header(node:child(0))
-	end
-	if node:type() == "document" then
-		return nil
-	end
-	-- HACK: Prevent calling parnet->child->parent->child ...
-	if node:parent():type() == "section" then
-		-- Parent -> child does not always point to itself
-		local child = node:parent():child(0)
-		if child and child:type() == "atx_heading" then
-			return child
-		end
-		return nil
-	end
-	return get_next_header(node:parent())
+  -- HACK: prevent Infinite recursion in case of a bug
+  if not node then return nil end
+  if node:type() == "atx_heading" then return node end
+  if node:type() == "paragraph" then return get_next_header(node:prev_named_sibling()) end
+  if node:type() == "section" then return get_next_header(node:child(0)) end
+  if node:type() == "document" then return nil end
+  -- HACK: Prevent calling parnet->child->parent->child ...
+  if node:parent():type() == "section" then
+    -- Parent -> child does not always point to itself
+    local child = node:parent():child(0)
+    if child and child:type() == "atx_heading" then return child end
+    return nil
+  end
+  return get_next_header(node:parent())
 end
 
 

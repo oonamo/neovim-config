@@ -35,7 +35,15 @@ require("render-markdown").setup({
   },
   heading = {
     enabled = true,
-    icons = { "◈  ", "◇  ", "◆  ", "⋄  ", "❖  ", "⟡  " },
+    icons = {
+      "█ ",
+      "██ ",
+      "███ ",
+      "████ ",
+      "█████ ",
+      "██████ ",
+    },
+    -- icons = { "◈  ", "◇  ", "◆  ", "⋄  ", "❖  ", "⟡  " },
 
     backgrounds = {
       "NormalBG",

@@ -192,7 +192,22 @@ function Config.explorer(cwd, opts)
   local default_opts = {
     cwd = cwd,
     mappings = {
+      toggle_preview = "",
       scroll_left = "", -- HACK: Prevent it from stealing <c-h>
+      complete_or_enter = {
+        char = "<Tab>",
+        func = function()
+          local matches = MiniPick.get_picker_matches()
+          if not matches then return end
+          local current = matches.current or matches.all[1]
+
+          if current.fs_type == "directory" then
+            MiniPick.get_picker_opts().source.choose(current)
+          else
+            MiniPick.set_picker_query(vim.split(current.text or "", ""))
+          end
+        end,
+      },
       go_up_level = {
         char = "<C-h>",
         func = function()
@@ -230,7 +245,7 @@ function Config.explorer(cwd, opts)
         end,
       },
       open_in_file_explorer = {
-        char = "<C-d>",
+        char = "<A-g>",
         func = function()
           local current = MiniPick.get_picker_matches().current
           if not current then return end
@@ -243,6 +258,76 @@ function Config.explorer(cwd, opts)
   }
   local _opts = vim.tbl_deep_extend("force", default_opts, opts or {})
   require("custom.explorer").explorer(_opts)
+end
+
+function Config.dired(opts)
+  local default_opts = {
+    mappings = {
+      scroll_left = "", -- HACK: Prevent it from stealing <c-h>
+      go_up_level = {
+        char = "<C-h>",
+        func = function()
+          local query = MiniPick.get_picker_query()
+          if not query[1] or query[1] == "" then
+            vim.schedule(function() vim.api.nvim_input("<CR>") end)
+          else
+            MiniPick.set_picker_query({ "" })
+          end
+        end,
+      },
+      go_up_level_neovide = {
+        char = "<c-bs>", -- Same as C BKSP, emacs lol
+        func = function()
+          local query = MiniPick.get_picker_query()
+          if not query[1] or query[1] == "" then
+            vim.schedule(function() vim.api.nvim_input("<CR>") end)
+          else
+            MiniPick.set_picker_query({ "" })
+          end
+        end,
+      },
+      new_file = {
+        char = "<c-e>",
+        func = function()
+          local query = MiniPick.get_picker_query()
+          if not query or #query < 1 then return end
+          local is_dir = query[#query] == "/"
+          query = table.concat(query, "")
+          local cwd = MiniPick.get_picker_opts().source.cwd
+          if is_dir then
+            vim.fn.mkdir(query)
+            MiniPick.refresh()
+            return
+          else
+            local file = cwd .. "/" .. query
+            file = file:gsub("\\", "/")
+
+            vim.schedule(function() vim.cmd.edit(file) end)
+          end
+          return true
+        end,
+      },
+      open_in_file_explorer = {
+        char = "<C-d>",
+        func = function()
+          local current = MiniPick.get_picker_matches().current
+          if not current then return end
+
+          vim.schedule(function() require("mini.files").open(current.path) end)
+          return true
+        end,
+      },
+    },
+    window = {
+      config = {
+        height = vim.o.lines,
+        width = vim.o.columns,
+        border = "solid",
+      },
+    },
+  }
+  opts = vim.tbl_deep_extend("force", default_opts, opts or {})
+  require("custom.explorer").explorer(opts)
 end
 
 function Config.create_win(opts)
@@ -446,11 +531,11 @@ Config.load_colorscheme = function()
 
   if saved.bg then vim.go.bg = saved.bg end
   if saved.colors_name and saved.colors_name ~= vim.g.colors_name then
-    ok, _ = pcall(vim.cmd.colorscheme, saved.colors_name)
+    ok, _ = require("custom.colors").select(saved.colors_name)
     if not ok then
       MiniDeps.later(function()
         local err
-        ok, err = require("custom.colors").select(saved.colors_name)
+        ok, err = pcall(vim.cmd.colorscheme, saved.colors_name)
         if not ok then
           vim.notify(
             "Could not load colorscheme '"
@@ -462,4 +547,13 @@ Config.load_colorscheme = function()
       end)
     end
   end
+end
+
+Config.get_selection = function()
+  local mode = vim.api.nvim_get_mode().mode
+  local opts = {}
+
+  if mode == "v" or mode == "V" or mode == "\22" then opts.type = mode end
+
+  return vim.fn.getregion(vim.fn.getpos("v"), vim.fn.getpos("."), opts)
 end

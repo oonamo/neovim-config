@@ -176,7 +176,7 @@ vim.diagnostic.config({
   -- virtual_text = false, -- For tiny-inline-diagnostic
   virtual_text = {
     spacing = 4,
-    prefix = vim.trim("< "),
+    prefix = "<",
     -- prefix = function(diag)
     -- 	return diagnostics_symbols[diag.severity]
     -- end,

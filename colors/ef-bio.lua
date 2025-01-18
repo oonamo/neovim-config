@@ -4,6 +4,7 @@ local is_dark = vim.o.bg == "dark"
 local bg = "#111111"
 local fg = "#cfdfd5"
 
+
 local palette = {
   accent = "#dadada",
   accent_bg = "#111111",

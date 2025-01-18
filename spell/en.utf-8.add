@@ -143,3 +143,4 @@ cmd
 clangd
 Espressif
 DMA
+REPL

@@ -48,6 +48,9 @@ local colors = {
 }
 
 require("mini.hues").apply_palette(colors)
+
+-- hi("LineNrAbove", { fg = })
+-- hi("LineNr", { link = "CursorLineNr" })
 hi("DiagnosticVirtualTextError", { fg = colors.red, bg = colors.red_bg })
 hi("DiagnosticVirtualTextHint", { fg = colors.blue, bg = colors.blue_bg })
 hi("DiagnosticVirtualTextInfo", { fg = colors.green, bg = colors.green_bg })
@@ -57,6 +60,10 @@ hi("Pmenu", { bg = "#f0f8f4", fg = "#34494a" })
 hi("PmenuSel", { bg = "#ccedff" })
 hi("BlinkCmpLabelMatch", { fg = "#1a870f" })
 
+hi("Cursor", { bg = "#bf005f" })
+hi("CursorIM", { link = "Cursor" })
+hi("lCursor", { link = "Cursor" })
+hi("TermCursor", { link = "Cursor" })
 
 vim.o.bg = "light"
 vim.g.colors_name = "ef-spring"
@@ -78,3 +85,9 @@ hi("MiniPickExplorerDirectory", { fg = "#34494a" })
 hi("MiniTablineCurrent", { bg = bg, fg = colors.fg_edge2, underline = true })
 hi("MiniTablineVisible", { bg = bg, fg = colors.bg_mid })
 hi("MiniTablineHidden", { bg = bg, fg = colors.bg_mid })
+
+hi("MiniJump2dSpot", { fg = colors.purple, bold = true, underline = true })
+hi("MiniJump2dSpotUnique", { fg = colors.red, bold = true, underline = true })
+hi("MiniJump2dSpotAhead", { fg = colors.yellow })
+
+hi("MiniFilesCursorLine", { bg = colors.purple_bg  })

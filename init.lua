@@ -1,5 +1,25 @@
 vim.loader.enable()
-vim.g.maplocalleader = ";"
+
+vim.g.loaded_gzip = 1
+vim.g.loaded_tar = 1
+vim.g.loaded_tarPlugin = 1
+vim.g.loaded_zip = 1
+vim.g.loaded_zipPlugin = 1
+vim.g.loaded_getscript = 1
+vim.g.loaded_getscriptPlugin = 1
+vim.g.loaded_vimball = 1
+vim.g.loaded_vimballPlugin = 1
+vim.g.loaded_matchit = 1
+-- vim.g.loaded_matchparen = 1
+vim.g.loaded_spellfile_plugin = 1
+vim.g.loaded_2html_plugin = 1
+vim.g.loaded_logiPat = 1
+vim.g.loaded_rrhelper = 1
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+vim.g.loaded_netrwSettings = 1
+vim.g.loaded_netrwFileHandlers = 1
+vim.g.loaded_tutor_mode_plugin = 1
 
 -- Clone 'mini.nvim' manually in a way that it gets managed by 'mini.deps'
 local path_package = vim.fn.stdpath("data") .. "/site/"
@@ -8,9 +28,12 @@ local mini_path = path_package .. "pack/deps/start/mini.nvim"
 _G.Config = {
   path_source = vim.fn.stdpath("config") .. "/lua/",
   path_package = path_package .. "pack/deps/opt/",
+  plugs = {
+    snacks = false,
+  },
 }
 
-if not vim.loop.fs_stat(mini_path) then
+if not (vim.uv or vim.loop).fs_stat(mini_path) then
   vim.cmd('echo "Installing `mini.nvim`" | redraw')
   local clone_cmd = {
     "git",
@@ -49,7 +72,16 @@ if vim.g.neovide or vim.g.goneovim then now(function() source("config/gui.lua") 
 
 --================== UI Plugins ====================
 --================== Colors ====================
-now(function() add({ source = "folke/tokyonight.nvim" }) end)
+now(function()
+  add({ source = "AstroNvim/astrotheme" })
+  require("astrotheme").setup()
+end)
+now(function()
+  add("miikanissi/modus-themes.nvim")
+  require("modus-themes").setup({
+    variant = "default", -- "default", "tinted", "deuteranopia", "tritanopia"
+  })
+end)
 now(function()
   add({ source = "EdenEast/nightfox.nvim" })
   local S = require("nightfox.lib.shade")
@@ -81,34 +113,34 @@ now(function()
   }
   require("nightfox").setup({
     palettes = {
-      dayfox = {
-        black = S.new("#1d344f", "#24476f", "#1c2f44", true),
-        red = S.new("#b95d76", "#c76882", "#ac5169", true),
-        green = S.new("#618774", "#629f81", "#597668", true),
-        yellow = S.new("#ba793e", "#ca884a", "#a36f3e", true),
-        blue = S.new("#4d688e", "#4e75aa", "#485e7d", true),
-        magenta = S.new("#8e6f98", "#9f75ac", "#806589", true),
-        cyan = S.new("#6ca7bd", "#74b2c9", "#5a99b0", true),
-        white = S.new("#cdd1d5", "#cfd6dd", "#b6bcc2", true),
-        orange = S.new("#e3786c", "#e8857a", "#d76558", true),
-        pink = S.new("#d685af", "#de8db7", "#c9709e", true),
-
-        comment = "#7f848e",
-
-        bg0 = "#dbdbdb", -- Dark bg (status line and float)
-        bg1 = "#eaeaea", -- Default bg
-        bg2 = "#dbcece", -- Lighter bg (colorcolm folds)
-        bg3 = "#ced6db", -- Lighter bg (cursor line)
-        bg4 = "#bebebe", -- Conceal, border fg
-
-        fg0 = "#182a40", -- Lighter fg
-        fg1 = "#1d344f", -- Default fg
-        fg2 = "#233f5e", -- Darker fg (status line)
-        fg3 = "#2e537d", -- Darker fg (line numbers, fold colums)
-
-        sel0 = "#e7d2be", -- Popup bg, visual selection bg
-        sel1 = "#a4c1c2", -- Popup sel bg, search bg
-      },
+      -- dayfox = {
+      --   black = S.new("#1d344f", "#24476f", "#1c2f44", true),
+      --   red = S.new("#b95d76", "#c76882", "#ac5169", true),
+      --   green = S.new("#618774", "#629f81", "#597668", true),
+      --   yellow = S.new("#ba793e", "#ca884a", "#a36f3e", true),
+      --   blue = S.new("#4d688e", "#4e75aa", "#485e7d", true),
+      --   magenta = S.new("#8e6f98", "#9f75ac", "#806589", true),
+      --   cyan = S.new("#6ca7bd", "#74b2c9", "#5a99b0", true),
+      --   white = S.new("#cdd1d5", "#cfd6dd", "#b6bcc2", true),
+      --   orange = S.new("#e3786c", "#e8857a", "#d76558", true),
+      --   pink = S.new("#d685af", "#de8db7", "#c9709e", true),
+      --
+      --   comment = "#7f848e",
+      --
+      --   bg0 = "#dbdbdb", -- Dark bg (status line and float)
+      --   bg1 = "#eaeaea", -- Default bg
+      --   bg2 = "#dbcece", -- Lighter bg (colorcolm folds)
+      --   bg3 = "#ced6db", -- Lighter bg (cursor line)
+      --   bg4 = "#bebebe", -- Conceal, border fg
+      --
+      --   fg0 = "#182a40", -- Lighter fg
+      --   fg1 = "#1d344f", -- Default fg
+      --   fg2 = "#233f5e", -- Darker fg (status line)
+      --   fg3 = "#2e537d", -- Darker fg (line numbers, fold colums)
+      --
+      --   sel0 = "#e7d2be", -- Popup bg, visual selection bg
+      --   sel1 = "#a4c1c2", -- Popup sel bg, search bg
+      -- },
       nightfox = nightfox,
     },
     specs = {
@@ -116,28 +148,25 @@ now(function()
     },
   })
 end)
-now(function() add({ source = "rebelot/kanagawa.nvim" }) end)
 now(function()
   add({ source = "sainnhe/everforest" })
-  vim.g.everforest_background = "soft"
+  vim.api.nvim_set_hl(0, "MiniPickMatchCurrent", { link = "Visual" })
+  vim.g.everforest_background = "hard"
+  vim.g.everforest_better_performance = true
   vim.g.everforest_diagnostic_text_highlight = true
   vim.g.everforest_diagnostic_line_highlight = true
   vim.g.everforest_diagnostic_virtual_text = true
 end)
-now(function()
-  add({ source = "sainnhe/gruvbox-material" })
-  vim.g.gruvbox_material_background = "medium"
-end)
+now(function() add({ source = "rose-pine/neovim", name = "rose-pine" }) end)
+now(function() add({ source = "catppuccin/nvim", name = "catppuccin" }) end)
 
-now(function() add({ source = "rose-pine/neovim" }) end)
-now(function() add({ source = "catppuccin/nvim" }) end)
-now(function() add({ source = "cocopon/iceberg.vim" }) end)
+-- now(function() add({ source = "cocopon/iceberg.vim" }) end)
 later(Config.load_colorscheme)
 
 --================== Mini Plugins ====================
 now(function()
   require("mini.notify").setup({
-    window = { config = { border = "solid" } },
+    -- window = { config = { border = "solid" } },
     lsp_progress = { enable = false },
   })
   vim.notify = MiniNotify.make_notify()
@@ -147,7 +176,8 @@ now(function()
   MiniIcons.mock_nvim_web_devicons()
   later(MiniIcons.tweak_lsp_kind)
 end)
-now(function() require("mini.tabline").setup({ show_icons = false, tabpage_section = "right" }) end)
+
+-- now(function() require("mini.tabline").setup({ show_icons = false, tabpage_section = "right" }) end)
 now(function() source("plugins/mini-starter.lua") end)
 later(function() require("mini.pairs").setup() end)
 later(function() source("plugins/mini-files.lua") end)
@@ -187,24 +217,63 @@ later(function()
   local hi_words = MiniExtra.gen_highlighter.words
   hipatterns.setup({
     highlighters = {
-      fixme = { pattern = "%f[%w]()FIXME()%f[%W]", group = "MiniHipatternsFixme" },
-      fix = { pattern = "%f[%w]()FIX()%f[%W]", group = "MiniHipatternsFixme" },
-      hack = { pattern = "%f[%w]()HACK()%f[%W]", group = "MiniHipatternsHack" },
-      perf = { pattern = "%f[%w]()PERF()%f[%W]", group = "MiniHipatternsHack" },
-      todo = { pattern = "%f[%w]()TODO()%f[%W]", group = "MiniHipatternsTodo" },
-      note = { pattern = "%f[%w]()NOTE()%f[%W]", group = "MiniHipatternsNote" },
+      -- stylua: ignore start
+      fixme       = { pattern = "() FIXME():",   group = "MiniHipatternsFixme" },
+      hack        = { pattern = "() HACK():",    group = "MiniHipatternsHack" },
+      todo        = { pattern = "() TODO():",    group = "MiniHipatternsTodo" },
+      note        = { pattern = "() NOTE():",    group = "MiniHipatternsNote" },
+      fixme_colon = { pattern = " FIXME():()",   group = "MiniHipatternsFixmeColon" },
+      hack_colon  = { pattern = " HACK():()",    group = "MiniHipatternsHackColon" },
+      todo_colon  = { pattern = " TODO():()",    group = "MiniHipatternsTodoColon" },
+      note_colon  = { pattern = " NOTE():()",    group = "MiniHipatternsNoteColon" },
+      fixme_body  = { pattern = " FIXME:().*()", group = "MiniHipatternsFixmeBody" },
+      hack_body   = { pattern = " HACK:().*()",  group = "MiniHipatternsHackBody" },
+      todo_body   = { pattern = " TODO:().*()",  group = "MiniHipatternsTodoBody" },
+      note_body   = { pattern = " NOTE:().*()",  group = "MiniHipatternsNoteBody" },
+      -- stylua: ignore end
+      -- fixme = { pattern = "%f[%w]()FIXME()%f[%W]", group = "MiniHipatternsFixme" },
+      -- fix = { pattern = "%f[%w]()FIX()%f[%W]", group = "MiniHipatternsFixme" },
+      -- hack = { pattern = "%f[%w]()HACK()%f[%W]", group = "MiniHipatternsHack" },
+      -- perf = { pattern = "%f[%w]()PERF()%f[%W]", group = "MiniHipatternsHack" },
+      -- todo = { pattern = "%f[%w]()TODO()%f[%W]", group = "MiniHipatternsTodo" },
+      -- note = { pattern = "%f[%w]()NOTE()%f[%W]", group = "MiniHipatternsNote" },
       -- fixme = hi_words({ "FIXME", "Fixme", "fixme" }, "MiniHipatternsFixme"),
       -- hack = hi_words({ "HACK", "Hack", "hack" }, "MiniHipatternsHack"),
       -- todo = hi_words({ "TODO", "Todo", "todo" }, "MiniHipatternsTodo"),
       -- note = hi_words({ "NOTE", "Note", "note" }, "MiniHipatternsNote"),
 
-      hex_color = hipatterns.gen_highlighter.hex_color(),
+      hex_color = hipatterns.gen_highlighter.hex_color({
+        style = "inline",
+        inline_text = "⬤  ",
+      }),
     },
+  })
+
+  local hi = function(...) vim.api.nvim_set_hl(0, ...) end
+
+  local function create_hi_hls()
+    for _, v in ipairs({ "Fixme", "Todo", "Note", "Hack" }) do
+      local hl = vim.api.nvim_get_hl(0, { name = "MiniHipatterns" .. v })
+      hi("MiniHipatterns" .. v .. "Colon", hl)
+      if hl.bg then
+        hi("MiniHipatterns" .. v .. "Body", { fg = hl.bg })
+      else
+        -- hi("MiniHipatterns" .. v .. "Colon", { fg = hl.fg })
+        hi("MiniHipatterns" .. v .. "Body", { fg = hl.fg })
+      end
+    end
+  end
+
+  create_hi_hls()
+  vim.api.nvim_create_autocmd("ColorScheme", {
+    callback = function() create_hi_hls() end,
   })
 end)
 
 later(function() source("plugins/mini-pick.lua") end)
 later(function() require("mini.align").setup() end)
+-- later(function() source("plugins/mini-map.lua") end)
+--
 later(function()
   local clue = require("mini.clue")
   clue.setup({
@@ -243,6 +312,11 @@ later(function()
 
       { mode = "n", keys = "<C-x>" },
       { mode = "x", keys = "<C-x>" },
+
+      { mode = "n", keys = "[" },
+      { mode = "x", keys = "[" },
+      { mode = "n", keys = "]" },
+      { mode = "x", keys = "]" },
     },
     window = {
       delay = 0,
@@ -274,7 +348,45 @@ later(function()
       { mode = "n", keys = "<Leader>o", desc = "+Other" },
       { mode = "n", keys = "<Leader>t", desc = "+Terminal" },
       { mode = "n", keys = "<Leader>v", desc = "+Visits" },
-      { mode = "f", keys = "<Leader>f", desc = "+Find" },
+      { mode = "n", keys = "<Leader>f", desc = "+Find" },
+      { mode = "n", keys = "<Leader>m", desc = "+Multicursor" },
+      { mode = "n", keys = "<Leader>mg", desc = "+Motion" },
+
+      { mode = "n", keys = "<Leader>mj", postkeys = "<leader>m" },
+      { mode = "n", keys = "<Leader>mJ", postkeys = "<leader>m" },
+      { mode = "n", keys = "<Leader>mk", postkeys = "<leader>m" },
+      { mode = "n", keys = "<Leader>mK", postkeys = "<leader>m" },
+      -- Bracketed:
+      { mode = "n", keys = "]b", postkeys = "]" },
+      { mode = "n", keys = "[b", postkeys = "[" },
+      { mode = "n", keys = "]c", postkeys = "]" },
+      { mode = "n", keys = "[c", postkeys = "[" },
+      { mode = "n", keys = "]d", postkeys = "]" },
+      { mode = "n", keys = "[d", postkeys = "[" },
+      -- { mode = "n", keys = "]f", postkeys = "]" },
+      -- { mode = "n", keys = "[f", postkeys = "[" },
+      { mode = "n", keys = "]h", postkeys = "]" },
+      { mode = "n", keys = "[h", postkeys = "[" },
+      -- { mode = "n", keys = "]i", postkeys = "]" },
+      -- { mode = "n", keys = "[i", postkeys = "[" },
+      -- { mode = "n", keys = "]j", postkeys = "]" },
+      -- { mode = "n", keys = "[j", postkeys = "[" },
+      -- { mode = "n", keys = "]l", postkeys = "]" },
+      -- { mode = "n", keys = "[l", postkeys = "[" },
+      -- { mode = "n", keys = "]o", postkeys = "]" },
+      -- { mode = "n", keys = "[o", postkeys = "[" },
+      { mode = "n", keys = "]q", postkeys = "]" },
+      { mode = "n", keys = "[q", postkeys = "[" },
+      { mode = "n", keys = "]t", postkeys = "]" },
+      { mode = "n", keys = "[t", postkeys = "[" },
+      { mode = "n", keys = "]u", postkeys = "]" },
+      { mode = "n", keys = "[u", postkeys = "[" },
+      { mode = "n", keys = "]w", postkeys = "]" },
+      { mode = "n", keys = "[w", postkeys = "[" },
+      -- { mode = "n", keys = "]x", postkeys = "]" },
+      -- { mode = "n", keys = "[x", postkeys = "[" },
+      { mode = "n", keys = "]y", postkeys = "]" },
+      { mode = "n", keys = "[y", postkeys = "[" },
     },
   })
 end)
@@ -408,7 +520,7 @@ later(
         n_steps_ahead = 10000000,
       },
       mappings = {
-        start_jumping = "<C-s>",
+        start_jumping = "gw",
       },
     })
   end
@@ -449,6 +561,12 @@ later(function()
     source = "saghen/blink.cmp",
     checkout = "main",
     hooks = {
+      post_checkout = function(path, source, name)
+        vim.notify("Installing blink.cmp binary...")
+        require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
+          cwd = Config.path_package .. "blink.cmp",
+        })
+      end,
       post_install = function(path, source, name)
         vim.notify("Installing blink.cmp binary...")
         require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
@@ -487,6 +605,14 @@ later(function()
   })
   source("plugins/obsidian.lua")
 end)
+if Config.plugs.snacks then
+  later(function()
+    add({
+      source = "folke/snacks.nvim",
+    })
+    source("plugins/snacks.lua")
+  end)
+end
 
 --================== Dev Plugins ====================
 -- later(function() add({ source = "~/projects/nvim/chadschemes/", hooks = {} }) end)
@@ -494,4 +620,9 @@ later(function()
   vim.opt.rtp:append("C:\\Users\\onam7\\projects\\command_pal")
   -- add({ source = "C:/Users/onam7/projects/command_pal", checkout = "refactor_mini_pick" })
   source("plugins/command_pal.lua")
+end)
+
+later(function()
+  vim.opt.rtp:append("C:\\Users\\onam7\\projects\\quicker_md.nvim")
+  source("plugins/quicker-md.lua")
 end)

@@ -1,12 +1,13 @@
 -- TODO: snippets
 require("blink.cmp").setup({
   snippets = {
-    expand = function(args)
-      local insert = MiniSnippets.config.expand.insert or MiniSnippets.default_insert
-      insert({ body = args })
-    end,
-    active = function(_) return MiniSnippets.session.get() ~= nil end,
-    jump = function(direction) MiniSnippets.session.jump(direction == 1 and "next" or "prev") end,
+    preset = "mini_snippets",
+    -- expand = function(args)
+    --   local insert = MiniSnippets.config.expand.insert or MiniSnippets.default_insert
+    --   insert({ body = args })
+    -- end,
+    -- active = function(_) return MiniSnippets.session.get() ~= nil end,
+    -- jump = function(direction) MiniSnippets.session.jump(direction == 1 and "next" or "prev") end,
   },
   keymap = {
     preset = "default",

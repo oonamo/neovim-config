@@ -1,11 +1,23 @@
 local highlight = vim.api.nvim_set_hl
 
-highlight(0, "MiniPickPrompt", { link = "MiniPickNormal" })
-highlight(0, "MiniPickBorder", { link = "MiniPickNormal" })
-highlight(0, "MiniPickBorderBusy", { link = "MiniPickNormal" })
-highlight(0, "MiniPickBorderText", { link = "MiniPickNormal" })
-highlight(0, "MiniPickIconDirectory", { link = "MiniPickNormal" })
-highlight(0, "MiniPickIconFile", { link = "MiniPickNormal" })
+-- highlight(0, "MiniPickPrompt", { link = "MiniPickNormal" })
+-- highlight(0, "MiniPickBorder", { link = "MiniPickNormal" })
+-- highlight(0, "MiniPickBorderBusy", { link = "MiniPickNormal" })
+-- highlight(0, "MiniPickBorderText", { link = "MiniPickNormal" })
+-- highlight(0, "MiniPickIconDirectory", { link = "MiniPickNormal" })
+-- highlight(0, "MiniPickIconFile", { link = "MiniPickNormal" })
+--
+-- vim.api.nvim_create_autocmd("ColorScheme", {
+--   callback = function()
+--     highlight(0, "MiniPickPrompt", { link = "MiniPickNormal" })
+--     highlight(0, "MiniPickBorder", { link = "MiniPickNormal" })
+--     highlight(0, "MiniPickBorderBusy", { link = "MiniPickNormal" })
+--     highlight(0, "MiniPickBorderText", { link = "MiniPickNormal" })
+--     highlight(0, "MiniPickIconDirectory", { link = "MiniPickNormal" })
+--     highlight(0, "MiniPickIconFile", { link = "MiniPickNormal" })
+--   end,
+-- })
+
 -- highlight(0, 'MiniPickNormal',        { link='Pmenu' })
 -- highlight(0, 'MiniPickHeader',        { link='Title' })
 -- highlight(0, 'MiniPickMatchCurrent',  { link='PmenuThumb' })
@@ -68,7 +80,8 @@ require("mini.pick").setup({
         row = ends,
         height = height,
         width = width,
-        style = "minimal",
+        -- border = "solid",
+        -- style = "minimal",
         border = { " ", " ", " ", " ", " ", " ", " ", " " },
         -- border = "shadow",
       }
@@ -157,17 +170,47 @@ MiniPick.registry.projects = function()
 end
 
 require("custom.buf_lines")
+require("custom.buffers")
+require("custom.show_in_buffer")
+
 require("custom.explorer").setup()
 vim.ui.select = MiniPick.ui_select
 
-vim.keymap.set("n", ",", [[<Cmd>Pick buffer_lines_current<CR>]], { nowait = true })
+vim.keymap.set("n", ",", function()
+  MiniPick.registry.buffer_inline(nil, {
+    window = {
+      config = function()
+        local height, width, starts, ends
+        local win_width = vim.o.columns
+        local win_height = vim.o.lines
+        width = win_width
+        height = math.floor(win_height * 0.3) -- 30%
+        starts = 1
+        ends = win_height
+
+        return {
+          col = starts,
+          row = ends,
+          height = 4,
+          width = width,
+          border = "single",
+          -- style = "minimal",
+          -- border = { " ", " ", " ", " ", " ", " ", " ", " " },
+          -- border = "shadow",
+        }
+      end,
+    },
+  })
+end)
+
 vim.keymap.set("n", "z=", function()
-  require("mini.pick").registry.spellsuggest(nil, {
+  MiniPick.registry.spellsuggest(nil, {
     window = {
       prompt_prefix = "Spell: ",
+      prompt_cursor = ". ",
       config = function()
         return {
-          relative = "cursor",
+          relative = "editor",
           anchor = "NW",
           row = 0,
           col = 0,
@@ -178,3 +221,29 @@ vim.keymap.set("n", "z=", function()
     },
   })
 end, { desc = "Show Spell suggestion" })
+
+vim.keymap.set("n", "<C-x>b", function()
+  MiniPick.registry.buffer_preview(nil, {
+    window = {
+      config = function()
+        local height, width, starts, ends
+        local win_width = vim.o.columns
+        local win_height = vim.o.lines
+        width = win_width
+        height = math.floor(win_height * 0.3) -- 30%
+        starts = 1
+        ends = win_height
+
+        return {
+          col = starts,
+          row = ends,
+          height = height,
+          width = width,
+          -- style = "minimal",
+          border = { " ", " ", " ", " ", " ", " ", " ", " " },
+          -- border = "shadow",
+        }
+      end,
+    },
+  })
+end, { desc = "Pick Buffers" })

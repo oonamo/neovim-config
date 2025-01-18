@@ -1,9 +1,9 @@
-if vim.fn.exists('syntax_on') ~= 1 then vim.cmd('syntax enable') end
+if vim.fn.exists("syntax_on") ~= 1 then vim.cmd("syntax enable") end
 
 if vim.fn.has("win32") then
   _G.platform_specific = { lineending = "\r\n" }
 else
-	_G.platform_specific = { lineending = "\n" }
+  _G.platform_specific = { lineending = "\n" }
 end
 
 -- vim.o.shell = "pwsh"
@@ -28,7 +28,7 @@ vim.opt.showmode = false
 vim.opt.ruler = true
 vim.opt.scrolloff = 4
 vim.opt.sidescrolloff = 8
-vim.opt.signcolumn = 'yes:1'
+vim.opt.signcolumn = "yes:1"
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 vim.opt.swapfile = false
@@ -38,12 +38,19 @@ vim.opt.breakindent = true
 vim.opt.smoothscroll = true
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
-vim.opt.completeopt = 'menuone'
-vim.opt.jumpoptions = 'stack,view,clean'
+vim.opt.completeopt = "menuone"
+vim.opt.jumpoptions = "stack,view,clean"
 vim.opt.title = true
 vim.opt.titlestring = "nvim"
 vim.opt.background = "dark"
-vim.o.guicursor = ""
+vim.opt.guicursor = {
+  -- Cursor shape
+  "i-c-ci-ve:blinkoff500-blinkon500-block-TermCursor",
+  "n-v:block-Curosr/lCursor",
+  "o:hor50-Curosr/lCursor",
+  "r-cr:hor20-Curosr/lCursor",
+}
+-- vim.o.guicursor = ""
 vim.opt.cmdheight = 1
 vim.opt.quickfixtextfunc = [[v:lua.Config.qftf]]
 
@@ -55,7 +62,7 @@ vim.o.lazyredraw = true
 
 -- Relative line numbers
 opt.nu = true
-opt.rnu = false
+opt.rnu = true
 
 -- set tab stop at 4
 opt.tabstop = 2
@@ -145,26 +152,23 @@ local shada_read ---@boolean?
 ---Restore 'shada' option and read from shada once
 ---@return true
 local function rshada()
-  if shada_read then
-    return true
-  end
+  if shada_read then return true end
   shada_read = true
 
-  vim.cmd.set('shada&')
+  vim.cmd.set("shada&")
   pcall(vim.cmd.rshada)
   return true
 end
 
-vim.opt.shada = ''
-vim.api.nvim_create_autocmd('BufReadPre', { once = true, callback = rshada })
-vim.api.nvim_create_autocmd('UIEnter', {
+vim.opt.shada = ""
+vim.api.nvim_create_autocmd("BufReadPre", { once = true, callback = rshada })
+vim.api.nvim_create_autocmd("UIEnter", {
   once = true,
   callback = function()
     vim.schedule(rshada)
     return true
   end,
 })
-
 
 -- Disable builtin plugins
 vim.g.loaded_2html_plugin = 0
