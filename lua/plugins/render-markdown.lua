@@ -17,6 +17,12 @@ require("render-markdown").setup({
     schedule = { raw = "[!SCHEDULE]", rendered = " Schedule", highlight = "Special" },
     formula = { raw = "[!FORMULA]", rendered = "󰡱 Formula", highlight = "Boolean" },
   },
+  indent = {
+    enabled = true,
+    per_level = 2,
+    skip_level = 1,
+    skip_heading = false,
+  },
   win_options = {
     -- showbreak = { default = "", rendered = "  " },
     breakindent = { default = true, rendered = true },

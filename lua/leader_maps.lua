@@ -100,7 +100,21 @@ end
 map_leader("n", "lf", function() require("conform").format({ lsp_fallback = true }) end, "Format Buffer")
 
 --================== Git (g) ====================
+local find_conflict = function(direction)
+  return function()
+    local ok = pcall(function() vim.cmd(string.format("%s<<<<<<<", direction)) end)
+    if not ok then
+      vim.notify("No conflicts found", vim.log.levels.INFO)
+      return
+    end
+    vim.cmd([[nohlsearch]])
+    vim.fn.histdel("search", -1)
+  end
+end
 local git_log_cmd = [[Git log --pretty=format:\%h\ \%as\ │\ \%s --topo-order]]
+
+map_leader("n", "gj", find_conflict("/"), "Find Next Git Confilict")
+map_leader("n", "gk", find_conflict("?"), "Find Previous Git Confilict")
 map_leader("n", "ga", "<Cmd>Git diff --cached<CR>", "Added diff")
 map_leader("n", "gb", function()
   local cursor = vim.api.nvim_win_get_cursor(0)

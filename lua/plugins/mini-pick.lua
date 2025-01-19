@@ -174,7 +174,36 @@ require("custom.buffers")
 require("custom.show_in_buffer")
 
 require("custom.explorer").setup()
-vim.ui.select = MiniPick.ui_select
+
+local get_cursor_anchor = function() return vim.fn.screenrow() < 0.5 * vim.o.lines and "NW" or "SW" end
+local win_config_at_cursor = function(height)
+  local current_line = vim.api.nvim_win_get_cursor(0)
+  height = height or math.floor(0.45 * vim.o.lines)
+  local anchor = get_cursor_anchor()
+  vim.notify(anchor)
+
+  return function()
+    return {
+      relative = "cursor",
+      anchor = anchor,
+      row = anchor == "SW" and 0 or 1,
+      col = 0,
+      -- row = current_line[1] - 1 + height,
+      -- col = current_line[2],
+      width = math.floor(0.618 * vim.o.columns),
+      height = height,
+    }
+  end
+end
+
+---@diagnostic disable-next-line: duplicate-set-field
+vim.ui.select = function(items, opts, on_choice)
+  local start_opts = {
+    options = { content_from_bottom = get_cursor_anchor() == "SW" },
+    window = { config = win_config_at_cursor(#items) },
+  }
+  MiniPick.ui_select(items, opts, on_choice, start_opts)
+end
 
 vim.keymap.set("n", ",", function()
   MiniPick.registry.buffer_inline(nil, {
@@ -203,24 +232,19 @@ vim.keymap.set("n", ",", function()
   })
 end)
 
-vim.keymap.set("n", "z=", function()
-  MiniPick.registry.spellsuggest(nil, {
-    window = {
-      prompt_prefix = "Spell: ",
-      prompt_cursor = ". ",
-      config = function()
-        return {
-          relative = "editor",
-          anchor = "NW",
-          row = 0,
-          col = 0,
-          width = 40,
-          height = 20,
-        }
-      end,
-    },
-  })
-end, { desc = "Show Spell suggestion" })
+vim.keymap.set(
+  "n",
+  "z=",
+  function()
+    MiniExtra.pickers.spellsuggest(nil, {
+      options = { content_from_bottom = get_cursor_anchor() == "SW" },
+      window = {
+        config = win_config_at_cursor(),
+      },
+    })
+  end,
+  { desc = "Show Spell suggestion" }
+)
 
 vim.keymap.set("n", "<C-x>b", function()
   MiniPick.registry.buffer_preview(nil, {

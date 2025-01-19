@@ -256,6 +256,7 @@ local show_in_buffer = function(buf_id, items, query, opts)
 
   -- Place range highlights accounting for possible shift due to prefixes
   local extmark_opts = { hl_group = "MiniPickMatchRanges", hl_mode = "combine", priority = 200 }
+  local searchable_array = {}
   for i = 1, #match_data do
     local line, row, ranges = match_data[i][4], match_data[i][3], match_ranges[i]
 
@@ -275,9 +276,11 @@ local show_in_buffer = function(buf_id, items, query, opts)
         end_col = range[2] - preview_prefix_len,
       })
     end
+    searchable_array[line] = ranges[1][1] - 1 - preview_prefix_len
   end
 
   vim.schedule(function()
+    if #query == 0 then return end
     local matches = MiniPick.get_picker_matches()
     if not matches then return end
 
@@ -285,7 +288,12 @@ local show_in_buffer = function(buf_id, items, query, opts)
     -- or matches.all[1]
     if not M.current then return end
 
-    pcall(vim.api.nvim_win_set_cursor, M.pre.win, { M.current.lnum, 0 })
+    local ind = matches.current_ind
+    if not ind then return vim.notify("Should be unreachable", vim.log.levels.ERROR) end
+
+    local col = searchable_array[ind] or 0
+
+    pcall(vim.api.nvim_win_set_cursor, M.pre.win, { M.current.lnum, col })
     pcall(vim.api.nvim_buf_call, M.pre.buf, function() vim.cmd("norm! zz") end)
   end)
 
@@ -327,14 +335,94 @@ local show_in_buffer_with_treesitter = function(buf_id, items, query, opts)
   if not has_ts and ft then vim.bo[buf_id].syntax = ft end
 end
 
+H.parse_item = function(item)
+  -- Try parsing table item first
+  if type(item) == "table" then return H.parse_item_table(item) end
+
+  -- Parse item's string representation
+  local stritem = H.item_to_string(item)
+
+  -- - Buffer
+  local ok, numitem = pcall(tonumber, stritem)
+  if ok and vim.api.nvim_buf_is_valid(numitem) then return { type = "buffer", buf_id = numitem } end
+
+  -- File or Directory
+  local path_type, path, lnum, col, rest = H.parse_path(stritem)
+  if path_type ~= "none" then return { type = path_type, path = path, lnum = lnum, col = col, text = rest } end
+
+  return {}
+end
+
+H.parse_item_table = function(item)
+  -- Buffer
+  local buf_id = item.bufnr or item.buf_id or item.buf
+  if vim.api.nvim_buf_is_valid(buf_id) then
+    --stylua: ignore
+    return {
+      type = 'buffer',  buf_id   = buf_id, path = item.path or vim.api.nvim_buf_get_name(buf_id),
+      lnum = item.lnum, end_lnum = item.end_lnum,
+      col  = item.col,  end_col  = item.end_col,
+      text = item.text,
+    }
+  end
+
+  -- File or Directory
+  if type(item.path) == "string" then
+    local path_type = H.get_fs_type(item.path)
+    if path_type == "file" or path_type == "uri" then
+      --stylua: ignore
+      return {
+        type = path_type, path     = item.path,
+        lnum = item.lnum, end_lnum = item.end_lnum,
+        col  = item.col,  end_col  = item.end_col,
+        text = item.text,
+      }
+    end
+
+    if path_type == "directory" then return { type = "directory", path = item.path } end
+  end
+
+  return {}
+end
+
+H.parse_path = function(x)
+  if type(x) ~= "string" or x == "" then return nil end
+  -- Allow inputs like 'aa/bb', 'aa-5'. Also allow inputs for line/position
+  -- separated by null character:
+  -- - 'aa/bb\00010' (line 10).
+  -- - 'aa/bb\00010\0005' (line 10, col 5).
+  -- - 'aa/bb\00010\0005\000xx' (line 10, col 5, with "xx" description).
+  local location_pattern = "()%z(%d+)%z?(%d*)%z?(.*)$"
+  local from, lnum, col, rest = x:match(location_pattern)
+  local path = x:sub(1, (from or 0) - 1)
+  path = path:sub(1, 1) == "~" and ((vim.loop.os_homedir() or "~") .. path:sub(2)) or path
+
+  -- Verify that path is real
+  local path_type = H.get_fs_type(path)
+  if path_type == "none" and path ~= "" then
+    local cwd = H.pickers.active == nil and vim.fn.getcwd() or H.pickers.active.opts.source.cwd
+    path = string.format("%s/%s", cwd, path)
+    -- path_type = H.get_fs_type(path)
+  end
+
+  return path_type, path, tonumber(lnum), tonumber(col), rest or ""
+end
+
+-- HACK: The show function handles choosing
+local choose = function(item)
+  if item == nil then return end
+end
+
 MiniPick.registry.buffer_inline = function(local_opts, opts)
   local_opts = local_opts or {}
   M.pre = { win = vim.api.nvim_get_current_win(), buf = vim.api.nvim_get_current_buf() }
   M.pre.position = vim.api.nvim_win_get_cursor(M.pre.win)
 
   local_opts = vim.tbl_deep_extend("force", { scope = "current", preserve_order = true }, local_opts)
-  opts = vim.tbl_deep_extend("force", { source = { show = show_in_buffer_with_treesitter } }, opts or {})
+  opts =
+    vim.tbl_deep_extend("force", { source = { show = show_in_buffer_with_treesitter, choose = choose } }, opts or {})
   local retval = MiniExtra.pickers.buf_lines(local_opts, opts)
+  if not retval then pcall(vim.api.nvim_win_set_cursor, M.pre.win, M.pre.position) end
   H.clear_namespace(M.pre.buf, H.ns_id.ranges)
 
   return retval

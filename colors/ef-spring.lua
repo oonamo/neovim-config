@@ -90,4 +90,11 @@ hi("MiniJump2dSpot", { fg = colors.purple, bold = true, underline = true })
 hi("MiniJump2dSpotUnique", { fg = colors.red, bold = true, underline = true })
 hi("MiniJump2dSpotAhead", { fg = colors.yellow })
 
-hi("MiniFilesCursorLine", { bg = colors.purple_bg  })
+hi("MiniFilesCursorLine", { bg = colors.purple_bg })
+
+-- hi("StatuslineInsert", { fg = c.color00, bg = c.color14 })
+-- hi("StatuslineVisual", { fg = c.visual_fg, bg = c.visual_bg })
+
+-- hi("MiniStatuslineModeNormal", { link = "StatuslineNormal" })
+-- hi("MiniStatuslineModeInsert", { link = "StatuslineInsert" })
+-- hi("MiniStatuslineModeVisual", { link = "StatuslineVisual" })

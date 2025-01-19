@@ -72,7 +72,7 @@ function M.buf_init_preview(buf, win, syntax, lines)
   vim.bo[buf].buftype = "nofile"
   vim.bo[buf].modifiable = true
   vim.wo[win].wrap = true
-  vim.api.nvim_buf_set_lines(buf, 0, -1, true, lines)
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
   vim.bo[buf].modifiable = false
   vim.wo[win].spell = false
   vim.bo[buf].syntax = syntax
@@ -82,7 +82,7 @@ local chunks = {}
 
 function M.update_preview(buf, win, lines)
   vim.bo[buf].modifiable = true
-  vim.api.nvim_buf_set_lines(buf, -1, -1, true, lines)
+  vim.api.nvim_buf_set_lines(buf, -1, -1, false, lines)
   vim.bo[buf].modifiable = false
 end
 
@@ -173,10 +173,10 @@ function M.shell_cmd(cmd, shell, opts)
       local lines = vim
         .iter(vim.split(data, "\n", { trimempty = false }))
         :map(function(l)
-          if l:sub(-1) == "\r" then l = l:sub(1, -2) end
-          if l:sub(-1) == "\n" then return l:sub(1, -2) end
-          return l
+          local new, _ = l:gsub("[\r\n]", "")
+          return new
         end)
+        :filter(function(l) return l and #l > 0 end)
         :totable()
       M.update_preview(buf, win, lines)
     end
@@ -195,9 +195,11 @@ function M.shell_cmd(cmd, shell, opts)
       exit_message = "Compilation exited abnormally with code " .. obj.code
     end
 
-    M.update_preview(buf, win, { exit_message .. " at " .. vim.fn.strftime("%a %b %e %H:%M:%S"), "" })
+    M.update_preview(buf, win, { "", exit_message .. " at " .. vim.fn.strftime("%a %b %e %H:%M:%S") })
     vim.notify(exit_message)
   end)
+
+  vim.print(shell_cmd)
 
   local ok, ret = pcall(
     vim.system,

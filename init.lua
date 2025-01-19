@@ -82,6 +82,7 @@ now(function()
     variant = "default", -- "default", "tinted", "deuteranopia", "tritanopia"
   })
 end)
+now(function() add("NTBBloodbath/sweetie.nvim") end)
 now(function()
   add({ source = "EdenEast/nightfox.nvim" })
   local S = require("nightfox.lib.shade")
@@ -558,7 +559,7 @@ end)
 
 later(function()
   add({
-    source = "saghen/blink.cmp",
+    source = "Saghen/blink.cmp",
     checkout = "main",
     hooks = {
       post_checkout = function(path, source, name)
