@@ -1,5 +1,8 @@
 local M = {}
 
+local active_timer = vim.uv.new_timer()
+local active_linenr = nil
+
 local hl_id = vim.api.nvim_create_namespace("hl-inline")
 
 local function hl_line(buf, line)
@@ -8,10 +11,29 @@ local function hl_line(buf, line)
   vim.api.nvim_buf_set_extmark(buf, hl_id, line - 1, 0, opts)
 end
 
+local function clear_timer()
+  pcall(function()
+    active_timer:stop()
+    active_timer:close()
+  end)
+end
+
+local function hl_line_debounce(buf, line)
+  if active_linenr and active_linenr == line then return end
+  active_linenr = line
+
+  clear_timer()
+  active_timer = vim.uv.new_timer()
+
+  active_timer:start(M.timeout, 0, function()
+    clear_timer()
+    vim.schedule(function() hl_line(buf, line) end)
+  end)
+end
+
 local ns_digit_prefix = vim.api.nvim_create_namespace("cur-buf-pick-show")
 local show_cur_buf_lines = function(buf_id, items, query, opts)
   if items == nil or #items == 0 then return end
-
 
   -- Move prefix line numbers into inline extmarks
   local lines = vim.api.nvim_buf_get_lines(buf_id, 0, -1, false)
@@ -38,17 +60,12 @@ local show_cur_buf_lines = function(buf_id, items, query, opts)
   -- Show as usual
   MiniPick.default_show(buf_id, items, query, opts)
 
-  -- TODO: This can be small, but it doesn't feel slow
-  vim.schedule(function()
-    local matches = MiniPick.get_picker_matches()
-    if not matches then return end
+  local matches = MiniPick.get_picker_matches()
+  if not matches then return end
 
-    M.current = matches.current or matches.all[1]
-    if not M.current then return end
-    pcall(vim.api.nvim_win_set_cursor, M.pre.win, { M.current.lnum, 0 })
-    pcall(vim.api.nvim_buf_call, M.pre.buf, function() vim.cmd("norm! zz") end)
-    hl_line(M.pre.buf, M.current.lnum)
-  end)
+  M.current = matches.current or matches.all[1]
+  if not M.current then return end
+  hl_line(M.pre.buf, M.current.lnum)
 end
 
 MiniPick.registry.buffer_lines_current = function(local_opts, opts)

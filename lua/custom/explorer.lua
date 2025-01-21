@@ -8,43 +8,89 @@ local M = {
   mappings = {},
 }
 
-M.mappings.go_up_level = {
-  char = "<C-h>",
-  func = function()
-    local query = MiniPick.get_picker_query()
-    if not query[1] or query[1] == "" then
-      vim.schedule(function() vim.api.nvim_input("<CR>") end)
-    else
-      MiniPick.set_picker_query({ "" })
-    end
-  end,
-}
+--- Deletes whole query if non empty
+--- If query is empty, go up a level
+---
+--- Mimics Emac's vertico behavior
+---@param char string
+M.mappings.go_up_level = function(char)
+  return {
+    char = char,
+    func = function()
+      local query = MiniPick.get_picker_query()
+      if not query[1] or query[1] == "" then
+        vim.schedule(function() vim.api.nvim_input("<CR>") end)
+      else
+        MiniPick.set_picker_query({ "" })
+      end
+    end,
+  }
+end
 
-M.mappings.go_up_level_neovide = {
-  char = "<c-bs>", -- Same as C BKSP, emacs lol
-  func = function()
-    local query = MiniPick.get_picker_query()
-    if not query[1] or query[1] == "" then
-      vim.schedule(function() vim.api.nvim_input("<CR>") end)
-    else
-      MiniPick.set_picker_query({ "" })
-    end
-  end,
-}
+---Calls the directory_fn on a path
+---@param char string
+---@param directory_fn fun(path: string)
+M.mappings.explorer = function(char, directory_fn)
+  return {
+    char = char,
+    func = function()
+      local current = MiniPick.get_picker_matches().current
+      if not current or current == "" then
+        vim.notify("No file or Directory is selected")
+        return
+      end
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "MiniPickStop",
+        once = true,
+        callback = vim.schedule_wrap(function()
+          local ok, _ = pcall(directory_fn, current.path)
+          if not ok then vim.notify(string.format("Could not use directory_fn on path '%s'", current.path)) end
+        end),
+      })
 
-M.mappings.explorer = {
-  char = "<C-d>",
-  func = function()
-    local current = MiniPick.get_picker_matches().current
-    if not current or current == "" then
-      vim.notify("No file or Directory is selected")
-      return
-    end
+      return true
+    end,
+  }
+end
 
-    vim.schedule(function() require("mini.files").open(current.path) end)
-    return true
-  end,
-}
+---If the current match is a directory, that item is selected
+---Otherwise, the item is completed
+---
+---This behavior mimics Emac's `vertico.el`
+---@param char string
+M.mappings.complete_or_enter = function(char)
+  return {
+    char = char,
+    func = function()
+      local matches = MiniPick.get_picker_matches()
+      if not matches then return end
+      local current = matches.current or matches.all[1]
+
+      if current.fs_type == "directory" then
+        MiniPick.get_picker_opts().source.choose(current)
+      else
+        MiniPick.set_picker_query(vim.split(current.text or "", ""))
+      end
+    end,
+  }
+end
+
+M.mappings.create_file = function(char)
+  return {
+    char = char,
+    func = function()
+      local query = MiniPick.get_picker_query()
+      if not query or #query < 1 then return end
+      query = table.concat(query, "")
+      local cwd = MiniPick.get_picker_opts().source.cwd
+      local file = cwd .. "/" .. query
+      file = file:gsub("\\", "/")
+
+      vim.schedule(function() vim.cmd.edit(file) end)
+      return true
+    end,
+  }
+end
 
 local PERM_SIZE = 10
 
@@ -295,6 +341,8 @@ function M.explorer_show(buf_id, items, query)
   require("mini.pick").default_show(buf_id, items, query, { show_icons = true })
 
   for line, item in ipairs(items) do
+    -- HACK: Compute's fs_stat every iteration to update any changes
+    -- TODO: Compute's fs_stat every iteration to update any changes
     local stat = vim.uv.fs_stat(item.path)
     local width = 0
     for i = 1, #M.opts.items do
@@ -318,11 +366,10 @@ local ivy_opts = {
   },
 }
 
-function M.get_items(item) return M.explorer_make_items(item.path, filter, sort) end
-
 -- Mostly from:
 -- https://github.com/echasnovski/mini.nvim/blob/2011aff270bcd3e1f3ad088253ace2d574967bed/lua/mini/extra.lua#L517
 function M.explorer(local_opts)
+  if not M.opts then M.setup() end
   local_opts = vim.tbl_deep_extend("force", { cwd = nil, filter = nil, sort = nil }, local_opts or {})
 
   local filter = local_opts.filter or function() return true end

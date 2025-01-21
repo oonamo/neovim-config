@@ -94,7 +94,7 @@ hi("PmenuSbar", { fg = c.menu_scroll_fg, bg = c.menu_scroll_bg })
 hi("CursorLine", { bg = c.cursorline })
 hi("MatchParen", { bg = c.match_paren_bg, fg = c.match_paren_fg, bold = true })
 hi("LineNr", { fg = c.line_nr })
-hi("CursorLineNr", { fg = c.line_nr_selected, bg = c.cursorline, bold = true })
+hi("CursorLineNr", { fg = c.line_nr_selected, bg = palette.base01, bold = true })
 
 hi("Visual", { bg = c.selection })
 
@@ -121,5 +121,15 @@ hi("DiagnosticVirtualTextWarn", { fg = c.warning_fg, bold = true })
 hi("DiffAdd", { fg = c.diff_add_fg })
 hi("DiffDelete", { fg = c.diff_delete_fg })
 hi("DiffChange", { fg = c.diff_change_fg })
+
+hi("MiniIconsAzure", { fg = c.function_builtin_fg })
+hi("MiniIconsBlue", { fg = c.info_fg })
+hi("MiniIconsCyan", { fg = c.hint_fg })
+hi("MiniIconsGreen", { fg = c.diff_add_fg })
+hi("MiniIconsGrey", { fg = c.menu_scroll_fg })
+hi("MiniIconsOrange", { fg = c.number_fg })
+hi("MiniIconsPurple", { fg = c.type_fg })
+hi("MiniIconsRed", { fg = c.variable_builtin_fg })
+hi("MiniIconsYellow", { fg = c.warning_fg })
 
 vim.g.colors_name = "veil"

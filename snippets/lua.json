@@ -1,0 +1,7 @@
+{
+  "Anonymous Function": {
+    "prefix": "afu",
+    "body": "function($1)\n\t$0\nend",
+    "desc": "Create an anonymous function"
+  }
+}

@@ -6,6 +6,8 @@ else
   _G.platform_specific = { lineending = "\n" }
 end
 
+vim.o.shada        = "'100,<50,s10,:1000,/100,@100,h" -- Limit what is stored in ShaDa file
+
 -- vim.o.shell = "pwsh"
 -- vim.o.shellcmdflag =
 -- 	"-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8; $PSStyle.OutputRendering = [System.Management.Automation.OutputRendering]::PlainText;"
@@ -14,9 +16,6 @@ end
 -- vim.o.shellquote = ""
 -- vim.o.shellxquote = ""
 
--- Make sure to setup `mapleader` and `maplocalleader` before
--- loading lazy.nvim so that mappings are correct.
--- This is also a good place to setup other settings (vim.opt)
 vim.g.mapleader = " "
 vim.g.maplocalleader = ";"
 local o, opt = vim.o, vim.opt
@@ -45,14 +44,13 @@ vim.opt.titlestring = "nvim"
 vim.opt.background = "dark"
 vim.opt.guicursor = {
   -- Cursor shape
-  "i-c-ci-ve:blinkoff500-blinkon500-block-TermCursor",
+  "i-c-ci-ve:ver25-blinkoff500-blinkon500-TermCursor",
   "n-v:block-Curosr/lCursor",
   "o:hor50-Curosr/lCursor",
   "r-cr:hor20-Curosr/lCursor",
 }
 -- vim.o.guicursor = ""
 vim.opt.cmdheight = 1
-vim.opt.quickfixtextfunc = [[v:lua.Config.qftf]]
 
 -- o.completeopt = "menu,menuone,noselect,popup"
 -- o.completeslash = "slash"
@@ -116,8 +114,8 @@ opt.foldlevel = 99
 o.foldmethod = "expr"
 o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 o.foldtext = ""
-o.list = false
--- o.listchars = table.concat({ "extends:…", "nbsp:␣", "precedes:…", "tab:> " }, ",")
+o.list = true
+o.listchars = table.concat({ "extends:…", "nbsp:␣", "precedes:…", "tab:> " }, ",")
 o.fillchars = [[eob: ,vert:▕,vertleft:🭿,vertright:▕,verthoriz:🭿,horiz:▁,horizdown:▁,horizup:▔]]
 o.virtualedit = "block"
 o.shortmess = "tacstFOSWCo"
@@ -145,30 +143,6 @@ vim.g.loaded_node_provider = 0
 vim.g.loaded_python3_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
-
--- Defer shada reading
-local shada_read ---@boolean?
-
----Restore 'shada' option and read from shada once
----@return true
-local function rshada()
-  if shada_read then return true end
-  shada_read = true
-
-  vim.cmd.set("shada&")
-  pcall(vim.cmd.rshada)
-  return true
-end
-
-vim.opt.shada = ""
-vim.api.nvim_create_autocmd("BufReadPre", { once = true, callback = rshada })
-vim.api.nvim_create_autocmd("UIEnter", {
-  once = true,
-  callback = function()
-    vim.schedule(rshada)
-    return true
-  end,
-})
 
 -- Disable builtin plugins
 vim.g.loaded_2html_plugin = 0

@@ -1,6 +1,7 @@
 ---@param client vim.lsp.Client
 ---@param buffer number
 local function on_attach(client, buffer)
+  if Config.completion == "mini" then vim.bo[buffer].omnifunc = "v:lua.MiniCompletion.completefunc_lsp" end
   vim.keymap.set("n", "<leader>la", vim.lsp.buf.code_action, {
     desc = "Preview code actions",
     buffer = buffer,
@@ -64,10 +65,7 @@ local function on_attach(client, buffer)
     desc = "Request Signature (Echo Area)",
   })
 
-  vim.keymap.set("n", "grn", vim.lsp.buf.rename)
-  vim.keymap.set("n", "grr", vim.lsp.buf.references)
-  vim.keymap.set("n", "gra", vim.lsp.buf.code_action)
-  vim.keymap.set("n", "gO", vim.lsp.buf.document_symbol)
+  vim.keymap.set("n", "<leader>l", vim.lsp.buf.document_symbol)
 end
 
 local defaults = { on_attach = on_attach }

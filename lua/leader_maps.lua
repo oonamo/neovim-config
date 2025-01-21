@@ -73,8 +73,8 @@ if not Config.plugs.snacks then
   map_leader("n", "fd", '<Cmd>Pick diagnostic scope="all"<CR>', "Diagnostic workspace")
   map_leader("n", "fD", '<Cmd>Pick diagnostic scope="current"<CR>', "Diagnostic buffer")
   map_leader("n", "ff", "<Cmd>Pick visit_paths preserve_order=true<CR>", "Visit paths (cwd)")
-  map_leader("n", "ff", "<Cmd>Pick files<CR>", "Files")
-  map_leader("n", "ff", '<Cmd>Pick visit_paths cwd="" preserve_order=true<CR>', "Visit paths (all)")
+  -- map_leader("n", "ff", "<Cmd>Pick files<CR>", "Files")
+  -- map_leader("n", "ff", '<Cmd>Pick visit_paths cwd="" preserve_order=true<CR>', "Visit paths (all)")
   map_leader("n", "fg", "<Cmd>Pick grep_live<CR>", "Grep live")
   map_leader("n", "fh", "<Cmd>Pick help<CR>", "Help tags")
   map_leader("n", "fH", "<Cmd>Pick hl_groups<CR>", "Highlight groups")
@@ -181,6 +181,7 @@ map_leader("n", "tp", function()
   vim.cmd("startinsert")
   vim.api.nvim_win_set_height(0, 5)
 end, "cmd terminal")
+map_leader("n", "ty", function() Config.toggle_term("yazi") end)
 
 --================== Visits ====================
 local map_vis = function(keys, call, desc)

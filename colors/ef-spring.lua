@@ -1,4 +1,5 @@
-if vim.g.colors_name ~= nil then vim.cmd("highlight clear") end
+vim.cmd("highlight clear")
+
 local is_dark = vim.o.bg == "light"
 local bg = "#f6fff9"
 local fg = "#34494a"
@@ -22,7 +23,7 @@ local colors = {
   azure = "#005268",
   azure_bg = "#c0eeff",
   bg = "#f6fff9",
-  bg_edge = "#f7fffa",
+  bg_edge = "#e8f0f0",
   bg_edge2 = "#f7fffa",
   bg_mid = "#d6ded8",
   bg_mid2 = "#b5bdb8",
@@ -91,6 +92,7 @@ hi("MiniJump2dSpotUnique", { fg = colors.red, bold = true, underline = true })
 hi("MiniJump2dSpotAhead", { fg = colors.yellow })
 
 hi("MiniFilesCursorLine", { bg = colors.purple_bg })
+hi("MiniPickMatchCurrent", { link = "MiniFilesCursorLine" })
 
 -- hi("StatuslineInsert", { fg = c.color00, bg = c.color14 })
 -- hi("StatuslineVisual", { fg = c.visual_fg, bg = c.visual_bg })

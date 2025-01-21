@@ -7,7 +7,7 @@ end
 
 require("mini.files").setup({
   windows = {
-    width_focus = 999999,
+    -- width_focus = 999999,
     preview = true,
   },
   mappings = {
@@ -22,32 +22,30 @@ local group = vim.api.nvim_create_augroup("mini-files-keymaps", { clear = true }
 local inc_search = vim.api.nvim_get_hl(0, { name = "IncSearch" })
 inc_search.default = true
 
-vim.api.nvim_set_hl(0, "MiniFilesNormal", { link = "Normal" })
-vim.api.nvim_set_hl(0, "MiniFilesBorder", { link = "Normal" })
-vim.api.nvim_set_hl(0, "MiniFilesCursorLine", inc_search)
+-- vim.api.nvim_set_hl(0, "MiniFilesNormal", { link = "Normal" })
+vim.api.nvim_set_hl(0, "MiniFilesBorder", { link = "MiniFilesNormal" })
 
 vim.api.nvim_create_autocmd("ColorScheme", {
   group = group,
-  callback = function()
-    inc_search = vim.api.nvim_get_hl(0, { name = "IncSearch" })
-    inc_search.default = true
-    vim.api.nvim_set_hl(0, "MiniFilesNormal", { link = "Normal" })
-    vim.api.nvim_set_hl(0, "MiniFilesBorder", { link = "Normal" })
-
-    vim.api.nvim_set_hl(0, "MiniFilesCursorLine", inc_search)
-  end,
+  callback = function() vim.api.nvim_set_hl(0, "MiniFilesBorder", { link = "MiniFilesNormal" }) end,
 })
 
 vim.api.nvim_create_autocmd("User", {
   group = group,
   pattern = "MiniFilesWindowOpen",
-  callback = function(args) vim.api.nvim_win_set_config(args.data.win_id, { border = "solid", height = vim.o.lines }) end,
+  callback = function(args)
+    -- vim.api.nvim_win_set_config(args.data.win_id, { border = "solid", height = vim.o.lines })
+    vim.api.nvim_win_set_config(args.data.win_id, { border = "solid" })
+  end,
 })
 
 vim.api.nvim_create_autocmd("User", {
   group = group,
   pattern = "MiniFilesWindowUpdate",
-  callback = function(args) vim.api.nvim_win_set_config(args.data.win_id, { border = "solid", height = vim.o.lines }) end,
+  callback = function(args)
+    -- vim.api.nvim_win_set_config(args.data.win_id, { border = "solid", height = vim.o.lines })
+    vim.api.nvim_win_set_config(args.data.win_id, { border = "solid" })
+  end,
 })
 
 vim.api.nvim_create_autocmd("User", {

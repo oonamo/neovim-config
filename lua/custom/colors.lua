@@ -17,12 +17,11 @@ M.colors = {
   end,
   ["everforest"] = function()
     vim.cmd.colorscheme("everforest")
-    local norm = vim.api.nvim_get_hl(0, {
-      name = "Normal",
-    })
-    norm.bg = "#000000"
+    -- local norm = vim.api.nvim_get_hl(0, {
+    --   name = "Normal",
+    -- })
     vim.api.nvim_set_hl(0, "MiniPickMatchCurrent", { link = "Visual" })
-    vim.api.nvim_set_hl(0, "Normal", norm)
+    -- vim.api.nvim_set_hl(0, "Normal", norm)
     vim.api.nvim_set_hl(0, "NormalNC", { link = "Normal" })
   end,
 }

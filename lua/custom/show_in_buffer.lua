@@ -2,9 +2,43 @@ local H = {
   ns_id = {
     ranges = vim.api.nvim_create_namespace("buffer-range-picker"),
     treesitter = vim.api.nvim_create_namespace("buffer-preview-treesitter"),
+    cursor_line = vim.api.nvim_create_namespace("buffer-preview-cursorline"),
   },
 }
 local M = {}
+
+local active_timer = vim.uv.new_timer()
+local active_linenr = nil
+
+H.clear_timer = function()
+  pcall(function()
+    active_timer:stop()
+    active_timer:close()
+  end)
+end
+
+H.go_to_line_col = function(pos)
+  if active_linenr and active_linenr == pos[1] then return end
+
+  H.clear_timer()
+  active_timer = vim.uv.new_timer()
+
+  active_timer:start(M.timeout, 0, function()
+    H.clear_timer()
+    vim.schedule(function()
+      pcall(vim.api.nvim_win_set_cursor, M.pre.win, pos)
+      pcall(vim.api.nvim_buf_call, M.pre.buf, function() vim.cmd("norm! zz") end)
+      H.clear_namespace(M.pre.buf, H.ns_id.cursor_line)
+      pcall(vim.api.nvim_buf_set_extmark, M.pre.buf, H.ns_id.cursor_line, pos[1] - 1, 0, {
+        end_row = pos[1],
+        end_col = 0,
+        hl_eol = true,
+        hl_group = "MiniPickMatchCurrent",
+        priority = 201,
+      })
+    end)
+  end)
+end
 
 H.seq_along = function(arr)
   if arr == nil then return nil end
@@ -257,6 +291,8 @@ local show_in_buffer = function(buf_id, items, query, opts)
   -- Place range highlights accounting for possible shift due to prefixes
   local extmark_opts = { hl_group = "MiniPickMatchRanges", hl_mode = "combine", priority = 200 }
   local searchable_array = {}
+
+  -- TODO: Don't highlight ranges outside of viewport
   for i = 1, #match_data do
     local line, row, ranges = match_data[i][4], match_data[i][3], match_ranges[i]
 
@@ -279,23 +315,23 @@ local show_in_buffer = function(buf_id, items, query, opts)
     searchable_array[line] = ranges[1][1] - 1 - preview_prefix_len
   end
 
-  vim.schedule(function()
-    if #query == 0 then return end
-    local matches = MiniPick.get_picker_matches()
-    if not matches then return end
+  local matches = MiniPick.get_picker_matches()
+  if not matches then return end
+  if #query == 0 and matches.current_ind == 1 then
+    if M.return_on_empty then H.go_to_line_col(M.pre.position) end
+    return
+  end
 
-    M.current = matches.current
-    -- or matches.all[1]
-    if not M.current then return end
+  local current = matches.current
+  -- or matches.all[1]
+  if not current then return end
 
-    local ind = matches.current_ind
-    if not ind then return vim.notify("Should be unreachable", vim.log.levels.ERROR) end
+  local ind = matches.current_ind
+  if not ind then return vim.notify("Should be unreachable", vim.log.levels.ERROR) end
 
-    local col = searchable_array[ind] or 0
+  local col = searchable_array[ind] or 0
 
-    pcall(vim.api.nvim_win_set_cursor, M.pre.win, { M.current.lnum, col })
-    pcall(vim.api.nvim_buf_call, M.pre.buf, function() vim.cmd("norm! zz") end)
-  end)
+  H.go_to_line_col({ current.lnum, col })
 
   -- Highlight prefixes
   if not opts.show_icons then return end
@@ -417,13 +453,24 @@ MiniPick.registry.buffer_inline = function(local_opts, opts)
   local_opts = local_opts or {}
   M.pre = { win = vim.api.nvim_get_current_win(), buf = vim.api.nvim_get_current_buf() }
   M.pre.position = vim.api.nvim_win_get_cursor(M.pre.win)
+  M.timeout = local_opts.timer or 10
+
+  M.return_on_empty = local_opts.return_on_empty or true
 
   local_opts = vim.tbl_deep_extend("force", { scope = "current", preserve_order = true }, local_opts)
+
+  if local_opts.scope ~= "current" then
+    return vim.notify("This picker only supports using the current buffer!", vim.log.levels.ERROR)
+  end
+
   opts =
     vim.tbl_deep_extend("force", { source = { show = show_in_buffer_with_treesitter, choose = choose } }, opts or {})
+
   local retval = MiniExtra.pickers.buf_lines(local_opts, opts)
-  if not retval then pcall(vim.api.nvim_win_set_cursor, M.pre.win, M.pre.position) end
+  H.clear_timer()
   H.clear_namespace(M.pre.buf, H.ns_id.ranges)
+  H.clear_namespace(M.pre.buf, H.ns_id.cursor_line)
+  if not retval then pcall(vim.api.nvim_win_set_cursor, M.pre.win, M.pre.position) end
 
   return retval
 end

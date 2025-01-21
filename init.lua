@@ -31,6 +31,7 @@ _G.Config = {
   plugs = {
     snacks = false,
   },
+  completion = "mini",
 }
 
 if not (vim.uv or vim.loop).fs_stat(mini_path) then
@@ -76,13 +77,7 @@ now(function()
   add({ source = "AstroNvim/astrotheme" })
   require("astrotheme").setup()
 end)
-now(function()
-  add("miikanissi/modus-themes.nvim")
-  require("modus-themes").setup({
-    variant = "default", -- "default", "tinted", "deuteranopia", "tritanopia"
-  })
-end)
-now(function() add("NTBBloodbath/sweetie.nvim") end)
+now(function() add("junegunn/seoul256.vim") end)
 now(function()
   add({ source = "EdenEast/nightfox.nvim" })
   local S = require("nightfox.lib.shade")
@@ -161,8 +156,7 @@ end)
 now(function() add({ source = "rose-pine/neovim", name = "rose-pine" }) end)
 now(function() add({ source = "catppuccin/nvim", name = "catppuccin" }) end)
 
--- now(function() add({ source = "cocopon/iceberg.vim" }) end)
-later(Config.load_colorscheme)
+now(Config.load_colorscheme)
 
 --================== Mini Plugins ====================
 now(function()
@@ -182,6 +176,51 @@ end)
 now(function() source("plugins/mini-starter.lua") end)
 later(function() require("mini.pairs").setup() end)
 later(function() source("plugins/mini-files.lua") end)
+
+local function something() print("something") end
+
+if Config.completion == "mini" then
+  later(function()
+    require("mini.completion").setup({
+      lsp_completion = {
+        source_func = "omnifunc",
+        auto_setup = false,
+        process_items = function(items, base)
+          -- Don't show 'Text' and 'Snippet' suggestions
+          items = vim.tbl_filter(function(x) return x.kind ~= 1 and x.kind ~= 15 end, items)
+          return MiniCompletion.default_process_items(items, base)
+        end,
+      },
+      fallback_action = function() end,
+      window = {
+        info = { border = "single" },
+        signature = { border = "single" },
+      },
+    })
+  end)
+else
+  later(function()
+    add({
+      source = "Saghen/blink.cmp",
+      checkout = "main",
+      hooks = {
+        post_checkout = function(path, source, name)
+          vim.notify("Installing blink.cmp binary...")
+          require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
+            cwd = Config.path_package .. "blink.cmp",
+          })
+        end,
+        post_install = function(path, source, name)
+          vim.notify("Installing blink.cmp binary...")
+          require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
+            cwd = Config.path_package .. "blink.cmp",
+          })
+        end,
+      },
+    })
+    source("plugins/blink-cmp.lua")
+  end)
+end
 later(function() require("mini.extra").setup() end)
 later(function() require("mini.bufremove").setup() end)
 later(function() require("mini.indentscope").setup() end)
@@ -292,6 +331,9 @@ later(function()
       { mode = "n", keys = "g" },
       { mode = "x", keys = "g" },
 
+      { mode = "n", keys = "s" },
+      { mode = "x", keys = "s" },
+
       -- Marks
       { mode = "n", keys = "'" },
       { mode = "n", keys = "`" },
@@ -318,6 +360,9 @@ later(function()
       { mode = "x", keys = "[" },
       { mode = "n", keys = "]" },
       { mode = "x", keys = "]" },
+
+      { mode = "n", keys = "<M-g>" },
+      { mode = "x", keys = "<M-g>" },
     },
     window = {
       delay = 0,
@@ -350,13 +395,7 @@ later(function()
       { mode = "n", keys = "<Leader>t", desc = "+Terminal" },
       { mode = "n", keys = "<Leader>v", desc = "+Visits" },
       { mode = "n", keys = "<Leader>f", desc = "+Find" },
-      { mode = "n", keys = "<Leader>m", desc = "+Multicursor" },
-      { mode = "n", keys = "<Leader>mg", desc = "+Motion" },
 
-      { mode = "n", keys = "<Leader>mj", postkeys = "<leader>m" },
-      { mode = "n", keys = "<Leader>mJ", postkeys = "<leader>m" },
-      { mode = "n", keys = "<Leader>mk", postkeys = "<leader>m" },
-      { mode = "n", keys = "<Leader>mK", postkeys = "<leader>m" },
       -- Bracketed:
       { mode = "n", keys = "]b", postkeys = "]" },
       { mode = "n", keys = "[b", postkeys = "[" },
@@ -397,13 +436,12 @@ later(function()
   require("mini.surround").setup({
     highlight_duration = 500,
     mappings = {
-      add = "gsa", -- Add surrounding in Normal and Visual modes
-      delete = "gsd", -- Delete surrounding
-      find = "gsn", -- Find surrounding (to the right)
-      find_left = "gsN", -- Find surrounding (to the left)
-      highlight = "gsh", -- Highlight surrounding
-      indentscope_color = "",
-      replace = "gsr", -- Replace surrounding
+      add = "sa", -- Add surrounding in Normal and Visual modes
+      delete = "sd", -- Delete surrounding
+      find = "sn", -- Find surrounding (to the right)
+      find_left = "sN", -- Find surrounding (to the left)
+      highlight = "sh", -- Highlight surrounding
+      replace = "sr", -- Replace surrounding
       update_n_lines = "", -- Update `n_lines`
 
       suffix_last = "l", -- Suffix to search with "prev" method
@@ -411,6 +449,8 @@ later(function()
     },
     search_method = "cover_or_next",
   })
+
+  vim.keymap.set({ "n", "x" }, "s", "<Nop>")
 end)
 
 later(function()
@@ -513,19 +553,7 @@ end)
 later(function() require("mini.splitjoin").setup() end)
 later(function() require("mini.bracketed").setup() end)
 later(function() require("mini.jump").setup() end)
-later(
-  function()
-    require("mini.jump2d").setup({
-      view = {
-        dim = true,
-        n_steps_ahead = 10000000,
-      },
-      mappings = {
-        start_jumping = "gw",
-      },
-    })
-  end
-)
+later(function() source("plugins/mini-jump2d.lua") end)
 
 later(
   function()
@@ -557,27 +585,27 @@ later(function()
   source("plugins/nvim-treesitter.lua")
 end)
 
-later(function()
-  add({
-    source = "Saghen/blink.cmp",
-    checkout = "main",
-    hooks = {
-      post_checkout = function(path, source, name)
-        vim.notify("Installing blink.cmp binary...")
-        require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
-          cwd = Config.path_package .. "blink.cmp",
-        })
-      end,
-      post_install = function(path, source, name)
-        vim.notify("Installing blink.cmp binary...")
-        require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
-          cwd = Config.path_package .. "blink.cmp",
-        })
-      end,
-    },
-  })
-  source("plugins/blink-cmp.lua")
-end)
+-- later(function()
+--   add({
+--     source = "Saghen/blink.cmp",
+--     checkout = "main",
+--     hooks = {
+--       post_checkout = function(path, source, name)
+--         vim.notify("Installing blink.cmp binary...")
+--         require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
+--           cwd = Config.path_package .. "blink.cmp",
+--         })
+--       end,
+--       post_install = function(path, source, name)
+--         vim.notify("Installing blink.cmp binary...")
+--         require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
+--           cwd = Config.path_package .. "blink.cmp",
+--         })
+--       end,
+--     },
+--   })
+--   source("plugins/blink-cmp.lua")
+-- end)
 
 later(function()
   add({ source = "neovim/nvim-lspconfig" })
@@ -599,13 +627,13 @@ later(function()
   source("plugins/render-markdown.lua")
 end)
 
-later(function()
-  add({
-    source = "epwalsh/obsidian.nvim",
-    depends = { "nvim-lua/plenary.nvim", "MeanderingProgrammer/render-markdown.nvim" },
-  })
-  source("plugins/obsidian.lua")
-end)
+-- later(function()
+--   add({
+--     source = "epwalsh/obsidian.nvim",
+--     depends = { "nvim-lua/plenary.nvim", "MeanderingProgrammer/render-markdown.nvim" },
+--   })
+--   source("plugins/obsidian.lua")
+-- end)
 if Config.plugs.snacks then
   later(function()
     add({
@@ -617,11 +645,12 @@ end
 
 --================== Dev Plugins ====================
 -- later(function() add({ source = "~/projects/nvim/chadschemes/", hooks = {} }) end)
-later(function()
-  vim.opt.rtp:append("C:\\Users\\onam7\\projects\\command_pal")
-  -- add({ source = "C:/Users/onam7/projects/command_pal", checkout = "refactor_mini_pick" })
-  source("plugins/command_pal.lua")
-end)
+-- later(function()
+--   vim.opt.rtp:append("C:\\Users\\onam7\\projects\\command_pal")
+--   -- add({ source = "C:/Users/onam7/projects/command_pal", checkout = "refactor_mini_pick" })
+
+--   source("plugins/command_pal.lua")
+-- end)
 
 later(function()
   vim.opt.rtp:append("C:\\Users\\onam7\\projects\\quicker_md.nvim")

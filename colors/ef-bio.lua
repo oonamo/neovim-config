@@ -4,7 +4,6 @@ local is_dark = vim.o.bg == "dark"
 local bg = "#111111"
 local fg = "#cfdfd5"
 
-
 local palette = {
   accent = "#dadada",
   accent_bg = "#111111",
@@ -46,6 +45,8 @@ local function hi(...) vim.api.nvim_set_hl(0, ...) end
 hi("StatusLine", { bg = "#00552f", fg = "#d0ffe0" })
 hi("String", { fg = "#af9fff" })
 hi("@keyword", { fg = "#00c089", bold = true })
+
+-- hi("Normal", { fg = fg, bg = bg })
 
 hi("DiagnosticVirtualTextError", { fg = palette.red, bg = "#48100f" })
 hi("DiagnosticVirtualTextHint", { fg = palette.blue, bg = palette.blue_bg })

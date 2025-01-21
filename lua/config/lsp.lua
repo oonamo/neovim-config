@@ -210,7 +210,6 @@ local function echo_handler(_, result, ctx)
 		actSig.activeParameter = actSig.activeParameter ~= 0 and actSig.activeParameter + 1 or 1
 	end
 
-	vim.print(actSig)
 	actSig.label = string.gsub(actSig.label or "", "[\n\r\t]", " ")
 
 	if actSig.label ~= "" then

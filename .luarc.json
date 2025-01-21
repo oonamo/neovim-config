@@ -20,7 +20,9 @@
         "Snacks",
         "MiniSnippets",
         "MiniStarter",
-        "MiniVisits"
+        "MiniVisits",
+        "MiniIcons",
+        "MiniCompletion"
     ],
     "completion.autoRequire": true,
 }

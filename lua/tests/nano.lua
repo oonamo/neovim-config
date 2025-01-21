@@ -61,6 +61,10 @@ local function stl_format(hl, value, hl_keys, reset)
   return string.format("%%#%s#%s%s", mod_hl, value, reset and "%#" .. status_bg .. "#" or "")
 end
 
+local function stl_hl_pair(hl, value, reset)
+  return string.format("%%#%s#%s%s", hl, value, reset and "%#" .. status_bg .. "#" or "")
+end
+
 local diag_signs_default_text = { "E", "W", "I", "H" }
 
 local diag_severity_map = {
@@ -190,12 +194,31 @@ end
 function statusline.branch()
   ---@diagnostic disable-next-line: undefined-field
   local branch = vim.b.minigit_summary and vim.b.minigit_summary.head_name or ""
-  return branch == "" and "" or "#" .. branch
+  return branch == "" and ""
+    or (
+      stl_format("gitbranch_hash", "#", {
+        fg = "MiniIconsRed",
+        bg = "StatusLine",
+      }, true) .. stl_format("gitbranch", branch, {
+        fg = "MiniIconsYellow",
+        bg = "StatusLine",
+      }, true)
+    )
+  -- or stl_format("gitbranch", "#" .. branch, {
+  --   fg = "NeoGitBranch",
+  --   bg = "StatusLine",
+  -- }, true)
 end
 
 ---Get current filetype
 ---@return string
-function statusline.ft() return vim.bo.ft == "" and "" or vim.bo.ft:gsub("^%l", string.upper) end
+function statusline.ft()
+  return vim.bo.ft == "" and ""
+    or stl_format("filetype", vim.bo.ft:gsub("^%l", string.upper), {
+      fg = "NonText",
+      bg = "StatusLine",
+    }, true)
+end
 
 ---@return string
 function statusline.wordcount()
@@ -325,33 +348,36 @@ local spinner_status_keep = 600 -- ms
 local spinner_progress_keep = 80 -- ms
 local spinner_timer = vim.uv.new_timer()
 
+vim.g.has_nf = true
 local spinner_icons ---@type string[]
 local spinner_icon_done ---@type string
 
-vim.g.has_nf = true
-
 if vim.g.has_nf then
-  spinner_icon_done = vim.trim("󰄬 ")
+  -- spinner_icon_done = { vim.trim("󰄬 "), "Constant" }
+  spinner_icon_done = stl_format("spinnerdone", vim.trim("󰄬 "), { fg = "Constant", bg = "Statusline" }, true)
   spinner_icons = {
-    "⣷",
-    "⣯",
-    "⣟",
-    "⡿",
-    "⢿",
-    "⣻",
-    "⣽",
-    "⣾",
+    stl_format("spinnera", "⣷", {
+      fg = "Constant",
+      bg = "Statusline",
+    }, true),
+    stl_format("spinnerb", "⣯", { fg = "Constant", bg = "StatusLine" }, true),
+    stl_format("spinnerc", "⣟", { fg = "Constant", bg = "StatusLine" }, true),
+    stl_format("spinnerd", "⡿", { fg = "Constant", bg = "StatusLine" }, true),
+    stl_format("spinnere", "⢿", { fg = "Constant", bg = "StatusLine" }, true),
+    stl_format("spinnerf", "⣻", { fg = "Constant", bg = "StatusLine" }, true),
+    stl_format("spinnerg", "⣽", { fg = "Constant", bg = "StatusLine" }, true),
+    stl_format("spinnerh", "⣾", { fg = "Constant", bg = "StatusLine" }, true),
   }
 else
   spinner_icon_done = "[done]"
   spinner_icons = {
-    "[    ]",
-    "[=   ]",
-    "[==  ]",
-    "[=== ]",
-    "[ ===]",
-    "[  ==]",
-    "[   =]",
+    { "[    ]", "Constant" },
+    { "[=   ]", "Constant" },
+    { "[==  ]", "Constant" },
+    { "[=== ]", "Constant" },
+    { "[ ===]", "Constant" },
+    { "[  ==]", "Constant" },
+    { "[   =]", "Constant" },
   }
 end
 
@@ -427,6 +453,7 @@ function statusline.lsp_progress()
     "%s %s ",
     table.concat(vim.tbl_map(function(id) return server_info[id].name end, server_ids), ", "),
     vim.b.spinner_icon
+    -- stl_hl_pair(vim.b.spinner_icon[2], vim.b.spinner_icon[1], true)
   )
 end
 
@@ -496,7 +523,24 @@ function statusline.get() return vim.g.statusline_winid == vim.api.nvim_get_curr
 
 vim.api.nvim_create_autocmd("ColorScheme", {
   group = groupid,
-  callback = function() M.hl = {} end,
+  callback = function()
+    M.hl = {}
+
+    spinner_icon_done = stl_format("spinnerdone", vim.trim("󰄬 "), { fg = "Constant", bg = "Statusline" }, true)
+    spinner_icons = {
+      stl_format("spinnera", "⣷", {
+        fg = "Constant",
+        bg = "Statusline",
+      }, true),
+      stl_format("spinnerb", "⣯", { fg = "Constant", bg = "StatusLine" }, true),
+      stl_format("spinnerc", "⣟", { fg = "Constant", bg = "StatusLine" }, true),
+      stl_format("spinnerd", "⡿", { fg = "Constant", bg = "StatusLine" }, true),
+      stl_format("spinnere", "⢿", { fg = "Constant", bg = "StatusLine" }, true),
+      stl_format("spinnerf", "⣻", { fg = "Constant", bg = "StatusLine" }, true),
+      stl_format("spinnerg", "⣽", { fg = "Constant", bg = "StatusLine" }, true),
+      stl_format("spinnerh", "⣾", { fg = "Constant", bg = "StatusLine" }, true),
+    }
+  end,
 })
 
 vim.o.statusline = [[%!v:lua.require'tests.nano'.get()]]
