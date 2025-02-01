@@ -111,7 +111,7 @@ local find_conflict = function(direction)
     vim.fn.histdel("search", -1)
   end
 end
-local git_log_cmd = [[Git log --pretty=format:\%h\ \%as\ │\ \%s --topo-order]]
+local git_log_cmd = [[Git log --graph --pretty=format:\%h\ \%as\ │\ \%s --topo-order]]
 
 map_leader("n", "gj", find_conflict("/"), "Find Next Git Confilict")
 map_leader("n", "gk", find_conflict("?"), "Find Previous Git Confilict")
@@ -126,11 +126,11 @@ end, "Blame")
 map_leader("n", "gA", "<Cmd>Git diff --cached -- %<CR>", "Added diff buffer")
 map_leader("n", "gc", "<Cmd>Git commit<CR>", "Commit")
 map_leader("n", "gC", "<Cmd>Git commit --amend<CR>", "Commit amend")
-map_leader("n", "gG", "<Cmd>Git status -s<CR>", "Status")
+map_leader("n", "gG", "<Cmd>Git status<CR>", "Status")
 map_leader("n", "gd", "<Cmd>Git diff<CR>", "Diff")
 map_leader("n", "gD", "<Cmd>Git diff -- %<CR>", "Diff buffer")
 map_leader("n", "gg", "<Cmd>lua Config.open_lazygit()<CR>", "Git tab")
-map_leader("n", "gl", "<cmd>Git log --oneline --follow -- %<cr>", "Log line")
+map_leader("n", "gl", "<cmd>Git log --graph --oneline<cr>", "Log line")
 map_leader("n", "gL", "<Cmd>" .. git_log_cmd .. " --follow -- %<CR>", "Log buffer")
 map_leader("n", "go", "<Cmd>lua MiniDiff.toggle_overlay()<CR>", "Toggle overlay")
 map_leader("n", "gs", "<Cmd>lua MiniGit.show_at_cursor()<CR>", "Show at cursor")

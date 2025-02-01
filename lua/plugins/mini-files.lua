@@ -16,6 +16,9 @@ require("mini.files").setup({
     -- go_out = "-",
     -- go_out_plus = "H",
   },
+  options = {
+    use_as_default_explorer = true,
+  },
 })
 
 local group = vim.api.nvim_create_augroup("mini-files-keymaps", { clear = true })

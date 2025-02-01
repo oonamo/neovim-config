@@ -1,12 +1,10 @@
 local group = vim.api.nvim_create_augroup("config group", { clear = true })
 
-vim.api.nvim_create_autocmd("TextYankPost", {
-  pattern = "*",
-  group = group,
-  callback = function()
-    vim.highlight.on_yank()
-  end,
-})
+-- vim.api.nvim_create_autocmd("TextYankPost", {
+--   pattern = "*",
+--   group = group,
+--   callback = function() vim.highlight.on_yank() end,
+-- })
 
 vim.api.nvim_create_autocmd("FileType", {
   group = group,
@@ -32,7 +30,7 @@ vim.api.nvim_create_autocmd("BufReadPre", {
   callback = function(ev)
     local stat = vim.uv.fs_stat(ev.match)
     if stat and stat.size > 1048567 then
-      vim.b.bigfile = true
+      vim.bo.bigfile = true
       vim.opt_local.spell = false
       vim.opt_local.swapfile = false
       vim.opt_local.undofile = false
@@ -87,3 +85,14 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 vim.api.nvim_create_autocmd("VimResized", {
   command = "wincmd =",
 })
+
+-- vim.api.nvim_create_autocmd({ "BufWritePost", "CmdlineLeave" }, {
+--   callback = function()
+--     vim.o.cmdheight = 0
+--     vim.cmd([[echo '' | redraw]])
+--   end,
+-- })
+--
+-- vim.api.nvim_create_autocmd({ "CmdlineChanged", "CmdlineEnter" }, {
+--   callback = function() vim.o.cmdheight = 1 end,
+-- })

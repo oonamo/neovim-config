@@ -211,6 +211,8 @@ function M.shell_cmd(cmd, shell, opts)
   if not ok then
     vim.notify("There was an error running " .. table.concat(shell_cmd) .. ":\n" .. ret, vim.log.levels.ERROR)
   end
+
+  return ok, ret
 end
 
 vim.api.nvim_create_user_command("Shell", function(c)

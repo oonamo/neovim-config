@@ -65,6 +65,11 @@ if has_pairs then
     pair = "$$",
     register = { cr = true },
   })
+  pairs.map_buf(0, "i", "<", {
+    action = "closeopen",
+    pair = "<>",
+    register = { cr = true },
+  })
 end
 
 

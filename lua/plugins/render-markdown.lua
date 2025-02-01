@@ -18,7 +18,7 @@ require("render-markdown").setup({
     formula = { raw = "[!FORMULA]", rendered = "󰡱 Formula", highlight = "Boolean" },
   },
   indent = {
-    enabled = true,
+    enabled = false,
     per_level = 2,
     skip_level = 1,
     skip_heading = false,

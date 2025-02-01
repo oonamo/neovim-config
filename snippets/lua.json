@@ -3,5 +3,13 @@
     "prefix": "afu",
     "body": "function($1)\n\t$0\nend",
     "desc": "Create an anonymous function"
+  },
+  "Foreach in array": {
+    "prefix": "ifor",
+    "body": [
+      "for i, ${2:v} in ipairs($1) do",
+      "\t$0",
+      "end"
+    ]
   }
 }

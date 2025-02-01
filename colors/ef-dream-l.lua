@@ -60,4 +60,4 @@ hi("BlinkCmpLabelMatch", { fg = "#deb07a" })
 hi("MiniTablineCurrent", { bg = bg, fg = pal.fg_edge2, underline = true })
 hi("MiniTablineVisible", { bg = bg, fg = pal.bg_mid })
 hi("MiniTablineHidden", { bg = bg, fg = pal.bg_mid })
-vim.g.colors_name = "ef-dream"
+

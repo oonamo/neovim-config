@@ -31,13 +31,11 @@ vim.opt.signcolumn = "yes:1"
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 vim.opt.swapfile = false
-vim.opt.undofile = true
 vim.opt.linebreak = true
 vim.opt.breakindent = true
 vim.opt.smoothscroll = true
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
-vim.opt.completeopt = "menuone"
 vim.opt.jumpoptions = "stack,view,clean"
 vim.opt.title = true
 vim.opt.titlestring = "nvim"
@@ -45,15 +43,17 @@ vim.opt.background = "dark"
 vim.opt.guicursor = {
   -- Cursor shape
   "i-c-ci-ve:ver25-blinkoff500-blinkon500-TermCursor",
-  "n-v:block-Curosr/lCursor",
+  "n-v:block-Cursor/lCursor",
   "o:hor50-Curosr/lCursor",
   "r-cr:hor20-Curosr/lCursor",
 }
 -- vim.o.guicursor = ""
 vim.opt.cmdheight = 1
 
--- o.completeopt = "menu,menuone,noselect,popup"
--- o.completeslash = "slash"
+-- TODO: Add fuzzy on 0.11.0
+vim.opt.completeopt = "menu,menuone,noselect,popup"
+
+vim.o.completeslash = "slash"
 
 vim.g.bigfile_size = 1024 * 1024 * 1.5 -- 1.5 MB
 vim.o.lazyredraw = true
@@ -143,14 +143,3 @@ vim.g.loaded_node_provider = 0
 vim.g.loaded_python3_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
-
--- Disable builtin plugins
-vim.g.loaded_2html_plugin = 0
-vim.g.loaded_gzip = 0
-vim.g.loaded_matchit = 0
-vim.g.loaded_spellfile_plugin = 0
-vim.g.loaded_tar = 0
-vim.g.loaded_tarPlugin = 0
-vim.g.loaded_tutor_mode_plugin = 0
-vim.g.loaded_zip = 0
-vim.g.loaded_zipPlugin = 0

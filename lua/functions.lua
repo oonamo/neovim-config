@@ -143,7 +143,7 @@ function Config.create_win(opts)
   local row = math.floor((vim.o.lines - height) / 2)
 
   local buf = nil
-  if vim.api.nvim_buf_is_valid(opts.buf) then
+  if opts.buf and vim.api.nvim_buf_is_valid(opts.buf) then
     buf = opts.buf
   else
     buf = vim.api.nvim_create_buf(false, true)
@@ -194,18 +194,21 @@ Config.load_colorscheme = function()
   if saved.colors_name and saved.colors_name ~= vim.g.colors_name then
     ok, _ = require("custom.colors").select(saved.colors_name)
     if not ok then
-      MiniDeps.later(function()
-        local err
-        ok, err = pcall(vim.cmd.colorscheme, saved.colors_name)
-        if not ok then
-          vim.notify(
-            "Could not load colorscheme '"
-              .. saved.colors_name
-              .. "':\n"
-              .. ((err and type(err) == "string") and err or "")
-          )
-        end
-      end)
+      ok, _ = pcall(vim.cmd.colorscheme, saved.colors_name)
+      if not ok then
+        MiniDeps.later(function()
+          local err
+          ok, err = pcall(vim.cmd.colorscheme, saved.colors_name)
+          if not ok then
+            vim.notify(
+              "Could not load colorscheme '"
+                .. saved.colors_name
+                .. "':\n"
+                .. ((err and type(err) == "string") and err or "")
+            )
+          end
+        end)
+      end
     end
   end
 end
@@ -217,4 +220,21 @@ Config.get_selection = function()
   if mode == "v" or mode == "V" or mode == "\22" then opts.type = mode end
 
   return vim.fn.getregion(vim.fn.getpos("v"), vim.fn.getpos("."), opts)
+end
+
+-- Log for personal use during debugging
+Config.log = {}
+
+local start_hrtime = vim.loop.hrtime()
+_G.DD = function(...)
+  local t = { ... }
+  t.timestamp = 0.000001 * (vim.loop.hrtime() - start_hrtime)
+  table.insert(Config.log, vim.deepcopy(t))
+end
+
+local log_buf_id
+Config.log_print = function()
+  if log_buf_id == nil or not vim.api.nvim_buf_is_valid(log_buf_id) then log_buf_id = Config.create_win().buf end
+  vim.api.nvim_win_set_buf(0, log_buf_id)
+  vim.api.nvim_buf_set_lines(log_buf_id, 0, -1, false, vim.split(vim.inspect(Config.log), "\n"))
 end

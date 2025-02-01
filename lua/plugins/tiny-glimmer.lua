@@ -1,23 +1,43 @@
-require("tiny-glimmer").setup({
+local tg = require("tiny-glimmer")
+tg.setup({
   overwrite = {
     auto_map = true,
     paste = {
-      default_animation = "pulse",
+      enabled = true,
+      default_animation = "fade",
     },
     search = {
       enabled = true,
+      default_animation = "reverse_fade",
     },
   },
-  animations = {
-    pulse = {
-      from_color = "DiffDelete",
-      to_color = "DiffAdd",
+  -- animations = {
+  --   fade = {
+  --     max_duration = 1000,
+  --     min_duration = 1000,
+  --     easing = "linear",
+  --     chars_for_max_duration = 10,
+  --   },
+  -- },
+  presets = {
+    -- Enable animation on cursorline when an event in `on_events` is triggered
+    -- Similar to `pulsar.el`
+    pulsar = {
+      enabled = true,
+      on_event = {  "WinEnter" },
+      default_animation = {
+        name = "fade",
+
+        settings = {
+          max_duration = 400,
+          min_duration = 200,
+
+          from_color = "DiffDelete",
+          to_color = "Normal",
+        },
+      },
     },
   },
 })
--- vim.keymap.set("n", "n", function() require("tiny-glimmer").search_next() end)
--- vim.keymap.set("n", "N", function() require("tiny-glimmer").search_prev() end)
--- vim.keymap.set("n", "p", function() require("tiny-glimmer").paste() end)
--- vim.keymap.set("n", "P", function() require("tiny-glimmer").Paste() end)
--- vim.keymap.set("n", "y", function() require("tiny-glimmer").yank() end)
--- vim.keymap.set("n", "P", function() require("tiny-glimmer").Yank() end)
+
+tg.change_hl("all", { from_color = "DiffDelete", to_color = "Normal" })

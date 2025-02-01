@@ -1,0 +1,13 @@
+return {
+  ["conform.nvim"] = "bf94626f32fbc3c9987ce2f4aab60d96866587df",
+  everforest = "7c4894b64f8d98862153515ceb2a31fc58b9a5b1",
+  ["friendly-snippets"] = "efff286dd74c22f731cdec26a70b46e5b203c619",
+  ["mini.nvim"] = "4446e834c30c799627d65691c73d59638e5c965f",
+  ["nightfox.nvim"] = "595ffb8f291fc4a9bef3201a28b7c0379a41cdee",
+  ["nvim-lspconfig"] = "513f4f0bde469ecb3abe2e1b606f63cf142e751e",
+  ["nvim-treesitter"] = "4862ab0aca21e92771b72e2d7e70424b250f0dd4",
+  ["nvim-treesitter-textobjects"] = "ad8f0a472148c3e0ae9851e26a722ee4e29b1595",
+  ["quicker.nvim"] = "049def718213d3cdf49fdf29835aded09b3e54a3",
+  ["render-markdown.nvim"] = "ad055861d17afe058bd835e82292e14a64b51b1d",
+  ["rose-pine"] = "42f0724e0bca9f57f0bcfa688787c37b8d4befe8"
+}

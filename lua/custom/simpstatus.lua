@@ -21,7 +21,6 @@ local function group_number(num, sep)
   end
 end
 
-
 ---@param hl string
 ---@param v table
 ---@return string
@@ -81,7 +80,6 @@ local function stl_hl_pair(hl, value, reset)
   return string.format("%%#%s#%s%s", hl, value, reset and "%#" .. status_bg .. "#" or "")
 end
 
-
 local function trunc(str, max_val, trunc_chars)
   if #str > max_val then str = str:sub(1, -max_val) .. trunc_chars end
   return str
@@ -140,15 +138,35 @@ local function padding(str, count, dir)
 end
 
 function M.fname(data)
-  if vim.bo[data.buf].ft == "" then return "[nofile]" end
-  local filename = vim.fn.fnamemodify(data.fname, ":t")
-  local fname = stl_format("filename", filename, {
-    fg = "Normal",
-    bg = "Normal",
-    bold = true,
-  })
+  local filename, mod
+  if vim.bo[data.buf].ft == "" then
+    filename = "**scratch**"
+  else
+    filename = vim.fn.fnamemodify(data.fname, ":t")
+  end
+  mod = vim.bo[data.buf].mod
 
-  return M.left .. padding(fname, 3, { "left", "right" }) .. M.right
+  local fname = stl_format("filename" .. (mod and "mod" or ""), filename, {
+    fg = "StatusLine",
+    bg = mod and "StatusLineNC" or "StatusLine",
+    bold = true,
+  }, true)
+
+  return fname
+end
+
+function M.fname_prefix(data)
+  local is_readonly = vim.bo[data.buf].ro
+  if is_readonly then return "🔒" end
+
+  if vim.bo[data.buf].ft == "oil" then
+    return stl_format("oiltype", " @ ", {
+      fg = "Normal",
+      bg = "DiffDelete",
+    }, true)
+  end
+
+  return ""
 end
 
 local function diff_info(data)
@@ -170,7 +188,6 @@ local function diff_info(data)
     add_format = stl_format("add", add, {
       fg = "diffAdded",
       bg = "StatusLine",
-      bold = true,
     }, true)
   end
   if delete and delete > 0 then
@@ -178,17 +195,15 @@ local function diff_info(data)
     delete_format = stl_format("delete", (hasAdd and " " or "") .. delete, {
       fg = "diffRemoved",
       bg = "StatusLine",
-      bold = true,
     }, true)
   end
   if change and change > 0 then
     change_format = stl_format("change", ((hasDelete or hasAdd) and " " or "") .. change, {
       fg = "diffChanged",
       bg = "StatusLine",
-      bold = true,
     }, true)
   end
-  return "[" .. add_format .. change_format .. delete_format .. "] %#StatusLine# "
+  return add_format .. change_format .. delete_format .. "%#StatusLine#"
 end
 
 local colors = {
@@ -199,14 +214,33 @@ local colors = {
   "Substitute",
 }
 
+local modes = {
+  text_mode = "§",
+  prog_mode = "λ",
+  term_mode = ">_",
+}
+
+function M.ft_prefix(data)
+  if non_programming_modes[vim.bo[data.buf].ft] then
+    return stl_format("nonprogpre", modes.text_mode, {
+      fg = "NonText",
+      bg = "StatusLine",
+    }, true)
+  end
+  return stl_format("progmode", modes.prog_mode, {
+    fg = "NonText",
+    bg = "StatusLine",
+  }, true)
+end
+
 local function ft(data)
   local filetype = vim.bo[data.buf].ft
   filetype = filetype:sub(1, 1):upper() .. filetype:sub(2)
+
   return stl_format("ft", filetype, {
     fg = "StatusLine",
     bg = "StatusLine",
-    bold = true,
-  })
+  }, true)
 end
 
 local function scrollbar(data)
@@ -416,26 +450,28 @@ local function diagnostics(data)
 end
 
 local function pos_info(data)
-  return stl_format("line", "L%l,%c", {
+  return stl_format("line", "%l:%c", {
     fg = status_bg,
     bg = status_bg,
-    bold = true,
   })
 end
 
 local function default_status(data)
   local is_not_programming = non_programming_modes[vim.bo[data.buf].ft] ~= nil
   return {
-    "  ",
+    M.fname_prefix(data),
     M.fname(data),
-    diff_info(data),
-    -- scrollbar(data),
-    "%=",
-    pos_info(data),
     " ",
-    is_not_programming and heading_outline(data) or ft(data),
+    -- scrollbar(data),
+    M.ft_prefix(data),
+    " ",
+    ft(data),
     "%=",
+    is_not_programming and heading_outline(data) or "",
+    "%=",
+    diff_info(data),
     diagnostics(data),
+    pos_info(data),
     is_not_programming and non_prog_mode(data) or nil,
     -- heading_outline(data),
   }
@@ -448,6 +484,7 @@ function M.build()
   data.buf = vim.api.nvim_win_get_buf(data.win)
   data.fname = vim.api.nvim_buf_get_name(data.buf)
   M.data = data
+
   local components = default_status(data)
   local statusline = ""
   for _, component in ipairs(components) do
@@ -456,7 +493,7 @@ function M.build()
   return statusline
 end
 
-vim.opt.statusline = "%!v:lua.require('moody').build()"
+vim.opt.statusline = "%!v:lua.require('custom.simpstatus').build()"
 vim.api.nvim_create_autocmd("Colorscheme", {
   group = vim.api.nvim_create_augroup("Statusline", { clear = true }),
   callback = function()

@@ -19,7 +19,7 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.g.loaded_netrwSettings = 1
 vim.g.loaded_netrwFileHandlers = 1
-vim.g.loaded_tutor_mode_plugin = 1
+vim.g.loaded_tutor_mode_plugin = 0
 
 -- Clone 'mini.nvim' manually in a way that it gets managed by 'mini.deps'
 local path_package = vim.fn.stdpath("data") .. "/site/"
@@ -58,7 +58,9 @@ now(function() source("settings.lua") end)
 now(function() source("mappings.lua") end)
 now(function() source("leader_maps.lua") end)
 now(function() source("config/autocommands.lua") end)
-now(function() source("tests/nano.lua") end)
+-- now(function() source("tests/nano.lua") end)
+-- now(function() source("custom/galaxyline.lua") end)
+now(function() source("custom/simpstatus.lua") end)
 
 if vim.env.TERM_PROGRAM == "WezTerm" then now(function() require("config.utils").wezterm() end) end
 
@@ -74,10 +76,53 @@ if vim.g.neovide or vim.g.goneovim then now(function() source("config/gui.lua") 
 --================== UI Plugins ====================
 --================== Colors ====================
 now(function()
-  add({ source = "AstroNvim/astrotheme" })
-  require("astrotheme").setup()
+  vim.g.ef_themes_debug = true
+  -- add("oonamo/ef-themes.nvim")
+  vim.opt.rtp:append("C:\\Users\\onam7\\projects\\nvim\\ef-themes")
+  require("ef-themes").setup({
+    transparent = false,
+    light = "ef-spring",
+    dark = "ef-dream",
+    modules = {
+      render_markdown = true,
+    },
+    on_highlights = function(highlights, colors, name) end,
+  })
+
+  local last = 0
+  local dark_complete = true
+  local ef_themes = require("ef-themes")
+  vim.keymap.set("n", "<F1>", function()
+    local list = dark_complete and ef_themes.list.light or ef_themes.list.dark
+    if last == #list then
+      if not dark_complete then
+        dark_complete = true
+      else
+        last = 0
+        dark_complete = false
+        list = ef_themes.list.light
+      end
+    end
+    last = last + 1
+    vim.cmd.colorscheme(list[last])
+
+    vim.defer_fn(function()
+      MiniNotify.clear()
+      vim
+        .system({
+          "pwsh.exe",
+          "-NoProfile",
+          "-NonInteractive",
+          "-Command",
+          vim.fs.joinpath(vim.fn.expand("~"), ".common", "termshot.ps1"),
+          list[last] .. ".png",
+        })
+        :wait()
+      vim.notify("took screenshot of " .. list[last])
+    end, 3000)
+  end)
 end)
-now(function() add("junegunn/seoul256.vim") end)
+
 now(function()
   add({ source = "EdenEast/nightfox.nvim" })
   local S = require("nightfox.lib.shade")
@@ -153,8 +198,15 @@ now(function()
   vim.g.everforest_diagnostic_line_highlight = true
   vim.g.everforest_diagnostic_virtual_text = true
 end)
+now(function()
+  add("sainnhe/gruvbox-material")
+  vim.g.gruvbox_material_background = "hard"
+  vim.g.gruvbox_material_diagnostic_text_highlight = true
+  vim.g.gruvbox_material_diagnostic_line_highlight = true
+  vim.g.gruvbox_material_diagnostic_virtual_text = true
+end)
 now(function() add({ source = "rose-pine/neovim", name = "rose-pine" }) end)
-now(function() add({ source = "catppuccin/nvim", name = "catppuccin" }) end)
+-- now(function() vim.cmd.colorscheme("duskfox") end)
 
 now(Config.load_colorscheme)
 
@@ -174,10 +226,22 @@ end)
 
 -- now(function() require("mini.tabline").setup({ show_icons = false, tabpage_section = "right" }) end)
 now(function() source("plugins/mini-starter.lua") end)
-later(function() require("mini.pairs").setup() end)
-later(function() source("plugins/mini-files.lua") end)
+later(
+  function()
+    require("mini.pairs").setup({
+      opts = {
+        mappings = {
+          ['"'] = { action = "closeopen", pair = '""', neigh_pattern = "[^%w][^%w]", register = { cr = false } },
+          ["'"] = { action = "closeopen", pair = "''", neigh_pattern = "[^%w][^%w]", register = { cr = false } },
+          ["`"] = { action = "closeopen", pair = "``", neigh_pattern = "[^%w][^%w]", register = { cr = false } },
+        },
+      },
+    })
+  end
+)
 
-local function something() print("something") end
+later(function() source("plugins/mini-files.lua") end)
+later(function() require("mini.test").setup() end)
 
 if Config.completion == "mini" then
   later(function()
@@ -206,15 +270,17 @@ else
       hooks = {
         post_checkout = function(path, source, name)
           vim.notify("Installing blink.cmp binary...")
-          require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
+          local ok, cmd = require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
             cwd = Config.path_package .. "blink.cmp",
           })
+          if ok then cmd:wait() end
         end,
         post_install = function(path, source, name)
           vim.notify("Installing blink.cmp binary...")
-          require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
+          local ok, cmd = require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
             cwd = Config.path_package .. "blink.cmp",
           })
+          if ok then cmd:wait() end
         end,
       },
     })
@@ -229,6 +295,7 @@ later(function()
   MiniMisc.setup_auto_root()
   MiniMisc.setup_restore_cursor()
 end)
+
 later(function() add("rafamadriz/friendly-snippets") end)
 later(function()
   local snippets = require("mini.snippets")
@@ -312,8 +379,7 @@ end)
 
 later(function() source("plugins/mini-pick.lua") end)
 later(function() require("mini.align").setup() end)
--- later(function() source("plugins/mini-map.lua") end)
---
+
 later(function()
   local clue = require("mini.clue")
   clue.setup({
@@ -323,6 +389,8 @@ later(function()
       { mode = "x", keys = "<Leader>" },
       { mode = "n", keys = "<localleader>" },
       { mode = "x", keys = "<localleader>" },
+
+      { mode = "n", keys = "\\" },
 
       -- Built-in completion
       { mode = "i", keys = "<C-x>" },
@@ -383,18 +451,20 @@ later(function()
       clue.gen_clues.registers(),
       clue.gen_clues.windows(),
       clue.gen_clues.z(),
-      { mode = "n", keys = "<Leader>b", desc = "+Buffer" },
-      { mode = "n", keys = "<Leader>g", desc = "+Git" },
-      { mode = "n", keys = "<Leader>s", desc = "+Search" },
-      { mode = "n", keys = "<Leader>l", desc = "+LSP" },
-      { mode = "n", keys = "<Leader>w", desc = "+Window" },
+      -- stylua: ignore start
+      { mode = "n", keys = "<Leader>b",     desc = "+Buffer" },
+      { mode = "n", keys = "<Leader>g",     desc = "+Git" },
+      { mode = "n", keys = "<Leader>s",     desc = "+Search" },
+      { mode = "n", keys = "<Leader>l",     desc = "+LSP" },
+      { mode = "n", keys = "<Leader>w",     desc = "+Window" },
       { mode = "n", keys = "<Leader><tab>", desc = "+Tabs" },
-      { mode = "n", keys = "<Leader>!", desc = "+Shell" },
-      { mode = "n", keys = "<Leader>L", desc = "+Lua" },
-      { mode = "n", keys = "<Leader>o", desc = "+Other" },
-      { mode = "n", keys = "<Leader>t", desc = "+Terminal" },
-      { mode = "n", keys = "<Leader>v", desc = "+Visits" },
-      { mode = "n", keys = "<Leader>f", desc = "+Find" },
+      { mode = "n", keys = "<Leader>!",     desc = "+Shell" },
+      { mode = "n", keys = "<Leader>L",     desc = "+Lua" },
+      { mode = "n", keys = "<Leader>o",     desc = "+Other" },
+      { mode = "n", keys = "<Leader>t",     desc = "+Terminal" },
+      { mode = "n", keys = "<Leader>v",     desc = "+Visits" },
+      { mode = "n", keys = "<Leader>f",     desc = "+Find" },
+      --stylua: ignore end
 
       -- Bracketed:
       { mode = "n", keys = "]b", postkeys = "]" },
@@ -517,25 +587,10 @@ later(function()
       split = "horizontal",
     },
   })
+
   vim.api.nvim_create_autocmd("User", {
-    pattern = "MiniGitCommandDone",
-    callback = function(ev)
-      if ev.data.git_subcommand:match("status") then
-        if ev.data.stdout == "" then
-          return vim.notify("Nothing in status!", vim.log.levels.INFO, { title = "Git Status" })
-        end
-        Config._cache.git = vim.b.minigit_summary
-        vim.api.nvim_create_autocmd("User", {
-          pattern = "MiniGitCommandSplit",
-          nested = true,
-          once = true,
-          callback = function(data)
-            vim.bo[data.buf].filetype = "ministatus"
-            return true
-          end,
-        })
-      end
-    end,
+    pattern = "MiniGitCommandSplit",
+    callback = function(data) vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = data.buf }) end,
   })
 end)
 
@@ -627,13 +682,13 @@ later(function()
   source("plugins/render-markdown.lua")
 end)
 
--- later(function()
---   add({
---     source = "epwalsh/obsidian.nvim",
---     depends = { "nvim-lua/plenary.nvim", "MeanderingProgrammer/render-markdown.nvim" },
---   })
---   source("plugins/obsidian.lua")
--- end)
+later(function()
+  add({
+    source = "epwalsh/obsidian.nvim",
+    depends = { "nvim-lua/plenary.nvim", "MeanderingProgrammer/render-markdown.nvim" },
+  })
+  source("plugins/obsidian.lua")
+end)
 if Config.plugs.snacks then
   later(function()
     add({
@@ -642,6 +697,46 @@ if Config.plugs.snacks then
     source("plugins/snacks.lua")
   end)
 end
+
+later(function()
+  add({ source = "rachartier/tiny-glimmer.nvim", checkout = "main" })
+  source("plugins/tiny-glimmer.lua")
+end)
+
+later(function()
+  local build = function(opts)
+    local path = opts.path
+
+    if not vim.fn.isdirectory(path) then path.path = vim.fn.fnamemodify(path, ":h") end
+
+    local ok, cmd = require("tests.compile_mode").shell_cmd({ "deno", "task", "--quiet", "build:fast" }, "cmd", {
+      cwd = path,
+    })
+    if ok then
+      cmd:wait()
+    else
+      vim.notify("Could not execute the build command")
+    end
+  end
+  add({
+    source = "toppair/peek.nvim",
+    hooks = {
+      post_install = function(opts)
+        later(function() build(opts) end)
+      end,
+      post_checkout = build,
+    },
+  })
+
+  require("peek").setup({
+    close_on_bdelete = false,
+    app = { "chromium", "--new-window" },
+    -- app = "browser",
+  })
+
+  vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
+  vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
+end)
 
 --================== Dev Plugins ====================
 -- later(function() add({ source = "~/projects/nvim/chadschemes/", hooks = {} }) end)

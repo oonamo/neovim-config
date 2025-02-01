@@ -4,6 +4,12 @@ local groupid = vim.api.nvim_create_augroup("StatusLine", {})
 local M = {}
 M.hl = {}
 
+local should_update = function()
+  if vim.o.cmdheight >= 1 then return true end
+
+  return vim.fn.mode() ~= "c"
+end
+
 ---@param hl string
 ---@param v table
 ---@return string
@@ -199,7 +205,8 @@ function statusline.branch()
       stl_format("gitbranch_hash", "#", {
         fg = "MiniIconsRed",
         bg = "StatusLine",
-      }, true) .. stl_format("gitbranch", branch, {
+      }, true)
+      .. stl_format("gitbranch", branch, {
         fg = "MiniIconsYellow",
         bg = "StatusLine",
       }, true)
@@ -215,7 +222,7 @@ end
 function statusline.ft()
   return vim.bo.ft == "" and ""
     or stl_format("filetype", vim.bo.ft:gsub("^%l", string.upper), {
-      fg = "NonText",
+      fg = "StatusLine",
       bg = "StatusLine",
     }, true)
 end
@@ -313,9 +320,10 @@ vim.api.nvim_create_autocmd("DiagnosticChanged", {
   callback = function(info)
     vim.b[info.buf].diag_cnt_cache = vim.diagnostic.count(info.buf)
     vim.b[info.buf].diag_str_cache = nil
-    vim.cmd.redrawstatus({
+
+    if should_update() then vim.cmd.redrawstatus({
       mods = { emsg_silent = true },
-    })
+    }) end
   end,
 })
 
@@ -390,7 +398,13 @@ vim.api.nvim_create_autocmd("LspProgress", {
   group = groupid,
   callback = function(info)
     if spinner_timer then
-      spinner_timer:start(spinner_progress_keep, spinner_progress_keep, vim.schedule_wrap(vim.cmd.redrawstatus))
+      spinner_timer:start(
+        spinner_progress_keep,
+        spinner_progress_keep,
+        vim.schedule_wrap(function()
+          if should_update() then vim.cmd.redrawstatus() end
+        end)
+      )
     end
 
     local id = info.data.client_id
@@ -407,13 +421,13 @@ vim.api.nvim_create_autocmd("LspProgress", {
       if not last_timestamp or last_timestamp == now then
         server_info[id] = nil
         if vim.tbl_isempty(server_info) and spinner_timer then spinner_timer:stop() end
-        vim.cmd.redrawstatus()
+        if should_update() then vim.cmd.redrawstatus() end
       end
     end, spinner_end_keep)
 
-    vim.cmd.redrawstatus({
+    if should_update() then vim.cmd.redrawstatus({
       mods = { emsg_silent = true },
-    })
+    }) end
   end,
 })
 
