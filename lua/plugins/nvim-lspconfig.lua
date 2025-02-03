@@ -194,7 +194,9 @@ vim.diagnostic.config({
     },
     text = {
       [vim.diagnostic.severity.ERROR] = "󰅚 ",
+      -- [vim.diagnostic.severity.ERROR] = "x ",
       [vim.diagnostic.severity.WARN] = "󰀪 ",
+      -- [vim.diagnostic.severity.WARN] = "▲ ",
       [vim.diagnostic.severity.INFO] = "󰋽 ",
       [vim.diagnostic.severity.HINT] = "󰌶 ",
     },

@@ -30,8 +30,8 @@ require("mini.pick").setup({
         row = ends,
         height = height,
         width = width,
-        border = "single",
-        -- border = { " ", " ", " ", " ", " ", " ", " ", " " },
+        -- border = "single",
+        border = { " ", " ", " ", " ", " ", " ", " ", " " },
       }
     end,
     -- config = function()

@@ -1,6 +1,8 @@
 local M = {}
 M.hl = {}
 
+local groupid = vim.api.nvim_create_augroup("status", { clear = true })
+
 local status_bg = "Statusline"
 
 local MAX_DEPTH = 1000
@@ -10,6 +12,7 @@ local non_programming_modes = {
   org = {},
   neorg = {},
   latex = {},
+  help = {},
 }
 
 local function group_number(num, sep)
@@ -76,15 +79,6 @@ local function stl_format(hl, value, hl_keys, reset)
   return string.format("%%#%s#%s%s", mod_hl, value, reset and "%#" .. status_bg .. "#" or "")
 end
 
-local function stl_hl_pair(hl, value, reset)
-  return string.format("%%#%s#%s%s", hl, value, reset and "%#" .. status_bg .. "#" or "")
-end
-
-local function trunc(str, max_val, trunc_chars)
-  if #str > max_val then str = str:sub(1, -max_val) .. trunc_chars end
-  return str
-end
-
 function M.make_his(hl_list)
   for k, v in pairs(hl_list) do
     vim.api.nvim_set_hl(0, "status" .. k, v)
@@ -147,10 +141,12 @@ function M.fname(data)
   mod = vim.bo[data.buf].mod
 
   local fname = stl_format("filename" .. (mod and "mod" or ""), filename, {
-    fg = "StatusLine",
-    bg = mod and "StatusLineNC" or "StatusLine",
+    fg = data.active and "StatusLine" or "StatusLineNC",
+    bg = (mod or not data.active) and "StatusLineNC" or "StatusLine",
+    -- fg = "StatusLine",
+    -- bg = mod and "StatusLineNC" or "StatusLine",
     bold = true,
-  }, true)
+  }, data.active)
 
   return fname
 end
@@ -192,18 +188,19 @@ local function diff_info(data)
   end
   if delete and delete > 0 then
     hasDelete = true
-    delete_format = stl_format("delete", (hasAdd and " " or "") .. delete, {
+    delete_format = stl_format("delete", delete, {
       fg = "diffRemoved",
       bg = "StatusLine",
     }, true)
   end
   if change and change > 0 then
-    change_format = stl_format("change", ((hasDelete or hasAdd) and " " or "") .. change, {
+    change_format = stl_format("change", change, {
       fg = "diffChanged",
       bg = "StatusLine",
     }, true)
   end
-  return add_format .. change_format .. delete_format .. "%#StatusLine#"
+  return string.format("%s %s %s", add_format, change_format, delete_format)
+  -- return add_format .. change_format .. delete_format .. "%#StatusLine#"
 end
 
 local colors = {
@@ -215,20 +212,26 @@ local colors = {
 }
 
 local modes = {
-  text_mode = "§",
-  prog_mode = "λ",
-  term_mode = ">_",
+  text_mode = "§ ",
+  prog_mode = "λ ",
+  term_mode = ">_ ",
 }
 
 function M.ft_prefix(data)
   if non_programming_modes[vim.bo[data.buf].ft] then
     return stl_format("nonprogpre", modes.text_mode, {
-      fg = "NonText",
+      fg = "Keyword",
+      bg = "StatusLine",
+    }, true)
+  end
+  if vim.bo[data.buf].buftype == "terminal" then
+    return stl_format("progmode", modes.term_mode, {
+      fg = "Keyword",
       bg = "StatusLine",
     }, true)
   end
   return stl_format("progmode", modes.prog_mode, {
-    fg = "NonText",
+    fg = "Keyword",
     bg = "StatusLine",
   }, true)
 end
@@ -238,8 +241,9 @@ local function ft(data)
   filetype = filetype:sub(1, 1):upper() .. filetype:sub(2)
 
   return stl_format("ft", filetype, {
-    fg = "StatusLine",
+    fg = "NonText",
     bg = "StatusLine",
+    italic = true,
   }, true)
 end
 
@@ -375,12 +379,6 @@ local function heading_outline(data)
         bg = "Normal",
         bold = true,
       })
-      -- return stl_format("header" .. header_level, #trunc(text, floor(header_distribution.active , "..."), {
-      -- 	fg = "RenderMarkdownH" .. header_level,
-      -- 	-- bg = "RenderMarkdownH" .. header_level .. "Bg",
-      -- 	bg = "Normal",
-      -- 	bold = true,
-      -- })
     end
     -- return icons[header_level]
     return stl_format("header" .. header_level, prefix .. " " .. text, {
@@ -449,11 +447,217 @@ local function diagnostics(data)
   return ""
 end
 
-local function pos_info(data)
-  return stl_format("line", "%l:%c", {
-    fg = status_bg,
+local diag_signs_default_text = { "x ", "▲ ", "I", "H" }
+
+local diag_severity_map = {
+  [1] = "ERROR",
+  [2] = "WARN",
+  [3] = "INFO",
+  [4] = "HINT",
+  ERROR = 1,
+  WARN = 2,
+  INFO = 3,
+  HINT = 4,
+}
+
+---@param severity integer|string
+---@return string
+local function get_diag_sign_text(severity)
+  local diag_config = vim.diagnostic.config()
+  local signs_text = diag_config and diag_config.signs and type(diag_config.signs) == "table" and diag_config.signs.text
+  return signs_text and (signs_text[severity] or signs_text[diag_severity_map[severity]])
+    or (diag_signs_default_text[severity] or diag_signs_default_text[diag_severity_map[severity]])
+end
+
+function M.diag(data)
+  if vim.b[data.buf].diag_str_cache then return vim.b[data.buf].diag_str_cache end
+  local str = ""
+  local buf_cnt = vim.b[data.buf].diag_cnt_cache or {}
+  for serverity_nr, severity in ipairs({ "Error", "Warn", "Info", "Hint" }) do
+    local cnt = buf_cnt[serverity_nr] ~= vim.NIL and buf_cnt[serverity_nr] or 0
+    if cnt > 0 then
+      local icon_text = get_diag_sign_text(serverity_nr)
+      str = str
+        .. (str == "" and "" or " ")
+        .. stl_format("diagnostic" .. severity, icon_text, {
+          fg = "DiagnosticSign" .. severity,
+          bg = status_bg,
+        }, true)
+        .. stl_format("count", cnt, {
+          fg = "StatusLine",
+          bg = status_bg,
+        }, true)
+    end
+  end
+  if str:find("%S") then str = str .. " " end
+  if str == "" then str = stl_format("count", " ", {
+    fg = "StatusLine",
     bg = status_bg,
+  }, true) end
+
+  vim.b[data.buf].diag_str_cache = str
+  return str
+end
+
+vim.api.nvim_create_autocmd("DiagnosticChanged", {
+  group = groupid,
+  desc = "Update diagnostics cache for the status line.",
+  callback = function(info)
+    vim.b[info.buf].diag_cnt_cache = vim.diagnostic.count(info.buf)
+    vim.b[info.buf].diag_str_cache = nil
+
+    vim.cmd.redrawstatus({
+      mods = { emsg_silent = true },
+    })
+  end,
+})
+
+function M.gitinfo(data)
+  local branch = vim.b[data.buf].minigit_summary and vim.b[data.buf].minigit_summary.head_name or ""
+  if branch == "" then return branch end
+
+  branch = branch:sub(1, 1):upper() .. branch:sub(2)
+  return stl_format("giticon", " ", {
+    fg = "Keyword",
+    bg = "StatusLine",
+  }) .. stl_format("gitbranch", branch .. " ", {
+    fg = "NonText",
+    bg = "StatusLine",
+    italic = true,
   })
+end
+
+local spinner_end_keep = 2000 -- ms
+local spinner_status_keep = 600 -- ms
+local spinner_progress_keep = 80 -- ms
+local spinner_timer = vim.uv.new_timer()
+
+vim.g.has_nf = true
+local spinner_bg = status_bg
+local spinner_icons ---@type string[]
+local spinner_icon_done ---@type string
+if vim.g.has_nf then
+  spinner_icon_done = stl_format("spinnerdone", vim.trim("󰄬 "), { fg = "Constant", bg = "Statusline" }, true)
+  spinner_icons = {
+    stl_format("spinnera", "⣷", {
+      fg = "Constant",
+      bg = "Statusline",
+    }, true),
+    stl_format("spinnerb", "⣯", { fg = "Constant", bg = spinner_bg }, true),
+    stl_format("spinnerc", "⣟", { fg = "Constant", bg = spinner_bg }, true),
+    stl_format("spinnerd", "⡿", { fg = "Constant", bg = spinner_bg }, true),
+    stl_format("spinnere", "⢿", { fg = "Constant", bg = spinner_bg }, true),
+    stl_format("spinnerf", "⣻", { fg = "Constant", bg = spinner_bg }, true),
+    stl_format("spinnerg", "⣽", { fg = "Constant", bg = spinner_bg }, true),
+    stl_format("spinnerh", "⣾", { fg = "Constant", bg = spinner_bg }, true),
+  }
+else
+  spinner_icon_done = "[done]"
+  spinner_icons = {
+    stl_format("spinnera", "[    ]", { fg = "Constant", bg = spinner_bg }),
+    stl_format("spinnerb", "[=   ]", { fg = "Constant", bg = spinner_bg }),
+    stl_format("spinnerc", "[==  ]", { fg = "Constant", bg = spinner_bg }),
+    stl_format("spinnerd", "[=== ]", { fg = "Constant", bg = spinner_bg }),
+    stl_format("spinnere", "[ ===]", { fg = "Constant", bg = spinner_bg }),
+    stl_format("spinnerf", "[  ==]", { fg = "Constant", bg = spinner_bg }),
+    stl_format("spinnerg", "[   =]", { fg = "Constant", bg = spinner_bg }),
+  }
+end
+
+---Id and additional info of language servers in progress
+---@type table<integer, { name: string, timestamp: integer, type: 'begin'|'report'|'end' }>
+local server_info = {}
+
+vim.api.nvim_create_autocmd("LspProgress", {
+  desc = "Update LSP progress info for the status line.",
+  group = groupid,
+  callback = function(info)
+    if spinner_timer then
+      spinner_timer:start(
+        spinner_progress_keep,
+        spinner_progress_keep,
+        vim.schedule_wrap(function() vim.cmd.redrawstatus() end)
+      )
+    end
+
+    local id = info.data.client_id
+    local now = vim.uv.now()
+    server_info[id] = {
+      name = vim.lsp.get_client_by_id(id).name,
+      timestamp = now,
+      type = info.data and info.data.params and info.data.params.value and info.data.params.value.kind,
+    } -- Update LSP progress data
+    -- Clear client message after a short time if no new message is received
+    vim.defer_fn(function()
+      -- No new report since the timer was set
+      local last_timestamp = (server_info[id] or {}).timestamp
+      if not last_timestamp or last_timestamp == now then
+        server_info[id] = nil
+        if vim.tbl_isempty(server_info) and spinner_timer then spinner_timer:stop() end
+        vim.cmd.redrawstatus()
+      end
+    end, spinner_end_keep)
+
+    vim.cmd.redrawstatus({
+      mods = { emsg_silent = true },
+    })
+  end,
+})
+
+function M.lsp_progress()
+  if vim.tbl_isempty(server_info) then return "" end
+  local buf = vim.api.nvim_get_current_buf()
+  local server_ids = {}
+  for id, _ in pairs(server_info) do
+    if vim.tbl_contains(vim.lsp.get_buffers_by_client_id(id), buf) then table.insert(server_ids, id) end
+  end
+  if vim.tbl_isempty(server_ids) then return "" end
+
+  local now = vim.uv.now()
+  ---@return boolean
+  local function allow_changing_state()
+    return not vim.b.spinner_state_changed or now - vim.b.spinner_state_changed > spinner_status_keep
+  end
+
+  if #server_ids == 1 and server_info[server_ids[1]].type == "end" then
+    if vim.b.spinner_icon ~= spinner_icon_done and allow_changing_state() then
+      vim.b.spinner_state_changed = now
+      vim.b.spinner_icon = spinner_icon_done
+    end
+  else
+    local spinner_icon_progress = spinner_icons[math.ceil(now / spinner_progress_keep) % #spinner_icons + 1]
+    if vim.b.spinner_icon ~= spinner_icon_done then
+      vim.b.spinner_icon = spinner_icon_progress
+    elseif allow_changing_state() then
+      vim.b.spinner_state_changed = now
+      vim.b.spinner_icon = spinner_icon_progress
+    end
+  end
+
+  return string.format(
+    "%s %s ",
+    table.concat(vim.tbl_map(function(id) return server_info[id].name end, server_ids), ", "),
+    vim.b.spinner_icon
+  )
+end
+
+function M.custom(data)
+  local custom_info = ""
+  if vim.g.autoformat then
+    custom_info = custom_info
+      .. stl_format("format", "󰁨  ", {
+        fg = "Function",
+        bg = status_bg,
+      }, true)
+  end
+  if vim.wo[data.win].spell then
+    custom_info = custom_info
+      .. stl_format("spell", "󰓆 ", {
+        fg = "Constant",
+        bg = status_bg,
+      }, true)
+  end
+  return custom_info
 end
 
 local function default_status(data)
@@ -462,18 +666,38 @@ local function default_status(data)
     M.fname_prefix(data),
     M.fname(data),
     " ",
-    -- scrollbar(data),
     M.ft_prefix(data),
-    " ",
     ft(data),
+    " ",
+    M.gitinfo(data),
+    -- scrollbar(data),
+    " ",
     "%=",
-    is_not_programming and heading_outline(data) or "",
+    vim.bo[data.buf].ft == "markdown" and heading_outline(data) or "",
     "%=",
+    M.lsp_progress(),
+    " ",
     diff_info(data),
-    diagnostics(data),
-    pos_info(data),
+    " ",
+    M.diag(data),
+    " ",
+    M.custom(data),
+    " ",
+    not is_not_programming and [[%{%&ru?"%l:%c ":""%}]] or nil,
     is_not_programming and non_prog_mode(data) or nil,
     -- heading_outline(data),
+  }
+end
+
+local function inactive(_)
+  return {
+    " ",
+    [[%{%&bt==#''?'':(&bt==#'help'?'%h ':(&pvw?'%w ':''))%}]],
+    [[%f]],
+    -- M.fname(data),
+    "%=",
+    "%<",
+    [[%{%&ru?"%l:%c ":""%}]],
   }
 end
 
@@ -483,9 +707,11 @@ function M.build()
   }
   data.buf = vim.api.nvim_win_get_buf(data.win)
   data.fname = vim.api.nvim_buf_get_name(data.buf)
+  data.active = data.win == vim.api.nvim_get_current_win()
+
   M.data = data
 
-  local components = default_status(data)
+  local components = data.active and default_status(data) or inactive(data)
   local statusline = ""
   for _, component in ipairs(components) do
     statusline = statusline .. component
@@ -495,10 +721,22 @@ end
 
 vim.opt.statusline = "%!v:lua.require('custom.simpstatus').build()"
 vim.api.nvim_create_autocmd("Colorscheme", {
-  group = vim.api.nvim_create_augroup("Statusline", { clear = true }),
+  group = groupid,
   callback = function()
     M.hl = {}
-    build_seperators()
+    spinner_icons = {
+      stl_format("spinnera", "⣷", {
+        fg = "Constant",
+        bg = "Statusline",
+      }, true),
+      stl_format("spinnerb", "⣯", { fg = "Constant", bg = spinner_bg }, true),
+      stl_format("spinnerc", "⣟", { fg = "Constant", bg = spinner_bg }, true),
+      stl_format("spinnerd", "⡿", { fg = "Constant", bg = spinner_bg }, true),
+      stl_format("spinnere", "⢿", { fg = "Constant", bg = spinner_bg }, true),
+      stl_format("spinnerf", "⣻", { fg = "Constant", bg = spinner_bg }, true),
+      stl_format("spinnerg", "⣽", { fg = "Constant", bg = spinner_bg }, true),
+      stl_format("spinnerh", "⣾", { fg = "Constant", bg = spinner_bg }, true),
+    }
   end,
 })
 

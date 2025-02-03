@@ -83,10 +83,14 @@ now(function()
     transparent = false,
     light = "ef-spring",
     dark = "ef-dream",
+    styles = {
+      pickers = "borderless",
+      diagnostic = "full",
+    },
     modules = {
       render_markdown = true,
+      mini = true,
     },
-    on_highlights = function(highlights, colors, name) end,
   })
 
   local last = 0
@@ -226,6 +230,37 @@ end)
 
 -- now(function() require("mini.tabline").setup({ show_icons = false, tabpage_section = "right" }) end)
 now(function() source("plugins/mini-starter.lua") end)
+later(function() require("mini.cursorword").setup() end)
+later(function()
+  local animate = require("mini.animate")
+  -- don't use animate when scrolling with the mouse
+  local mouse_scrolled = false
+  for _, scroll in ipairs({ "Up", "Down" }) do
+    local key = "<ScrollWheel" .. scroll .. ">"
+    vim.keymap.set({ "", "i" }, key, function()
+      mouse_scrolled = true
+      return key
+    end, { expr = true })
+  end
+
+  require("mini.animate").setup({
+    resize = {
+      timing = animate.gen_timing.linear({ duration = 50, unit = "total" }),
+    },
+    scroll = {
+      timing = animate.gen_timing.linear({ duration = 150, unit = "total" }),
+      subscroll = animate.gen_subscroll.equal({
+        predicate = function(total_scroll)
+          if mouse_scrolled then
+            mouse_scrolled = false
+            return false
+          end
+          return total_scroll > 1
+        end,
+      }),
+    },
+  })
+end)
 later(
   function()
     require("mini.pairs").setup({
@@ -444,11 +479,10 @@ later(function()
       },
     },
     clues = {
-      _G.Config.leader_groups,
       clue.gen_clues.builtin_completion(),
       clue.gen_clues.g(),
       clue.gen_clues.marks(),
-      clue.gen_clues.registers(),
+      clue.gen_clues.registers({ show_contents = true }),
       clue.gen_clues.windows(),
       clue.gen_clues.z(),
       -- stylua: ignore start
@@ -459,7 +493,7 @@ later(function()
       { mode = "n", keys = "<Leader>w",     desc = "+Window" },
       { mode = "n", keys = "<Leader><tab>", desc = "+Tabs" },
       { mode = "n", keys = "<Leader>!",     desc = "+Shell" },
-      { mode = "n", keys = "<Leader>L",     desc = "+Lua" },
+      { mode = "n", keys = "<Leader>l",     desc = "+Lsp" },
       { mode = "n", keys = "<Leader>o",     desc = "+Other" },
       { mode = "n", keys = "<Leader>t",     desc = "+Terminal" },
       { mode = "n", keys = "<Leader>v",     desc = "+Visits" },

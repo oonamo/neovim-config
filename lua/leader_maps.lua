@@ -9,7 +9,7 @@ Config.leader_groups = {
   { mode = "n", keys = "<Leader>e", desc = "+Explore" },
   { mode = "n", keys = "<Leader>f", desc = "+Find" },
   { mode = "n", keys = "<Leader>g", desc = "+Git" },
-  { mode = "n", keys = "<Leader>l", desc = "+LSP" },
+  { mode = "n", keys = "<Leader>l", desc = "+Lsp" },
   { mode = "n", keys = "<Leader>L", desc = "+Lua" },
   { mode = "n", keys = "<Leader>o", desc = "+Other" },
   { mode = "n", keys = "<Leader>t", desc = "+Terminal" },
@@ -19,7 +19,7 @@ Config.leader_groups = {
 }
 
 --================== U (ui) ====================
-map_leader("n", "uh", function() MiniNotify.show_history() end, "Show Notification History")
+map_leader("n", "n", function() MiniNotify.show_history() end, "Show Notification History")
 
 --================== Y (yank) ====================
 map_leader({ "n", "v" }, "y", '"+y', "Copy motion to Clipboard")

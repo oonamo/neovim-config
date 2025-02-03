@@ -42,12 +42,12 @@ vim.opt.titlestring = "nvim"
 vim.opt.background = "dark"
 vim.opt.guicursor = {
   -- Cursor shape
-  "i-c-ci-ve:ver25-blinkoff500-blinkon500-TermCursor",
+  -- "i-c-ci-ve:ver25-blinkoff500-blinkon500-TermCursor",
+  "i-c-ci-ve:blinkoff500-blinkon500-TermCursor",
   "n-v:block-Cursor/lCursor",
   "o:hor50-Curosr/lCursor",
   "r-cr:hor20-Curosr/lCursor",
 }
--- vim.o.guicursor = ""
 vim.opt.cmdheight = 1
 
 -- TODO: Add fuzzy on 0.11.0
