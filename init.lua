@@ -76,7 +76,7 @@ if vim.g.neovide or vim.g.goneovim then now(function() source("config/gui.lua") 
 --================== UI Plugins ====================
 --================== Colors ====================
 now(function()
-  vim.g.ef_themes_debug = true
+  vim.g.ef_themes_debug = false
   -- add("oonamo/ef-themes.nvim")
   vim.opt.rtp:append("C:\\Users\\onam7\\projects\\nvim\\ef-themes")
   require("ef-themes").setup({
@@ -89,6 +89,8 @@ now(function()
     },
     modules = {
       render_markdown = true,
+      snacks = Config.plugs.snacks,
+      semantic_tokens = true,
       mini = true,
     },
   })
@@ -232,48 +234,23 @@ end)
 now(function() source("plugins/mini-starter.lua") end)
 later(function() require("mini.cursorword").setup() end)
 later(function()
-  local animate = require("mini.animate")
-  -- don't use animate when scrolling with the mouse
-  local mouse_scrolled = false
-  for _, scroll in ipairs({ "Up", "Down" }) do
-    local key = "<ScrollWheel" .. scroll .. ">"
-    vim.keymap.set({ "", "i" }, key, function()
-      mouse_scrolled = true
-      return key
-    end, { expr = true })
-  end
+  require("mini.pairs").setup({
+    mappings = {
+      -- ['"'] = { action = "closeopen", pair = '""', neigh_pattern = "[^%w][^%w]", register = { cr = false } },
+      -- ["'"] = { action = "closeopen", pair = "''", neigh_pattern = "[^%w][^%w]", register = { cr = false } },
+      ["`"] = { action = "closeopen", pair = "``", neigh_pattern = "[^%w][^%w]", register = { cr = false } },
 
-  require("mini.animate").setup({
-    resize = {
-      timing = animate.gen_timing.linear({ duration = 50, unit = "total" }),
-    },
-    scroll = {
-      timing = animate.gen_timing.linear({ duration = 150, unit = "total" }),
-      subscroll = animate.gen_subscroll.equal({
-        predicate = function(total_scroll)
-          if mouse_scrolled then
-            mouse_scrolled = false
-            return false
-          end
-          return total_scroll > 1
-        end,
-      }),
+      ["["] = { action = "open", pair = "[]", neigh_pattern = "[^\\]." },
+      ["{"] = { action = "open", pair = "{}", neigh_pattern = "[^\\]." },
+      [")"] = { action = "close", pair = "()", neigh_pattern = "[^\\]." },
+      ["]"] = { action = "close", pair = "[]", neigh_pattern = "[^\\]." },
+      ["}"] = { action = "close", pair = "{}", neigh_pattern = "[^\\]." },
+
+      ['"'] = { action = "closeopen", pair = '""', neigh_pattern = "[^\\].", register = { cr = false } },
+      ["'"] = { action = "closeopen", pair = "''", neigh_pattern = "[^%a\\].", register = { cr = false } },
     },
   })
 end)
-later(
-  function()
-    require("mini.pairs").setup({
-      opts = {
-        mappings = {
-          ['"'] = { action = "closeopen", pair = '""', neigh_pattern = "[^%w][^%w]", register = { cr = false } },
-          ["'"] = { action = "closeopen", pair = "''", neigh_pattern = "[^%w][^%w]", register = { cr = false } },
-          ["`"] = { action = "closeopen", pair = "``", neigh_pattern = "[^%w][^%w]", register = { cr = false } },
-        },
-      },
-    })
-  end
-)
 
 later(function() source("plugins/mini-files.lua") end)
 later(function() require("mini.test").setup() end)
@@ -290,7 +267,17 @@ if Config.completion == "mini" then
           return MiniCompletion.default_process_items(items, base)
         end,
       },
-      fallback_action = function() end,
+      fallback_action = function()
+        if vim.g.complete_fallback then
+          -- FROM: https://github.com/echasnovski/mini.nvim/blob/3049adbafd08b769d0700624fe9b85fa4176c88c/lua/mini/completion.lua#L757-L762
+          local keys = string.format("<C-g><C-g>%s", "<C-x><C-n>")
+          local trigger_keys = vim.api.nvim_replace_termcodes(keys, true, false, true)
+          vim.api.nvim_feedkeys(trigger_keys, "n", false)
+        end
+      end,
+      mappings = {
+        force_fallback = "<C-f>",
+      },
       window = {
         info = { border = "single" },
         signature = { border = "single" },
@@ -617,9 +604,9 @@ end)
 later(function() require("mini.operators").setup() end)
 later(function()
   require("mini.git").setup({
-    command = {
-      split = "horizontal",
-    },
+    -- command = {
+    --   split = "horizontal",
+    -- },
   })
 
   vim.api.nvim_create_autocmd("User", {
@@ -632,9 +619,9 @@ later(function()
   require("mini.diff").setup({
     view = {
       style = "sign",
-      signs = { add = "+", change = "~", delete = "-" },
+      -- signs = { add = "+", change = "~", delete = "-" },
       -- signs = { add = "┃", change = "┃", delete = "┃" },
-      -- signs = { add = "▍ ", change = "▍ ", delete = " " },
+      signs = { add = "▍ ", change = "▍ ", delete = " " },
     },
   })
 end)

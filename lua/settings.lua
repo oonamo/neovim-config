@@ -6,7 +6,7 @@ else
   _G.platform_specific = { lineending = "\n" }
 end
 
-vim.o.shada        = "'100,<50,s10,:1000,/100,@100,h" -- Limit what is stored in ShaDa file
+vim.o.shada = "'100,<50,s10,:1000,/100,@100,h" -- Limit what is stored in ShaDa file
 
 -- vim.o.shell = "pwsh"
 -- vim.o.shellcmdflag =
@@ -52,6 +52,8 @@ vim.opt.cmdheight = 1
 
 -- TODO: Add fuzzy on 0.11.0
 vim.opt.completeopt = "menu,menuone,noselect,popup"
+
+if vim.fn.has("nvim-0.11") == 1 then vim.opt.completeopt:append("fuzzy") end
 
 vim.o.completeslash = "slash"
 
@@ -106,7 +108,7 @@ o.ttimeoutlen = 10
 opt.swapfile = false
 opt.backup = false
 opt.undofile = true
-opt.wildoptions = "tagfile"
+opt.wildoptions = "pum,fuzzy"
 opt.wildmenu = true
 o.makeprg = "just"
 opt.laststatus = 2 -- Or 3 for global statusline
@@ -136,8 +138,8 @@ vim.g.netrw_mouse = 2
 
 o.cursorline = true
 o.cursorlineopt = "screenline,number"
-o.winblend = 0
-o.pumblend = 0
+-- o.winblend = 50
+-- o.pumblend = 50
 
 vim.g.loaded_node_provider = 0
 vim.g.loaded_python3_provider = 0

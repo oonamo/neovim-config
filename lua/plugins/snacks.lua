@@ -6,16 +6,16 @@ require("snacks").setup({
       },
     },
     enabled = true,
-    layout = {
-      -- preset = "dropdown",
-      -- preset = "default",
-      -- preset = "dropdown",
-      preset = "ivy",
-      -- preset = "select",
-      -- preset = "telescope",
-      -- preset = "vertical",
-      -- preset = "vscode",
-    },
+    -- layout = {
+    --   -- preset = "dropdown",
+    --   -- preset = "default",
+    --   -- preset = "dropdown",
+    --   preset = "ivy",
+    --   -- preset = "select",
+    --   -- preset = "telescope",
+    --   -- preset = "vertical",
+    --   -- preset = "vscode",
+    -- },
   },
 })
 

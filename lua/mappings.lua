@@ -34,6 +34,7 @@ map_toggle("r", "<Cmd>setlocal relativenumber!<CR>", "Toggle 'relativenumber'")
 map_toggle("s", "<Cmd>setlocal spell!<CR>", "Toggle 'spell'")
 map_toggle("w", "<Cmd>setlocal wrap!<CR>", "Toggle 'wrap'")
 map_toggle("f", function() vim.g.autoformat = not vim.g.autoformat end, "Toggle 'autoformat'")
+map_toggle("B", function() vim.g.complete_fallback = not vim.g.complete_fallback end, "Toggle 'complete_fallback'")
 
 --================== Hlsearch ====================
 map("n", "<Esc>", "<cmd>nohlsearch<cr><Esc>")

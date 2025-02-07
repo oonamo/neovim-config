@@ -410,7 +410,7 @@ local function non_prog_mode(data)
       raw_word_count = tostring(wc_table.words)
     else
       local wc_table_words_str = tostring(wc_table.words) --[[@as string]]
-      raw_word_count = wc_table.words_str:reverse():gsub("(%d%d%d)", "%1,"):reverse():gsub("^,", "")
+      raw_word_count = wc_table_words_str:reverse():gsub("(%d%d%d)", "%1,"):reverse():gsub("^,", "")
     end
     return stl_format("fileinfo", "≡", {
       fg = "DiagnosticInfo",
