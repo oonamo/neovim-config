@@ -76,8 +76,6 @@ if vim.g.neovide or vim.g.goneovim then now(function() source("config/gui.lua") 
 --================== UI Plugins ====================
 --================== Colors ====================
 now(function()
-  vim.g.ef_themes_debug = false
-  -- add("oonamo/ef-themes.nvim")
   vim.opt.rtp:append("C:\\Users\\onam7\\projects\\nvim\\ef-themes")
   require("ef-themes").setup({
     transparent = false,
