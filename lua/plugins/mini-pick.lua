@@ -1,50 +1,67 @@
 local highlight = vim.api.nvim_set_hl
 
+local win_config = function()
+  -- local height, width, starts, ends
+  -- local win_width = vim.o.columns
+  -- local win_height = vim.o.lines
+  --
+  -- width = win_width
+  -- height = math.floor(win_height * 0.4) -- 40%
+  -- starts = 1
+  -- ends = win_height
+
+  -- if win_height <= 25 then
+  --   -- height = math.min(win_height, 18)
+  -- width = win_width
+  -- height = math.floor(win_height * 0.4) -- 40%
+  -- starts = 1
+  -- ends = win_height
+  -- else
+  -- width = math.floor(win_width * 0.5) -- 50%
+  -- height = math.floor(win_height * 0.4) -- 40%
+  -- starts = math.floor((win_width - width) / 2)
+  -- ends = math.floor(win_height * 0.65)
+  -- end
+
+  -- return {
+  --   col = starts,
+  --   row = ends,
+  --   height = height,
+  --   width = width,
+  --   -- border = "single",
+  --   border = { " ", " ", " ", " ", " ", " ", " ", " " },
+  -- }
+
+  -- local height = math.floor(0.618 * vim.o.lines)
+  -- local width = math.floor(0.4 * vim.o.columns)
+  -- return {
+  --   anchor = "NW",
+  --   height = height,
+  --   width = width,
+  --   border = "solid",
+  --   row = math.floor(0.5 * (vim.o.lines - height)),
+  --   col = math.floor(0.5 * (vim.o.columns - width)),
+  -- }
+  --
+
+  -- Floating Consult style
+  local height = math.floor(0.3 * vim.o.lines)
+  local width = math.floor(0.8 * vim.o.columns)
+  -- bold   = 'vert:┃,horiz:━,horizdown:┳,horizup:┻,verthoriz:╋,vertleft:┫,vertright:┣',
+  return {
+    anchor = "NW",
+    height = height,
+    width = width,
+    border = "solid",
+    row = math.floor(0.5 * (vim.o.lines - height)),
+    col = math.floor(0.5 * (vim.o.columns - width)),
+  }
+end
+
 require("mini.pick").setup({
   window = {
-    config = function()
-      local height, width, starts, ends
-      local win_width = vim.o.columns
-      local win_height = vim.o.lines
-
-      width = win_width
-      height = math.floor(win_height * 0.4) -- 40%
-      starts = 1
-      ends = win_height
-
-      -- if win_height <= 25 then
-      --   -- height = math.min(win_height, 18)
-      --   width = win_width
-      --   height = math.floor(win_height * 0.4) -- 40%
-      --   starts = 1
-      --   ends = win_height
-      -- else
-      --   width = math.floor(win_width * 0.5) -- 50%
-      --   height = math.floor(win_height * 0.4) -- 40%
-      --   starts = math.floor((win_width - width) / 2)
-      --   ends = math.floor(win_height * 0.65)
-      -- end
-
-      return {
-        col = starts,
-        row = ends,
-        height = height,
-        width = width,
-        -- border = "single",
-        border = { " ", " ", " ", " ", " ", " ", " ", " " },
-      }
-    end,
-    -- config = function()
-    --   return {
-    --     width = vim.o.columns,
-    --     height = math.floor(vim.o.lines * 0.3),
-    --     border = "solid",
-    --   }
-    -- end,
-    -- String to use as cursor in prompt
-    prompt_cursor = "|",
-    -- String to use as prefix in prompt
-    -- prompt_prefix = ":",
+    config = win_config,
+    prompt_prefix = "",
   },
   mappings = {
     refine = "<A-x>",

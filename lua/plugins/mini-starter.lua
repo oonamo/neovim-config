@@ -1,37 +1,5 @@
 local starter = require("mini.starter")
 
-local pick = function()
-  return {
-    {
-      action = function() Config.explorer() end,
-      name = "Explorer",
-      section = "Pick",
-    },
-    {
-      action = "Pick files",
-      name = "Files",
-      section = "Pick",
-    },
-    {
-      action = "Pick grep_live",
-      name = "Grep live",
-      section = "Pick",
-    },
-    {
-      action = "Pick help",
-      name = "Help tags",
-      section = "Pick",
-    },
-    {
-      action = "Pick visit_paths",
-      name = "Visited paths",
-      section = "Pick",
-    },
-  }
-end
-
--- starter.setup({ evaluate_single = true })
-
 starter.setup({
   evaluate_single = true,
   items = {

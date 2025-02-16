@@ -56,7 +56,7 @@ end
 ---If the current match is a directory, that item is selected
 ---Otherwise, the item is completed
 ---
----This behavior mimics Emac's `vertico.el`
+---This ehavior mimics Emac's `vertico.el`
 ---@param char string
 M.mappings.complete_or_enter = function(char)
   return {
@@ -96,7 +96,7 @@ local PERM_SIZE = 10
 
 local hi = function(...) vim.api.nvim_set_hl(0, ...) end
 hi("ReadBit", { link = "MiniIconsYellow", default = true })
-hi("ExeMod", { link = "MiniIconsRed", default = true })
+hi("ExeBit", { link = "MiniIconsRed", default = true })
 hi("WriteBit", { link = "MiniIconsAzure", default = true })
 hi("SepBit", { link = "NonText", default = true })
 hi("MiniPickExplorerSize", { link = "Constant", default = true })
@@ -126,7 +126,11 @@ local defaults = {
     max_mins = 60,
     max_days = 30,
   },
-  prompt_prefix = function(cwd) return ("Find Files: " .. cwd .. M._seperator):gsub("\\", "/") end,
+  prompt_prefix = function(cwd)
+    cwd = cwd:gsub("\\", "/")
+    cwd = cwd:gsub("^" .. vim.fn.expand("~"):gsub("\\", "/"), "~")
+    return "Find Files: " .. cwd .. "/"
+  end,
 }
 
 -- Taken from mini.extra
@@ -218,16 +222,16 @@ end
 ---@param exe_modifier false|string
 ---@param num integer
 local function perm_to_table_str(exe_modifier, num, tbl)
-  table.insert(tbl, (bit.band(num, 4) ~= 0 and { "r", "ReadBit" } or { "-", "SepBit" }))
-  table.insert(tbl, (bit.band(num, 2) ~= 0 and { "w", "WriteBit" } or { "-", "SepBit" }))
+  table.insert(tbl, (bit.band(num, 0x4) ~= 0 and { "r", "ReadBit" } or { "-", "SepBit" }))
+  table.insert(tbl, (bit.band(num, 0x2) ~= 0 and { "w", "WriteBit" } or { "-", "SepBit" }))
   if exe_modifier then
-    if bit.band(num, 1) ~= 0 then
-      table.insert(tbl, { exe_modifier, "ExeMod" })
+    if bit.band(num, 0x1) ~= 0 then
+      table.insert(tbl, { exe_modifier, "ExeBit" })
     else
-      table.insert(tbl, { exe_modifier:upper(), "ExeMod" })
+      table.insert(tbl, { exe_modifier:upper(), "ExeBit" })
     end
   else
-    table.insert(tbl, (bit.band(num, 1) ~= 0 and { "x", "ExeBit" } or { "-", "SepBit" }))
+    table.insert(tbl, (bit.band(num, 0x1) ~= 0 and { "x", "ExeBit" } or { "-", "SepBit" }))
   end
 end
 
@@ -342,7 +346,7 @@ function M.explorer_show(buf_id, items, query)
 
   for line, item in ipairs(items) do
     -- HACK: Compute's fs_stat every iteration to update any changes
-    -- TODO: Compute's fs_stat every iteration to update any changes
+    -- PERF: This is very expensive, but it might not be that important
     local stat = vim.uv.fs_stat(item.path)
     local width = 0
     for i = 1, #M.opts.items do

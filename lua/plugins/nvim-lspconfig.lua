@@ -54,18 +54,24 @@ local function on_attach(client, buffer)
     )
   end
 
-  vim.keymap.set("n", "<leader>lq", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })
-  vim.keymap.set("n", "<leader>ld", vim.diagnostic.setloclist, { desc = "Quickfix [L]ist [D]iagnostics" })
+  vim.keymap.set(
+    "n",
+    "<leader>lq",
+    vim.diagnostic.setqflist,
+    { desc = "Quickfix [L]ist [D]iagnostics", buffer = buffer }
+  )
 
   vim.keymap.set("n", "<leader>ls", function() require("config.lsp").request(true) end, {
     desc = "Request Signature",
+    buffer = buffer,
   })
 
   vim.keymap.set("n", "<leader>le", function() require("config.lsp").echo_area_sig() end, {
     desc = "Request Signature (Echo Area)",
+    buffer = buffer,
   })
 
-  vim.keymap.set("n", "<leader>l", vim.lsp.buf.document_symbol)
+  vim.keymap.set("n", "gO", function() vim.lsp.buf.document_symbol({ loclist = true }) end, { buffer = buffer })
 end
 
 local defaults = { on_attach = on_attach }
@@ -171,7 +177,6 @@ end
 vim.diagnostic.config({
   underline = true,
   severity_sort = true,
-  -- virtual_text = false, -- For tiny-inline-diagnostic
   virtual_text = {
     spacing = 4,
     prefix = "<",
@@ -183,7 +188,7 @@ vim.diagnostic.config({
     header = " ",
     border = "rounded",
     source = "if_many",
-    title = { { " 󰌶 Diagnostics ", "FloatTitle" } },
+    title = { { "󰌶  Diagnostics ", "FloatTitle" } },
   },
   signs = {
     numhl = {

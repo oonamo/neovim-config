@@ -1,10 +1,10 @@
 local group = vim.api.nvim_create_augroup("config group", { clear = true })
 
--- vim.api.nvim_create_autocmd("TextYankPost", {
---   pattern = "*",
---   group = group,
---   callback = function() vim.highlight.on_yank() end,
--- })
+vim.api.nvim_create_autocmd("TextYankPost", {
+  pattern = "*",
+  group = group,
+  callback = function() vim.highlight.on_yank() end,
+})
 
 vim.api.nvim_create_autocmd("FileType", {
   group = group,

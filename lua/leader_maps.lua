@@ -203,3 +203,6 @@ map_vis("vv", 'add_label("core")', "Add to core")
 map_vis("vV", 'remove_label("core")', "Remove from core")
 map_leader("n", "vc", "<cmd>Pick visit_paths filter='core'<CR>", "Select core (cwd)")
 map_leader("n", "vC", "<cmd>Pick visit_paths cwd='' filter='core'<CR>", "Select core (all)")
+
+--================== Snippets ====================
+map_leader("x", "s", "<Cmd>lua MiniSnippets.expand()<CR>", "Expand snippet")

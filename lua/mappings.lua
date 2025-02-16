@@ -66,11 +66,11 @@ map({ "c", "i" }, "<C-a>", "<Home>")
 map("c", "<C-e>", "<End>")
 map("c", "<C-n>", "<Down>")
 map("c", "<C-p>", "<Up>")
--- map("c", "<Tab>", [[pumvisible() == 1 ? "\<C-n>" : "\<Tab>"]], { expr = true })
 map("c", "<C-x>", "<C-f><Esc>?")
 cmap(":", "lua ")
-map({ "c", "i" }, "<C-d>", "<C-right>")
-map({ "c", "i" }, "<C-s>", "<C-left>")
+map({ "c" }, "<C-d>", "<C-right>")
+map({ "c" }, "<C-s>", "<C-left>")
+vim.cmd.cabbr({ args = { "<expr>", "%%", "expand(%:p:h)" } })
 
 --================== Quickfix Navigation ====================
 vim.keymap.set("n", "<C-n>", "<cmd>cnext<cr>", { desc = "Quickfix Next" })
@@ -123,3 +123,22 @@ map("o", "o", function()
     return "o"
   end
 end, { expr = true })
+
+--- Dev stuff
+map({ "n", "v", "c", "t", "x" }, "<F2>", function()
+  MiniNotify.clear()
+  local name = vim.ui.input({
+    prompt = "Name: ",
+  }, function(selection)
+    if not selection then return end
+    local outfile = selection .. ".png"
+    vim.system({
+      "pwsh.exe",
+      "-NoProfile",
+      "-NonInteractive",
+      "-Command",
+      vim.fs.joinpath(vim.fn.expand("~"), ".common", "termshot.ps1"),
+      outfile,
+    })
+  end)
+end)

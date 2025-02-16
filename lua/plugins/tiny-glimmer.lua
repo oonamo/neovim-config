@@ -6,10 +6,12 @@ tg.setup({
       enabled = true,
       default_animation = "fade",
     },
-    search = {
+  },
+  support = {
+    substitute = {
       enabled = true,
-      default_animation = "reverse_fade",
-    },
+    }
+
   },
   -- animations = {
   --   fade = {
@@ -24,7 +26,7 @@ tg.setup({
     -- Similar to `pulsar.el`
     pulsar = {
       enabled = true,
-      on_event = {  "WinEnter" },
+      on_event = {  "WinEnter", "CmdlineLeave",  },
       default_animation = {
         name = "fade",
 

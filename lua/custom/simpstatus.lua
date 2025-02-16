@@ -489,7 +489,7 @@ function M.diag(data)
         }, true)
     end
   end
-  if str:find("%S") then str = str .. " " end
+  if str:find("%S") then str = str .. "%#StatusLine#" end
   if str == "" then str = stl_format("count", " ", {
     fg = "StatusLine",
     bg = status_bg,
@@ -641,6 +641,28 @@ function M.lsp_progress()
   )
 end
 
+function M.linenr(data)
+  local count = vim.api.nvim_buf_line_count(data.buf)
+  local pad = #tostring(count)
+  return [[→%02c ↓%0]] .. pad .. "l/%L %03p%%%"
+  -- return stl_format("linenr", str, {
+  --   fg = status_bg,
+  --   bg = status_bg,
+  -- })
+  -- return "→%02c ↓"
+  --   .. stl_format("linenr", "%0" .. pad .. "l/%L %%03p%%%%%%", {
+  --     fg = "StatusLine",
+  --     bg = status_bg,
+  --     italic = true,
+  --   })
+end
+
+-- local str = vim.pesc([[→%02c ↓%0]] .. 3 .. "l/%L %03p%%%")
+-- print(stl_format("linenr", str, {
+--   fg = status_bg,
+--   bg = status_bg,
+-- }))
+
 function M.custom(data)
   local custom_info = ""
   if vim.g.autoformat then
@@ -684,6 +706,7 @@ local function default_status(data)
     M.custom(data),
     " ",
     not is_not_programming and [[%{%&ru?"%l:%c ":""%}]] or nil,
+    -- M.linenr(data),
     is_not_programming and non_prog_mode(data) or nil,
     -- heading_outline(data),
   }
@@ -708,6 +731,8 @@ function M.build()
   data.buf = vim.api.nvim_win_get_buf(data.win)
   data.fname = vim.api.nvim_buf_get_name(data.buf)
   data.active = data.win == vim.api.nvim_get_current_win()
+
+  if vim.bo[data.buf].ft == "" and vim.bo[data.buf].buftype == "" then return "" end
 
   M.data = data
 

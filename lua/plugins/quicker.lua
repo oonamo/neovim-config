@@ -18,8 +18,8 @@ require("quicker").setup({
     },
   },
   highlight = {
-    treesitter = true,
-    lsp = true,
+    treesitter = false,
+    lsp = false,
     load_buffers = false,
   },
 })

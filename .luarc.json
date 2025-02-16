@@ -22,7 +22,8 @@
         "MiniStarter",
         "MiniVisits",
         "MiniIcons",
-        "MiniCompletion"
+        "MiniCompletion",
+        "MiniIndentscope"
     ],
     "completion.autoRequire": true,
 }

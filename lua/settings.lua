@@ -39,7 +39,6 @@ vim.opt.smartcase = true
 vim.opt.jumpoptions = "stack,view,clean"
 vim.opt.title = true
 vim.opt.titlestring = "nvim"
-vim.opt.background = "dark"
 vim.opt.guicursor = {
   -- Cursor shape
   -- "i-c-ci-ve:ver25-blinkoff500-blinkon500-TermCursor",
@@ -79,7 +78,7 @@ opt.shiftwidth = 2
 -- better searching
 o.inccommand = "split"
 o.incsearch = true
-o.hlsearch = true
+vim.o.hlsearch = true
 o.ignorecase = true
 o.smartcase = true
 
@@ -108,14 +107,15 @@ o.ttimeoutlen = 10
 opt.swapfile = false
 opt.backup = false
 opt.undofile = true
-opt.wildoptions = "pum,fuzzy"
+-- opt.wildoptions = "pum"
+opt.wildmode = "longest,list,full"
 opt.wildmenu = true
 o.makeprg = "just"
 opt.laststatus = 2 -- Or 3 for global statusline
 opt.foldlevel = 99
 o.foldmethod = "expr"
 o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-o.foldtext = ""
+-- o.foldtext = "v:lua.Config.fold_text()"
 o.list = true
 o.listchars = table.concat({ "extends:…", "nbsp:␣", "precedes:…", "tab:> " }, ",")
 o.fillchars = [[eob: ,vert:▕,vertleft:🭿,vertright:▕,verthoriz:🭿,horiz:▁,horizdown:▁,horizup:▔]]

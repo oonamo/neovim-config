@@ -19,7 +19,7 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.g.loaded_netrwSettings = 1
 vim.g.loaded_netrwFileHandlers = 1
-vim.g.loaded_tutor_mode_plugin = 0
+vim.g.loaded_tutor_mode_plugin = 1
 
 -- Clone 'mini.nvim' manually in a way that it gets managed by 'mini.deps'
 local path_package = vim.fn.stdpath("data") .. "/site/"
@@ -28,10 +28,12 @@ local mini_path = path_package .. "pack/deps/start/mini.nvim"
 _G.Config = {
   path_source = vim.fn.stdpath("config") .. "/lua/",
   path_package = path_package .. "pack/deps/opt/",
+  sep = package.config:sub(1, 1),
   plugs = {
     snacks = false,
   },
   completion = "mini",
+  dev_dir = vim.fs.joinpath(vim.fn.expand("~"), "projects", "nvim"),
 }
 
 if not (vim.uv or vim.loop).fs_stat(mini_path) then
@@ -53,13 +55,18 @@ require("mini.deps").setup({ path = { package = path_package } })
 local now, add, later = MiniDeps.now, MiniDeps.add, MiniDeps.later
 local source = function(path) dofile(Config.path_source .. path) end
 
+local add_dev = function(name)
+  local path = vim.fs.joinpath(Config.dev_dir, name)
+  if Config.sep == "\\" then path = path:gsub("/", "\\") end
+
+  vim.opt.rtp:append(path)
+end
+
 --================== Settings ====================
 now(function() source("settings.lua") end)
 now(function() source("mappings.lua") end)
 now(function() source("leader_maps.lua") end)
 now(function() source("config/autocommands.lua") end)
--- now(function() source("tests/nano.lua") end)
--- now(function() source("custom/galaxyline.lua") end)
 now(function() source("custom/simpstatus.lua") end)
 
 if vim.env.TERM_PROGRAM == "WezTerm" then now(function() require("config.utils").wezterm() end) end
@@ -76,7 +83,7 @@ if vim.g.neovide or vim.g.goneovim then now(function() source("config/gui.lua") 
 --================== UI Plugins ====================
 --================== Colors ====================
 now(function()
-  vim.opt.rtp:append("C:\\Users\\onam7\\projects\\nvim\\ef-themes")
+  add_dev("ef-themes")
   require("ef-themes").setup({
     transparent = false,
     light = "ef-spring",
@@ -84,13 +91,26 @@ now(function()
     styles = {
       pickers = "borderless",
       diagnostic = "full",
+      functions = { bold = true },
     },
     modules = {
       render_markdown = true,
       snacks = Config.plugs.snacks,
       semantic_tokens = true,
       mini = true,
+      blink = Config.completion ~= "mini",
     },
+    on_highlights = function(his, c)
+      return {
+        ReadBit = { fg = c.rainbow_1 },
+        WriteBit = { fg = c.rainbow_2 },
+        ExeBit = { fg = c.rainbow_3 },
+        SepBit = { fg = c.fg_dim },
+        MiniPickExplorerSize = { fg = c.variable },
+        MiniPickExplorerDate = { fg = c.date_common },
+        MiniPickExplorerDirectory = { fg = c.rainbow_1 },
+      }
+    end,
   })
 
   local last = 0
@@ -127,94 +147,27 @@ now(function()
   end)
 end)
 
-now(function()
-  add({ source = "EdenEast/nightfox.nvim" })
-  local S = require("nightfox.lib.shade")
-  local C = require("nightfox.lib.color")
-  local bg0 = C.new("#192330")
-  local black = C.new("#000000")
-  local nightfox = {
-    bg0 = bg0:blend(black, 0.75):to_hex(),
-    bg1 = "#192330",
-    comment = "#526175",
-    black = S.new("#393b44", "#475072", "#32343b"),
-    red = S.new("#c94f6d", "#d6616b", "#ad425c"),
-    green = S.new("#81b29a", "#58cd8b", "#689c83"),
-    yellow = S.new("#dbc074", "#ffe37e", "#c7a957"),
-    blue = S.new("#719cd6", "#84cee4", "#5483c1"),
-    magenta = S.new("#9d79d6", "#b8a1e3", "#835dc1"),
-    cyan = S.new("#63cdcf", "#59f0ff", "#4ab8ba"),
-    white = S.new("#dfdfe0", "#f2f2f2", "#bdbdc0"),
-    orange = S.new("#f4a261", "#f6a878", "#e28940"),
-    pink = S.new("#d67ad2", "#df97db", "#c15dbc"),
-  }
-  local nightfox_spec = {
-    git = {
-      add = "#70a288",
-      change = "#a58155",
-      delete = "#904a6a",
-      conflict = "#c07a6d",
-    },
-  }
-  require("nightfox").setup({
-    palettes = {
-      -- dayfox = {
-      --   black = S.new("#1d344f", "#24476f", "#1c2f44", true),
-      --   red = S.new("#b95d76", "#c76882", "#ac5169", true),
-      --   green = S.new("#618774", "#629f81", "#597668", true),
-      --   yellow = S.new("#ba793e", "#ca884a", "#a36f3e", true),
-      --   blue = S.new("#4d688e", "#4e75aa", "#485e7d", true),
-      --   magenta = S.new("#8e6f98", "#9f75ac", "#806589", true),
-      --   cyan = S.new("#6ca7bd", "#74b2c9", "#5a99b0", true),
-      --   white = S.new("#cdd1d5", "#cfd6dd", "#b6bcc2", true),
-      --   orange = S.new("#e3786c", "#e8857a", "#d76558", true),
-      --   pink = S.new("#d685af", "#de8db7", "#c9709e", true),
-      --
-      --   comment = "#7f848e",
-      --
-      --   bg0 = "#dbdbdb", -- Dark bg (status line and float)
-      --   bg1 = "#eaeaea", -- Default bg
-      --   bg2 = "#dbcece", -- Lighter bg (colorcolm folds)
-      --   bg3 = "#ced6db", -- Lighter bg (cursor line)
-      --   bg4 = "#bebebe", -- Conceal, border fg
-      --
-      --   fg0 = "#182a40", -- Lighter fg
-      --   fg1 = "#1d344f", -- Default fg
-      --   fg2 = "#233f5e", -- Darker fg (status line)
-      --   fg3 = "#2e537d", -- Darker fg (line numbers, fold colums)
-      --
-      --   sel0 = "#e7d2be", -- Popup bg, visual selection bg
-      --   sel1 = "#a4c1c2", -- Popup sel bg, search bg
-      -- },
-      nightfox = nightfox,
-    },
-    specs = {
-      nightfox = nightfox_spec,
-    },
-  })
-end)
-now(function()
-  add({ source = "sainnhe/everforest" })
-  vim.api.nvim_set_hl(0, "MiniPickMatchCurrent", { link = "Visual" })
-  vim.g.everforest_background = "hard"
-  vim.g.everforest_better_performance = true
-  vim.g.everforest_diagnostic_text_highlight = true
-  vim.g.everforest_diagnostic_line_highlight = true
-  vim.g.everforest_diagnostic_virtual_text = true
-end)
-now(function()
-  add("sainnhe/gruvbox-material")
-  vim.g.gruvbox_material_background = "hard"
-  vim.g.gruvbox_material_diagnostic_text_highlight = true
-  vim.g.gruvbox_material_diagnostic_line_highlight = true
-  vim.g.gruvbox_material_diagnostic_virtual_text = true
-end)
-now(function() add({ source = "rose-pine/neovim", name = "rose-pine" }) end)
--- now(function() vim.cmd.colorscheme("duskfox") end)
-
 now(Config.load_colorscheme)
 
 --================== Mini Plugins ====================
+-- now(function()
+--   require("mini.statusline").setup()
+-- end)
+now(
+  function()
+    require("mini.basics").setup({
+      options = {
+        basic = true,
+        extra_ui = true,
+        win_borders = "single",
+      },
+      autocommands = {
+        basic = false,
+        relnum_in_visual_mode = false,
+      },
+    })
+  end
+)
 now(function()
   require("mini.notify").setup({
     -- window = { config = { border = "solid" } },
@@ -227,61 +180,15 @@ now(function()
   MiniIcons.mock_nvim_web_devicons()
   later(MiniIcons.tweak_lsp_kind)
 end)
-
--- now(function() require("mini.tabline").setup({ show_icons = false, tabpage_section = "right" }) end)
+now(function() require("mini.tabline").setup() end)
 now(function() source("plugins/mini-starter.lua") end)
 later(function() require("mini.cursorword").setup() end)
-later(function()
-  require("mini.pairs").setup({
-    mappings = {
-      -- ['"'] = { action = "closeopen", pair = '""', neigh_pattern = "[^%w][^%w]", register = { cr = false } },
-      -- ["'"] = { action = "closeopen", pair = "''", neigh_pattern = "[^%w][^%w]", register = { cr = false } },
-      ["`"] = { action = "closeopen", pair = "``", neigh_pattern = "[^%w][^%w]", register = { cr = false } },
-
-      ["["] = { action = "open", pair = "[]", neigh_pattern = "[^\\]." },
-      ["{"] = { action = "open", pair = "{}", neigh_pattern = "[^\\]." },
-      [")"] = { action = "close", pair = "()", neigh_pattern = "[^\\]." },
-      ["]"] = { action = "close", pair = "[]", neigh_pattern = "[^\\]." },
-      ["}"] = { action = "close", pair = "{}", neigh_pattern = "[^\\]." },
-
-      ['"'] = { action = "closeopen", pair = '""', neigh_pattern = "[^\\].", register = { cr = false } },
-      ["'"] = { action = "closeopen", pair = "''", neigh_pattern = "[^%a\\].", register = { cr = false } },
-    },
-  })
-end)
+later(function() source("plugins/mini-pairs.lua") end)
 
 later(function() source("plugins/mini-files.lua") end)
-later(function() require("mini.test").setup() end)
 
 if Config.completion == "mini" then
-  later(function()
-    require("mini.completion").setup({
-      lsp_completion = {
-        source_func = "omnifunc",
-        auto_setup = false,
-        process_items = function(items, base)
-          -- Don't show 'Text' and 'Snippet' suggestions
-          items = vim.tbl_filter(function(x) return x.kind ~= 1 and x.kind ~= 15 end, items)
-          return MiniCompletion.default_process_items(items, base)
-        end,
-      },
-      fallback_action = function()
-        if vim.g.complete_fallback then
-          -- FROM: https://github.com/echasnovski/mini.nvim/blob/3049adbafd08b769d0700624fe9b85fa4176c88c/lua/mini/completion.lua#L757-L762
-          local keys = string.format("<C-g><C-g>%s", "<C-x><C-n>")
-          local trigger_keys = vim.api.nvim_replace_termcodes(keys, true, false, true)
-          vim.api.nvim_feedkeys(trigger_keys, "n", false)
-        end
-      end,
-      mappings = {
-        force_fallback = "<C-f>",
-      },
-      window = {
-        info = { border = "single" },
-        signature = { border = "single" },
-      },
-    })
-  end)
+  later(function() source("plugins/mini-completion.lua") end)
 else
   later(function()
     add({
@@ -293,14 +200,14 @@ else
           local ok, cmd = require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
             cwd = Config.path_package .. "blink.cmp",
           })
-          if ok then cmd:wait() end
+          if not ok then vim.notify("Could not compile blink.cmp binary", vim.log.levels.ERROR) end
         end,
         post_install = function(path, source, name)
           vim.notify("Installing blink.cmp binary...")
           local ok, cmd = require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
             cwd = Config.path_package .. "blink.cmp",
           })
-          if ok then cmd:wait() end
+          if not ok then vim.notify("Could not compile blink.cmp binary", vim.log.levels.ERROR) end
         end,
       },
     })
@@ -349,25 +256,18 @@ later(function()
       hack        = { pattern = "() HACK():",    group = "MiniHipatternsHack" },
       todo        = { pattern = "() TODO():",    group = "MiniHipatternsTodo" },
       note        = { pattern = "() NOTE():",    group = "MiniHipatternsNote" },
+      perf        = { pattern = "() PERF():",    group = "MiniHipatternsFixme" },
       fixme_colon = { pattern = " FIXME():()",   group = "MiniHipatternsFixmeColon" },
       hack_colon  = { pattern = " HACK():()",    group = "MiniHipatternsHackColon" },
       todo_colon  = { pattern = " TODO():()",    group = "MiniHipatternsTodoColon" },
       note_colon  = { pattern = " NOTE():()",    group = "MiniHipatternsNoteColon" },
+      perf_colon  = { pattern = " PERF():()",    group = "MiniHipatternsFixmeColon" },
       fixme_body  = { pattern = " FIXME:().*()", group = "MiniHipatternsFixmeBody" },
       hack_body   = { pattern = " HACK:().*()",  group = "MiniHipatternsHackBody" },
       todo_body   = { pattern = " TODO:().*()",  group = "MiniHipatternsTodoBody" },
       note_body   = { pattern = " NOTE:().*()",  group = "MiniHipatternsNoteBody" },
+      perf_body   = { pattern = " PERF:().*()",  group = "MiniHipatternsFixmeBody" },
       -- stylua: ignore end
-      -- fixme = { pattern = "%f[%w]()FIXME()%f[%W]", group = "MiniHipatternsFixme" },
-      -- fix = { pattern = "%f[%w]()FIX()%f[%W]", group = "MiniHipatternsFixme" },
-      -- hack = { pattern = "%f[%w]()HACK()%f[%W]", group = "MiniHipatternsHack" },
-      -- perf = { pattern = "%f[%w]()PERF()%f[%W]", group = "MiniHipatternsHack" },
-      -- todo = { pattern = "%f[%w]()TODO()%f[%W]", group = "MiniHipatternsTodo" },
-      -- note = { pattern = "%f[%w]()NOTE()%f[%W]", group = "MiniHipatternsNote" },
-      -- fixme = hi_words({ "FIXME", "Fixme", "fixme" }, "MiniHipatternsFixme"),
-      -- hack = hi_words({ "HACK", "Hack", "hack" }, "MiniHipatternsHack"),
-      -- todo = hi_words({ "TODO", "Todo", "todo" }, "MiniHipatternsTodo"),
-      -- note = hi_words({ "NOTE", "Note", "note" }, "MiniHipatternsNote"),
 
       hex_color = hipatterns.gen_highlighter.hex_color({
         style = "inline",
@@ -379,7 +279,7 @@ later(function()
   local hi = function(...) vim.api.nvim_set_hl(0, ...) end
 
   local function create_hi_hls()
-    for _, v in ipairs({ "Fixme", "Todo", "Note", "Hack" }) do
+    for _, v in ipairs({ "Fixme", "Todo", "Note", "Hack", "Perf" }) do
       local hl = vim.api.nvim_get_hl(0, { name = "MiniHipatterns" .. v })
       hi("MiniHipatterns" .. v .. "Colon", hl)
       if hl.bg then
@@ -471,18 +371,18 @@ later(function()
       clue.gen_clues.windows(),
       clue.gen_clues.z(),
       -- stylua: ignore start
-      { mode = "n", keys = "<Leader>b",     desc = "+Buffer" },
-      { mode = "n", keys = "<Leader>g",     desc = "+Git" },
-      { mode = "n", keys = "<Leader>s",     desc = "+Search" },
-      { mode = "n", keys = "<Leader>l",     desc = "+LSP" },
-      { mode = "n", keys = "<Leader>w",     desc = "+Window" },
-      { mode = "n", keys = "<Leader><tab>", desc = "+Tabs" },
-      { mode = "n", keys = "<Leader>!",     desc = "+Shell" },
-      { mode = "n", keys = "<Leader>l",     desc = "+Lsp" },
+      { mode = "n", keys = "<Leader>b",     desc = "  Buffer" },
+      { mode = "n", keys = "<Leader>g",     desc = "󰊢  Git" },
+      { mode = "n", keys = "<Leader>s",     desc = "  Search" },
+      { mode = "n", keys = "<Leader>l",     desc = "󰘦  LSP" },
+      { mode = "n", keys = "<Leader>w",     desc = "  Window" },
+      { mode = "n", keys = "<Leader><tab>", desc = "  Tabs" },
+      { mode = "n", keys = "<Leader>!",     desc = " Shell" },
       { mode = "n", keys = "<Leader>o",     desc = "+Other" },
-      { mode = "n", keys = "<Leader>t",     desc = "+Terminal" },
-      { mode = "n", keys = "<Leader>v",     desc = "+Visits" },
-      { mode = "n", keys = "<Leader>f",     desc = "+Find" },
+      { mode = "n", keys = "<Leader>t",     desc = "  Terminal" },
+      { mode = "n", keys = "<Leader>v",     desc = " Visits" },
+      { mode = "n", keys = "<Leader>f",     desc = "  Find" },
+      { mode = "n", keys = "<Leader>p",     desc = "  Paste" },
       --stylua: ignore end
 
       -- Bracketed:
@@ -529,6 +429,7 @@ later(function()
       delete = "sd", -- Delete surrounding
       find = "sn", -- Find surrounding (to the right)
       find_left = "sN", -- Find surrounding (to the left)
+      find_right = "sn", -- Find surrounding (to the left)
       highlight = "sh", -- Highlight surrounding
       replace = "sr", -- Replace surrounding
       update_n_lines = "", -- Update `n_lines`
@@ -560,46 +461,31 @@ later(function()
       i = require("mini.extra").gen_ai_spec.indent(),
       u = ai.gen_spec.function_call(), -- u for Usage
       U = ai.gen_spec.function_call({ name_pattern = "[%w_]" }), -- without dot
-      e = { -- snake_case, camelCase, PascalCase, etc; all capitalizations
-        -- Lua 5.1 character classes and the undocumented frontier pattern:
-        -- https://www.lua.org/manual/5.1/manual.html#5.4.1
-        -- http://lua-users.org/wiki/FrontierPattern
+      e = {
         {
-          -- Matches a single uppercase letter followed by 1+ lowercase
-          -- letters. This covers:
-          -- - PascalCaseWords (or the latter part of camelCaseWords)
-          "%u[%l%d]+%f[^%l%d]", -- An uppercase letter, 1+ lowercase letters, to end of lowercase letters
-
-          -- Matches lowercase letters up until not lowercase letter.
-          -- This covers:
-          -- - start of camelCaseWords (just the `camel`)
-          -- - snake_case_words in lowercase
-          -- - regular lowercase words
-          "%f[^%s%p][%l%d]+%f[^%l%d]", -- after whitespace/punctuation, 1+ lowercase letters, to end of lowercase letters
-          "^[%l%d]+%f[^%l%d]", -- after beginning of line, 1+ lowercase letters, to end of lowercase letters
-
-          -- Matches uppercase or lowercase letters up until not letters.
-          -- This covers:
-          -- - SNAKE_CASE_WORDS in uppercase
-          -- - Snake_Case_Words in titlecase
-          -- - regular UPPERCASE words
-          -- (it must be both uppercase and lowercase otherwise it will
-          -- match just the first letter of PascalCaseWords)
-          "%f[^%s%p][%a%d]+%f[^%a%d]", -- after whitespace/punctuation, 1+ letters, to end of letters
-          "^[%a%d]+%f[^%a%d]", -- after beginning of line, 1+ letters, to end of letters
+          "%u[%l%d]+%f[^%l%d]",
+          "%f[^%s%p][%l%d]+%f[^%l%d]",
+          "^[%l%d]+%f[^%l%d]",
+          "%f[^%s%p][%a%d]+%f[^%a%d]",
+          "^[%a%d]+%f[^%a%d]",
         },
-        -- { -- original version from mini.ai help file:
-        --   '%u[%l%d]+%f[^%l%d]',
-        --   '%f[%S][%l%d]+%f[^%l%d]',
-        --   '%f[%P][%l%d]+%f[^%l%d]',
-        --   '^[%l%d]+%f[^%l%d]',
-        -- },
         "^().*()$",
       },
     },
   })
 end)
-later(function() require("mini.operators").setup() end)
+later(function()
+  --https://github.com/echasnovski/nvim/blob/731779461d233af2cf0260d80dca4a6d6da51e34/plugin/20_mini.lua#L271C1-L278C33
+  local remap = function(mode, lhs_from, lhs_to)
+    local keymap = vim.fn.maparg(lhs_from, mode, false, true)
+    local rhs = keymap.callback or keymap.rhs
+    if rhs == nil then error("Could not remap from " .. lhs_from .. " to " .. lhs_to) end
+    vim.keymap.set(mode, lhs_to, rhs, { desc = keymap.desc })
+  end
+  remap("n", "gx", "<Leader>ox")
+  remap("x", "gx", "<Leader>ox")
+  require("mini.operators").setup()
+end)
 later(function()
   require("mini.git").setup({
     -- command = {
@@ -620,6 +506,7 @@ later(function()
       -- signs = { add = "+", change = "~", delete = "-" },
       -- signs = { add = "┃", change = "┃", delete = "┃" },
       signs = { add = "▍ ", change = "▍ ", delete = " " },
+      -- signs = { add = "█", change = "▒", delete = "" },
     },
   })
 end)
@@ -717,10 +604,10 @@ if Config.plugs.snacks then
   end)
 end
 
-later(function()
-  add({ source = "rachartier/tiny-glimmer.nvim", checkout = "main" })
-  source("plugins/tiny-glimmer.lua")
-end)
+-- later(function()
+--   add({ source = "rachartier/tiny-glimmer.nvim", checkout = "main" })
+--   source("plugins/tiny-glimmer.lua")
+-- end)
 
 later(function()
   local build = function(opts)
@@ -759,12 +646,11 @@ end)
 
 --================== Dev Plugins ====================
 -- later(function() add({ source = "~/projects/nvim/chadschemes/", hooks = {} }) end)
--- later(function()
---   vim.opt.rtp:append("C:\\Users\\onam7\\projects\\command_pal")
---   -- add({ source = "C:/Users/onam7/projects/command_pal", checkout = "refactor_mini_pick" })
-
---   source("plugins/command_pal.lua")
--- end)
+later(function()
+  vim.opt.rtp:append("C:\\Users\\onam7\\projects\\command_pal")
+  -- add({ source = "C:/Users/onam7/projects/command_pal", checkout = "refactor_mini_pick" })
+  source("plugins/command_pal.lua")
+end)
 
 later(function()
   vim.opt.rtp:append("C:\\Users\\onam7\\projects\\quicker_md.nvim")

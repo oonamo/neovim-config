@@ -7,9 +7,24 @@
   "Foreach in array": {
     "prefix": "ifor",
     "body": [
-      "for i, ${2:v} in ipairs($1) do",
-      "\t$0",
+      "for ${1:i}, ${2:v} in ipairs($3) do",
+      "  ${0:$TM_SELECTED_TEXT}",
       "end"
+    ]
+  },
+  "Foreach in table": {
+    "prefix": "pfor",
+    "body": [
+      "for ${1:k}, ${2:v} in ipairs($3) do",
+      "  ${0:$TM_SELECTED_TEXT}",
+      "end"
+    ]
+  },
+  "Module": {
+    "prefix": "mod",
+    "body": [
+      "local ${1:M} = {}",
+      "$0"
     ]
   }
 }
