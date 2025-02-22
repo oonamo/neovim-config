@@ -7,29 +7,32 @@ local M = {
 
 local child_cmd
 
-local function delete_child_cmd() vim.api.nvim_del_autocmd(child_cmd) end
+local function delete_child_cmd()
+  pcall(vim.api.nvim_del_autocmd, child_cmd)
+end
 
-vim.api.nvim_create_autocmd("LspAttach", {
-  group = M.group,
-  callback = function(args)
-    local ft = vim.bo[args.buf].filetype
-    if ft == "text" or ft == "markdown" then return end
-
-    child_cmd = vim.api.nvim_create_autocmd("LspProgress", {
-      group = M.group,
-      callback = function(info)
-        if vim.tbl_get(info, "data", "params", "value", "kind") == "end" then
-          vim.b[args.buf].complete_fallback = false
-          M.has_attached_full = true
-          vim.schedule(function()
-            delete_child_cmd()
-            assert(vim.tbl_isempty(vim.api.nvim_get_autocmds({ event = "LspProgress", group = M.group })))
-          end)
-        end
-      end,
-    })
-  end,
-})
+-- vim.api.nvim_create_autocmd("LspAttach", {
+--   once = true,
+--   group = M.group,
+--   callback = function(args)
+--     local ft = vim.bo[args.buf].filetype
+--     if ft == "text" or ft == "markdown" then return end
+--
+--     child_cmd = vim.api.nvim_create_autocmd("LspProgress", {
+--       group = M.group,
+--       callback = function(info)
+--         if vim.tbl_get(info, "data", "params", "value", "kind") == "end" then
+--           vim.b[args.buf].complete_fallback = false
+--           M.has_attached_full = true
+--           vim.schedule(function()
+--             delete_child_cmd()
+--           end)
+--           return true
+--         end
+--       end,
+--     })
+--   end,
+-- })
 
 require("mini.completion").setup({
   lsp_completion = {

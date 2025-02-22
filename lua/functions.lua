@@ -193,23 +193,23 @@ Config.load_colorscheme = function()
   if saved.bg then vim.go.bg = saved.bg end
   if saved.colors_name and saved.colors_name ~= vim.g.colors_name then
     ok, _ = require("custom.colors").select(saved.colors_name)
-    if not ok then
-      ok, _ = pcall(vim.cmd.colorscheme, saved.colors_name)
+    if ok then return end
+
+    ok, _ = pcall(vim.cmd.colorscheme, saved.colors_name)
+    if ok then return end
+
+    MiniDeps.later(function()
+      local err
+      ok, err = pcall(vim.cmd.colorscheme, saved.colors_name)
       if not ok then
-        MiniDeps.later(function()
-          local err
-          ok, err = pcall(vim.cmd.colorscheme, saved.colors_name)
-          if not ok then
-            vim.notify(
-              "Could not load colorscheme '"
-                .. saved.colors_name
-                .. "':\n"
-                .. ((err and type(err) == "string") and err or "")
-            )
-          end
-        end)
+        vim.notify(
+          "Could not load colorscheme '"
+            .. saved.colors_name
+            .. "':\n"
+            .. ((err and type(err) == "string") and err or "")
+        )
       end
-    end
+    end)
   end
 end
 

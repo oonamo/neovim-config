@@ -1,60 +1,14 @@
-vim.loader.enable()
+local now, later = MiniDeps.now, MiniDeps.later
 
-vim.g.loaded_gzip = 1
-vim.g.loaded_tar = 1
-vim.g.loaded_tarPlugin = 1
-vim.g.loaded_zip = 1
-vim.g.loaded_zipPlugin = 1
-vim.g.loaded_getscript = 1
-vim.g.loaded_getscriptPlugin = 1
-vim.g.loaded_vimball = 1
-vim.g.loaded_vimballPlugin = 1
-vim.g.loaded_matchit = 1
--- vim.g.loaded_matchparen = 1
-vim.g.loaded_spellfile_plugin = 1
-vim.g.loaded_2html_plugin = 1
-vim.g.loaded_logiPat = 1
-vim.g.loaded_rrhelper = 1
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-vim.g.loaded_netrwSettings = 1
-vim.g.loaded_netrwFileHandlers = 1
-vim.g.loaded_tutor_mode_plugin = 1
-
--- Clone 'mini.nvim' manually in a way that it gets managed by 'mini.deps'
-local path_package = vim.fn.stdpath("data") .. "/site/"
-local mini_path = path_package .. "pack/deps/start/mini.nvim"
-
-_G.Config = {
-  path_source = vim.fn.stdpath("config") .. "/lua/",
-  path_package = path_package .. "pack/deps/opt/",
-  sep = package.config:sub(1, 1),
-  plugs = {
-    snacks = false,
-  },
-  completion = "mini",
-  dev_dir = vim.fs.joinpath(vim.fn.expand("~"), "projects", "nvim"),
-}
-
----@diagnostic disable-next-line: undefined-field
-if not (vim.uv or vim.loop).fs_stat(mini_path) then
-  vim.cmd('echo "Installing `mini.nvim`" | redraw')
-  local clone_cmd = {
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/echasnovski/mini.nvim",
-    mini_path,
-  }
-  vim.fn.system(clone_cmd)
-  vim.cmd("packadd mini.nvim | helptags ALL")
-  vim.cmd('echo "Installed `mini.nvim`" | redraw')
+local add = function(spec, opts)
+  return function() MiniDeps.add(spec, opts) end
 end
 
-require("mini.deps").setup({ path = { package = path_package } })
+local s_add = require("config.superdeps").add
 
-local now, add, later = MiniDeps.now, MiniDeps.add, MiniDeps.later
-local source = function(path) dofile(Config.path_source .. path) end
+local source = function(path)
+  return function() dofile(Config.path_source .. path) end
+end
 
 local add_dev = function(name)
   local path = vim.fs.joinpath(Config.dev_dir, name)
@@ -63,13 +17,43 @@ local add_dev = function(name)
   vim.opt.rtp:append(path)
 end
 
---================== Settings ====================
-now(function() source("settings.lua") end)
-now(function() source("mappings.lua") end)
-now(function() source("leader_maps.lua") end)
-now(function() source("config/autocommands.lua") end)
--- now(function() source("custom/simpstatus.lua") end)
+local build = function(cmd, opts)
+  local path = opts.path
+  if not vim.fn.isdirectory(path) then path.path = vim.fn.fnamemodify(path, ":h") end
+
+  local ok, _ = require("tests.compile_mode").shell_cmd(cmd, vim.o.shell, {
+    cwd = path,
+  })
+  if not ok then vim.notify("Could not execute the build command") end
+end
+
+local use = function(name, opts)
+  return function()
+    local ok, pack = pcall(require, name)
+    if not ok then
+      return vim.notify("Error loading " .. tostring(name) .. ":\n" .. tostring(pack), vim.log.levels.WARN)
+    end
+    if pack.setup then pack.setup(opts) end
+  end
+end
+
+-- stylua: ignore start
+now(source "settings.lua")
+now(source "mappings.lua")
+now(source "leader_maps.lua")
+now(source "config/autocommands.lua")
+now(source "functions.lua")
+now(source "tests/compile_mode.lua")
+now(source "config/statuscolumn.lua")
+now(Config.load_colorscheme)
+
+if vim.env.TERM_PROGRAM == "WezTerm" then
+  now(require "config.wezterm.lua".wezterm)
+end
+-- stylua: ignore end
+
 if not vim.g.neovide then
+  now(source("config/gui.lua"))
   later(function()
     local animate = require("mini.animate")
     animate.setup({
@@ -92,19 +76,7 @@ if not vim.g.neovide then
     })
   end)
 end
-if vim.env.TERM_PROGRAM == "WezTerm" then now(function() require("config.utils").wezterm() end) end
 
-now(function() source("functions.lua") end)
-now(function() source("tests/compile_mode.lua") end)
-now(function()
-  source("config/statuscolumn.lua")
-  vim.o.statuscolumn = "%!v:lua.require('config.statuscolumn').statuscolumn()"
-end)
-
-if vim.g.neovide or vim.g.goneovim then now(function() source("config/gui.lua") end) end
-
---================== UI Plugins ====================
---================== Colors ====================
 now(function()
   add_dev("ef-themes")
   require("ef-themes").setup({
@@ -135,125 +107,35 @@ now(function()
       }
     end,
   })
-
-  local last = 0
-  local dark_complete = true
-  local ef_themes = require("ef-themes")
-  vim.keymap.set("n", "<F1>", function()
-    local list = dark_complete and ef_themes.list.light or ef_themes.list.dark
-    if last == #list then
-      if not dark_complete then
-        dark_complete = true
-      else
-        last = 0
-        dark_complete = false
-        list = ef_themes.list.light
-      end
-    end
-    last = last + 1
-    vim.cmd.colorscheme(list[last])
-
-    vim.defer_fn(function()
-      MiniNotify.clear()
-      vim
-        .system({
-          "pwsh.exe",
-          "-NoProfile",
-          "-NonInteractive",
-          "-Command",
-          vim.fs.joinpath(vim.fn.expand("~"), ".common", "termshot.ps1"),
-          list[last] .. ".png",
-        })
-        :wait()
-      vim.notify("took screenshot of " .. list[last])
-    end, 3000)
-  end)
 end)
 
-now(Config.load_colorscheme)
+-- stylua: ignore start
+now(use "mini.statusline" )
 
---================== Mini Plugins ====================
-later(function() require("mini.statusline").setup() end)
-now(
-  function()
-    require("mini.basics").setup({
-      options = {
-        basic = true,
-        extra_ui = true,
-        win_borders = "single",
-      },
-      autocommands = {
-        basic = false,
-        relnum_in_visual_mode = false,
-      },
-    })
-  end
-)
-now(function()
-  require("mini.notify").setup({
-    -- window = { config = { border = "solid" } },
-    lsp_progress = { enable = false },
-  })
-  vim.notify = MiniNotify.make_notify()
-end)
+now(use("mini.notify", { lsp_progress = { enable = false } }))
+
 now(function()
   require("mini.icons").setup()
   MiniIcons.mock_nvim_web_devicons()
   later(MiniIcons.tweak_lsp_kind)
 end)
-now(function() require("mini.tabline").setup() end)
-now(function() source("plugins/mini-starter.lua") end)
-later(function() require("mini.cursorword").setup() end)
-later(function() source("plugins/mini-pairs.lua") end)
-later(function() require("mini.trailspace").setup() end)
 
-later(function() source("plugins/mini-files.lua") end)
+now(use "mini.tabline")
+now(source "plugins/mini-starter.lua")
 
-if Config.completion == "mini" then
-  later(function() source("plugins/mini-completion.lua") end)
-else
-  later(function()
-    local function install_blink(path, source, name)
-      vim.notify("Installing blink.cmp binary...", vim.log.levels.INFO)
-      local ok, cmd = require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
-        cwd = Config.path_package .. "blink.cmp",
-      })
-
-      if not ok then vim.notify("Error installing blink:\n" .. tostring(cmd), vim.log.levels.INFO) end
-    end
-    add({
-      source = "Saghen/blink.cmp",
-      checkout = "main",
-      hooks = {
-        post_checkout = function(path, source, name)
-          vim.notify("Installing blink.cmp binary...")
-          local ok, cmd = require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
-            cwd = Config.path_package .. "blink.cmp",
-          })
-          if not ok then vim.notify("Could not compile blink.cmp binary", vim.log.levels.ERROR) end
-        end,
-        post_install = function(path, source, name)
-          vim.notify("Installing blink.cmp binary...")
-          local ok, cmd = require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
-            cwd = Config.path_package .. "blink.cmp",
-          })
-          if not ok then vim.notify("Could not compile blink.cmp binary", vim.log.levels.ERROR) end
-        end,
-      },
-    })
-    source("plugins/blink-cmp.lua")
-  end)
-end
-later(function() require("mini.extra").setup() end)
-later(function() require("mini.bufremove").setup() end)
-later(function() require("mini.indentscope").setup() end)
+later(use "mini.cursorword")
+later(use "mini.trailspace")
+later(source "plugins/mini-pairs.lua")
+later(use "mini.extra")
+later(use "mini.bufremove")
+later(use "mini.indentscope")
 later(function()
   require("mini.misc").setup({ make_global = { "put", "put_text" } })
   MiniMisc.setup_auto_root()
   MiniMisc.setup_restore_cursor()
 end)
 
-later(function() add("rafamadriz/friendly-snippets") end)
+later(add "rafamadriz/friendly-snippets")
 later(function()
   local snippets = require("mini.snippets")
   snippets.setup({
@@ -326,8 +208,8 @@ later(function()
   })
 end)
 
-later(function() source("plugins/mini-pick.lua") end)
-later(function() require("mini.align").setup() end)
+later(source "plugins/mini-pick.lua")
+later(use "mini.align")
 
 later(function()
   local clue = require("mini.clue")
@@ -449,7 +331,7 @@ later(function()
   })
 end)
 
-later(function() require("mini.visits").setup() end)
+later(use "mini.visits")
 later(function()
   require("mini.surround").setup({
     highlight_duration = 500,
@@ -503,6 +385,8 @@ later(function()
     },
   })
 end)
+
+
 later(function()
   --https://github.com/echasnovski/nvim/blob/731779461d233af2cf0260d80dca4a6d6da51e34/plugin/20_mini.lua#L271C1-L278C33
   local remap = function(mode, lhs_from, lhs_to)
@@ -528,8 +412,7 @@ later(function()
   })
 end)
 
-later(function()
-  require("mini.diff").setup({
+later(use("mini.diff", {
     view = {
       style = "sign",
       -- signs = { add = "+", change = "~", delete = "-" },
@@ -537,30 +420,25 @@ later(function()
       signs = { add = "▍ ", change = "▍ ", delete = " " },
       -- signs = { add = "█", change = "▒", delete = "" },
     },
-  })
-end)
+}))
 
-later(function() require("mini.splitjoin").setup() end)
-later(function() require("mini.bracketed").setup() end)
-later(function() require("mini.jump").setup() end)
-later(function() source("plugins/mini-jump2d.lua") end)
+later(use "mini.splitjoin")
+later(use "mini.bracketed")
+later(use "mini.jump")
+later(source "plugins/mini-jump2d.lua")
+later(use("mini.move", {
+  mappings = {
+    left = "H",
+    right = "L",
+    line_left = "H",
+    down = "J",
+    up = "K",
+  },
+}))
 
-later(
-  function()
-    require("mini.move").setup({
-      mappings = {
-        left = "H",
-        right = "L",
-        line_left = "H",
-        down = "J",
-        up = "K",
-      },
-    })
-  end
-)
 --================== Plugins ====================
-later(function()
-  add({
+later(
+  s_add {
     source = "nvim-treesitter/nvim-treesitter-textobjects",
     depends = {
       {
@@ -568,110 +446,66 @@ later(function()
         checkout = "master",
         hooks = {
           post_checkout = function() vim.cmd("TSUpdate") end,
+          post_install = function() vim.cmd("TSUpdate") end,
         },
       },
     },
-  })
-  source("plugins/nvim-treesitter.lua")
-end)
+  }
+  :next
+  (source "plugins/nvim-treesitter")
+)
 
--- later(function()
---   add({
---     source = "Saghen/blink.cmp",
---     checkout = "main",
---     hooks = {
---       post_checkout = function(path, source, name)
---         vim.notify("Installing blink.cmp binary...")
---         require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
---           cwd = Config.path_package .. "blink.cmp",
---         })
---       end,
---       post_install = function(path, source, name)
---         vim.notify("Installing blink.cmp binary...")
---         require("tests.compile_mode").shell_cmd({ "cargo", "build", "--release" }, "cmd", {
---           cwd = Config.path_package .. "blink.cmp",
---         })
---       end,
---     },
---   })
---   source("plugins/blink-cmp.lua")
--- end)
+later(
+  s_add "neovim/lspconfig"
+  :next
+  (source "plugins/conform.lua")
+)
 
-later(function()
-  add({ source = "neovim/nvim-lspconfig" })
-  require("plugins.nvim-lspconfig")
-end)
+later(
+  s_add "stevearc/conform.nvim"
+  :next
+  (source "plugins/conform.lua")
+)
 
-later(function()
-  add({ source = "stevearc/conform.nvim" })
-  source("plugins/conform.lua")
-end)
+later(
+  s_add "stevearc/quicker.nvim"
+  :next
+  (source "plugins/conform.lua")
+)
 
-later(function()
-  add({ source = "stevearc/quicker.nvim" })
-  source("plugins/quicker.lua")
-end)
+later(
+  s_add "MeanderingProgrammer/render-markdown.nvim"
+  :next
+  (source "plugins/render-markdown.lua")
+)
 
-later(function()
-  add({ source = "MeanderingProgrammer/render-markdown.nvim" })
-  source("plugins/render-markdown.lua")
-end)
-
--- later(function()
---   add({
---     source = "epwalsh/obsidian.nvim",
---     depends = { "nvim-lua/plenary.nvim", "MeanderingProgrammer/render-markdown.nvim" },
---   })
---   source("plugins/obsidian.lua")
--- end)
 if Config.plugs.snacks then
-  later(function()
-    add({
-      source = "folke/snacks.nvim",
-    })
-    source("plugins/snacks.lua")
-  end)
+  later(
+    s_add "folke/snacks.nvim"
+    :next
+    (source "plugins/snacks.lua")
+  )
 end
 
-later(function()
-  local build = function(opts)
-    local path = opts.path
-
-    if not vim.fn.isdirectory(path) then path.path = vim.fn.fnamemodify(path, ":h") end
-
-    local ok, cmd = require("tests.compile_mode").shell_cmd({ "deno", "task", "--quiet", "build:fast" }, "cmd", {
-      cwd = path,
-    })
-    if not ok then vim.notify("Could not execute the build command") end
-  end
-  add({
+later(
+  s_add {
     source = "toppair/peek.nvim",
     hooks = {
       post_install = function(opts)
-        later(function() build(opts) end)
-      end,
-      post_checkout = build,
-    },
-  })
-
-  require("peek").setup({
+        later(function()
+          build({"deno", "task", "--quiet", "build:fast" }, opts)
+        end)
+      end
+    }
+  }
+  :next
+  (use ("peek", {
     close_on_bdelete = false,
     app = { "chromium", "--new-window" },
-    -- app = "browser",
-  })
-
-  vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
-  vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
-end)
-
---================== Dev Plugins ====================
--- later(function() add({ source = "~/projects/nvim/chadschemes/", hooks = {} }) end)
-later(function()
-  vim.opt.rtp:append("C:\\Users\\onam7\\projects\\command_pal")
-  source("plugins/command_pal.lua")
-end)
-
--- later(function()
---   vim.opt.rtp:append("C:\\Users\\onam7\\projects\\quicker_md.nvim")
---   source("plugins/quicker-md.lua")
--- end)
+  }))
+  :next
+  (function()
+    vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
+    vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
+  end)
+)

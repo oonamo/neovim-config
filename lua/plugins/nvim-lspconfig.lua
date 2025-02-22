@@ -177,9 +177,19 @@ end
 vim.diagnostic.config({
   underline = true,
   severity_sort = true,
+  virtual_lines = {
+    format = function(s)
+      if s.severity ~= vim.diagnostic.severity.ERROR then return end
+      return s.message
+    end,
+  },
   virtual_text = {
     spacing = 4,
     prefix = "<",
+    format = function(s)
+      if s.severity == vim.diagnostic.severity.ERROR then return end
+      return s.message
+    end
     -- prefix = function(diag)
     -- 	return diagnostics_symbols[diag.severity]
     -- end,
