@@ -144,4 +144,6 @@ function M.statuscolumn()
   return table.concat(components, "")
 end
 
+vim.o.statuscolumn = "%!v:lua.require('config.statuscolumn').statuscolumn()"
+
 return M

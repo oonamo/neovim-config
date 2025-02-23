@@ -1,0 +1,11 @@
+{
+  "Static String": {
+    "prefix": "ss",
+    "body": "&'static str",
+    "desc": "Add a type as a static string"
+  },
+  "LifeTime": {
+    "prefix": "lt",
+    "body": "<'${1:a}>"
+  }
+}

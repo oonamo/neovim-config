@@ -15,7 +15,7 @@
   "Foreach in table": {
     "prefix": "pfor",
     "body": [
-      "for ${1:k}, ${2:v} in ipairs($3) do",
+      "for ${1:k}, ${2:v} in pairs($3) do",
       "  ${0:$TM_SELECTED_TEXT}",
       "end"
     ]

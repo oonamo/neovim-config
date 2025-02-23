@@ -1,10 +1,6 @@
 local now, later = MiniDeps.now, MiniDeps.later
 
-local add = function(spec, opts)
-  return function() MiniDeps.add(spec, opts) end
-end
-
-local s_add = require("config.superdeps").add
+local add = require("config.superdeps").add
 
 local source = function(path)
   return function() dofile(Config.path_source .. path) end
@@ -48,12 +44,11 @@ now(source "config/statuscolumn.lua")
 now(Config.load_colorscheme)
 
 if vim.env.TERM_PROGRAM == "WezTerm" then
-  now(require "config.wezterm.lua".wezterm)
+  now(require "config.utils".wezterm)
 end
--- stylua: ignore end
 
 if not vim.g.neovide then
-  now(source("config/gui.lua"))
+  now(source "config/gui.lua")
   later(function()
     local animate = require("mini.animate")
     animate.setup({
@@ -123,6 +118,7 @@ end)
 now(use "mini.tabline")
 now(source "plugins/mini-starter.lua")
 
+later(source "plugins/mini-completion.lua")
 later(use "mini.cursorword")
 later(use "mini.trailspace")
 later(source "plugins/mini-pairs.lua")
@@ -303,18 +299,8 @@ later(function()
       { mode = "n", keys = "[c", postkeys = "[" },
       { mode = "n", keys = "]d", postkeys = "]" },
       { mode = "n", keys = "[d", postkeys = "[" },
-      -- { mode = "n", keys = "]f", postkeys = "]" },
-      -- { mode = "n", keys = "[f", postkeys = "[" },
       { mode = "n", keys = "]h", postkeys = "]" },
       { mode = "n", keys = "[h", postkeys = "[" },
-      -- { mode = "n", keys = "]i", postkeys = "]" },
-      -- { mode = "n", keys = "[i", postkeys = "[" },
-      -- { mode = "n", keys = "]j", postkeys = "]" },
-      -- { mode = "n", keys = "[j", postkeys = "[" },
-      -- { mode = "n", keys = "]l", postkeys = "]" },
-      -- { mode = "n", keys = "[l", postkeys = "[" },
-      -- { mode = "n", keys = "]o", postkeys = "]" },
-      -- { mode = "n", keys = "[o", postkeys = "[" },
       { mode = "n", keys = "]q", postkeys = "]" },
       { mode = "n", keys = "[q", postkeys = "[" },
       { mode = "n", keys = "]t", postkeys = "]" },
@@ -323,8 +309,6 @@ later(function()
       { mode = "n", keys = "[u", postkeys = "[" },
       { mode = "n", keys = "]w", postkeys = "]" },
       { mode = "n", keys = "[w", postkeys = "[" },
-      -- { mode = "n", keys = "]x", postkeys = "]" },
-      -- { mode = "n", keys = "[x", postkeys = "[" },
       { mode = "n", keys = "]y", postkeys = "]" },
       { mode = "n", keys = "[y", postkeys = "[" },
     },
@@ -400,11 +384,7 @@ later(function()
   require("mini.operators").setup()
 end)
 later(function()
-  require("mini.git").setup({
-    -- command = {
-    --   split = "horizontal",
-    -- },
-  })
+  require("mini.git").setup()
 
   vim.api.nvim_create_autocmd("User", {
     pattern = "MiniGitCommandSplit",
@@ -422,6 +402,7 @@ later(use("mini.diff", {
     },
 }))
 
+later(use("mini.basics"))
 later(use "mini.splitjoin")
 later(use "mini.bracketed")
 later(use "mini.jump")
@@ -438,7 +419,7 @@ later(use("mini.move", {
 
 --================== Plugins ====================
 later(
-  s_add {
+  add {
     source = "nvim-treesitter/nvim-treesitter-textobjects",
     depends = {
       {
@@ -451,44 +432,38 @@ later(
       },
     },
   }
-  :next
-  (source "plugins/nvim-treesitter")
+  :next(source "plugins/nvim-treesitter.lua")
 )
 
 later(
-  s_add "neovim/lspconfig"
-  :next
-  (source "plugins/conform.lua")
+  add "neovim/nvim-lspconfig"
+  :next(source "plugins/nvim-lspconfig.lua")
 )
 
 later(
-  s_add "stevearc/conform.nvim"
-  :next
-  (source "plugins/conform.lua")
+  add "stevearc/conform.nvim"
+  :next(source "plugins/conform.lua")
 )
 
 later(
-  s_add "stevearc/quicker.nvim"
-  :next
-  (source "plugins/conform.lua")
+  add "stevearc/quicker.nvim"
+  :next(source "plugins/conform.lua")
 )
 
 later(
-  s_add "MeanderingProgrammer/render-markdown.nvim"
-  :next
-  (source "plugins/render-markdown.lua")
+  add "MeanderingProgrammer/render-markdown.nvim"
+  :next(source "plugins/render-markdown.lua")
 )
 
 if Config.plugs.snacks then
   later(
-    s_add "folke/snacks.nvim"
-    :next
-    (source "plugins/snacks.lua")
+    add "folke/snacks.nvim"
+    :next(source "plugins/snacks.lua")
   )
 end
 
 later(
-  s_add {
+  add {
     source = "toppair/peek.nvim",
     hooks = {
       post_install = function(opts)
@@ -498,13 +473,11 @@ later(
       end
     }
   }
-  :next
-  (use ("peek", {
+  :next(use ("peek", {
     close_on_bdelete = false,
     app = { "chromium", "--new-window" },
   }))
-  :next
-  (function()
+  :next(function()
     vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
     vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
   end)

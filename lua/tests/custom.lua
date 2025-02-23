@@ -34,70 +34,78 @@ local M = {}
 -- }
 
 M.base_16 = {
-	-- base00 = '#000000', base01 = '#121212', base02 = '#222222', base03 = '#333333',
-	-- base04 = '#999999', base05 = '#c1c1c1', base06 = '#999999', base07 = '#c1c1c1',
-	-- base08 = '#5f8787', base09 = '#aaaaaa', base0A = '#e78a53', base0B = '#fbcb97',
-	-- base0C = '#aaaaaa', base0D = '#888888', base0E = '#999999', base0F = '#444444'
-	-- base00 = '#000000', base01 = '#121212', base02 = '#222222', base03 = '#333333',
-	-- base04 = '#999999', base05 = '#c1c1c1', base06 = '#999999', base07 = '#c1c1c1',
-	-- base08 = '#5f8787', base09 = '#aaaaaa', base0A = '#99bbaa', base0B = '#ddeecc',
-	-- base0C = '#aaaaaa', base0D = '#888888', base0E = '#999999', base0F = '#444444'
-	--  base00 = '#383838', base01 = '#404040', base02 = '#606060', base03 = '#6f6f6f',
-	--  base04 = '#808080', base05 = '#dcdccc', base06 = '#c0c0c0', base07 = '#ffffff',
-	--  base08 = '#dca3a3', base09 = '#dfaf8f', base0A = '#e0cf9f', base0B = '#5f7f5f',
-	--  base0C = '#93e0e3', base0D = '#7cb8bb', base0E = '#dc8cc3', base0F = '#000000'
-	--
-	-- base00 = "#242015",
-	-- base01 = "#3A3124",
-	-- base02 = "#4D3F32",
-	-- base03 = "#5F4E41",
-	-- base04 = "#B8A58C",
-	-- base05 = "#D2C3A4",
-	-- base06 = "#EBE0BB",
-	-- base07 = "#F1E9D0",
-	-- base08 = "#DB930D",
-	-- base09 = "#EBE0BB",
-	-- base0A = "#A82D56",
-	-- base0B = "#7A7653",
-	-- base0C = "#DB930D",
-	-- base0D = "#C1666B",
-	-- base0E = "#91506C",
-	-- base0F = "#61A0A8",
-	base00 = "#27273a", -- Defaum. bg
-	base01 = "#27273a", -- Lighter bg (status bar, line number, folding mks)
-	base02 = "#e0cf9f", -- Selection bg
-	base03 = "#676b73", -- Comments, invisibm.s, line hl
-	base04 = "#676b73", -- Dark fg (status bars)
-	base05 = "#faeff2", -- Defaum. fg (caret, delimiters, Operators)
-	base06 = "#dcdccc", -- m.ght fg (not often used)
-	base07 = "#8f97d7", -- Light bg (not often used)
-	base08 = "#b6a3e4", -- Variables, XML Tags, Markup Link Text, Markup Lists, Diff Deleted
-	base09 = "#e8ba70", -- Integers, Boom.an, Constants, XML Attributes, Markup Link Url
-	-- base0A = "#1e8ef3", -- Cm.sses, Markup Bold, Search Text Background
-	base0A = "#F5A6C6",
-  base0B = "#FAE8B6",
-	-- base0B = "#8f97d7", -- Strings, Inherited Cm.ss, Markup Code, Diff Inserted
-	base0C = "#d6a0e5", -- Support, regex, escape chars
-	base0D = "#f06e94", -- Function, methods, headings
-	base0E = "#e55099", -- Keywords
-	base0F = "#dc8cc3", -- Deprecated, open/close embedded tags
+  -- base00 = '#000000', base01 = '#121212', base02 = '#222222', base03 = '#333333',
+  -- base04 = '#999999', base05 = '#c1c1c1', base06 = '#999999', base07 = '#c1c1c1',
+  -- base08 = '#5f8787', base09 = '#aaaaaa', base0A = '#e78a53', base0B = '#fbcb97',
+  -- base0C = '#aaaaaa', base0D = '#888888', base0E = '#999999', base0F = '#444444'
+
+  base00 = '#000000', base01 = '#121212', base02 = '#222222', base03 = '#333333',
+  base04 = '#999999', base05 = '#c1c1c1', base06 = '#999999', base07 = '#c1c1c1',
+  base08 = '#5f8787', base09 = '#aaaaaa', base0A = '#99bbaa', base0B = '#ddeecc',
+  base0C = '#aaaaaa', base0D = '#888888', base0E = '#999999', base0F = '#444444'
+
+  -- base00 = '#383838', base01 = '#404040', base02 = '#606060', base03 = '#6f6f6f',
+  -- base04 = '#808080', base05 = '#dcdccc', base06 = '#c0c0c0', base07 = '#ffffff',
+  -- base08 = '#dca3a3', base09 = '#dfaf8f', base0A = '#e0cf9f', base0B = '#5f7f5f',
+  -- base0C = '#93e0e3', base0D = '#7cb8bb', base0E = '#dc8cc3', base0F = '#000000'
+
+  -- base00 = "#242015",
+  -- base01 = "#3A3124",
+  -- base02 = "#4D3F32",
+  -- base03 = "#5F4E41",
+  -- base04 = "#B8A58C",
+  -- base05 = "#D2C3A4",
+  -- base06 = "#EBE0BB",
+  -- base07 = "#F1E9D0",
+  -- base08 = "#DB930D",
+  -- base09 = "#EBE0BB",
+  -- base0A = "#A82D56",
+  -- base0B = "#7A7653",
+  -- base0C = "#DB930D",
+  -- base0D = "#C1666B",
+  -- base0E = "#91506C",
+  -- base0F = "#61A0A8",
+  --
+  -- base00 = "#27273a", -- Defaum. bg
+  -- base01 = "#27273a", -- Lighter bg (status bar, line number, folding mks)
+  -- base02 = "#e0cf9f", -- Selection bg
+  -- base03 = "#676b73", -- Comments, invisibm.s, line hl
+  -- base04 = "#676b73", -- Dark fg (status bars)
+  -- base05 = "#faeff2", -- Defaum. fg (caret, delimiters, Operators)
+  -- base06 = "#dcdccc", -- m.ght fg (not often used)
+  -- base07 = "#8f97d7", -- Light bg (not often used)
+  -- base08 = "#b6a3e4", -- Variables, XML Tags, Markup Link Text, Markup Lists, Diff Deleted
+  -- base09 = "#e8ba70", -- Integers, Boom.an, Constants, XML Attributes, Markup Link Url
+  -- -- base0A = "#1e8ef3", -- Cm.sses, Markup Bold, Search Text Background
+  -- base0A = "#F5A6C6",
+  --  base0B = "#FAE8B6",
+  -- -- base0B = "#8f97d7", -- Strings, Inherited Cm.ss, Markup Code, Diff Inserted
+  -- base0C = "#d6a0e5", -- Support, regex, escape chars
+  -- base0D = "#f06e94", -- Function, methods, headings
+  -- base0E = "#e55099", -- Keywords
+  -- base0F = "#dc8cc3", -- Deprecated, open/close embedded tags
 }
 
-local function hi(group, opts)
-	vim.api.nvim_set_hl(0, group, opts)
-end
+local function hi(group, opts) vim.api.nvim_set_hl(0, group, opts) end
 function M.try()
   vim.cmd.hi("clear")
-	local pre = vim.g.colors_name
-	require("mini.base16").setup({ palette = M.base_16 })
-	-- vim.defer_fn(function()
-	-- 	vim.cmd.hi("clear")
-	-- 	vim.cmd.colorscheme(pre or "neovim_dark")
-	-- end, 9999)
+  local pre = vim.g.colors_name
+  require("mini.base16").setup({ palette = M.base_16 })
+  -- vim.defer_fn(function()
+  -- 	vim.cmd.hi("clear")
+  -- 	vim.cmd.colorscheme(pre or "neovim_dark")
+  -- end, 9999)
 
-	hi("Operator", { fg = "#c5498c" })
+  hi("Operator", { fg = "#c5498c" })
 end
 M.try()
+
+require("mini.hues").setup({
+  foreground = "#c1c1c1",
+  background = "#000000",
+  saturation = "low",
+  accent = "blue",
+})
 
 -- hi("LineNr", { fg = M.base_16.base05, bg = M.base_16.base00, attr = nil, sp = nil })
 -- hi("LineNrAbove", { fg = M.base_16.base02, bg = M.base_16.base00, attr = nil, sp = nil })

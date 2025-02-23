@@ -142,9 +142,9 @@ function M.init_compile_mode(opts)
 end
 
 M.shell_func = {
-  ["cmd"] = { "cmd.exe", "/c" },
+  ["cmd.exe"] = { "cmd.exe", "/c" },
   ["sh"] = { "sh", "-C" },
-  ["pwsh"] = { "pwsh", "-NoLogo", "-Command" },
+  ["pwsh.exe"] = { "pwsh", "-NoLogo", "-Command" },
 }
 
 -- TODO: Coroutines
@@ -164,7 +164,7 @@ function M.shell_cmd(cmd, shell, opts)
   end
 
   if sep == "\\" then expanded_cmd = expanded_cmd:gsub("/", "\\") end
-  local shell_cmd = vim.deepcopy(M.shell_func[shell])
+  local shell_cmd = vim.deepcopy(M.shell_func[shell]) or vim.deepcopy(M.shell_func["sh"])
   table.insert(shell_cmd, expanded_cmd)
   M.update_preview(buf, win, { table.concat(shell_cmd, " ") })
 
@@ -216,7 +216,7 @@ function M.shell_cmd(cmd, shell, opts)
 end
 
 vim.api.nvim_create_user_command("Shell", function(c)
-  local shell = "cmd"
+  local shell = vim.o.shell
   if c.bang then shell = "pwsh" end
   M.shell_cmd(c.fargs, shell)
 end, { nargs = "*", bang = true, complete = "file" })
