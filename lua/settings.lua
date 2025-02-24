@@ -118,7 +118,7 @@ o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 -- o.foldtext = "v:lua.Config.fold_text()"
 o.list = true
 o.listchars = table.concat({ "extends:…", "nbsp:␣", "precedes:…", "tab:> " }, ",")
-o.fillchars = [[eob: ,vert:▕,vertleft:🭿,vertright:▕,verthoriz:🭿,horiz:▁,horizdown:▁,horizup:▔]]
+o.fillchars = [[eob:~,vert:▕,vertleft:🭿,vertright:▕,verthoriz:🭿,horiz:▁,horizdown:▁,horizup:▔]]
 o.virtualedit = "block"
 o.shortmess = "tacstFOSWCo"
 vim.opt.formatoptions:append("n")

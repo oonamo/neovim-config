@@ -87,9 +87,11 @@ now(function()
       semantic_tokens = true,
       mini = true,
       blink = Config.completion ~= "mini",
+      neogit = true,
     },
-    on_highlights = function(_, c)
+    on_highlights = function(hl, c)
       return {
+        EndOfBuffer = { fg = hl.LineNr.fg },
         ReadBit = { fg = c.rainbow_1 },
         WriteBit = { fg = c.rainbow_2 },
         ExeBit = { fg = c.rainbow_3 },
@@ -276,7 +278,7 @@ later(
 
 
 later(source "plugins/mini-diff.lua")
-later(use("mini.basics"))
+-- later(use "mini.basics")
 later(use "mini.splitjoin")
 later(use "mini.bracketed")
 later(use "mini.jump")
@@ -364,4 +366,13 @@ later(
       vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
     end)
   }
+)
+
+later(
+  add {
+    source = "NeogitOrg/neogit",
+    depends = {  "nvim-lua/plenary.nvim" },
+  }
+  :next
+  { source "plugins/neogit.lua" }
 )
