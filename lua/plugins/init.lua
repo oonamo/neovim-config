@@ -50,7 +50,6 @@ later(function()
 end)
 
 if not vim.g.neovide then
-  now(source "config/gui.lua")
   later(function()
     local animate = require("mini.animate")
     animate.setup({
@@ -72,6 +71,8 @@ if not vim.g.neovide then
       },
     })
   end)
+else
+  now(source "config/gui.lua")
 end
 
 now(function()
@@ -111,7 +112,7 @@ now(source "plugins/mini-statusline.lua" )
 
 now(function()
   local function win_config()
-    local opts =  { title = (vim.b.notify_config or {}).title }
+    local opts = { title = (vim.b.notify_config or {}).title }
     vim.b.notify_config = nil
     return opts
   end
@@ -127,7 +128,7 @@ now(function()
 
   vim.notify = function(msg, level, opts)
     vim.b.notify_config = opts
-    MiniNotify.make_notify()(msg, level, opts)
+    MiniNotify.make_notify()(msg, level)
   end
 end)
 
@@ -447,33 +448,39 @@ later(
       },
     },
   }
-  :next(source "plugins/nvim-treesitter.lua")
+  :next
+  { source "plugins/nvim-treesitter.lua" }
 )
 
 later(
   add "neovim/nvim-lspconfig"
-  :next(source "plugins/nvim-lspconfig.lua")
+  :next
+  { source "plugins/nvim-lspconfig.lua" }
 )
 
 later(
   add "stevearc/conform.nvim"
-  :next(source "plugins/conform.lua")
+  :next
+  { source "plugins/conform.lua" }
 )
 
 later(
   add "stevearc/quicker.nvim"
-  :next(source "plugins/conform.lua")
+  :next
+  { source "plugins/conform.lua" }
 )
 
 later(
   add "MeanderingProgrammer/render-markdown.nvim"
-  :next(source "plugins/render-markdown.lua")
+  :next
+  { source "plugins/render-markdown.lua" }
 )
 
 if Config.plugs.snacks then
   later(
     add "folke/snacks.nvim"
-    :next(source "plugins/snacks.lua")
+    :next
+    { source "plugins/snacks.lua" }
   )
 end
 
@@ -488,12 +495,15 @@ later(
       end
     }
   }
-  :next(use ("peek", {
-    close_on_bdelete = false,
-    app = { "chromium", "--new-window" },
-  }))
-  :next(function()
-    vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
-    vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
-  end)
+  :next
+  {
+    (use ("peek", {
+      close_on_bdelete = false,
+      app = { "chromium", "--new-window" },
+    })),
+    (function()
+      vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
+      vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
+    end)
+  }
 )
