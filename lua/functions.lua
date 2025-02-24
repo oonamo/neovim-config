@@ -39,11 +39,45 @@ function Config.async_grep(args)
   vim.cmd.copen()
 end
 
+local shell_maps = {
+  ["sh"] = { "-c" },
+  ["cmd.exe"] = { "/C" },
+  ["pwsh.exe"] = { "-C" },
+}
+
+function Config.async_make(args)
+  local makeprg = vim.opt.makeprg:get()
+  for _, arg in ipairs(args) do
+    if arg == "~" then arg = vim.uv.os_homedir() end
+    makeprg = makeprg .. " " .. arg
+  end
+  local make_cmd = {
+    unpack(shell_maps[vim.o.shell]),
+    makeprg,
+  }
+
+  local output_handler = vim.schedule_wrap(function(err, data)
+    if data ~= nil then
+      vim.fn.setqflist({}, "a", {
+        lines = vim.split(data, "\n", { trimempty = true }),
+        efm = vim.opt.errorformat:get()[1],
+      })
+    end
+    vim.cmd.redraw()
+  end)
+
+  vim.system(make_cmd, { stdout = output_handler, stderr = output_handler, text = true })
+
+  vim.cmd.copen()
+end
+
 vim.api.nvim_create_user_command(
   "Grep",
   function(c) Config.async_grep(c.args) end,
   { nargs = "*", bang = true, complete = "file" }
 )
+
+vim.api.nvim_create_user_command("Make", function(c) Config.async_make(c.fargs) end, { nargs = "*" })
 
 function Config.explorer(cwd, opts)
   local mappings = require("custom.explorer").mappings

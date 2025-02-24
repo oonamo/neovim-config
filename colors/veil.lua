@@ -90,6 +90,8 @@ hi("StatusLineNC", { fg = c.status_inactive_fg, bg = c.status_inactive_bg })
 
 hi("Pmenu", { fg = c.popup_fg, bg = c.popup_bg })
 hi("PmenuSel", { fg = c.menu_sel_fg, bg = c.menu_sel_bg })
+hi("PmenuMatch", { fg = c.attribute_fg, bg = c.popup_bg, bold = true })
+hi("PmenuMatchSel", { fg = c.attribute_fg, bg = c.menu_sel_bg, bold = true })
 hi("PmenuSbar", { fg = c.menu_scroll_fg, bg = c.menu_scroll_bg })
 hi("CursorLine", { bg = c.cursorline })
 hi("MatchParen", { bg = c.match_paren_bg, fg = c.match_paren_fg, bold = true })

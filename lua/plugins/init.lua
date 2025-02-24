@@ -327,7 +327,7 @@ later(
 later(
   add "stevearc/quicker.nvim"
   :next
-  { source "plugins/conform.lua" }
+  { source "plugins/quicker.lua" }
 )
 
 later(
@@ -368,6 +368,7 @@ later(
   }
 )
 
+-- NOTE: trying this out
 later(
   add {
     source = "NeogitOrg/neogit",
