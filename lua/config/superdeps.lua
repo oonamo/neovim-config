@@ -7,6 +7,8 @@ function M.use(name, opts)
       return vim.notify("Error loading " .. tostring(name) .. ":\n" .. tostring(pack), vim.log.levels.WARN)
     end
     if pack.setup then pack.setup(opts) end
+
+    return true
   end
 
   local data = {
@@ -23,7 +25,10 @@ function M.use(name, opts)
 end
 
 function M.add(spec, opts)
-  local add_fn = function() MiniDeps.add(spec, opts) end
+  local add_fn = function()
+    MiniDeps.add(spec, opts)
+    return true
+  end
 
   local data = {
     add_fn = add_fn,
@@ -39,7 +44,9 @@ function M.add(spec, opts)
 end
 
 function M:on_call()
-  self.add_fn()
+  local ok = self.add_fn()
+  if not ok then return end
+
   for _, v in ipairs(self.next_fns) do
     v()
   end

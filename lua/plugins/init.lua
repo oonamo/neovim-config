@@ -2,6 +2,7 @@ local now, later = MiniDeps.now, MiniDeps.later
 
 local sd = require("config.superdeps")
 
+--- NOTE: s_use is not very useful, just looks nice
 local add, s_use = sd.add, sd.use
 
 local source = function(path)
@@ -104,27 +105,30 @@ end)
 -- stylua: ignore start
 now(source "plugins/mini-statusline.lua" )
 
-now(function()
-  local function win_config()
-    local opts = { title = (vim.b.notify_config or {}).title }
-    vim.b.notify_config = nil
-    return opts
-  end
 
-  require("mini.notify").setup({
+now(
+  s_use ("mini.notify", {
     lsp_progress = {
       enable = false,
     },
     window = {
-      config = win_config,
+      config = function()
+        local opts = { title = (vim.b.notify_config or {}).title }
+        vim.b.notify_config = nil
+        return opts
+      end
     }
   })
-
-  vim.notify = function(msg, level, opts)
-    vim.b.notify_config = opts
-    MiniNotify.make_notify()(msg, level)
-  end
-end)
+  :next
+  {
+    function()
+      vim.notify = function(msg, level, opts)
+        vim.b.notify_config = opts
+        MiniNotify.make_notify()(msg, level)
+      end
+    end
+  }
+)
 
 now(
   s_use "mini.icons"
