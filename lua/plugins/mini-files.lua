@@ -7,7 +7,6 @@ end
 
 require("mini.files").setup({
   windows = {
-    -- width_focus = 999999,
     preview = true,
   },
   mappings = {
@@ -45,30 +44,7 @@ local map_split = function(buf_id, lhs, direction, close_on_file)
   vim.keymap.set("n", lhs, rhs, { buffer = buf_id, desc = desc })
 end
 
-local group = vim.api.nvim_create_augroup("mini-files-keymaps", { clear = true })
-
-vim.api.nvim_create_autocmd("ColorScheme", {
-  group = group,
-  callback = function() vim.api.nvim_set_hl(0, "MiniFilesBorder", { link = "MiniFilesNormal" }) end,
-})
-
-vim.api.nvim_create_autocmd("User", {
-  group = group,
-  pattern = "MiniFilesWindowOpen",
-  callback = function(args)
-    -- vim.api.nvim_win_set_config(args.data.win_id, { border = "solid", height = vim.o.lines })
-    vim.api.nvim_win_set_config(args.data.win_id, { border = "solid" })
-  end,
-})
-
-vim.api.nvim_create_autocmd("User", {
-  group = group,
-  pattern = "MiniFilesWindowUpdate",
-  callback = function(args)
-    -- vim.api.nvim_win_set_config(args.data.win_id, { border = "solid", height = vim.o.lines })
-    vim.api.nvim_win_set_config(args.data.win_id, { border = "solid" })
-  end,
-})
+local group = vim.api.nvim_create_augroup("mini-files-augroups", { clear = true })
 
 vim.api.nvim_create_autocmd("User", {
   group = group,
@@ -86,10 +62,8 @@ vim.api.nvim_create_autocmd("User", {
   group = group,
   callback = function(args)
     local buf_id = args.data.buf_id
-    vim.keymap.set("n", "gy", copy_file_under_cursor, { buffer = buf_id })
-    map_split(buf_id, "<C-w>s", "horizontal", false)
-    map_split(buf_id, "<C-w>v", "vertical", false)
-    map_split(buf_id, "<C-w>S", "horizontal", true)
-    map_split(buf_id, "<C-w>V", "vertical", true)
+    vim.keymap.set("n", "g.", copy_file_under_cursor, { buffer = buf_id })
+    map_split(buf_id, "<C-s>", "horizontal", true)
+    map_split(buf_id, "<C-v>", "vertical", true)
   end,
 })

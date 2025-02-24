@@ -36,6 +36,15 @@ map_toggle("w", "<Cmd>setlocal wrap!<CR>", "Toggle 'wrap'")
 map_toggle("f", function() vim.g.autoformat = not vim.g.autoformat end, "Toggle 'autoformat'")
 map_toggle("B", function() vim.g.complete_fallback = not vim.g.complete_fallback end, "Toggle 'complete_fallback'")
 
+map_toggle("o", function()
+  local formatoptions = vim.bo.formatoptions
+  if formatoptions:match("[oc]") then
+    vim.cmd("setlocal formatoptions-=o formatoptions-=c")
+  else
+    vim.cmd("setlocal formatoptions+=o formatoptions+=c")
+  end
+end, "Toggle 'auto insert comments'")
+
 --================== Hlsearch ====================
 map("n", "<Esc>", "<cmd>nohlsearch<cr><Esc>")
 map("n", "<C-c>", "<cmd>nohlsearch<cr><C-c>", { silent = true })

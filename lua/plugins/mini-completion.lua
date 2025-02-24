@@ -1,39 +1,5 @@
 vim.g.complete_fallback = false
 
-local M = {
-  group = vim.api.nvim_create_augroup("fallback-attach-handle", { clear = true }),
-  has_attached_full = false,
-}
-
-local child_cmd
-
-local function delete_child_cmd()
-  pcall(vim.api.nvim_del_autocmd, child_cmd)
-end
-
--- vim.api.nvim_create_autocmd("LspAttach", {
---   once = true,
---   group = M.group,
---   callback = function(args)
---     local ft = vim.bo[args.buf].filetype
---     if ft == "text" or ft == "markdown" then return end
---
---     child_cmd = vim.api.nvim_create_autocmd("LspProgress", {
---       group = M.group,
---       callback = function(info)
---         if vim.tbl_get(info, "data", "params", "value", "kind") == "end" then
---           vim.b[args.buf].complete_fallback = false
---           M.has_attached_full = true
---           vim.schedule(function()
---             delete_child_cmd()
---           end)
---           return true
---         end
---       end,
---     })
---   end,
--- })
-
 require("mini.completion").setup({
   lsp_completion = {
     source_func = "omnifunc",

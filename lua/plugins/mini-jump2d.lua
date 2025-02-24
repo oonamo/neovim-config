@@ -1,4 +1,6 @@
 require("mini.jump2d").setup({
+  -- Just use the easy keys
+  labels = "asdfghjkl",
   view = {
     dim = true,
     n_steps_ahead = 10000000,

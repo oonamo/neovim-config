@@ -43,9 +43,11 @@ now(source "tests/compile_mode.lua")
 now(source "config/statuscolumn.lua")
 now(Config.load_colorscheme)
 
-if vim.env.TERM_PROGRAM == "WezTerm" then
-  now(require "config.utils".wezterm)
-end
+later(function()
+  if vim.env.TERM_PROGRAM == "WezTerm" then
+    require("config.utils").wezterm()
+  end
+end)
 
 if not vim.g.neovide then
   now(source "config/gui.lua")
@@ -105,9 +107,29 @@ now(function()
 end)
 
 -- stylua: ignore start
-now(use "mini.statusline" )
+now(source "plugins/mini-statusline.lua" )
 
-now(use("mini.notify", { lsp_progress = { enable = false } }))
+now(function()
+  local function win_config()
+    local opts =  { title = (vim.b.notify_config or {}).title }
+    vim.b.notify_config = nil
+    return opts
+  end
+
+  require("mini.notify").setup({
+    lsp_progress = {
+      enable = false,
+    },
+    window = {
+      config = win_config,
+    }
+  })
+
+  vim.notify = function(msg, level, opts)
+    vim.b.notify_config = opts
+    MiniNotify.make_notify()(msg, level, opts)
+  end
+end)
 
 now(function()
   require("mini.icons").setup()
@@ -130,6 +152,7 @@ later(function()
   MiniMisc.setup_auto_root()
   MiniMisc.setup_restore_cursor()
 end)
+later(source "plugins/mini-files.lua")
 
 later(add "rafamadriz/friendly-snippets")
 later(function()
@@ -392,16 +415,8 @@ later(function()
   })
 end)
 
-later(use("mini.diff", {
-    view = {
-      style = "sign",
-      -- signs = { add = "+", change = "~", delete = "-" },
-      -- signs = { add = "┃", change = "┃", delete = "┃" },
-      signs = { add = "▍ ", change = "▍ ", delete = " " },
-      -- signs = { add = "█", change = "▒", delete = "" },
-    },
-}))
 
+later(source "plugins/mini-diff.lua")
 later(use("mini.basics"))
 later(use "mini.splitjoin")
 later(use "mini.bracketed")
