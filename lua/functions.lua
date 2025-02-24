@@ -45,47 +45,8 @@ vim.api.nvim_create_user_command(
   { nargs = "*", bang = true, complete = "file" }
 )
 
----@param tbl table
----@return table
-function Config.flatten(tbl)
-  local flattened = {}
-  for _, v in pairs(tbl) do
-    if type(v) == "table" then
-      for inner_k, inner_v in pairs(v) do
-        flattened[inner_k] = inner_v
-      end
-    else
-      table.insert(flattened, v)
-    end
-  end
-  return flattened
-end
-
-function Config.ensure_length(str, length)
-  local ret = str
-  local len = #str
-  if len < length then
-    for _ = 0, length - len do
-      ret = ret .. " "
-    end
-  elseif str > length then
-    ret = str:sub(0, length)
-  end
-  return ret
-end
-
-function Config.pad_str(str, len)
-  if str and #str > len then return str:sub(0, len - 2) .. "..." end
-  str = str or ""
-  for _ = 0, (len - #str) do
-    str = str .. " "
-  end
-  return str
-end
-
 function Config.explorer(cwd, opts)
   local mappings = require("custom.explorer").mappings
-  Config._cache.explorer_parent = nil
   local default_opts = {
     cwd = cwd,
     mappings = {
@@ -213,15 +174,6 @@ Config.load_colorscheme = function()
   end
 end
 
-Config.get_selection = function()
-  local mode = vim.api.nvim_get_mode().mode
-  local opts = {}
-
-  if mode == "v" or mode == "V" or mode == "\22" then opts.type = mode end
-
-  return vim.fn.getregion(vim.fn.getpos("v"), vim.fn.getpos("."), opts)
-end
-
 -- Log for personal use during debugging
 Config.log = {}
 
@@ -237,17 +189,4 @@ Config.log_print = function()
   if log_buf_id == nil or not vim.api.nvim_buf_is_valid(log_buf_id) then log_buf_id = Config.create_win().buf end
   vim.api.nvim_win_set_buf(0, log_buf_id)
   vim.api.nvim_buf_set_lines(log_buf_id, 0, -1, false, vim.split(vim.inspect(Config.log), "\n"))
-end
-
-Config.fold_text = function()
-  local line = vim.api.nvim_buf_get_lines(0, vim.v.foldstart - 1, vim.v.foldstart, true)[1]
-  local idx = vim.v.foldstart + 1
-  while string.find(line, "^%s*@") or string.find(line, "^%s*$") do
-    line = vim.api.nvim_buf_get_lines(0, idx - 1, idx, true)[1]
-    idx = idx + 1
-  end
-  local icon = "▼"
-  if vim.g.nerd_font then icon = " " end
-  local padding = string.rep(" ", string.find(line, "[^%s]") - 1)
-  return string.format("%s%s %s   %d", padding, icon, line, vim.v.foldend - vim.v.foldstart + 1)
 end

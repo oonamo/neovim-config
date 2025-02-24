@@ -1,8 +1,8 @@
 local diag_signs = {
-  ERROR = "%#DiagnosticError#x%#MiniStatuslineDevinfo#",
-  WARN = "%#DiagnosticWarn#▲%#MiniStatuslineDevinfo#",
-  INFO = "%#DiagnosticInfo#I%#MiniStatuslineDevinfo#",
-  HINT = "%#DiagnosticHint#H%#MiniStatuslineDevinfo#",
+  ERROR = "%#DiagnosticError#x %#MiniStatuslineDevinfo#",
+  WARN = "%#DiagnosticWarn#▲ %#MiniStatuslineDevinfo#",
+  INFO = "%#DiagnosticInfo#I %#MiniStatuslineDevinfo#",
+  HINT = "%#DiagnosticHint#H %#MiniStatuslineDevinfo#",
 }
 
 local function statusline()

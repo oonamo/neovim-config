@@ -36,5 +36,5 @@ local light_palette = {
 	base0F = "#37474F",
 }
 
--- require("mini.base16").setup({ palette = palette })
-require("mini.base16").setup({ palette = light_palette })
+require("mini.base16").setup({ palette = palette })
+-- require("mini.base16").setup({ palette = light_palette })

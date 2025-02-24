@@ -256,18 +256,19 @@ function M.time_str(time)
   local diff_hours = diff_mins / 60
   local diff_days = diff_hours / 24
 
+  local add_named_time = function(name, value)
+    local val = math.floor(value + 0.5)
+    ret = val .. " " .. name .. (val ~= 1 and "s" or "") .. " ago"
+  end
+
   if diff_secs <= M.opts.time.max_secs then
-    local val = math.floor(diff_secs + 0.5)
-    ret = val .. " second" .. (val ~= 1 and "s" or "") .. " ago"
+    add_named_time("second", diff_secs)
   elseif diff_mins <= M.opts.time.max_secs then
-    local val = math.floor(diff_mins + 0.5)
-    ret = val .. " minute" .. (val ~= 1 and "s" or "") .. " ago"
+    add_named_time("minute", diff_secs)
   elseif diff_hours <= M.opts.time.max_hours then
-    local val = math.floor(diff_hours + 0.5)
-    ret = val .. " hour" .. (val ~= 1 and "s" or "") .. " ago"
+    add_named_time("hour", diff_secs)
   elseif diff_days <= M.opts.time.max_days then
-    local val = math.floor(diff_days + 0.5)
-    ret = val .. " day" .. (val ~= 1 and "s" or "") .. " ago"
+    add_named_time("day", diff_secs)
   elseif year ~= current_year then
     ret = vim.fn.strftime("%b %d %y", time.sec)
   else

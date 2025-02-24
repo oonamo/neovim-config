@@ -1,6 +1,8 @@
 local now, later = MiniDeps.now, MiniDeps.later
 
-local add = require("config.superdeps").add
+local sd = require("config.superdeps")
+
+local add, s_use = sd.add, sd.use
 
 local source = function(path)
   return function() dofile(Config.path_source .. path) end
@@ -148,11 +150,16 @@ later(source "plugins/mini-pairs.lua")
 later(use "mini.extra")
 later(use "mini.bufremove")
 later(use "mini.indentscope")
-later(function()
-  require("mini.misc").setup({ make_global = { "put", "put_text" } })
-  MiniMisc.setup_auto_root()
-  MiniMisc.setup_restore_cursor()
-end)
+later(
+  s_use ("mini.misc", {make_global = { "put", "put_text" } })
+  :next
+  {
+    function()
+      MiniMisc.setup_auto_root()
+      MiniMisc.setup_restore_cursor()
+    end
+  }
+)
 later(source "plugins/mini-files.lua")
 
 later(add "rafamadriz/friendly-snippets")
@@ -340,8 +347,8 @@ later(function()
 end)
 
 later(use "mini.visits")
-later(function()
-  require("mini.surround").setup({
+later(
+  s_use("mini.surround", {
     highlight_duration = 500,
     mappings = {
       add = "sa", -- Add surrounding in Normal and Visual modes
@@ -358,9 +365,30 @@ later(function()
     },
     search_method = "cover_or_next",
   })
-
-  vim.keymap.set({ "n", "x" }, "s", "<Nop>")
-end)
+  :next
+  { function() vim.keymap.set({ "n", "x" }, "s", "<Nop>") end }
+)
+-- later(function()
+--   require("mini.surround").setup({
+--     highlight_duration = 500,
+--     mappings = {
+--       add = "sa", -- Add surrounding in Normal and Visual modes
+--       delete = "sd", -- Delete surrounding
+--       find = "sn", -- Find surrounding (to the right)
+--       find_left = "sN", -- Find surrounding (to the left)
+--       find_right = "sn", -- Find surrounding (to the left)
+--       highlight = "sh", -- Highlight surrounding
+--       replace = "sr", -- Replace surrounding
+--       update_n_lines = "", -- Update `n_lines`
+--
+--       suffix_last = "l", -- Suffix to search with "prev" method
+--       suffix_next = "n", -- Suffix to search with "next" method
+--     },
+--     search_method = "cover_or_next",
+--   })
+--
+--   vim.keymap.set({ "n", "x" }, "s", "<Nop>")
+-- end)
 
 later(function()
   local ai = require("mini.ai")
@@ -407,14 +435,19 @@ later(function()
   remap("x", "gx", "<Leader>ox")
   require("mini.operators").setup()
 end)
-later(function()
-  require("mini.git").setup()
 
-  vim.api.nvim_create_autocmd("User", {
-    pattern = "MiniGitCommandSplit",
-    callback = function(data) vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = data.buf }) end,
-  })
-end)
+later(
+  s_use "mini.git"
+  :next
+  {
+    function()
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "MiniGitCommandSplit",
+        callback = function(data) vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = data.buf }) end,
+      })
+    end
+  }
+)
 
 
 later(source "plugins/mini-diff.lua")

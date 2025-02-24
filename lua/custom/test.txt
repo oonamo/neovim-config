@@ -1,5 +1,0 @@
-------------------------------------------------------------------------------------------------------------- This line is out of view, this is to check if the search scrolls correctly
-------------------------------------------------------------this is an another
-
-
-this is normal text
