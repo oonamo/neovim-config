@@ -11,7 +11,7 @@ function M.use(name, opts)
 
   local data = {
     add_fn = add_fn,
-    next_fns = {}
+    next_fns = {},
   }
 
   setmetatable(data, {
@@ -47,9 +47,9 @@ end
 
 function M:next(do_op)
   if type(do_op) == "table" then
-    for _, op in ipairs(do_op) do
-      table.insert(self.next_fns, op)
-    end
+    -- PERF: Slightly increase perfomance by just setting this to be all the next_fns
+    --       Would override previous fns
+    self.next_fns = do_op
   else
     table.insert(self.next_fns, do_op)
   end
