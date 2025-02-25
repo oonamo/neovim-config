@@ -6,4 +6,4 @@ local map = function(mode, lhs, rhs, desc, opts)
   vim.keymap.set(mode, lhs, rhs, opts)
 end
 
-map("n", "<leader>Ng", "<cmd>Neogit<cr>", "Open neogit")
+map("n", "<C-x>g", "<cmd>Neogit<cr>", "Open neogit")

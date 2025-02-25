@@ -87,7 +87,7 @@ now(function()
       semantic_tokens = true,
       mini = true,
       blink = Config.completion ~= "mini",
-      neogit = true,
+      neogit = Config.plugs.neogit,
     },
     on_highlights = function(hl, c)
       return {
@@ -106,31 +106,7 @@ end)
 
 -- stylua: ignore start
 now(source "plugins/mini-statusline.lua" )
-
-
-now(
-  s_use ("mini.notify", {
-    lsp_progress = {
-      enable = false,
-    },
-    window = {
-      config = function()
-        local opts = { title = (vim.b.notify_config or {}).title }
-        vim.b.notify_config = nil
-        return opts
-      end
-    }
-  })
-  :next
-  {
-    function()
-      vim.notify = function(msg, level, opts)
-        vim.b.notify_config = opts
-        MiniNotify.make_notify()(msg, level)
-      end
-    end
-  }
-)
+now(source "plugins/mini-notify.lua")
 
 now(
   s_use "mini.icons"
@@ -369,11 +345,13 @@ later(
 )
 
 -- NOTE: trying this out
-later(
-  add {
-    source = "NeogitOrg/neogit",
-    depends = {  "nvim-lua/plenary.nvim" },
-  }
-  :next
-  { source "plugins/neogit.lua" }
-)
+if Config.plugs.neogit then
+  later(
+    add {
+      source = "NeogitOrg/neogit",
+      depends = {  "nvim-lua/plenary.nvim" },
+    }
+    :next
+    { source "plugins/neogit.lua" }
+  )
+end

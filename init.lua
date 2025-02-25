@@ -23,7 +23,6 @@ vim.g.loaded_tutor_mode_plugin = 1
 
 -- Clone 'mini.nvim' manually in a way that it gets managed by 'mini.deps'
 local path_package = vim.fn.stdpath("data") .. "/site/"
-local mini_path = path_package .. "pack/deps/start/mini.nvim"
 
 _G.Config = {
   path_source = vim.fn.stdpath("config") .. "/lua/",
@@ -31,10 +30,10 @@ _G.Config = {
   sep = package.config:sub(1, 1),
   plugs = {
     snacks = false,
+    neogit = true,
   },
   completion = "mini",
   dev_dir = vim.fs.joinpath(vim.fn.expand("~"), "projects", "nvim"),
 }
 
 require("config.deps")
-require("plugins")

@@ -1,11 +1,26 @@
 ---@param client vim.lsp.Client
 ---@param buffer number
 local function on_attach(client, buffer)
+  local function map_if_supported(method, lhs, rhs, desc, opts)
+    if client:supports_method(method, buffer) then
+      opts = opts or {}
+      opts.desc = desc
+      opts.buffer = buffer
+      vim.keymap.set("n", lhs, rhs, opts)
+    end
+  end
+
   if Config.completion == "mini" then vim.bo[buffer].omnifunc = "v:lua.MiniCompletion.completefunc_lsp" end
-  vim.keymap.set("n", "<leader>la", vim.lsp.buf.code_action, {
-    desc = "Preview code actions",
-    buffer = buffer,
-  })
+
+  map_if_supported("textDocument/codeAction", "<leader>la", vim.lsp.buf.code_action, "Apply Code Action")
+  map_if_supported("textDocument/definition", "<leader>ld", vim.lsp.buf.definition, "Go to defnition")
+  map_if_supported("textDocument/implementation", "<leader>li", vim.lsp.buf.implementation, "Go to implementation")
+  map_if_supported("textDocument/references", "<leader>lr", vim.lsp.buf.references, "Go to implementation")
+  map_if_supported("textDocument/typeDefinition", "<leader>lt", vim.lsp.buf.type_definition, "Go to type definition")
+  map_if_supported("textDocument/declaration", "<leader>lD", vim.lsp.buf.declaration, "Go to type definition")
+  map_if_supported("textDocument/rename", "<leader>ln", vim.lsp.buf.rename, "Rename symbol")
+  map_if_supported("textDocument/rename", "<leader>ln", vim.lsp.buf.rename, "Rename symbol")
+  map_if_supported("textDocument/signatureHelp", "<leader>k", vim.lsp.buf.signature_help, "Rename symbol")
 
   vim.keymap.set("n", "gd", vim.lsp.buf.definition, {
     desc = "go to buffer definition",
@@ -19,40 +34,35 @@ local function on_attach(client, buffer)
     { desc = "go to multiple definition", buffer = buffer }
   )
 
-  vim.keymap.set("n", "<leader>ld", function() vim.diagnostic.open_float() end, {
+  vim.keymap.set("n", "<leader>ll", function() vim.diagnostic.open_float() end, {
     desc = "Open float menu",
     buffer = buffer,
   })
 
-  vim.keymap.set("n", "[d", vim.diagnostic.goto_next, {
-    desc = "Got to next diagnostic",
-    buffer = buffer,
-  })
+  -- vim.keymap.set("n", "[d", vim.diagnostic.goto_next, {
+  --   desc = "Got to next diagnostic",
+  --   buffer = buffer,
+  -- })
+  --
+  -- vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, {
+  --   desc = "Go to previous diagnostic",
+  --   buffer = buffer,
+  -- })
 
-  vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, {
-    desc = "Go to previous diagnostic",
-    buffer = buffer,
-  })
+  -- vim.keymap.set("n", "<leader>ln", vim.lsp.buf.rename, { desc = "Rename symbol", buffer = buffer, expr = true })
+  -- vim.keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, {
+  --   desc = "Signature help",
+  --   buffer = buffer,
+  -- })
 
-  vim.keymap.set("n", "<leader>lr", vim.lsp.buf.references, {
-    desc = "Go to lsp references",
-    buffer = buffer,
-  })
-
-  vim.keymap.set("n", "<leader>ln", vim.lsp.buf.rename, { desc = "Rename symbol", buffer = buffer, expr = true })
-  vim.keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, {
-    desc = "Signature help",
-    buffer = buffer,
-  })
-
-  if client.supports_method("textDocument/inlayHint") then
-    vim.keymap.set(
-      "n",
-      "<leader>lh",
-      function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end,
-      { desc = "Inlay Hint" }
-    )
-  end
+  -- if client.supports_method("textDocument/inlayHint") then
+  --   vim.keymap.set(
+  --     "n",
+  --     "<leader>lh",
+  --     function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end,
+  --     { desc = "Inlay Hint" }
+  --   )
+  -- end
 
   vim.keymap.set(
     "n",
@@ -66,10 +76,10 @@ local function on_attach(client, buffer)
     buffer = buffer,
   })
 
-  vim.keymap.set("n", "<leader>le", function() require("config.lsp").echo_area_sig() end, {
-    desc = "Request Signature (Echo Area)",
-    buffer = buffer,
-  })
+  -- vim.keymap.set("n", "<leader>le", function() require("config.lsp").echo_area_sig() end, {
+  --   desc = "Request Signature (Echo Area)",
+  --   buffer = buffer,
+  -- })
 
   vim.keymap.set("n", "gO", function() vim.lsp.buf.document_symbol({ loclist = true }) end, { buffer = buffer })
 end

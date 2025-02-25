@@ -1,7 +1,11 @@
 {
   "Anonymous Function": {
     "prefix": "afu",
-    "body": "function($1)\n\t$0\nend",
+    "body": [
+      "function($1)",
+      " ${0:$TM_SELECTED_TEXT}",
+      "end"
+    ],
     "desc": "Create an anonymous function"
   },
   "Foreach in array": {

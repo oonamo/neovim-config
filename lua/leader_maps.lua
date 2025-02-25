@@ -96,7 +96,7 @@ if not Config.plugs.snacks then
 end
 
 --================== LSP (l) ====================
-map_leader("n", "lf", function() require("conform").format({ lsp_fallback = true }) end, "Format Buffer")
+map_leader("n", "lf", function() require("conform").format({ lsp_fallback = true, async = true }) end, "Format Buffer")
 
 --================== Git (g) ====================
 local find_conflict = function(direction)
@@ -125,8 +125,17 @@ end, "Blame")
 
 map_leader("n", "gA", "<Cmd>Git diff --cached -- %<CR>", "Added diff buffer")
 map_leader("n", "gc", function()
-  vim.cmd("Git diff --cached --patch-with-stat")
-  vim.cmd("horizontal Git commit")
+  vim.cmd("Git commit")
+  vim.cmd("horizontal Git diff --cached --patch-with-stat")
+
+  vim.api.nvim_create_autocmd("User", {
+    pattern = "MiniGitCommandSplit",
+    command = "wincmd k",
+    once = true,
+  })
+
+  -- vim.cmd("Git diff --cached --patch-with-stat")
+  -- vim.cmd("horizontal Git commit")
 end, "Commit with diff")
 map_leader("n", "gp", "<cmd>Git pull<cr>", "Pull")
 map_leader("n", "gP", "<cmd>Git push<cr>", "Push")
@@ -162,7 +171,7 @@ cx_leader("n", "d", function()
   local bufname = vim.api.nvim_buf_get_name(0)
   local buf_cwd = vim.fn.fnamemodify(bufname, ":p:h")
   Config.dired({ cwd = buf_cwd })
-end)
+end, "Dired")
 cx_leader("n", "f", function() Config.explorer() end, "File Explorer (cwd)")
 cx_leader("n", "h", "<cmd>Pick help<cr>", "Pick help")
 cx_leader("n", "1", function() require("mini.misc").zoom() end, "Only Buffer")

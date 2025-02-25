@@ -79,14 +79,14 @@ map("c", "<C-x>", "<C-f><Esc>?")
 cmap(":", "lua ")
 map({ "c" }, "<C-d>", "<C-right>")
 map({ "c" }, "<C-s>", "<C-left>")
-vim.cmd.cabbr({ args = { "<expr>", "%%", "expand(%:p:h)" } })
 
 --================== Quickfix Navigation ====================
-vim.keymap.set("n", "<C-n>", "<cmd>cnext<cr>", { desc = "Quickfix Next" })
-vim.keymap.set("n", "<C-y>", "<cmd>cprev<cr>", { desc = "Quickfix Last" })
+vim.keymap.set("n", "<C-g>", "<cmd>cnext<cr>", { desc = "Quickfix Next" })
+vim.keymap.set("n", "<C-t>", "<cmd>cprev<cr>", { desc = "Quickfix Last" })
 
 --================== Grep ====================
-map("n", "<C-g>", ":Grep ", { desc = "Start grep", silent = false })
+map("n", "gG", ":Grep ", { desc = "Start grep", silent = false })
+map("n", "g/", ":Grep <C-r>/ %<cr>", { desc = "Grep last search", silent = false })
 
 --================== Paste ====================
 map("n", "<C-p>", function()
